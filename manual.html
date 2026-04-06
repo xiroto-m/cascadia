@@ -3,6 +3,15 @@
 
 <head>
   <meta charset="UTF-8">
+  <script>
+    (function() {
+      var pass = prompt('パスワードを入力してください');
+      if (pass !== 'cascadia2026') {
+        document.documentElement.innerHTML = '';
+        throw new Error('Access denied');
+      }
+    })();
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>カスケディア・トレーディング 営業マニュアル</title>
   <meta name="description" content="カスケディア・トレーディング 新入社員〜若手営業向け営業マニュアル">
