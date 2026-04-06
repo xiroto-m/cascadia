@@ -3,18 +3,8 @@
 
 <head>
   <meta charset="UTF-8">
-  <style id="auth-guard">html { visibility: hidden !important; }</style>
-  <script>
-    (function() {
-      var pass = prompt('パスワードを入力してください');
-      if (pass !== 'cascadia2026') {
-        window.location.href = 'about:blank';
-        document.documentElement.innerHTML = '';
-        throw new Error('Access denied');
-      }
-      document.getElementById('auth-guard').remove();
-    })();
-  </script>
+  <style id="auth-guard">body > :not(#auth-overlay) { visibility: hidden !important; }</style>
+  <script src="auth.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>カスケディア・トレーディング 営業マニュアル</title>
   <meta name="description" content="カスケディア・トレーディング 新入社員〜若手営業向け営業マニュアル">
@@ -1792,6 +1782,70 @@
       opacity: 1;
       color: var(--accent-blue);
     }
+
+    /* Quiz specific styles */
+    .hero-quiz-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 16px;
+      padding: 10px 20px;
+      background: linear-gradient(135deg, var(--accent-violet), var(--accent-rose));
+      color: var(--bg-primary);
+      text-decoration: none;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      box-shadow: 0 4px 15px rgba(167, 139, 250, 0.3);
+      transition: all 0.3s var(--ease-out);
+    }
+
+    .hero-quiz-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(167, 139, 250, 0.4);
+      filter: brightness(1.1);
+    }
+
+    .hero-quiz-link .icon {
+      font-size: 1.1rem;
+    }
+
+    .sidebar-quiz-section {
+      margin-top: auto;
+      padding: 15px 20px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .nav-quiz {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 15px;
+      background: rgba(167, 139, 250, 0.1);
+      border: 1px solid rgba(167, 139, 250, 0.2);
+      border-radius: 12px;
+      color: var(--accent-violet);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 700;
+      transition: all 0.2s;
+    }
+
+    .nav-quiz:hover {
+      background: rgba(167, 139, 250, 0.2);
+      transform: translateX(3px);
+    }
+
+    @media(max-width:900px) {
+      .bottom-nav {
+        gap: 0;
+      }
+      .bottom-nav-item {
+        min-width: 0;
+        padding: 5px 4px;
+        flex: 1;
+      }
+    }
   </style>
 </head>
 
@@ -1869,6 +1923,11 @@
         </div>
       </div>
     </nav>
+    <div class="sidebar-quiz-section">
+      <a href="quiz.html" class="nav-quiz" target="_blank">
+        <span class="icon">📝</span> 理解度チェックテスト
+      </a>
+    </div>
     <div class="sidebar-footer">© 2026 Cascadia Trading</div>
   </aside>
 
@@ -1901,6 +1960,9 @@
           <h1>カスケディア営業マニュアル</h1>
           <p class="hero-sub">
             商品の「丸暗記」ではなく、営業現場での「勘所」を掴み、自走できるようになるためのガイドラインです。<br>順引き（商品カタログ）と逆引き（課題・ステージ別）の両方から、最適な情報にアクセスできます。</p>
+          <a href="quiz.html" class="hero-quiz-link" target="_blank">
+            <span class="icon">📝</span> 理解度チェックテストに挑戦する
+          </a>
         </div>
         <h2><span class="h2-icon">📚</span> 各章へジャンプ</h2>
         <div class="card-grid">
@@ -1936,6 +1998,9 @@
         <div class="section-hero"><span class="hero-emoji">🌍</span>
           <h1>第1章　フィロソフィー</h1>
           <p class="hero-sub">私たちが「飼料を届ける」意味 ── カスケディアの使命と営業の誇り</p>
+          <a href="quiz.html#ch1" class="hero-quiz-link" target="_blank">
+            <span class="icon">📝</span> 第1章のクイズに挑戦
+          </a>
         </div>
         <h2><span class="h2-icon">🌏</span> カスケディアの使命：グローバルな資源循環の担い手</h2>
         <p>カスケディア・トレーディングは、アメリカ、カナダ、オーストラリアなど世界各国から牧草・飼料・資材を輸入し、日本の畜産農家に届けています。しかし、私たちの仕事は単なる「モノの輸出入」ではありません。</p>
@@ -2014,6 +2079,9 @@
         <div class="section-hero"><span class="hero-emoji">🐮</span>
           <h1>第2章　牛の基礎知識</h1>
           <p class="hero-sub">「なぜその飼料が必要なのか」── 牛の消化器官・成長ステージ・ストレスの生理学</p>
+          <a href="quiz.html#ch2" class="hero-quiz-link" target="_blank">
+            <span class="icon">📝</span> 第2章のクイズに挑戦
+          </a>
         </div>
         <h2><span class="h2-icon">🫁</span> 四つの胃の仕組み</h2>
         <p>牛は<strong>四つの胃</strong>を持つ反芻動物です。この消化システムの理解が、飼料提案の基盤になります。</p>
@@ -2829,6 +2897,9 @@
         <div class="section-hero"><span class="hero-emoji">🔍</span>
           <h1>第3章　逆引きインデックス</h1>
           <p class="hero-sub">顧客の「課題」「牛の成長ステージ」「季節」から、最適な商品を見つける</p>
+          <a href="quiz.html#ch3" class="hero-quiz-link" target="_blank">
+            <span class="icon">📝</span> 第3章のクイズに挑戦
+          </a>
         </div>
         <h2><span class="h2-icon">🎯</span> 課題別クイックガイド</h2>
         <p>酪農・畜産の現場でよくある相談内容から、提案すべき商品カテゴリをガイドします。</p>
@@ -3456,6 +3527,9 @@
         <div class="section-hero"><span class="hero-emoji">📦</span>
           <h1>第4章　商品カタログ</h1>
           <p class="hero-sub">自社製品を体系的に学ぶ ── カテゴリツリーから各商品の詳細ページへ</p>
+          <a href="quiz.html#ch4" class="hero-quiz-link" target="_blank">
+            <span class="icon">📝</span> 第4章のクイズに挑戦
+          </a>
         </div>
         <div class="callout info" style="margin:28px 0">
           <div class="callout-title">🔎 品番の読み解き方</div>
@@ -5096,6 +5170,9 @@
         <div class="section-hero"><span class="hero-emoji">📎</span>
           <h1>付録 ── 用語集</h1>
           <p class="hero-sub">営業現場で頻出する業界用語・略語をまとめています</p>
+          <a href="quiz.html#ch5" class="hero-quiz-link" target="_blank">
+            <span class="icon">📝</span> 付録のクイズに挑戦
+          </a>
         </div>
         <h2><span class="h2-icon">📖</span> 飼料・栄養の用語</h2>
         <div class="glossary-grid">
@@ -5364,6 +5441,7 @@
     <a class="bottom-nav-item" data-section="ch4" onclick="navigateTo('ch4')"><span class="bn-icon">📦</span>カタログ</a>
     <a class="bottom-nav-item" data-section="appendix" onclick="navigateTo('appendix')"><span
         class="bn-icon">📎</span>付録</a>
+    <a href="quiz.html" class="bottom-nav-item" target="_blank"><span class="bn-icon">📝</span>クイズ</a>
   </nav>
 
   <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>

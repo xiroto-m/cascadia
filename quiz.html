@@ -2,18 +2,8 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<style id="auth-guard">html { visibility: hidden !important; }</style>
-<script>
-  (function() {
-    var pass = prompt('パスワードを入力してください');
-    if (pass !== 'cascadia2026') {
-      window.location.href = 'about:blank';
-      document.documentElement.innerHTML = '';
-      throw new Error('Access denied');
-    }
-    document.getElementById('auth-guard').remove();
-  })();
-</script>
+<style id="auth-guard">body > :not(#auth-overlay) { visibility: hidden !important; }</style>
+<script src="auth.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>カスケディア営業マニュアル 理解度チェック</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -560,11 +550,20 @@ scrQuiz.addEventListener('touchend', e => {
 }, {passive:true});
 
 /* ===== INIT ===== */
+function checkHash() {
+  const hash = window.location.hash.replace('#','');
+  if(hash && chapters.find(c=>c.id===hash)) {
+    startChapter(hash);
+  }
+}
+
 updateStats();renderChapters();renderAchievements();
+checkHash();
 
 // Override showScreen for achievements
 const _showScreen=showScreen;
 showScreen=function(id){_showScreen(id);if(id==='scrAchiev')renderAchievements()};
+window.addEventListener('hashchange', checkHash);
 </script>
 </body>
 </html>
