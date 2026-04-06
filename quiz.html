@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>カスケディア営業マニュアル 理解度チェック</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0c14;--bg2:#111525;--bg3:#171c30;--card:#1a2038;--card-h:#222a4a;--green:#34d399;--green-d:#22a67a;--green-g:rgba(52,211,153,.12);--blue:#60a5fa;--amber:#fbbf24;--rose:#fb7185;--violet:#a78bfa;--teal:#2dd4bf;--orange:#fb923c;--txt:#e8eaed;--txt2:#9ca3af;--txt3:#6b7280;--brd:rgba(255,255,255,.06);--font:'Noto Sans JP','Inter',sans-serif}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px;scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:3px}
+
+/* Header */
+.header{text-align:center;padding:40px 20px 20px;position:relative}
+.header h1{font-size:1.6rem;font-weight:800;background:linear-gradient(135deg,var(--green),var(--teal),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.header p{color:var(--txt2);font-size:.82rem;margin-top:6px}
+
+/* Stats Bar */
+.stats-bar{display:flex;justify-content:center;gap:16px;padding:14px 20px;flex-wrap:wrap}
+.stat{background:var(--bg2);border:1px solid var(--brd);border-radius:12px;padding:10px 18px;text-align:center;min-width:90px}
+.stat .val{font-size:1.3rem;font-weight:800;color:var(--green)}
+.stat .lbl{font-size:.65rem;color:var(--txt3);margin-top:2px}
+
+/* XP Bar */
+.xp-wrap{max-width:500px;margin:10px auto;padding:0 20px}
+.xp-info{display:flex;justify-content:space-between;font-size:.72rem;color:var(--txt3);margin-bottom:4px}
+.xp-bar{height:8px;background:var(--bg3);border-radius:8px;overflow:hidden}
+.xp-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--teal));border-radius:8px;transition:width .6s ease;width:0}
+
+/* Rank Badge */
+.rank-badge{text-align:center;margin:8px 0 16px}
+.rank-badge span{display:inline-block;padding:4px 14px;border-radius:20px;font-size:.72rem;font-weight:700;background:rgba(52,211,153,.1);color:var(--green);border:1px solid rgba(52,211,153,.2)}
+
+/* Screens */
+.screen{display:none;max-width:700px;margin:0 auto;padding:0 20px 100px}
+.screen.active{display:block;animation:fadeUp .4s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* Chapter Select */
+.ch-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.ch-card{background:var(--card);border:1px solid var(--brd);border-radius:14px;padding:18px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden}
+.ch-card:hover{border-color:var(--green-d);transform:translateY(-2px);box-shadow:0 8px 30px rgba(52,211,153,.08)}
+.ch-card .emoji{font-size:1.8rem;margin-bottom:6px}
+.ch-card .title{font-size:.85rem;font-weight:700}
+.ch-card .desc{font-size:.7rem;color:var(--txt3);margin-top:3px}
+.ch-card .stars{margin-top:8px;font-size:.8rem;letter-spacing:2px}
+.ch-card .progress-mini{height:3px;background:var(--bg);border-radius:3px;margin-top:6px;overflow:hidden}
+.ch-card .progress-mini div{height:100%;background:var(--green);border-radius:3px;transition:width .4s}
+.ch-card.locked{opacity:.45;pointer-events:none}
+.ch-card .lock-icon{position:absolute;top:12px;right:12px;font-size:1rem}
+.ch-card.completed{border-color:rgba(52,211,153,.3)}
+
+/* Quiz Area */
+.q-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.q-chapter{font-size:.75rem;color:var(--green);font-weight:600}
+.q-count{font-size:.72rem;color:var(--txt3)}
+.q-progress{height:4px;background:var(--bg3);border-radius:4px;overflow:hidden;margin-bottom:24px}
+.q-progress div{height:100%;background:linear-gradient(90deg,var(--green),var(--blue));border-radius:4px;transition:width .4s}
+.q-card{background:var(--card);border:1px solid var(--brd);border-radius:16px;padding:24px;margin-bottom:20px}
+.q-num{font-size:.68rem;color:var(--violet);font-weight:700;margin-bottom:6px}
+.q-text{font-size:.95rem;font-weight:600;line-height:1.7;margin-bottom:18px}
+.q-opts{display:flex;flex-direction:column;gap:8px}
+.q-opt{background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:12px 16px;cursor:pointer;font-size:.82rem;color:var(--txt2);transition:all .2s;position:relative;line-height:1.6}
+.q-opt:hover{border-color:rgba(96,165,250,.3);background:var(--card-h);color:var(--txt)}
+.q-opt.selected{border-color:var(--blue);background:rgba(96,165,250,.08);color:var(--txt)}
+.q-opt.correct{border-color:var(--green)!important;background:rgba(52,211,153,.1)!important;color:var(--green)!important}
+.q-opt.wrong{border-color:var(--rose)!important;background:rgba(251,113,133,.08)!important;color:var(--rose)!important}
+.q-opt.disabled{pointer-events:none}
+.q-explain{margin-top:14px;padding:14px;border-radius:10px;font-size:.78rem;line-height:1.7;color:var(--txt2);display:none}
+.q-explain.show{display:block;animation:fadeUp .3s ease}
+.q-explain.ok-bg{background:rgba(52,211,153,.06);border-left:3px solid var(--green)}
+.q-explain.ng-bg{background:rgba(251,113,133,.06);border-left:3px solid var(--rose)}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 28px;border-radius:12px;font-size:.82rem;font-weight:700;cursor:pointer;border:none;transition:all .2s;font-family:var(--font)}
+.btn-primary{background:linear-gradient(135deg,var(--green),var(--teal));color:var(--bg)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(52,211,153,.25)}
+.btn-secondary{background:var(--bg2);border:1px solid var(--brd);color:var(--txt2)}
+.btn-secondary:hover{border-color:var(--green-d);color:var(--txt)}
+.btn-row{display:flex;gap:10px;margin-top:20px;justify-content:center;flex-wrap:wrap}
+
+/* Result Screen */
+.result-card{background:var(--card);border:1px solid var(--brd);border-radius:18px;padding:30px;text-align:center;margin:20px 0}
+.result-emoji{font-size:3.5rem;margin-bottom:10px}
+.result-title{font-size:1.4rem;font-weight:800;margin-bottom:6px}
+.result-score{font-size:2.4rem;font-weight:800;background:linear-gradient(135deg,var(--green),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.result-sub{font-size:.8rem;color:var(--txt2);margin-top:4px}
+.result-xp{margin-top:14px;padding:10px 20px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.2);border-radius:10px;display:inline-block}
+.result-xp span{color:var(--amber);font-weight:800;font-size:1.1rem}
+
+/* Combo & Toast */
+.combo-display{position:fixed;top:80px;right:20px;background:var(--card);border:1px solid rgba(251,191,36,.3);border-radius:12px;padding:8px 16px;font-size:.75rem;font-weight:700;color:var(--amber);opacity:0;transition:opacity .3s;z-index:100;pointer-events:none}
+.combo-display.show{opacity:1}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--card);border:1px solid var(--brd);border-radius:14px;padding:12px 24px;font-size:.82rem;font-weight:600;z-index:200;transition:transform .4s ease;pointer-events:none;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast .toast-emoji{font-size:1.2rem;margin-right:6px}
+
+/* Achievements */
+.achiev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:16px}
+.achiev-item{background:var(--card);border:1px solid var(--brd);border-radius:12px;padding:14px;text-align:center;transition:all .3s}
+.achiev-item.unlocked{border-color:rgba(251,191,36,.3);background:rgba(251,191,36,.04)}
+.achiev-item .a-icon{font-size:2rem;margin-bottom:4px;filter:grayscale(1) brightness(.4)}
+.achiev-item.unlocked .a-icon{filter:none}
+.achiev-item .a-name{font-size:.78rem;font-weight:700;color:var(--txt2)}
+.achiev-item.unlocked .a-name{color:var(--amber)}
+.achiev-item .a-desc{font-size:.65rem;color:var(--txt3);margin-top:2px}
+
+/* Responsive */
+@media(max-width:500px){
+.ch-grid{grid-template-columns:1fr}
+.stats-bar{gap:8px}
+.stat{padding:8px 12px;min-width:70px}
+.stat .val{font-size:1rem}
+.header h1{font-size:1.3rem}
+.q-card{padding:18px}
+.achiev-grid{grid-template-columns:1fr 1fr}
+}
+.modal-overlay {position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:all 0.3s;}
+.modal-overlay.active {opacity:1;pointer-events:auto;}
+.modal-box {background:var(--bg);width:90%;max-width:400px;border-radius:12px;padding:24px;text-align:center;transform:translateY(20px);transition:all 0.3s;box-shadow:0 10px 30px rgba(0,0,0,0.15);}
+.modal-overlay.active .modal-box {transform:translateY(0);}
+.modal-box h3 {font-size:1.2rem;margin-bottom:12px;color:var(--txt);}
+.modal-box p {font-size:0.9rem;color:var(--txt2);margin-bottom:24px;}
+.hint-btn {background:#e3f2fd;color:#1e88e5;border:none;padding:6px 12px;border-radius:20px;font-size:0.8rem;font-weight:600;cursor:pointer;margin-bottom:16px;display:inline-flex;align-items:center;gap:6px;transition:0.2s;text-decoration:none;}
+.hint-btn:hover {background:#bbdefb;transform: translateY(-1px);}
+.deep-link-btn {display:inline-block;margin-top:16px;padding:10px 20px;background:linear-gradient(135deg,#00b09b,#96c93d);color:#fff;text-decoration:none;border-radius:30px;font-weight:700;font-size:0.9rem;box-shadow:0 4px 15px rgba(0,176,155,0.3);transition:0.3s;}
+.deep-link-btn:hover {transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,176,155,0.4);}
+.swipe-hint {text-align:center;font-size:0.75rem;color:var(--txt3);width:100%;margin-top:12px;animation:pulseHint 1.5s infinite;opacity:0;pointer-events:none;transition:opacity 0.3s;}
+.swipe-hint.show {opacity:1;}
+@keyframes pulseHint {0%,100%{opacity:0.5;}50%{opacity:1;}}
+
+/* Mission & Vision */
+.modal-mission-badge { display:inline-block; font-size:0.7rem; font-weight:800; background: var(--blue); color: var(--bg); padding: 4px 12px; border-radius:20px; margin-bottom: 12px; letter-spacing: 1px; }
+.mission-box { background: rgba(96,165,250,0.06); border: 1px solid rgba(96,165,250,0.2); border-radius: 10px; padding: 18px; margin-bottom: 20px; text-align: left; }
+.purpose-title { font-size:0.75rem; font-weight:700; color: var(--blue); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+.vision-title { font-size:0.75rem; font-weight:700; color: var(--green); margin-top: 14px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+.mission-box p { margin-bottom: 0; font-size: 0.82rem; color: var(--txt); line-height:1.6; }
+.growth-vision { margin-top: 20px; padding: 16px; background: rgba(52,211,153,0.08); border-radius: 12px; border: 1px solid rgba(52,211,153,0.3); text-align: left; display: none; }
+.growth-vision.show { display: block; animation: fadeUp 0.4s ease; }
+.growth-title { font-size: 0.8rem; font-weight: 800; color: var(--green); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+.growth-text { font-size: 0.85rem; line-height: 1.6; color: var(--txt); }
+</style>
+</head>
+<body>
+
+<!-- PRE_QUIZ MODAL -->
+<div class="modal-overlay" id="preQuizModal">
+  <div class="modal-box">
+    <div class="modal-mission-badge">MISSION</div>
+    <h3 id="preQuizTitle">章のタイトル</h3>
+    
+    <div class="mission-box">
+       <div class="purpose-title">🎯 学ぶ目的</div>
+       <p id="preQuizPurpose">ここに目的が入ります</p>
+       
+       <div class="vision-title">🚀 クリアしたらどうなるか？</div>
+       <p id="preQuizVision">ここにビジョンが入ります</p>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <a href="#" target="_blank" class="btn btn-secondary" id="btnPreviewManual">📚 まずマニュアルで知識を入れる</a>
+      <button class="btn btn-primary" onclick="startQuizFromModal()" style="background:linear-gradient(135deg,var(--blue),var(--violet));color:#fff;border:none;">💡 いきなりクイズで実力を試す！</button>
+      <button class="btn btn-secondary" onclick="closeModal()" style="background:transparent;border:none;color:var(--txt3)">キャンセル</button>
+    </div>
+  </div>
+</div>
+
+<div class="combo-display" id="combo">🔥 <span id="comboNum">0</span>連続正解!</div>
+<div class="toast" id="toast"><span class="toast-emoji"></span><span class="toast-text"></span></div>
+
+<div class="header">
+<h1>🐄 カスケディア営業力チェック</h1>
+<p>マニュアルの理解度をゲーム感覚でテストしよう！</p>
+</div>
+
+<div class="stats-bar">
+<div class="stat"><div class="val" id="sXP">0</div><div class="lbl">総合XP</div></div>
+<div class="stat"><div class="val" id="sStreak">0</div><div class="lbl">🔥 連続</div></div>
+<div class="stat"><div class="val" id="sCorrect">0</div><div class="lbl">✅ 正解</div></div>
+<div class="stat"><div class="val" id="sTotal">0</div><div class="lbl">📝 回答</div></div>
+</div>
+
+<div class="xp-wrap">
+<div class="xp-info"><span id="rankLabel">🥚 ルーキー</span><span id="xpLabel">0 / 100 XP</span></div>
+<div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
+</div>
+<div class="rank-badge"><span id="rankBadge">Lv.1 ルーキー営業</span></div>
+
+<!-- HOME SCREEN -->
+<div class="screen active" id="scrHome">
+<h2 style="font-size:1rem;font-weight:700;margin-bottom:4px;">📚 チャプターを選択</h2>
+<p style="font-size:.72rem;color:var(--txt3);">各章をクリアしてXPを獲得し、ランクを上げよう！</p>
+<div class="ch-grid" id="chGrid"></div>
+<div class="btn-row" style="margin-top:24px">
+<button class="btn btn-secondary" onclick="showScreen('scrAchiev')">🏆 実績</button>
+<button class="btn btn-primary" onclick="startRandom()">🎲 ランダム10問</button>
+</div>
+<div style="text-align:center; margin-top:40px;">
+  <button class="btn btn-secondary" onclick="resetHistory()" style="background:transparent; border-color:rgba(251,113,133,0.3); color:var(--rose); padding:6px 14px; font-size:0.75rem;">🗑️ 学習履歴をリセット</button>
+</div>
+</div>
+
+<!-- QUIZ SCREEN -->
+<div class="screen" id="scrQuiz">
+<div class="q-header"><span class="q-chapter" id="qChapter"></span><span class="q-count" id="qCount"></span></div>
+<div class="q-progress"><div id="qProg"></div></div>
+<div id="qArea"></div>
+<div class="btn-row" id="qBtns"></div>
+</div>
+
+<!-- RESULT SCREEN -->
+<div class="screen" id="scrResult">
+<div class="result-card">
+<div class="result-emoji" id="rEmoji"></div>
+<div class="result-title" id="rTitle"></div>
+<div class="result-score" id="rScore"></div>
+<div class="result-sub" id="rSub"></div>
+<div class="result-xp"><span id="rXP">+0</span> XP獲得！</div>
+<div class="growth-vision" id="rVision">
+  <div class="growth-title">🌟 成長の証（獲得スキル）</div>
+  <div class="growth-text" id="rVisionText"></div>
+</div>
+</div>
+<div class="btn-row">
+<button class="btn btn-secondary" onclick="showScreen('scrHome');renderChapters()">🏠 ホームに戻る</button>
+<button class="btn btn-primary" id="rRetry">🔄 もう一度</button>
+</div>
+</div>
+
+<!-- ACHIEVEMENTS SCREEN -->
+<div class="screen" id="scrAchiev">
+<h2 style="font-size:1.1rem;font-weight:700;margin-bottom:4px">🏆 実績・バッジ</h2>
+<p style="font-size:.72rem;color:var(--txt3);margin-bottom:8px">チャレンジを達成してバッジを集めよう！</p>
+<div class="achiev-grid" id="achievGrid"></div>
+<div class="btn-row"><button class="btn btn-secondary" onclick="showScreen('scrHome')">← 戻る</button></div>
+</div>
+
+<script>
+/* ===== QUESTION DATA ===== */
+const chapters = [
+{id:'ch1',emoji:'🌍',title:'第1章 フィロソフィー',desc:'使命・営業哲学',purpose:'カスケディアの使命と、農家との向き合い方の根本を理解する。',vision:'農家に「売り込む」のではなく、共に経営課題を解決するパートナーとして信頼関係を築けるようになります。',questions:[
+{q:'アルファルファヘイ1トンを育てるのに必要な水の量はおよそどれくらい？',o:['約100〜200トン','約800〜1,000トン','約50〜100トン','約3,000トン'],a:1,ex:'1トンのアルファルファヘイには約800〜1,000トンの水が必要です。これを「バーチャルウォーター（仮想水）」と呼びます。',ref:'ch1',we:['普通の野菜(200トン等)と混同しやすいですが、牧草はもっと水を飲みます。','','少なすぎます！これでは砂漠の植物です。','そこまで多くはありません！日本ではお米が約3600トンと言われています。']},
+{q:'日本の粗飼料の自給率はおよそ何%？',o:['約50%','約76%','約90%','約30%'],a:1,ex:'粗飼料の自給率は約76%ですが、濃厚飼料はわずか12%程度です。',ref:'ch1',we:['カロリーベースの食料自給率(約38%)に近い値なので勘違いしやすいです。','','90%もあったら理想的ですが、残念ながらそこまで高くありません。','これは日本の濃厚飼料(穀物等)の自給率(約12%)と混同しているかも。']},
+{q:'日本が年間に輸入する飼料の量はおよそどのくらい？',o:['約500万トン','約1,200万トン','約2,400万トン','約5,000万トン'],a:2,ex:'日本は年間約2,400万トンの飼料を輸入しています。',ref:'ch1',we:['500万トンでも膨大ですが、実際はその数倍の規模です。','1200万トン惜しい！さらにその倍です。','','5000万トンは流石に多すぎますね。']},
+{q:'カスケディアの営業が目指すべき姿として正しいのは？',o:['売上を最大化する売り子','顧客の牛が健康になり経営改善した結果、注文が増える営業コンサルタント','カタログを読み上げる営業','とにかく新規開拓する営業'],a:1,ex:'「売ること」ではなく「パートナーになること」がカスケディアの営業哲学です。',ref:'ch1',we:['ただ売り込むだけでは、農家からの本当の信頼は得られません。','','カタログを読むだけならAIやネット通販でもできてしまいます。','新規も大事ですが、まずは既存のお客様との深いパートナーシップが最優先です。']},
+{q:'若手営業のマインドセットとして、最も重要なものは？',o:['自分の知識をアピールする','農家に「教えてください」と言える素直さ','値引きで勝負する','ライバル社の悪口を言う'],a:1,ex:'農家は畜産のプロ。「教えてもらう姿勢」が信頼を生みます。',ref:'ch1',we:['知識をひけらかすよりも、現場のプロから教えを乞う方がずっと信頼されます。','','値引きに頼る営業は、最終的に自分の首を絞めることになります。','他社の悪口は、巡り巡って自分の評価を下げるため絶対NGです。']},
+{q:'「数字で語る」例として適切なのは？',o:['「うちの商品は良いです」','「品質が高いです」','「CP18%のアルファルファで乳量が1日○kg改善する可能性があります」','「他社より安いです」'],a:2,ex:'データは最強の営業ツール。具体的な数字で語ることが説得力につながります。',ref:'ch1',we:['良い・悪いという主観的な表現は、お客様には響きません。','高いと言われても、どれくらい高いのかイメージが湧かないですね。','','安さだけでは価値ある提案とは言えません。コストパフォーマンスを数字で示しましょう。']}
+]},
+{id:'ch2',emoji:'🐮',title:'第2章 牛の基礎知識',desc:'消化・成長・ストレス',purpose:'牛の消化の仕組みやストレス要因など、牛の生態を科学的に理解する。',vision:'農家と「牛の健康状態」について専門的な会話ができ、現場の課題をいち早く見抜けるようになります。',questions:[
+{q:'牛の第一胃（ルーメン）の容量はおよそどのくらい？',o:['50〜80L','150〜200L','300〜400L','10〜20L'],a:1,ex:'ルーメンは150〜200Lの容量を持ち、ここに棲む微生物が飼料を分解します。',ref:'ch2',we:['これは羊などの胃のサイズ。牛はもっともっと巨大です！','','ドラム缶(200L)をはるかに超える大きさではありません。','人間や小型動物のサイズですね。牛の胃は想像以上に大きいんです。']},
+{q:'牛のエネルギー源の約何%をルーメン微生物が生み出すVFAが占める？',o:['約30%','約50%','約70%','約90%'],a:2,ex:'VFA（揮発性脂肪酸）はルーメン微生物が繊維を分解して生成し、牛のエネルギー源の約70%を占めます。',ref:'ch2',we:['30%では少なすぎます。牛は微生物の力に極めて深く依存しています。','50%でも惜しい！牛はさらに多くを微生物に頼っています。','','90%は高すぎますが、非常に重要であることは間違いありません。']},
+{q:'ルーメンの適正pH範囲は？',o:['4.0〜5.0','5.0〜5.5','6.2〜6.8','7.5〜8.0'],a:2,ex:'唾液に含まれる重炭酸塩がルーメンpHを6.2〜6.8に保ちます。pH5.5以下はアシドーシスの危険域です。',ref:'ch2',we:['強酸性すぎます！牛がアシドーシス（酸欠状態）で倒れてしまうレベルです。','5.5以下はすでに危険信号。少し胃酸過多の状態です。','','アルカリ性に傾きすぎており、正常な発酵が進みません。']},
+{q:'VFAのうち「乳脂肪の前駆体」となるのは？',o:['プロピオン酸','酪酸','酢酸','乳酸'],a:2,ex:'酢酸は乳脂肪の前駆体。粗飼料が不足すると酢酸生成が減り、乳脂率が下がります。',ref:'ch2',we:['プロピオン酸は乳脂ではなく「乳量」を増やすエネルギー源になります。','酪酸は胃壁の発達に関わりますが、乳脂肪のメインで作られるものではありません。','','乳酸は増えすぎると胃を極端に酸性にしてしまう危険な物質です。']},
+{q:'哺乳期（0〜2ヶ月）の仔牛に最も重要な栄養源は？',o:['チモシーヘイ','アルファルファ','母乳or代用乳','配合飼料'],a:2,ex:'ルーメンが未発達な哺乳期は、母乳or代用乳が唯一の栄養源です。',ref:'ch2',we:['まだ胃（ルーメン）が発達していないので、草はうまく消化できません。','アルファルファは素晴らしい草ですが、赤ちゃんの胃にはまだ早すぎます。','','固形飼料を消化する能力がまだ十分に備わっていません。']},
+{q:'暑熱ストレスが始まるTHI（温湿度指数）の目安は？',o:['60以上','72以上','85以上','90以上'],a:1,ex:'THI72を超えると暑熱ストレスが始まります。日本の夏はTHI80以上が常態化します。',ref:'ch2',we:['60台なら牛はまだ快適に過ごせる「安全圏」です。','','85はすでに「重度」のストレス。対策が遅すぎます！','90以上は命に関わる危険レベル。もっと早い段階から対処が必要です。']},
+{q:'乳牛と肉牛で、乳牛に求められる主なタンパク源は？',o:['イネ科中心（低CP）','アルファルファ中心（高CP）','稲わら中心','配合飼料のみ'],a:1,ex:'乳牛は高CP（アルファルファ中心）、肉牛はやや低CP（イネ科・稲わら中心）です。',ref:'ch2',we:['','肉牛にアルファルファを多給すると、尿石症などのリスクが高まります。','稲わらだけでは、乳牛がたくさん乳をしぼるためのエネルギー（タンパク）が足りません。','配合飼料だけでは胃の健康が保てず、病気になってしまいます。']},
+{q:'寒冷ストレスで気温-5℃以下の場合、通常より何%多くエネルギーが必要？',o:['5〜10%','10〜30%','40〜50%','50%以上'],a:1,ex:'気温が-5℃を下回ると体温維持のために10〜30%多くのエネルギーが必要になります。',ref:'ch2',we:['','10〜30%多く必要です。意外と寒さには強いんですが、-5℃となると話は別です。','40%は多すぎます。そこまで極端には増えません。','50%以上は北極のような極寒環境ですね。']},
+{q:'乳牛が分娩後、自分自身の体脂肪を削りながら維持する泌乳状態を何と呼ぶ？',o:['維持エネルギー状態','高カルシウム血症','負のエネルギーバランス','ルーメンバイパス'],a:2,ex:'分娩後40〜50日は乾物摂取量が乳量に追いつかず、負のエネルギーバランスとなります。',ref:'ch2-lactation',we:['単なる維持ではなく、「削っている」状態です。','低カルシウム血症（乳熱）とは別のエネルギー不足の問題です。','','ルーメンバイパスは脂肪やタンパク質を胃で消化させず直接腸に届ける仕組みのことです。']},
+{q:'ルーメン内で合成され、直接「乳脂肪」の主な原料となるVFA（揮発性脂肪酸）は？',o:['酢酸・酪酸','プロピオン酸','乳酸','アミノ酸'],a:0,ex:'繊維質の発酵から生じる酢酸・酪酸が乳脂肪の合成原料として欠かせません。',ref:'ch2-milk',we:['','プロピオン酸はグルコースや乳糖の原料になります。','乳酸は増えすぎるとアシドーシスを引き起こしてしまいます。','アミノ酸は「タンパク質」の原料になります。']},
+{q:'飼料分析において、牛がすぐに満腹になってしまう制限要因となる「総繊維（ガサ）」を表す指標は？',o:['CP（粗タンパク）','NFC（非繊維性炭水化物）','NDF（中性デタージェント繊維）','SIP（溶解性タンパク）'],a:2,ex:'NDF（総繊維）が高すぎると摂取量上限に達してしまい、十分なエネルギーが取れません。',ref:'ch2-analysis',we:['CPはタンパク質の指標です。','NFCは糖やデンプンなど、消化しやすい炭水化物のことです。','','SIPはすぐに分解されるタンパク質の割合です。']},
+{q:'分娩直後の「乳熱（低カルシウム血症）」などの原因防止に、乾乳期に給与する牧草の理想の特徴は？',o:['高カルシウム','低カルシウム','高タンパク','高でんぷん'],a:1,ex:'分娩直前に低カルシウム状態に慣れさせることで、体内からの動員機能を高めておくためです。チモシーなどが適します。',ref:'ch2-vitmin',we:['高カルシウムを与えると体が油断してしまい、分娩直後に対応できなくなります。','','乾乳期に高タンパクを与えすぎるとバランスが崩れてしまいます。','でんぷんはエネルギー源ですが、乳熱の直接予防にはアプローチが異なります。']},
+{q:'蹄壁や蹄底のケラチン合成に必須で、蹄（ひづめ）の病気予防・細胞修復の鍵となる微量ミネラルは？',o:['カルシウム (Ca)','コバルト (Co)','亜鉛 (Zn)','リン (P)'],a:2,ex:'亜鉛は上皮組織やケラチン合成に必須で、蹄病予防のために重要視されるミネラルです。',ref:'ch2-vitmin',we:['骨の主成分ですが、ケラチンなどの組織修復とは少し役割が違います。','コバルトはルーメン微生物がビタミンB12をつくるための成分です。','','リンは骨づくりやエネルギー代謝に必要ですが、蹄への直接作用は亜鉛が上回ります。']},
+{q:'飼料中の粗タンパク質（CP）は、窒素含量を何倍して算出する？',o:['4.0倍','6.25倍','10倍','2.5倍'],a:1,ex:'蛋白質の平均窒素含量が16%のため、100/16=6.25で算出します。',ref:'ch2-analysis',we:['違う倍率です。これではCPが過小評価になってしまいます。','','これではCPが実際より大幅に高く出てしまいます。','逆に小さすぎます。蛋白質の窒素含量が16%であることから考えましょう。']},
+{q:'チモシー（牧草）の収穫時期が遅れると、成分にどのような変化が起きる？',o:['CPが上がり、NDFが下がる','CPもTDNも変わらない','NDF（繊維）が高くなり、CPやTDNは減少する','全ての成分が均等に上昇する'],a:2,ex:'収穫が遅れると植物の茎が硬くなり（NDF増加）、タンパク質（CP）やエネルギー（TDN）は減っていきます。',ref:'ch2-analysis',we:['逆です。収穫が早いほどCPが高く柔らかいのです。','植物の成長に伴い、成分は大きく変化します。','','繊維は増えますが、栄養価は下がります。']},
+{q:'SIP（溶解性タンパク質）が高い牧草を与える時、アンモニア処理を助けるためにバランス良く組み合わせるべき栄養素は？',o:['カルシウム','NFC（糖やデンプンなど）','ビタミンA','水分'],a:1,ex:'NFC（糖やデンプンなどすぐにエネルギーになる成分）を一緒に与えることで、微生物がアンモニアとエネルギーを同時に利用できるようになります。',ref:'ch2-analysis',we:['カルシウムは骨や乳熱予防に重要ですが、アンモニアの処理とは別の話です。','','ビタミンAは免疫や繁殖に関係しますが、ルーメンでのアンモニア処理とは無関係です。','水分は大事ですが、アンモニアを処理する訳ではありません。']},
+{q:'クロースアップ期（分娩前約3週間）に胎児は生まれる時の体重の約何%を成長する？',o:['約10%','約30%','約60%','約90%'],a:2,ex:'胎児の生時体重の約60%がクロースアップ期に急成長するため、ルーメンが圧迫され食い込みが落ちます。',ref:'ch2-lactation',we:['10%は少なすぎます。クロースアップ期の胎児の急成長は非常に劇的です。','30%でもまだ過小評価です。もっと急激に成長します。','','90%はさすがに高すぎます。初期の発育もあります。']},
+{q:'泌乳後期（140日以降）に特に注意すべきリスクは？',o:['乳量が急激に上がりすぎる','食べ過ぎて過肥（太り過ぎ）になる','乳脂率が強制的に上がる','DMIが急激に低下する'],a:1,ex:'泌乳後期は乳量が落ちているのに食欲は高いため、給与量を調整しないと過肥になり次回分娩時の病気リスクが高まります。',ref:'ch2-lactation',we:['泌乳後期は乳量が低下する時期です。','','乳脂率は強制的には上がりません。','むしろ食欲は高く、食い込みは維持される傾向があります。']},
+{q:'乳糖の原料となる「プロピオン酸」は、主にどのエサの発酵から発生する？',o:['繊維質（干草）','でんぷんや糖','脂肪','タンパク質'],a:1,ex:'でんぷんや糖がルーメンで発酵してプロピオン酸が生成 → 肝臓でグルコースに変換 → 乳糖の原料になります。',ref:'ch2-milk',we:['繊維質の発酵では主に酢酸・酪酸（乳脂肪の原料）が発生します。','','脂肪はルーメンで発酵されず、小腸等で直接吸収されます。','タンパク質はアンモニアに分解され、乳タンパクの原料になります。']},
+{q:'乳脂肪や乳タンパクなどの乳成分が季節的に最も低下しやすいのはいつ？',o:['1〜3月（冬）','4〜6月（春）','7〜9月（夏）','10〜12月（秋）'],a:2,ex:'夏場（7〜9月）は暑熱ストレスによる食い込み低下などで、乳脂肪・SNF・乳タンパクいずれも低下しやすくなります。',ref:'ch2-milk',we:['冬場はむしろ乳成分が高まる傾向にあります。','春は中間的な時期です。','','秋から冬にかけては成分が回復する傾向です。']}
+]},
+{id:'ch3',emoji:'🔍',title:'第3章 逆引きインデックス',desc:'課題・ステージ・季節別',purpose:'現場でよくある課題に対して、適切な解決策（商品）をパッと引き出す力をつける。',vision:'顧客の悩みに対して、即座に最適な提案ができる「頼れるコンサルタント」として活躍できます。',questions:[
+{q:'「乳量・乳質を上げたい」場合に提案すべきバイパス脂肪商品は？',o:['重曹','Richfat CA','チモシーヘイ','木質ペレット'],a:1,ex:'Richfat CAはバイパス脂肪でエネルギー密度を上げ、乳脂率を改善します。',ref:'ch3',we:['重曹は胃の酸性化を防ぐ役割で、エネルギーや乳脂を直接上げるものではありません。','','チモシーは乳質改善よりも、胃の健康維持や乳熱予防に向いています。','木質ペレットは敷料（牛のベッド）であり、食べ物ではありません笑']},
+{q:'「仔牛の下痢が多い」時に提案すべき代用乳は？',o:['Rumifat R100','ストレスマネージャーAST','スタートトゥフィニッシュ','ビートパルプ'],a:2,ex:'スタートトゥフィニッシュは哺乳〜離乳までオールインワンで栄養を提供します。',ref:'ch3',we:['Rumifatは成牛用のバイパス脂肪なので、赤ちゃんには使えません。','ストレスマネージャーは暑さ（暑熱）対策用の商品です。','','ビートパルプはおやつのような補助飼料で、下痢の根本解決にはなりません。']},
+{q:'暑熱ストレス専用の混合飼料は？',o:['VM MIX','カーフガードEX','ストレスマネージャーAST','フットプロテクト'],a:2,ex:'ストレスマネージャーASTは暑熱ストレス専用設計の混合飼料です。',ref:'ch3',we:['VM MIXは一般的なビタミン・ミネラル補給用です。惜しい！','カーフガードは仔牛（カーフ）用の商品です。','','フットプロテクトは名前の通り「蹄（足）」を守るための商品です。']},
+{q:'蹄の健康に特化した混合飼料は？',o:['フットプロテクト','レバチャージ','グルトリス','ビタミンE100'],a:0,ex:'フットプロテクトは亜鉛・ビオチン等で蹄の健康をサポートします。',ref:'ch3',we:['','レバチャージは肝機能をサポートするための商品です。','グルトリスはカスケディアの商品ではありません。','ビタミンE100は免疫力アップ用などに使われます。']},
+{q:'乾乳期に乳熱を予防するために使う低Ca粗飼料は？',o:['アルファルファヘイ','オーツヘイ','チモシーヘイ','コーンサイレージ'],a:2,ex:'チモシーヘイは低Caのイネ科牧草で、乾乳牛の乳熱予防に使います。',ref:'ch3',we:['アルファルファは高カルシウムなので、逆に乳熱のリスクを高めてしまいます。非常に危険！','オーツヘイも低カルシウムですが、カスケディアの主力として提案する本命は違います。','','コーンサイレージは高エネルギーなので、乾乳期に与えすぎると牛が太りすぎてしまいます。']},
+{q:'夏（6〜9月）の暑熱対策で「少量高エネルギーで熱負荷軽減」できる商品は？',o:['チモシーヘイ','Richfat CA','重曹','おが粉'],a:1,ex:'Richfat CAは少量で高エネルギーを供給し、発酵熱を抑制します。',ref:'ch3',we:['チモシーなどの繊維は消化の際に発熱してしまうため、夏場はあえて減らしたりします。','','重曹は胃の環境を整えますが、高いエネルギーを供給するものではありません。','おが粉は食べるものではなく寝床用です！']}
+]},
+{id:'ch4',emoji:'📦',title:'第4章 商品カタログ',desc:'商品知識を深めよう',purpose:'カスケディアの主力商品群の特長とメリットを正確に把握する。',vision:'「この商品がなぜ顧客に必要なのか」を自信を持って語り、成約に結びつけることができるようになります。',questions:[
+{q:'アルファルファヘイのCP（粗タンパク）の範囲は？',o:['CP 5-8%','CP 8-12%','CP 17-22%','CP 25-30%'],a:2,ex:'アルファルファはマメ科でCP17-22%、高Ca。搾乳牛のタンパク補給に最適です。',ref:'ch4-hay',we:['5-8%は稲わらなど、非常にタンパク質が低い飼料のレベルです。','8-12%はチモシーなどのイネ科牧草の一般的なレベルです。','','25-30%は大豆などの超高タンパク飼料のレベル。草としては高すぎます。']},
+{q:'チモシーヘイの主な産地は？',o:['オーストラリア','中国','アメリカ・カナダ','ベトナム'],a:2,ex:'チモシーヘイはアメリカ・カナダ産。カナダ・アルバータ州の冷涼な気候が生むプレミアム品質です。',ref:'ch4-hay',we:['オーストラリアはオーツヘイの主要産地です。チモシーではありません。','中国からの輸入はあまり主流ではありません。','','気候が合わないため、ベトナムからのチモシー輸入はありません。']},
+{q:'サイレージの水分含量はおよそ？',o:['15%以下','30〜40%','50〜70%','80%以上'],a:2,ex:'ヘイが水分15%以下に対し、サイレージは50〜70%と高水分です。',ref:'ch4-sil',we:['15%以下は「乾草（ヘイ）」の基準です。サイレージはもっとしっとりしています。','30-40%は少し乾いたサイレージ（ヘイレージ）ですが、一般的ではありません。','','80%以上はほとんど水ですね！生野菜ほどの水分です。']},
+{q:'Richfat CA・Richfat EX PA・Rumifat R100のうち、「万能型」はどれ？',o:['Richfat EX PA','Rumifat R100','Richfat CA','全て同じ'],a:2,ex:'Richfat CAが最もバランスの良い万能型。迷ったらまずこれを提案します。',ref:'ch4-byp',we:['PA（パルミチン酸）特化型は、乳脂率を急上昇させる「尖った」商品です。','R100は純粋なエネルギー補給特化型です。','','それぞれ成分が異なり、得意な役割が違います。']},
+{q:'ソイパスの特殊加工法は？',o:['高温長時間加熱','加糖加熱処理','冷凍乾燥','化学処理'],a:1,ex:'ソイパスは「加糖加熱処理」でリジンを壊さずルーメンをバイパスさせます。',ref:'ch4-byp',we:['単なる加熱だけでは大事なタンパク質（リジン）が壊れて無駄になってしまいます。','','ソイパスは凍らせずに「砂糖を使った加熱」で処理します。','化学薬品を使わない自然な製法が特徴です。']},
+{q:'カスケディアの品番構造として正しいのは？',o:['商品名＋価格＋産地','事業区分＋分類＋品目＋産地＋枝番','ランダムな番号','日付＋商品名'],a:1,ex:'品番は「事業区分＋分類＋品目＋産地コード＋枝番」の構造です。',ref:'ch4',we:['これだと事業部ごとの管理や細かい分類ができません。','','完全にランダムでは誰も見分けることができませんね。','日付はロット情報等で管理しますが、品番そのものには組み込まれません。']},
+{q:'代用乳「スタートトゥフィニッシュ」の最大の特徴は？',o:['最も安い','哺乳〜離乳までオールインワン','肉牛専用','成牛にも使える'],a:1,ex:'「1つで哺乳期完結」がセールストーク。管理の手間を大幅削減できます。',ref:'ch4-comp',we:['単なる価格の安さだけで勝負する商品ではなく、付加価値提案が鍵です。','','名前の通り「スタート」から「フィニッシュ」まで！肉牛専用ではありません。','成牛に代用乳（ミルク）は必要ありません。']},
+{q:'@mowment（アットモーメント）の成牛向け主要機能は？',o:['体重測定','発情検知精度90%+','自動給餌','搾乳自動化'],a:1,ex:'@mowmentは発情検知精度90%+で、繁殖改善の切り札です。',ref:'ch4-eqp',we:['体重測定は別の機器（カメラシステムなど）で行われます。','','自動給餌機能は備わっていません。発情検知と健康管理に特化しています。','搾乳システム（搾乳ロボット）とは別の機器です。']},
+{q:'夏場に「乳脂率が落ちた」と悩む農場に提案すべき、パルミチン酸主体の脂肪酸カルシウムは？',o:['大豆・菜種系の不飽和脂肪酸','オメガ3系の機能性脂肪酸','パーム系の飽和脂肪酸','オリーブオイル'],a:2,ex:'パーム系の飽和脂肪酸は乳脂肪の「直接の材料」となるため、乳脂率アップに直結します。',ref:'ch4-fat',we:['インスリン感受性を上げて体脂肪回復には良いですが、乳脂率は抑制されやすいです。','細胞膜保護や抗炎症の効果はありますが、乳脂アップの主目的とは異なります。','','オリーブオイルは牛用バイパス脂肪として一般的には流通していません！']},
+{q:'分娩後に痩せすぎる（BCSが低下する）牛に対して、エネルギーを体に回すために推奨される油の種類は？',o:['パーム系脂肪酸','天然バイパス綿実','オレイン酸などの不飽和脂肪酸系','全ての油に共通する効果'],a:2,ex:'オレイン酸などの不飽和脂肪酸（大豆・菜種等）は消化効率が高く、牛の体脂肪（BCS）としての回復（肉の再生）に行き渡りやすいです。',ref:'ch4-fat',we:['パーム系は乳脂肪（しぼる乳の成分）になって出ていきやすいです。','綿実は万能ですが、ピンポイントで牛の身体を大きく回復させたい時は不飽和系が優先されることがあります。','','油の組成によって「乳に行くか」「体に残るか」がはっきり違います！']},
+{q:'脂肪酸カルシウムが「ルーメンバイパス」できる仕組みとして正しいのは？',o:['ルーメンで完全に分解される','カルシウムのコーティングでルーメンを通過し、第四胃で分離・小腸で吸収','ルーメン微生物が脂肪を食べて増殖する','口の中で分解されて直接血液に入る'],a:1,ex:'脂肪酸をカルシウムで包み込むことで、ルーメンでは微生物に影響を与えず通過し、第四胃（酸性）で分離され、小腸で効率よく吸収されます。',ref:'ch2-fatcalcium',we:['ルーメンで分解されると微生物を阻害してしまいます。それを防ぐのがバイパスです。','','微生物は脂肪を食べるのではなく、微生物に「触れさせない」のがポイントです。','口から直接吸収されることはありません。']},
+{q:'脂肪が炭水化物に比べて持つエネルギーは約何倍？',o:['約1.2倍','約2.25倍','約5倍','約10倍'],a:1,ex:'脂肪は炭水化物（穀類など）の約2.25倍のエネルギーを持ち、少量で効率よくエネルギー不足を防止できます。',ref:'ch2-fatcalcium',we:['もう少し高いです。脂肪は非常にエネルギー密度が高いのが特徴です。','','さすがに5倍まではありません。','10倍は大きすぎます。']},
+{q:'夏場に脂肪製品が特に重要な理由として最も正しいのは？',o:['脂肪は冷たい食べ物だから','脂肪の消化は体内での熱発生が少ないから','脂肪は水分を多く含むから','脂肪は日持ちが良いから'],a:1,ex:'繊維や糖の消化は体内で多くの熱（ヒートインクリメント）を発生させますが、脂肪は少ない熱で代謝できるため、暑熱時に最適です。',ref:'ch2-fatcalcium',we:['脂肪自体の温度とは関係ありません。体内での代謝熱の問題です。','','脂肪は水分を多く含みません。エネルギー密度が高いのが特徴です。','日持ちも重要ですが、夏場に特に必要な理由は「熱が出にくい」点です。']},
+{q:'綿実（わたみ）が「一粒で三役」と言われる理由は？',o:['ビタミン・ミネラル・水分を含む','脂肪（約20%）・繊維・タンパク質を同時に含む','乳脂肪・乳糖・乳タンパクを直接作る','安い・早い・うまい'],a:1,ex:'綿実は脂肪（約20%）・繊維・タンパク質を同時に含む天然の優秀な飼料素材です。',ref:'ch2-fatcalcium',we:['綿実にはビタミン・ミネラルも含まれますが、「三役」の主役は別の3つです。','','綿実自体が乳成分を直接作るわけではありません。原料を提供する形です。','それは牛丼の話ですね（笑）']},
+{q:'「種付けしても着かない（リピート）」と悩む農家さんに提案すべき脂肪酸の組み合わせは？',o:['パルミチン酸のみ','リノール酸系＋オメガ3系','オリーブオイルのみ','綿実のみ'],a:1,ex:'リノール酸系（子宮環境改善）＋オメガ3系（着床サポート）の組み合わせで、受精卵がしっかり着床する力をサポートします。',ref:'ch2-fatcalcium',we:['パルミチン酸は乳脂肪アップが主目的で、繁殖目的とは少し違います。','','オリーブオイルは牛用のバイパス脂肪としては一般的ではありません。','綿実は万能ですが、着床不良に特化した提案にはリノール酸+オメガ3がベターです。']}
+]},
+{id:'ch5',emoji:'📎',title:'付録 用語・荷姿',desc:'業界用語と物流知識',purpose:'業務で日常的に使われる専門用語や物流の基礎知識を身につける。',vision:'社内や取引先とのやり取りがスムーズになり、プロフェッショナルとしての説得力が格段に増します。',questions:[
+{q:'TMRとは何の略？',o:['Total Mixed Ration','Traditional Milk Recipe','Top Market Rate','Total Management Report'],a:0,ex:'TMR = Total Mixed Ration。粗飼料と濃厚飼料を均一に混合した完全混合飼料です。',ref:'appendix',we:['','牛乳のレシピではありません。牛の食事（Ration）です！','市場のレート（株価や為替）のような名前ですね。違います。','管理レポートのことではありません。']},
+{q:'BCS（ボディ・コンディション・スコア）で搾乳牛の適正値は？',o:['1.0〜2.0','3.0〜3.5','4.5〜5.0','2.0〜2.5'],a:1,ex:'搾乳牛はBCS 3.0〜3.5が適正。肉牛は3.0〜4.0です。',ref:'appendix',we:['ガリガリに痩せすぎです！栄養失調の危険があります。','','4.5〜5.0は太りすぎ。メタボ状態で難産や病気のリスクが跳ね上がります。','2.0〜2.5も少し痩せ気味で、体力が心配です。']},
+{q:'CIF価格に含まれるのは？',o:['商品代金のみ','商品代金＋保険料＋運賃','商品代金＋関税','運賃のみ'],a:1,ex:'CIF = Cost, Insurance and Freight。日本の港まで込みの価格条件です。',ref:'appendix',we:['これはFOB（本船渡し条件）と混同しているかもしれません。日本までの運賃が含まれます。','','日本国内に持ち込むための関税（DDP等）までは含まれません。','商品代金も含まれないと、商品がタダになってしまいます！']},
+{q:'「デマレージ」と「ディテンション」の違いで正しいのは？',o:['同じ意味','デマレージ＝CYでの留置料、ディテンション＝空コンテナ返却遅延料','デマレージ＝保管料、ディテンション＝関税','逆の意味'],a:1,ex:'デマレージはCYでのフリータイム超過料、ディテンションは空コンテナ返却遅延料です。',ref:'appendix',we:['似ていますが、港(CY)に置いているか、持ち出しているかの違いがあります。','','保管料はデマレージの一種とも言えますが、ディテンションは関税ではありません。','逆に覚えると痛い出費（ペナルティ）の計算を間違えるので注意です。']},
+{q:'ハーフカットラップの重量目安は？',o:['約100kg','約250kg','約500kg','約1000kg'],a:2,ex:'ハーフカットラップは約500kg。最も一般的な牧草の荷姿です。',ref:'app-pack',we:['100kgは人が二人くらいいれば運べるかもしれませんが、ハーフカットはもっと重いです。','250kgの小さい丸いロールもありますが、カナダ産のハーフカットはもっと大きいです。','','1000kgの超大型サイズは日本ではあまり流通していません。']},
+{q:'DCADとは何の調整に使う指標？',o:['飼料の価格','カチオン・アニオン差（乳熱予防）','牧草の色','コンテナの重量'],a:1,ex:'DCAD = Dietary Cation-Anion Difference。乾乳後期にDCADをマイナスに傾け乳熱を予防します。',ref:'appendix',we:['価格の指標ではありません。牛の体内バランスの指標です。','','草の色は品質評価には大切ですが、DCAD（ミネラルバランス）とは関係ありません。','コンテナの重量はペイロード等と呼ばれます。']}
+]}
+];
+
+
+/* ===== GAME STATE ===== */
+let state = JSON.parse(localStorage.getItem('cascadia_quiz') || 'null') || {
+  xp:0, totalCorrect:0, totalAnswered:0, streak:0, maxStreak:0,
+  chapterScores:{}, achievements:[]
+};
+function save(){localStorage.setItem('cascadia_quiz',JSON.stringify(state))}
+
+const ranks = [
+  {name:'ルーキー営業',icon:'🥚',xp:0},
+  {name:'見習い営業',icon:'🐣',xp:100},
+  {name:'一人前営業',icon:'🐥',xp:300},
+  {name:'中堅営業',icon:'🦅',xp:600},
+  {name:'エース営業',icon:'⭐',xp:1000},
+  {name:'マスター営業',icon:'👑',xp:1500},
+  {name:'レジェンド',icon:'🏆',xp:2500},
+];
+const achieveDefs = [
+  {id:'first',icon:'🎯',name:'初回クリア',desc:'初めてチャプターをクリア'},
+  {id:'perfect',icon:'💎',name:'パーフェクト',desc:'1章を全問正解'},
+  {id:'streak5',icon:'🔥',name:'5連続正解',desc:'5問連続で正解'},
+  {id:'streak10',icon:'💥',name:'10連続正解',desc:'10問連続で正解'},
+  {id:'all_ch',icon:'🌟',name:'全章制覇',desc:'全てのチャプターをクリア'},
+  {id:'xp500',icon:'🚀',name:'XP 500達成',desc:'累計500XP獲得'},
+  {id:'xp1000',icon:'🛸',name:'XP 1000達成',desc:'累計1000XP獲得'},
+  {id:'ans50',icon:'📚',name:'50問回答',desc:'累計50問に回答'},
+];
+
+let curQuiz = null;
+let curIdx = 0;
+let curCorrect = 0;
+let quizAnswered = false;
+
+/* ===== UI HELPERS ===== */
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+function showToast(emoji,text){const t=document.getElementById('toast');t.querySelector('.toast-emoji').textContent=emoji;t.querySelector('.toast-text').textContent=text;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
+function updateStats(){
+  document.getElementById('sXP').textContent=state.xp;
+  document.getElementById('sStreak').textContent=state.streak;
+  document.getElementById('sCorrect').textContent=state.totalCorrect;
+  document.getElementById('sTotal').textContent=state.totalAnswered;
+  let r=ranks[0];let nxt=ranks[1];
+  for(let i=ranks.length-1;i>=0;i--){if(state.xp>=ranks[i].xp){r=ranks[i];nxt=ranks[i+1]||null;break}}
+  const lv=ranks.indexOf(r)+1;
+  document.getElementById('rankLabel').textContent=`${r.icon} ${r.name}`;
+  document.getElementById('rankBadge').textContent=`Lv.${lv} ${r.name}`;
+  if(nxt){const pct=((state.xp-r.xp)/(nxt.xp-r.xp)*100);document.getElementById('xpFill').style.width=pct+'%';document.getElementById('xpLabel').textContent=`${state.xp} / ${nxt.xp} XP`}
+  else{document.getElementById('xpFill').style.width='100%';document.getElementById('xpLabel').textContent=state.xp+' XP (MAX)'}
+}
+
+function renderChapters(){
+  const g=document.getElementById('chGrid');g.innerHTML='';
+  chapters.forEach((ch,i)=>{
+    const sc=state.chapterScores[ch.id];
+    const best=sc?sc.best:0;const total=ch.questions.length;
+    const pct=sc?Math.round(sc.best/total*100):0;
+    const stars=best===total?'⭐⭐⭐':best>=total*.7?'⭐⭐':best>=total*.4?'⭐':'☆☆☆';
+    const completed=best===total;
+    const d=document.createElement('div');
+    d.className='ch-card'+(completed?' completed':'');
+    d.innerHTML=`<div class="emoji">${ch.emoji}</div><div class="title">${ch.title}</div><div class="desc">${ch.desc}（${total}問）</div><div class="stars">${stars}</div><div class="progress-mini"><div style="width:${pct}%"></div></div>`;
+    d.onclick=()=>openPreQuizModal(ch.id);
+    g.appendChild(d);
+  });
+}
+
+function unlock(id){
+  if(!state.achievements.includes(id)){state.achievements.push(id);save();const a=achieveDefs.find(x=>x.id===id);if(a)showToast(a.icon,'実績解除: '+a.name)}
+}
+
+/* ===== QUIZ LOGIC ===== */
+let pendingChId = null;
+function openPreQuizModal(chId) {
+  pendingChId = chId;
+  const ch = chapters.find(c => c.id === chId);
+  if(!ch) return;
+  document.getElementById('preQuizTitle').textContent = ch.emoji + ' ' + ch.title;
+  document.getElementById('preQuizPurpose').textContent = ch.purpose;
+  document.getElementById('preQuizVision').textContent = ch.vision;
+  document.getElementById('btnPreviewManual').href = 'manual.html#' + ch.id;
+  document.getElementById('preQuizModal').classList.add('active');
+}
+function closeModal() {
+  document.getElementById('preQuizModal').classList.remove('active');
+  pendingChId = null;
+}
+function startQuizFromModal() {
+  if(!pendingChId) return;
+  document.getElementById('preQuizModal').classList.remove('active');
+  startChapter(pendingChId);
+  pendingChId = null;
+}
+
+function startChapter(chId){
+  const ch=chapters.find(c=>c.id===chId);if(!ch)return;
+  curQuiz={chId:ch.id,title:ch.title,emoji:ch.emoji,questions:shuffle([...ch.questions])};
+  curIdx=0;curCorrect=0;quizAnswered=false;
+  showScreen('scrQuiz');
+  document.getElementById('qChapter').textContent=ch.emoji+' '+ch.title;
+  renderQuestion();
+}
+function startRandom(){
+  let all=[];chapters.forEach(ch=>ch.questions.forEach(q=>all.push({...q,_ch:ch.title})));
+  all=shuffle(all).slice(0,10);
+  curQuiz={chId:'random',title:'🎲 ランダム10問',emoji:'🎲',questions:all};
+  curIdx=0;curCorrect=0;quizAnswered=false;
+  showScreen('scrQuiz');
+  document.getElementById('qChapter').textContent='🎲 ランダムチャレンジ';
+  renderQuestion();
+}
+function renderQuestion(){
+  const qs=curQuiz.questions;const q=qs[curIdx];
+  document.getElementById('qCount').textContent=`${curIdx+1} / ${qs.length}`;
+  document.getElementById('qProg').style.width=((curIdx)/qs.length*100)+'%';
+  quizAnswered=false;
+  let html=`<div class="q-card"><div class="q-num">Q${curIdx+1}</div>`;
+  if(q.ref) { html+=`<button class="hint-btn" onclick="window.open('manual.html#${q.ref}','_blank')">📖 マニュアルで調べる</button>`; }
+  html+=`<div class="q-text">${q.q}</div><div class="q-opts">`;
+  q.o.forEach((o,i)=>{html+=`<div class="q-opt" data-i="${i}" onclick="selectAnswer(${i})">${o}</div>`});
+  html+=`</div><div class="q-explain" id="qEx"></div></div>`;
+  document.getElementById('qArea').innerHTML=html;
+  document.getElementById('qBtns').innerHTML='';
+}
+function selectAnswer(i){
+  if(quizAnswered)return;quizAnswered=true;
+  const q=curQuiz.questions[curIdx];const correct=i===q.a;
+  const opts=document.querySelectorAll('.q-opt');
+  opts.forEach(o=>{o.classList.add('disabled');const oi=parseInt(o.dataset.i);if(oi===q.a)o.classList.add('correct');if(oi===i&&!correct)o.classList.add('wrong')});
+  state.totalAnswered++;
+  let earnedXP=0;
+  if(correct){
+    curCorrect++;state.totalCorrect++;state.streak++;
+    if(state.streak>state.maxStreak)state.maxStreak=state.streak;
+    earnedXP=10+(state.streak>=5?5:0)+(state.streak>=10?10:0);
+    state.xp+=earnedXP;
+    showToast('✅',`正解！ +${earnedXP} XP`);
+    if(state.streak>=5)unlock('streak5');
+    if(state.streak>=10)unlock('streak10');
+  }else{
+    state.streak=0;
+    state.xp+=2; // 失敗からの学習XP
+    showToast('💡','失敗から学ぶ！ +2 XP');
+  }
+  if(state.xp>=500)unlock('xp500');
+  if(state.xp>=1000)unlock('xp1000');
+  if(state.totalAnswered>=50)unlock('ans50');
+  const combo=document.getElementById('combo');
+  if(state.streak>=3){document.getElementById('comboNum').textContent=state.streak;combo.classList.add('show')}else{combo.classList.remove('show')}
+  const ex=document.getElementById('qEx');
+  ex.className='q-explain show '+(correct?'ok-bg':'ng-bg');
+  let exHtml = '';
+  if(correct){
+    exHtml = '✅ <strong>正解！</strong><br>' + q.ex;
+  }else{
+    let wrongMsg = (q.we && q.we[i]) ? `<div style="margin-bottom:8px;padding:8px;background:rgba(251,113,133,0.1);border-radius:6px;"><span style="color:var(--rose);font-weight:700;">【なぜ違うの？👀】</span> <span style="color:var(--txt)">${q.we[i]}</span></div>` : '';
+    exHtml = '💡 <strong>失敗は成長のチャンス！</strong><br>' + wrongMsg + '<strong>【解説】</strong><br>' + q.ex;
+  }
+  if(q.ref) { exHtml += `<div style="margin-top:10px;"><a href="manual.html#${q.ref}" target="_blank" class="deep-link-btn">👉 この部分をマニュアルでしっかり復習する</a></div>`; }
+  ex.innerHTML=exHtml;
+  save();updateStats();
+  const isLast=curIdx>=curQuiz.questions.length-1;
+  const btnText=isLast?'📊 結果を見る':'次の問題 →';
+  document.getElementById('qBtns').innerHTML=
+    `<div style="display:flex;flex-direction:column;align-items:center;width:100%;">
+       <button class="btn btn-primary" onclick="${isLast?'showResult()':'nextQuestion()'}">${btnText}</button>
+       <div class="swipe-hint show">👈 スワイプかボタンで次へ</div>
+     </div>`;
+}
+function nextQuestion(){curIdx++;renderQuestion()}
+function showResult(){
+  const total=curQuiz.questions.length;const pct=Math.round(curCorrect/total*100);
+  let emoji='😅',title='もう少し！';
+  if(pct===100){emoji='🏆';title='パーフェクト！！'}
+  else if(pct>=80){emoji='🎉';title='素晴らしい！'}
+  else if(pct>=60){emoji='👍';title='いい調子！'}
+  else if(pct>=40){emoji='💪';title='頑張ろう！'}
+  document.getElementById('rEmoji').textContent=emoji;
+  document.getElementById('rTitle').textContent=title;
+  document.getElementById('rScore').textContent=`${curCorrect} / ${total}（${pct}%）`;
+  document.getElementById('rSub').textContent=curQuiz.title;
+  const earned=curCorrect*10;
+  document.getElementById('rXP').textContent='+'+earned;
+  const rVision = document.getElementById('rVision');
+  if(pct>=80 && curQuiz.chId!=='random'){
+    const ch = chapters.find(c => c.id === curQuiz.chId);
+    if(ch && ch.vision) {
+      document.getElementById('rVisionText').textContent = ch.vision;
+      rVision.classList.add('show');
+    } else { rVision.classList.remove('show'); }
+  } else { rVision.classList.remove('show'); }
+
+  if(curQuiz.chId!=='random'){
+    const prev=state.chapterScores[curQuiz.chId];
+    if(!prev||curCorrect>prev.best){state.chapterScores[curQuiz.chId]={best:curCorrect,total:total}}
+    unlock('first');
+    if(curCorrect===total)unlock('perfect');
+    const allDone=chapters.every(c=>state.chapterScores[c.id]&&state.chapterScores[c.id].best>0);
+    if(allDone)unlock('all_ch');
+  }
+  save();updateStats();
+  document.getElementById('rRetry').onclick=()=>{
+    if(curQuiz.chId==='random')startRandom();else startChapter(curQuiz.chId);
+  };
+  document.getElementById('combo').classList.remove('show');
+  showScreen('scrResult');
+}
+
+function renderAchievements(){
+  const g=document.getElementById('achievGrid');g.innerHTML='';
+  achieveDefs.forEach(a=>{
+    const u=state.achievements.includes(a.id);
+    g.innerHTML+=`<div class="achiev-item${u?' unlocked':''}"><div class="a-icon">${a.icon}</div><div class="a-name">${a.name}</div><div class="a-desc">${a.desc}</div></div>`;
+  });
+}
+
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
+
+/* ===== FEATURES ===== */
+function resetHistory() {
+  if (confirm("本当に学習データをすべてリセットしますか？この操作は取り消せません。")) {
+    localStorage.removeItem('cascadia_quiz');
+    location.reload();
+  }
+}
+
+// Swipe events
+let touchStartX = 0;
+let touchEndX = 0;
+const scrQuiz = document.getElementById('scrQuiz');
+scrQuiz.addEventListener('touchstart', e => {
+    touchStartX = e.changedTouches[0].screenX;
+}, {passive:true});
+scrQuiz.addEventListener('touchend', e => {
+    touchEndX = e.changedTouches[0].screenX;
+    if (!quizAnswered) return;
+    if (touchStartX - touchEndX > 50) { // Swipe left
+        const isLast = curIdx >= curQuiz.questions.length - 1;
+        if (isLast) showResult();
+        else nextQuestion();
+    }
+}, {passive:true});
+
+/* ===== INIT ===== */
+updateStats();renderChapters();renderAchievements();
+
+// Override showScreen for achievements
+const _showScreen=showScreen;
+showScreen=function(id){_showScreen(id);if(id==='scrAchiev')renderAchievements()};
+</script>
+</body>
+</html>

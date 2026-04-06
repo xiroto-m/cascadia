@@ -1,0 +1,5581 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>カスケディア・トレーディング 営業マニュアル</title>
+  <meta name="description" content="カスケディア・トレーディング 新入社員〜若手営業向け営業マニュアル">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap');
+
+    :root {
+      --bg-primary: #0f1117;
+      --bg-secondary: #161822;
+      --bg-tertiary: #1c1f2e;
+      --bg-card: #1e2132;
+      --bg-card-hover: #252840;
+      --accent-green: #34d399;
+      --accent-green-dim: #22a67a;
+      --accent-green-glow: rgba(52, 211, 153, 0.15);
+      --accent-blue: #60a5fa;
+      --accent-blue-dim: #3b82f6;
+      --accent-amber: #fbbf24;
+      --accent-amber-dim: #d97706;
+      --accent-rose: #fb7185;
+      --accent-violet: #a78bfa;
+      --accent-teal: #2dd4bf;
+      --accent-orange: #fb923c;
+      --text-primary: #e8eaed;
+      --text-secondary: #9ca3af;
+      --text-muted: #6b7280;
+      --text-inverse: #0f1117;
+      --border-subtle: rgba(255, 255, 255, 0.06);
+      --border-medium: rgba(255, 255, 255, 0.10);
+      --glass: rgba(255, 255, 255, 0.03);
+      --glass-heavy: rgba(255, 255, 255, 0.06);
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+      --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.6);
+      --shadow-glow: 0 0 30px rgba(52, 211, 153, 0.08);
+      --font-sans: 'Noto Sans JP', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'SF Mono', 'Fira Code', monospace;
+      --sidebar-width: 300px;
+      --header-height: 56px;
+      --content-max: 920px;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --duration: 0.3s
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    html {
+      font-size: 15px;
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.8;
+      overflow-x: hidden;
+      min-height: 100vh
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 3px
+    }
+
+    .app-layout {
+      display: flex;
+      min-height: 100vh
+    }
+
+    /* Progress bar */
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-green), var(--accent-teal));
+      z-index: 200;
+      transition: width 0.15s;
+      width: 0
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 100;
+      transition: transform var(--duration) var(--ease-out);
+      overflow: hidden
+    }
+
+    .sidebar-header {
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid var(--border-subtle);
+      flex-shrink: 0
+    }
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text-primary)
+    }
+
+    .sidebar-logo .logo-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--accent-green), var(--accent-teal));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0
+    }
+
+    .sidebar-logo .logo-text {
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      line-height: 1.3
+    }
+
+    .sidebar-logo .logo-sub {
+      font-size: 0.62rem;
+      color: var(--text-muted);
+      font-weight: 400;
+      letter-spacing: 0.04em
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 0
+    }
+
+    .nav-section {
+      margin-bottom: 2px
+    }
+
+    .nav-chapter {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+      user-select: none;
+      text-decoration: none
+    }
+
+    .nav-chapter:hover {
+      background: var(--glass-heavy);
+      color: var(--text-primary)
+    }
+
+    .nav-chapter.active {
+      color: var(--accent-green);
+      border-left-color: var(--accent-green);
+      background: var(--accent-green-glow)
+    }
+
+    .nav-chapter .chapter-icon {
+      width: 22px;
+      text-align: center;
+      font-size: 0.95rem;
+      flex-shrink: 0
+    }
+
+    .nav-chapter .chapter-arrow {
+      margin-left: auto;
+      font-size: 0.65rem;
+      transition: transform 0.2s var(--ease-out);
+      color: var(--text-muted)
+    }
+
+    .nav-chapter.expanded .chapter-arrow {
+      transform: rotate(90deg)
+    }
+
+    .nav-children {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s var(--ease-out)
+    }
+
+    .nav-children.open {
+      max-height: 800px
+    }
+
+    .nav-child {
+      display: block;
+      padding: 6px 20px 6px 52px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      text-decoration: none;
+      border-left: 3px solid transparent
+    }
+
+    .nav-child:hover {
+      color: var(--text-secondary);
+      background: var(--glass)
+    }
+
+    .nav-child.active {
+      color: var(--accent-green);
+      border-left-color: var(--accent-green)
+    }
+
+    .sidebar-footer {
+      padding: 12px 20px;
+      border-top: 1px solid var(--border-subtle);
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      flex-shrink: 0
+    }
+
+    /* Main */
+    .main-content {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      min-height: 100vh
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      height: var(--header-height);
+      background: rgba(15, 17, 23, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      z-index: 50;
+      gap: 14px
+    }
+
+    .topbar-breadcrumb {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .topbar-breadcrumb .sep {
+      opacity: 0.4
+    }
+
+    .topbar-breadcrumb .current {
+      color: var(--accent-green);
+      font-weight: 500
+    }
+
+    .hamburger {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      font-size: 1.3rem;
+      cursor: pointer;
+      padding: 5px;
+      border-radius: 6px;
+      transition: background 0.15s
+    }
+
+    .hamburger:hover {
+      background: var(--glass-heavy)
+    }
+
+    /* Sections */
+    .content-area {
+      padding: 32px 36px 80px;
+      max-width: var(--content-max);
+      margin: 0 auto
+    }
+
+    .section {
+      display: none;
+      animation: fadeIn 0.4s var(--ease-out)
+    }
+
+    .section.active {
+      display: block
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    /* Typography */
+    .section-hero {
+      margin-bottom: 36px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--border-subtle)
+    }
+
+    .section-hero .hero-emoji {
+      font-size: 2.8rem;
+      margin-bottom: 10px;
+      display: block
+    }
+
+    .section-hero h1 {
+      font-size: 1.85rem;
+      font-weight: 800;
+      line-height: 1.3;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em
+    }
+
+    .section-hero .hero-sub {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      max-width: 640px
+    }
+
+    h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin: 44px 0 14px;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 9px
+    }
+
+    h2 .h2-icon {
+      font-size: 1.1rem
+    }
+
+    h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin: 28px 0 10px;
+      color: var(--accent-blue)
+    }
+
+    h4 {
+      font-size: 0.92rem;
+      font-weight: 600;
+      margin: 18px 0 7px;
+      color: var(--text-secondary)
+    }
+
+    p {
+      margin-bottom: 14px;
+      color: var(--text-secondary);
+      line-height: 1.85
+    }
+
+    strong {
+      color: var(--text-primary);
+      font-weight: 600
+    }
+
+    /* Cards */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 14px;
+      margin: 18px 0
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 13px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all var(--duration) var(--ease-out);
+      position: relative;
+      overflow: hidden
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 13px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      background: linear-gradient(135deg, var(--accent-green-glow), transparent)
+    }
+
+    .card:hover {
+      border-color: var(--accent-green-dim);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-glow)
+    }
+
+    .card:hover::before {
+      opacity: 1
+    }
+
+    .card-icon {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+      display: block;
+      position: relative
+    }
+
+    .card-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 5px;
+      color: var(--text-primary);
+      position: relative
+    }
+
+    .card-desc {
+      font-size: 0.77rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      position: relative
+    }
+
+    .card-arrow {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: var(--text-muted);
+      transition: all 0.2s;
+      font-size: 0.85rem
+    }
+
+    .card:hover .card-arrow {
+      color: var(--accent-green);
+      transform: translateX(3px)
+    }
+
+    .reverse-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 11px;
+      padding: 16px;
+      transition: all var(--duration) var(--ease-out)
+    }
+
+    .reverse-card:hover {
+      border-color: rgba(96, 165, 250, 0.3);
+      background: var(--bg-card-hover)
+    }
+
+    .reverse-card .rc-header {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 8px
+    }
+
+    .reverse-card .rc-icon {
+      font-size: 1.2rem
+    }
+
+    .reverse-card .rc-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-primary)
+    }
+
+    .rc-scene {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      font-style: italic;
+      margin-bottom: 8px;
+      padding-left: 10px;
+      border-left: 2px solid var(--border-medium)
+    }
+
+    /* Tables */
+    .table-wrapper {
+      overflow-x: auto;
+      margin: 14px 0 20px;
+      border-radius: 9px;
+      border: 1px solid var(--border-subtle)
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem
+    }
+
+    thead {
+      background: var(--bg-tertiary)
+    }
+
+    th {
+      padding: 9px 12px;
+      font-weight: 600;
+      text-align: left;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      border-bottom: 1px solid var(--border-medium)
+    }
+
+    td {
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      vertical-align: top
+    }
+
+    tbody tr:hover {
+      background: var(--glass)
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none
+    }
+
+    /* Accordion */
+    .accordion {
+      margin: 14px 0
+    }
+
+    .accordion-item {
+      border: 1px solid var(--border-subtle);
+      border-radius: 9px;
+      margin-bottom: 7px;
+      overflow: hidden;
+      transition: border-color 0.2s
+    }
+
+    .accordion-item.open {
+      border-color: var(--border-medium)
+    }
+
+    .accordion-header {
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      background: var(--bg-card);
+      transition: background 0.2s;
+      user-select: none
+    }
+
+    .accordion-header:hover {
+      background: var(--bg-card-hover)
+    }
+
+    .accordion-arrow {
+      margin-left: auto;
+      transition: transform 0.25s var(--ease-out);
+      color: var(--text-muted);
+      font-size: 0.7rem
+    }
+
+    .accordion-item.open .accordion-arrow {
+      transform: rotate(180deg)
+    }
+
+    .accordion-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s var(--ease-out), padding 0.35s;
+      padding: 0 16px;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.8
+    }
+
+    .accordion-item.open .accordion-body {
+      max-height: 3000px;
+      padding: 0 16px 16px
+    }
+
+    /* Callout */
+    .callout {
+      border-radius: 9px;
+      padding: 14px 18px;
+      margin: 18px 0;
+      font-size: 0.82rem;
+      line-height: 1.7;
+      border-left: 4px solid;
+      position: relative
+    }
+
+    .callout-title {
+      font-weight: 700;
+      font-size: 0.8rem;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 5px
+    }
+
+    .callout.tip {
+      background: rgba(52, 211, 153, 0.06);
+      border-color: var(--accent-green)
+    }
+
+    .callout.tip .callout-title {
+      color: var(--accent-green)
+    }
+
+    .callout.important {
+      background: rgba(251, 191, 36, 0.06);
+      border-color: var(--accent-amber)
+    }
+
+    .callout.important .callout-title {
+      color: var(--accent-amber)
+    }
+
+    .callout.caution {
+      background: rgba(251, 113, 133, 0.06);
+      border-color: var(--accent-rose)
+    }
+
+    .callout.caution .callout-title {
+      color: var(--accent-rose)
+    }
+
+    .callout.info {
+      background: rgba(96, 165, 250, 0.06);
+      border-color: var(--accent-blue)
+    }
+
+    .callout.info .callout-title {
+      color: var(--accent-blue)
+    }
+
+    /* Talk boxes */
+    .talk-box {
+      border-radius: 11px;
+      border: 1px solid var(--border-subtle);
+      margin: 14px 0;
+      overflow: hidden
+    }
+
+    .talk-header {
+      padding: 10px 16px;
+      background: var(--bg-tertiary);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 7px
+    }
+
+    .talk-body {
+      padding: 14px 16px;
+      background: var(--bg-card)
+    }
+
+    .talk-label {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      margin-bottom: 6px
+    }
+
+    .talk-label.ng {
+      background: rgba(251, 113, 133, 0.15);
+      color: var(--accent-rose)
+    }
+
+    .talk-label.ok {
+      background: rgba(52, 211, 153, 0.15);
+      color: var(--accent-green)
+    }
+
+    .talk-text {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-bottom: 10px
+    }
+
+    .talk-text:last-child {
+      margin-bottom: 0
+    }
+
+    .talk-point {
+      margin-top: 8px;
+      padding: 9px 12px;
+      background: rgba(96, 165, 250, 0.06);
+      border-radius: 7px;
+      font-size: 0.78rem;
+      color: var(--accent-blue);
+      line-height: 1.6
+    }
+
+    /* Tree */
+    .tree {
+      padding: 0 0 0 10px;
+      list-style: none
+    }
+
+    .tree li {
+      position: relative;
+      padding: 5px 0 5px 22px
+    }
+
+    .tree li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1px;
+      height: 100%;
+      background: var(--border-medium)
+    }
+
+    .tree li::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 16px;
+      width: 14px;
+      height: 1px;
+      background: var(--border-medium)
+    }
+
+    .tree li:last-child::before {
+      height: 16px
+    }
+
+    .tree-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      padding: 3px 8px;
+      border-radius: 5px;
+      transition: background 0.15s
+    }
+
+    .tree-label:hover {
+      background: var(--glass-heavy)
+    }
+
+    .tree-label.tree-link {
+      cursor: pointer;
+      color: var(--accent-green)
+    }
+
+    .tree-label.tree-link:hover {
+      text-decoration: underline
+    }
+
+    .tree-label .tree-code {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--accent-violet);
+      background: rgba(167, 139, 250, 0.1);
+      padding: 1px 5px;
+      border-radius: 4px
+    }
+
+    .tree-label .tree-icon {
+      font-size: 0.95rem
+    }
+
+    /* Digest diagram */
+    .digest-diagram {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 13px;
+      padding: 24px;
+      margin: 18px 0;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      line-height: 2;
+      white-space: pre;
+      overflow-x: auto
+    }
+
+    /* Tags */
+    .tag {
+      display: inline-block;
+      font-size: 0.66rem;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 20px;
+      letter-spacing: 0.02em
+    }
+
+    .tag-green {
+      background: rgba(52, 211, 153, 0.12);
+      color: var(--accent-green)
+    }
+
+    .tag-blue {
+      background: rgba(96, 165, 250, 0.12);
+      color: var(--accent-blue)
+    }
+
+    .tag-amber {
+      background: rgba(251, 191, 36, 0.12);
+      color: var(--accent-amber)
+    }
+
+    .tag-rose {
+      background: rgba(251, 113, 133, 0.12);
+      color: var(--accent-rose)
+    }
+
+    .tag-violet {
+      background: rgba(167, 139, 250, 0.12);
+      color: var(--accent-violet)
+    }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--accent-violet);
+      background: rgba(167, 139, 250, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap
+    }
+
+    /* Summary box */
+    .summary-box {
+      background: linear-gradient(135deg, rgba(52, 211, 153, 0.08), rgba(96, 165, 250, 0.05));
+      border: 1px solid rgba(52, 211, 153, 0.15);
+      border-radius: 13px;
+      padding: 22px;
+      margin: 26px 0
+    }
+
+    .summary-box h4 {
+      color: var(--accent-green);
+      margin-top: 0
+    }
+
+    .summary-box ol,
+    .summary-box ul {
+      padding-left: 18px;
+      color: var(--text-secondary);
+      font-size: 0.84rem
+    }
+
+    .summary-box li {
+      margin-bottom: 7px;
+      line-height: 1.7
+    }
+
+    /* Back to top */
+    .back-to-top {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      color: var(--text-inverse);
+      border: none;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s var(--ease-out);
+      box-shadow: var(--shadow-md);
+      z-index: 80
+    }
+
+    .back-to-top.show {
+      opacity: 1;
+      pointer-events: auto
+    }
+
+    .back-to-top:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg)
+    }
+
+    /* Glossary */
+    .glossary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 10px;
+      margin: 16px 0
+    }
+
+    .glossary-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 9px;
+      padding: 14px 16px
+    }
+
+    .glossary-term {
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--accent-green);
+      margin-bottom: 3px
+    }
+
+    .glossary-def {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      line-height: 1.6
+    }
+
+    /* Sidebar overlay */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 90;
+      opacity: 0;
+      transition: opacity 0.3s;
+      -webkit-backdrop-filter: blur(4px);
+      backdrop-filter: blur(4px)
+    }
+
+    .sidebar-overlay.show {
+      display: block;
+      opacity: 1
+    }
+
+    /* Mobile bottom nav */
+    .bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: calc(60px + env(safe-area-inset-bottom, 0px));
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      background: rgba(16, 18, 28, 0.97);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border-subtle);
+      z-index: 80;
+      justify-content: space-around;
+      align-items: center;
+      padding-left: 4px;
+      padding-right: 4px
+    }
+
+    .bottom-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      font-size: 0.62rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 7px 12px;
+      border-radius: 10px;
+      transition: all 0.2s;
+      text-decoration: none;
+      -webkit-tap-highlight-color: transparent;
+      min-width: 56px;
+      min-height: 44px;
+      justify-content: center
+    }
+
+    .bottom-nav-item:active {
+      transform: scale(0.92);
+      background: var(--glass-heavy)
+    }
+
+    .bottom-nav-item.active {
+      color: var(--accent-green)
+    }
+
+    .bottom-nav-item.active .bn-icon {
+      filter: drop-shadow(0 0 8px rgba(52, 211, 153, 0.4))
+    }
+
+    .bottom-nav-item .bn-icon {
+      font-size: 1.25rem;
+      transition: filter 0.2s
+    }
+
+    /* ===== RESPONSIVE: TABLET ===== */
+    @media(max-width:900px) {
+      .sidebar {
+        transform: translateX(-100%);
+        box-shadow: var(--shadow-lg)
+      }
+
+      .sidebar.open {
+        transform: translateX(0)
+      }
+
+      .main-content {
+        margin-left: 0
+      }
+
+      .hamburger {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 10px
+      }
+
+      .hamburger:active {
+        background: var(--glass-heavy);
+        transform: scale(0.92)
+      }
+
+      .content-area {
+        padding: 20px 18px calc(80px + env(safe-area-inset-bottom, 0px))
+      }
+
+      .section-hero {
+        margin-bottom: 24px;
+        padding-bottom: 20px
+      }
+
+      .section-hero h1 {
+        font-size: 1.4rem
+      }
+
+      .card-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px
+      }
+
+      h2 {
+        font-size: 1.15rem;
+        margin: 32px 0 12px
+      }
+
+      .bottom-nav {
+        display: flex
+      }
+
+      .back-to-top {
+        bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+        right: 14px;
+        width: 40px;
+        height: 40px;
+        font-size: 1rem
+      }
+
+      .glossary-grid {
+        grid-template-columns: 1fr
+      }
+
+      /* Touch-friendly accordions */
+      .accordion-header {
+        padding: 14px 16px;
+        min-height: 48px
+      }
+
+      .accordion-header:active {
+        background: var(--bg-card-hover)
+      }
+
+      /* Touch-friendly cards */
+      .card {
+        transition: transform 0.15s, box-shadow 0.15s
+      }
+
+      .card:active {
+        transform: scale(0.97) !important;
+        box-shadow: none !important
+      }
+
+      .card::before {
+        display: none
+      }
+
+      /* Touch-friendly nav items */
+      .nav-chapter {
+        padding: 12px 20px;
+        min-height: 44px
+      }
+
+      .nav-child {
+        padding: 10px 20px 10px 52px;
+        min-height: 40px
+      }
+
+      /* Talk/callout touch spacing */
+      .talk-box {
+        margin: 12px 0
+      }
+
+      .callout {
+        margin: 14px 0
+      }
+    }
+
+    /* ===== RESPONSIVE: SMARTPHONE ===== */
+    @media(max-width:480px) {
+      :root {
+        --sidebar-width: calc(100vw - 60px)
+      }
+
+      html {
+        font-size: 14.5px
+      }
+
+      body {
+        -webkit-text-size-adjust: 100%;
+        padding-top: 0
+      }
+
+      /* Topbar */
+      .topbar {
+        padding: 0 12px;
+        height: 48px;
+        gap: 8px
+      }
+
+      .topbar-breadcrumb {
+        font-size: 0.72rem
+      }
+
+      .topbar-breadcrumb .sep {
+        margin: 0 2px
+      }
+
+      /* Hero compact */
+      .section-hero {
+        margin-bottom: 20px;
+        padding-bottom: 16px
+      }
+
+      .section-hero .hero-emoji {
+        font-size: 2.2rem;
+        margin-bottom: 6px
+      }
+
+      .section-hero h1 {
+        font-size: 1.3rem;
+        line-height: 1.35
+      }
+
+      .section-hero .hero-sub {
+        font-size: 0.82rem;
+        line-height: 1.6
+      }
+
+      /* Content area */
+      .content-area {
+        padding: 16px 14px calc(76px + env(safe-area-inset-bottom, 0px))
+      }
+
+      /* Cards single column */
+      .card-grid {
+        grid-template-columns: 1fr;
+        gap: 8px
+      }
+
+      .card {
+        padding: 16px;
+        border-radius: 11px
+      }
+
+      .card-icon {
+        font-size: 1.5rem;
+        margin-bottom: 7px
+      }
+
+      .card-title {
+        font-size: 0.86rem
+      }
+
+      .card-desc {
+        font-size: 0.74rem
+      }
+
+      /* Typography */
+      h2 {
+        font-size: 1.08rem;
+        margin: 26px 0 10px
+      }
+
+      h3 {
+        font-size: 0.95rem;
+        margin: 20px 0 8px
+      }
+
+      p {
+        font-size: 0.86rem;
+        line-height: 1.75;
+        margin-bottom: 12px
+      }
+
+      /* Tables: full-bleed with scroll hint */
+      .table-wrapper {
+        margin-left: -14px;
+        margin-right: -14px;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+        position: relative;
+        -webkit-overflow-scrolling: touch
+      }
+
+      .table-wrapper::after {
+        content: '← スクロール →';
+        position: sticky;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: block;
+        text-align: center;
+        font-size: 0.6rem;
+        color: var(--text-muted);
+        padding: 4px;
+        background: linear-gradient(transparent, var(--bg-primary));
+        opacity: 0.7
+      }
+
+      table {
+        font-size: 0.76rem;
+        min-width: 380px
+      }
+
+      th {
+        padding: 8px 10px;
+        font-size: 0.72rem
+      }
+
+      td {
+        padding: 8px 10px
+      }
+
+      code {
+        font-size: 0.66rem;
+        padding: 1px 4px
+      }
+
+      /* Accordion compact */
+      .accordion-header {
+        font-size: 0.82rem;
+        padding: 13px 14px;
+        gap: 7px
+      }
+
+      .accordion-body {
+        font-size: 0.8rem
+      }
+
+      /* Callout compact */
+      .callout {
+        padding: 12px 14px;
+        font-size: 0.8rem;
+        border-radius: 8px;
+        margin: 12px 0
+      }
+
+      .callout-title {
+        font-size: 0.76rem
+      }
+
+      /* Talk compact */
+      .talk-header {
+        padding: 9px 14px;
+        font-size: 0.76rem
+      }
+
+      .talk-body {
+        padding: 12px 14px
+      }
+
+      .talk-label {
+        font-size: 0.64rem
+      }
+
+      .talk-text {
+        font-size: 0.8rem
+      }
+
+      .talk-point {
+        font-size: 0.74rem;
+        padding: 8px 10px
+      }
+
+      /* Summary compact */
+      .summary-box {
+        padding: 16px 14px;
+        border-radius: 10px;
+        margin: 16px 0
+      }
+
+      .summary-box ol,
+      .summary-box ul {
+        font-size: 0.8rem;
+        padding-left: 16px
+      }
+
+      /* Tree compact */
+      .tree-label {
+        font-size: 0.78rem;
+        padding: 3px 6px
+      }
+
+      .tree-label .tree-code {
+        font-size: 0.64rem
+      }
+
+      /* Glossary compact */
+      .glossary-item {
+        padding: 11px 13px
+      }
+
+      .glossary-term {
+        font-size: 0.82rem
+      }
+
+      .glossary-def {
+        font-size: 0.74rem
+      }
+
+      /* Digest diagram */
+      .digest-diagram {
+        padding: 14px;
+        font-size: 0.68rem;
+        line-height: 1.8;
+        border-radius: 10px;
+        margin: 12px -14px;
+        border-radius: 0;
+        border-left: none;
+        border-right: none
+      }
+
+      /* Reverse cards */
+      .reverse-card {
+        padding: 13px
+      }
+
+      .rc-scene {
+        font-size: 0.72rem
+      }
+
+      /* Bottom nav tighter */
+      .bottom-nav {
+        height: calc(54px + env(safe-area-inset-bottom, 0px))
+      }
+
+      .bottom-nav-item {
+        padding: 5px 8px;
+        font-size: 0.58rem;
+        min-width: 48px
+      }
+
+      .bottom-nav-item .bn-icon {
+        font-size: 1.15rem
+      }
+
+      /* BackToTop */
+      .back-to-top {
+        width: 36px;
+        height: 36px;
+        font-size: 0.9rem;
+        bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+        right: 12px
+      }
+
+      /* Sidebar full screen */
+      .sidebar {
+        width: var(--sidebar-width);
+        border-radius: 0 16px 16px 0;
+        border-right: none;
+        box-shadow: 0 0 40px rgba(0, 0, 0, 0.7)
+      }
+
+      .sidebar-header {
+        padding: 14px 16px 12px
+      }
+
+      .sidebar-logo .logo-icon {
+        width: 30px;
+        height: 30px;
+        font-size: 14px;
+        border-radius: 8px
+      }
+
+      .sidebar-logo .logo-text {
+        font-size: 0.78rem
+      }
+
+      .sidebar-logo .logo-sub {
+        font-size: 0.58rem
+      }
+
+      .nav-chapter {
+        padding: 11px 16px;
+        font-size: 0.78rem
+      }
+
+      .nav-child {
+        padding: 8px 16px 8px 46px;
+        font-size: 0.72rem
+      }
+
+      .sidebar-footer {
+        padding: 10px 16px;
+        font-size: 0.6rem
+      }
+    }
+
+    /* Added styles for logs */
+
+    .log-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.75rem;
+      color: var(--accent-blue);
+      text-decoration: none;
+      padding: 4px 8px;
+      background: rgba(96, 165, 250, 0.1);
+      border-radius: 5px;
+      margin-top: 6px;
+      margin-right: 6px;
+      transition: background 0.2s;
+    }
+
+    .log-link:hover {
+      background: rgba(96, 165, 250, 0.2);
+    }
+
+    .success-case {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px dashed var(--border-medium);
+    }
+
+    /* Search */
+    .topbar-search {
+      margin-left: auto;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-input {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 6px 14px 6px 32px;
+      color: var(--text-primary);
+      font-size: 0.75rem;
+      width: 180px;
+      transition: all 0.2s;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--accent-green);
+      background: rgba(0, 0, 0, 0.2);
+      width: 220px;
+      box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.2);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      pointer-events: none;
+    }
+
+    .search-clear {
+      position: absolute;
+      right: 8px;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      padding: 2px;
+      cursor: pointer;
+      display: none;
+      font-size: 0.85rem;
+    }
+
+    .search-clear:hover {
+      color: var(--text-primary);
+    }
+
+    .search-result-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 9px;
+      padding: 16px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .search-result-item:hover {
+      border-color: var(--accent-green-dim);
+      background: var(--bg-card-hover);
+    }
+
+    .sr-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--accent-green);
+      margin-bottom: 6px;
+    }
+
+    .sr-snippet {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .sr-highlight {
+      background: rgba(251, 191, 36, 0.2);
+      color: var(--accent-amber);
+      font-weight: bold;
+      padding: 0 2px;
+      border-radius: 2px;
+    }
+
+    .sr-empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* ===== RESPONSIVE: COMPACT SEARCH ===== */
+    @media(max-width:480px) {
+      .topbar-search {
+        flex: 1;
+        justify-content: flex-end;
+      }
+
+      .search-input {
+        width: 100%;
+        max-width: 160px;
+        padding: 5px 12px 5px 28px;
+        font-size: 0.7rem;
+      }
+
+      .search-input:focus {
+        width: 100%;
+        max-width: none;
+      }
+    }
+
+    /* ===== UX ENHANCEMENTS: PRINT & BADGES & SORT ===== */
+    @media print {
+
+      body,
+      .app-layout {
+        background: white !important;
+        color: black !important;
+      }
+
+      .sidebar,
+      .topbar,
+      .bottom-nav,
+      .back-to-top,
+      .topbar-search,
+      .hero-emoji {
+        display: none !important;
+      }
+
+      .content-area {
+        margin: 0 !important;
+        padding: 0 !important;
+        height: auto !important;
+        overflow: visible !important;
+        width: 100% !important;
+        border: none !important;
+      }
+
+      .section {
+        display: none !important;
+        animation: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        page-break-after: always;
+      }
+
+      .section.active {
+        display: block !important;
+      }
+
+      table {
+        border-collapse: collapse;
+        page-break-inside: auto;
+        background: white !important;
+        width: 100% !important;
+        border: 1px solid #ccc !important;
+      }
+
+      tr,
+      .callout {
+        page-break-inside: avoid;
+        page-break-after: auto;
+      }
+
+      thead {
+        display: table-header-group;
+      }
+
+      th,
+      td {
+        background: white !important;
+        color: black !important;
+        border: 1px solid #ccc !important;
+        text-shadow: none !important;
+        padding: 8px !important;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      p,
+      span,
+      div {
+        color: black !important;
+        text-shadow: none !important;
+      }
+
+      .callout {
+        background: #f9f9f9 !important;
+        border: 1px solid #ccc !important;
+        box-shadow: none !important;
+      }
+
+      .badge-new {
+        display: inline-block;
+        border: 1px solid black;
+        animation: none !important;
+        background: white !important;
+        color: black !important;
+        padding: 1px 4px;
+        box-shadow: none !important;
+      }
+
+      .h2-icon,
+      .tree-icon,
+      .card-icon,
+      .glossary-term {
+        color: black !important;
+      }
+
+      a {
+        color: black !important;
+        text-decoration: none !important;
+      }
+    }
+
+    .badge-new {
+      display: inline-block;
+      background: var(--accent-rose);
+      color: var(--bg-primary);
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 12px;
+      margin-left: 8px;
+      vertical-align: middle;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      animation: badge-pulse 2s infinite;
+      box-shadow: 0 0 10px rgba(251, 113, 133, 0.4);
+    }
+
+    @keyframes badge-pulse {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(251, 113, 133, 0.4);
+      }
+
+      50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 4px rgba(251, 113, 133, 0);
+      }
+
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(251, 113, 133, 0);
+      }
+    }
+
+    th.sortable {
+      cursor: pointer;
+      position: relative;
+      user-select: none;
+      transition: background var(--duration) var(--ease-out);
+      padding-right: 20px !important;
+    }
+
+    th.sortable:hover {
+      background: var(--bg-tertiary) !important;
+    }
+
+    th.sortable::after {
+      content: '↕';
+      font-size: 0.7rem;
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      opacity: 0.5;
+    }
+
+    th.sortable.asc::after {
+      content: '↑';
+      opacity: 1;
+      color: var(--accent-blue);
+    }
+
+    th.sortable.desc::after {
+      content: '↓';
+      opacity: 1;
+      color: var(--accent-blue);
+    }
+  </style>
+</head>
+
+<div class="progress-bar" id="progressBar"></div>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <a class="sidebar-logo" href="#" onclick="navigateTo('home');return false;">
+        <div class="logo-icon">🐄</div>
+        <div>
+          <div class="logo-text">CASCADIA</div>
+          <div class="logo-sub">営業マニュアル</div>
+        </div>
+      </a>
+    </div>
+    <nav class="sidebar-nav" id="sidebarNav">
+      <div class="nav-section"><a class="nav-chapter active" data-section="home" onclick="navigateTo('home')"><span
+            class="chapter-icon">🏠</span>ホーム</a></div>
+      <div class="nav-section">
+        <a class="nav-chapter" data-section="ch1" onclick="toggleChapter(this,'ch1-children')"><span
+            class="chapter-icon">🌍</span>第1章 フィロソフィー<span class="chapter-arrow">▶</span></a>
+        <div class="nav-children" id="ch1-children">
+          <a class="nav-child" data-section="ch1" onclick="navigateTo('ch1')">カスケディアの使命</a>
+          <a class="nav-child" data-section="ch1" onclick="navigateTo('ch1')">日本の畜産を支える</a>
+          <a class="nav-child" data-section="ch1" onclick="navigateTo('ch1')">営業の誇り</a>
+        </div>
+      </div>
+      <div class="nav-section">
+        <a class="nav-chapter" data-section="ch2" onclick="toggleChapter(this,'ch2-children')"><span
+            class="chapter-icon">🐮</span>第2章 牛の基礎知識<span class="chapter-arrow">▶</span></a>
+        <div class="nav-children" id="ch2-children">
+          <a class="nav-child" data-section="ch2" onclick="navigateTo('ch2')">消化システム</a>
+          <a class="nav-child" data-section="ch2" onclick="navigateTo('ch2')">成長ステージ</a>
+          <a class="nav-child" data-section="ch2" onclick="navigateTo('ch2')">乳牛 vs 肉牛</a>
+          <a class="nav-child" data-section="ch2" onclick="navigateTo('ch2')">ストレス管理</a>
+          <a class="nav-child" data-section="ch2-lactation" onclick="navigateTo('ch2-lactation')">泌乳サイクル<span class="badge-new">NEW</span></a>
+          <a class="nav-child" data-section="ch2-milk" onclick="navigateTo('ch2-milk')">乳成分と合成<span class="badge-new">NEW</span></a>
+          <a class="nav-child" data-section="ch2-analysis" onclick="navigateTo('ch2-analysis')">飼料分析<span class="badge-new">NEW</span></a>
+          <a class="nav-child" data-section="ch2-vitmin" onclick="navigateTo('ch2-vitmin')">ビタミン・ミネラル<span class="badge-new">NEW</span></a>
+        </div>
+      </div>
+      <div class="nav-section">
+        <a class="nav-chapter" data-section="ch3" onclick="toggleChapter(this,'ch3-children')"><span
+            class="chapter-icon">🔍</span>第3章 逆引きインデックス<span class="chapter-arrow">▶</span></a>
+        <div class="nav-children" id="ch3-children">
+          <a class="nav-child" data-section="ch3" onclick="navigateTo('ch3')">課題別に探す</a>
+          <a class="nav-child" data-section="ch3" onclick="navigateTo('ch3')">ステージ別に探す</a>
+          <a class="nav-child" data-section="ch3" onclick="navigateTo('ch3')">季節別に探す</a>
+        </div>
+      </div>
+      <div class="nav-section">
+        <a class="nav-chapter" data-section="ch4" onclick="toggleChapter(this,'ch4-children')"><span
+            class="chapter-icon">📦</span>第4章 商品カタログ<span class="chapter-arrow">▶</span></a>
+        <div class="nav-children" id="ch4-children">
+          <a class="nav-child" data-section="ch4" onclick="navigateTo('ch4')">カテゴリツリー</a>
+          <a class="nav-child" data-section="ch4-hay" onclick="navigateTo('ch4-hay')">🌾 粗飼料・牧草</a>
+          <a class="nav-child" data-section="ch4-sil" onclick="navigateTo('ch4-sil')">🌽 粗飼料・サイレージ</a>
+          <a class="nav-child" data-section="ch4-byp" onclick="navigateTo('ch4-byp')">🧪 副産物・添加剤</a>
+          <a class="nav-child" data-section="ch4-comp" onclick="navigateTo('ch4-comp')">🥛 配合飼料・代用乳</a>
+          <a class="nav-child" data-section="ch4-px" onclick="navigateTo('ch4-px')">⚗️ 自社企画PX</a>
+          <a class="nav-child" data-section="ch4-eqp" onclick="navigateTo('ch4-eqp')">🔧 資材・IoT</a>
+          <a class="nav-child" data-section="ch4-food" onclick="navigateTo('ch4-food')">🫒 食糧事業</a>
+          <a class="nav-child" data-section="ch4-svc" onclick="navigateTo('ch4-svc')">🧾 付帯手配・サービス</a>
+          <a class="nav-child" data-section="ch4-fat" onclick="navigateTo('ch4-fat')">💧 脂肪酸Ca<span
+              class="badge-new">NEW</span></a>
+        </div>
+      </div>
+      <div class="nav-section">
+        <a class="nav-chapter" data-section="appendix" onclick="toggleChapter(this,'app-children')"><span
+            class="chapter-icon">📎</span>付録<span class="chapter-arrow">▶</span></a>
+        <div class="nav-children" id="app-children">
+          <a class="nav-child" data-section="appendix" onclick="navigateTo('appendix')">用語集</a>
+          <a class="nav-child" data-section="app-pack" onclick="navigateTo('app-pack')">荷姿ガイド</a>
+        </div>
+      </div>
+    </nav>
+    <div class="sidebar-footer">© 2026 Cascadia Trading</div>
+  </aside>
+
+  <main class="main-content">
+    <header class="topbar">
+      <button class="hamburger" id="hamburger" onclick="toggleSidebar()">☰</button>
+      <div class="topbar-breadcrumb" id="breadcrumb">
+        <span>🐄 営業マニュアル</span><span class="sep">/</span><span class="current" id="breadcrumbCurrent">ホーム</span>
+      </div>
+      <div class="topbar-search">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" class="search-input" placeholder="マニュアル内を検索...">
+        <button class="search-clear" id="searchClear" aria-label="Clear search">✕</button>
+      </div>
+    </header>
+    <div class="content-area">
+
+      <div class="section" id="sec-search-results">
+        <div class="section-hero">
+          <span class="hero-emoji">🔍</span>
+          <h1>検索結果</h1>
+          <p class="hero-sub" id="searchStatus">「...」の検索結果</p>
+        </div>
+        <div id="searchResultsList"></div>
+      </div>
+
+      <div class="section active" id="sec-home">
+        <div class="section-hero">
+          <span class="hero-emoji">🐄</span>
+          <h1>カスケディア営業マニュアル</h1>
+          <p class="hero-sub">
+            商品の「丸暗記」ではなく、営業現場での「勘所」を掴み、自走できるようになるためのガイドラインです。<br>順引き（商品カタログ）と逆引き（課題・ステージ別）の両方から、最適な情報にアクセスできます。</p>
+        </div>
+        <h2><span class="h2-icon">📚</span> 各章へジャンプ</h2>
+        <div class="card-grid">
+          <div class="card" onclick="navigateTo('ch1')"><span class="card-icon">🌍</span>
+            <div class="card-title">第1章 フィロソフィー</div>
+            <div class="card-desc">グローバルな視点と営業の誇り。なぜ私たちはこの仕事をするのか。</div><span class="card-arrow">→</span>
+          </div>
+          <div class="card" onclick="navigateTo('ch2')"><span class="card-icon">🐮</span>
+            <div class="card-title">第2章 牛の基礎知識</div>
+            <div class="card-desc">四つの胃、成長ステージ、ストレス管理。飼料提案の土台となる生理学。</div><span class="card-arrow">→</span>
+          </div>
+          <div class="card" onclick="navigateTo('ch3')"><span class="card-icon">🔍</span>
+            <div class="card-title">第3章 逆引きインデックス</div>
+            <div class="card-desc">課題・ステージ・季節から最適な商品を見つける。</div><span class="card-arrow">→</span>
+          </div>
+          <div class="card" onclick="navigateTo('ch4')"><span class="card-icon">📦</span>
+            <div class="card-title">第4章 商品カタログ</div>
+            <div class="card-desc">全商品の分類ツリーと詳細ページ。営業トーク例も。</div><span class="card-arrow">→</span>
+          </div>
+          <div class="card" onclick="navigateTo('appendix')"><span class="card-icon">📎</span>
+            <div class="card-title">付録</div>
+            <div class="card-desc">用語集・荷姿ガイドなどリファレンス集。</div><span class="card-arrow">→</span>
+          </div>
+        </div>
+        <div class="callout tip">
+          <div class="callout-title">💡 マニュアルの使い方</div>
+          <p style="margin:0;">
+            左のサイドバー（スマホではハンバーガーメニュー☰）から各章にアクセスできます。「商品名が分かっている」なら第4章（順引き）、「顧客の課題から探したい」なら第3章（逆引き）からスタートするのがおすすめです。下部のナビバーからも素早くジャンプできます。
+          </p>
+        </div>
+      </div>
+      <div class="section" id="sec-ch1">
+        <div class="section-hero"><span class="hero-emoji">🌍</span>
+          <h1>第1章　フィロソフィー</h1>
+          <p class="hero-sub">私たちが「飼料を届ける」意味 ── カスケディアの使命と営業の誇り</p>
+        </div>
+        <h2><span class="h2-icon">🌏</span> カスケディアの使命：グローバルな資源循環の担い手</h2>
+        <p>カスケディア・トレーディングは、アメリカ、カナダ、オーストラリアなど世界各国から牧草・飼料・資材を輸入し、日本の畜産農家に届けています。しかし、私たちの仕事は単なる「モノの輸出入」ではありません。</p>
+        <div class="callout info">
+          <div class="callout-title">🌊 知っていましたか？</div>
+          <p style="margin:0;">
+            1トンのアルファルファヘイを育てるには約<strong>800〜1,000トンの水</strong>が必要です。飼料を輸入するということは、その国の「水資源」と「土壌の栄養」を日本に届けているということ。これを<strong>「バーチャルウォーター（仮想水）」</strong>と呼びます。私たちは地球規模の資源循環の、まさに担い手なのです。
+          </p>
+        </div>
+        <p>ワシントン州のコロンビア川流域で育まれたアルファルファ、アルバータ州の冷涼な気候が生み出すチモシー、ビクトリア州の太陽が乾燥させたオーツヘイ ──
+          それぞれの土地の気候風土と農家の努力が凝縮された「地球からの贈り物」を、日本の牛のもとへ届けるパイプラインが私たちです。</p>
+        <h2><span class="h2-icon">🇯🇵</span> 日本の畜産を支える ── 飼料の安定供給が食卓を守る</h2>
+        <p>
+          日本の畜産業は、飼料の多くを海外からの輸入に頼っています。粗飼料の自給率は約<strong>76%</strong>ですが、濃厚飼料に至ってはわずか<strong>12%</strong>程度。安定した飼料供給がなければ、日本の酪農家・畜産農家は経営を維持できません。
+        </p>
+        <p>私たちは<strong>「飼料の安定供給 ＝
+            日本の食卓を守ること」</strong>という自覚を持ち、国際相場の変動、海上輸送のリスク、為替変動を管理しながら、確実に顧客のもとへ届けています。毎朝あなたが飲む牛乳、焼肉の和牛 ──
+          その裏側にカスケディアの飼料がある。これは紛れもない事実です。</p>
+        <div class="callout important">
+          <div class="callout-title">⚠️ 数字で知る飼料輸入の重要性</div>
+          <p style="margin:0;">
+            日本は年間約<strong>2,400万トン</strong>の飼料を輸入しています。仮にこの供給が途絶えた場合、数ヶ月以内に国内の畜産は壊滅的な打撃を受けるとされています。私たちの仕事は、日本の「食の安全保障」に直結しています。
+          </p>
+        </div>
+        <h2><span class="h2-icon">🤝</span> 営業の誇り ── 「パートナー」になるということ</h2>
+        <p>カスケディアの営業は、単なる「売り子」ではありません。顧客の牧場を訪問し、牛群の状態を把握し、飼料設計の改善を一緒に考える<strong>「営業コンサルタント」</strong>です。</p>
+        <p>良い営業とは何か？
+          それは「売上を上げる人」ではなく、<strong>「顧客の牛が健康になり、経営が改善した結果として、自然と注文が増える人」</strong>です。目の前の1トンを売ることではなく、5年後も10年後も取引が続く信頼関係を築くこと。それがカスケディアの営業哲学です。
+        </p>
+        <h2><span class="h2-icon">💪</span> 仕事に活きるマインドセット</h2>
+        <div class="accordion">
+          <div class="accordion-item open">
+            <div class="accordion-header" onclick="toggleAccordion(this)"><span>① 「教えてもらう」姿勢を持つ</span><span
+                class="accordion-arrow">▼</span></div>
+            <div class="accordion-body">
+              <p>
+                農家は畜産のプロです。特に若手のうちは、商品を売り込む前に<strong>「教えてください」</strong>と言える素直さが最大の武器になります。農家から牛の状態を聞き、一緒に考える。その姿勢が信頼を生みます。
+              </p>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(this)"><span>② 「なぜ？」を常に問う</span><span
+                class="accordion-arrow">▼</span></div>
+            <div class="accordion-body">
+              <p>「この牧草はなぜこの産地がいいのか？」「この添加剤はなぜこのタイミングで必要なのか？」── 理由を理解している営業と、カタログを読み上げるだけの営業では、説得力が天と地ほど違います。</p>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(this)"><span>③ 数字で語る習慣をつける</span><span
+                class="accordion-arrow">▼</span></div>
+            <div class="accordion-body">
+              <p>
+                「良い」「悪い」ではなく、<strong>「CP（粗タンパク）が18%のアルファルファを使えば、乳量が1日あたり○kg改善する可能性があります」</strong>と数字で語れるようになりましょう。データは最強の営業ツールです。
+              </p>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(this)"><span>④ 失敗を恐れずチャレンジする</span><span
+                class="accordion-arrow">▼</span></div>
+            <div class="accordion-body">
+              <p>提案が外れることもあります。大事なのは、結果を検証し、次に活かすこと。農家と一緒にトライ＆エラーできる関係こそが、長期的なパートナーシップの土台です。</p>
+            </div>
+          </div>
+        </div>
+        <div class="summary-box">
+          <h4 style="margin-top:0;">📌 第1章のポイント</h4>
+          <ol>
+            <li>飼料の輸入は<strong>「グローバルな資源の移動」</strong>。地球規模の視点を持つ。</li>
+            <li>安定供給は<strong>「日本の食の安全保障」</strong>に直結している。</li>
+            <li>営業の仕事は<strong>「売ること」ではなく「パートナーになること」</strong>。</li>
+            <li><strong>「教えてもらう姿勢」＋「数字で語る力」</strong>が若手の最強の武器。</li>
+          </ol>
+        </div>
+      </div>
+      <div class="section" id="sec-ch2">
+        <div class="section-hero"><span class="hero-emoji">🐮</span>
+          <h1>第2章　牛の基礎知識</h1>
+          <p class="hero-sub">「なぜその飼料が必要なのか」── 牛の消化器官・成長ステージ・ストレスの生理学</p>
+        </div>
+        <h2><span class="h2-icon">🫁</span> 四つの胃の仕組み</h2>
+        <p>牛は<strong>四つの胃</strong>を持つ反芻動物です。この消化システムの理解が、飼料提案の基盤になります。</p>
+        <div class="digest-diagram"> 🌾 食べる
+          ↓
+          ┌──────────────────────────────────┐
+          │ 🟢 第一胃（ルーメン）150〜200L │ ← 微生物が繊維を発酵分解
+          │ ↕ 反芻（口に戻して再咀嚼） │ ← 唾液（100-180L/日）でpH緩衝
+          ├──────────────────────────────────┤
+          │ 🔵 第二胃（網胃） │ ← 異物をキャッチするフィルター
+          ├──────────────────────────────────┤
+          │ 🟡 第三胃（葉胃） │ ← 水分を吸収
+          ├──────────────────────────────────┤
+          │ 🔴 第四胃（皺胃） │ ← ヒトの胃に相当。胃酸で消化
+          └──────────────────────────────────┘
+          ↓
+          小腸 → 栄養吸収 → 大腸 → 排泄</div>
+        <div class="callout important">
+          <div class="callout-title">⚠️ 営業の必須知識</div>
+          <p style="margin:0;">
+            <strong>ルーメン（第一胃）</strong>が最も重要。ここに棲む数十兆の微生物が飼料を分解し、牛のエネルギー源の約<strong>70%</strong>（揮発性脂肪酸=VFA）を作り出します。飼料提案とは、実質的に<strong>「ルーメン微生物に何を食べさせるか」</strong>を設計することです。
+          </p>
+        </div>
+        <h3>粗飼料の3つの役割</h3>
+        <div class="accordion">
+          <div class="accordion-item open">
+            <div class="accordion-header" onclick="toggleAccordion(this)"><span>① 物理的刺激 → 反芻を促す</span><span
+                class="accordion-arrow">▼</span></div>
+            <div class="accordion-body">
+              <p>
+                牧草の長い繊維が「ルーメンマット」を形成。ルーメン壁を刺激して反芻を促進し、1日100〜180Lもの唾液分泌を促します。唾液に含まれる<strong>重炭酸塩</strong>が天然の緩衝材として、ルーメンpHを<strong>6.2〜6.8</strong>の適正範囲に保ちます。
+              </p>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(this)"><span>② 微生物のエサ → VFA（揮発性脂肪酸）の生成</span><span
+                class="accordion-arrow">▼</span></div>
+            <div class="accordion-body">
+              <p>ルーメン微生物は繊維を分解して<strong>酢酸・プロピオン酸・酪酸</strong>を生成します。<br>・<strong>酢酸</strong>：乳脂肪の前駆体 →
+                粗飼料不足＝乳脂率低下<br>・<strong>プロピオン酸</strong>：肝臓でグルコースに変換 → エネルギー源<br>・<strong>酪酸</strong>：ルーメン壁の発達促進 →
+                仔牛に特に重要</p>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(this)"><span>③ ルーメンの健康維持</span><span
+                class="accordion-arrow">▼</span></div>
+            <div class="accordion-body">
+              <p>粗飼料不足は<strong>「ルーメンアシドーシス」</strong>（ルーメン酸性化）を引き起こします。pH 5.5以下が続くと → 食欲低下 → ルーメン壁の損傷 → 蹄葉炎 →
+                最悪の場合は死亡。<strong>粗飼料は牛の健康の土台</strong>です。</p>
+            </div>
+          </div>
+        </div>
+        <h2><span class="h2-icon">📈</span> 牛の成長ステージと栄養ニーズ</h2>
+        <div class="card-grid">
+          <div class="reverse-card">
+            <div class="rc-header"><span class="rc-icon">🍼</span><span class="rc-title">哺乳期（0〜2ヶ月）</span></div>
+            <p style="font-size:0.82rem;color:var(--text-secondary);">
+              ルーメン未発達。母乳or<strong>代用乳</strong>が唯一の栄養源。スターターの早期給与でルーメン発達を促す。<br>→ <strong>スタートトゥフィニッシュ</strong> /
+              <strong>パワーカーフMO</strong>
+            </p>
+          </div>
+          <div class="reverse-card">
+            <div class="rc-header"><span class="rc-icon">🌱</span><span class="rc-title">育成期（2〜15ヶ月）</span></div>
+            <p style="font-size:0.82rem;color:var(--text-secondary);">ルーメンが急速に発達。良質な粗飼料が鍵。繊維質が多い牧草でルーメンを鍛える。<br>→
+              <strong>チモシーヘイ</strong> / <strong>サルバスターP育成用</strong>
+            </p>
+          </div>
+          <div class="reverse-card">
+            <div class="rc-header"><span class="rc-icon">🥛</span><span class="rc-title">搾乳期（初産〜）</span></div>
+            <p style="font-size:0.82rem;color:var(--text-secondary);">エネルギー要求が最大化。泌乳ピーク（分娩後60〜90日）に体重が減少しやすい。<br>→
+              <strong>アルファルファ</strong>＋<strong>Richfat CA</strong>＋<strong>搾乳用PX</strong>
+            </p>
+          </div>
+          <div class="reverse-card">
+            <div class="rc-header"><span class="rc-icon">💤</span><span class="rc-title">乾乳期（分娩前60日）</span></div>
+            <p style="font-size:0.82rem;color:var(--text-secondary);">次産に向けた体調管理。低カルシウム飼料で乳熱を予防。過肥を避ける。<br>→
+              <strong>チモシーヘイ</strong>＋<strong>ビッグF乾乳用VIT</strong>＋<strong>プロピオン酸Ca</strong>
+            </p>
+          </div>
+        </div>
+        <h2><span class="h2-icon">🐄</span> 乳牛 vs 肉牛 ── 飼料設計の違い</h2>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>項目</th>
+                <th>乳牛（ホルスタイン等）</th>
+                <th>肉牛（黒毛和種等）</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>目的</strong></td>
+                <td>乳量・乳質の最大化</td>
+                <td>増体・肉質（サシ）の向上</td>
+              </tr>
+              <tr>
+                <td><strong>エネルギー戦略</strong></td>
+                <td>泌乳ピークに高エネルギー集中</td>
+                <td>肥育後期にエネルギー増量</td>
+              </tr>
+              <tr>
+                <td><strong>粗飼料の役割</strong></td>
+                <td>ルーメン健康維持＋乳脂率確保</td>
+                <td>ルーメン健康維持＋嗜好性</td>
+              </tr>
+              <tr>
+                <td><strong>タンパク要求</strong></td>
+                <td>高CP（アルファルファ中心）</td>
+                <td>やや低CP（イネ科・稲わら中心）</td>
+              </tr>
+              <tr>
+                <td><strong>代表的な課題</strong></td>
+                <td>乳熱・ケトーシス・蹄病</td>
+                <td>ビタミンA制御・ルーメンアシドーシス</td>
+              </tr>
+              <tr>
+                <td><strong>主力商品</strong></td>
+                <td>アルファルファ/Richfat/搾乳PX</td>
+                <td>稲わら/配合飼料/ビタミンE</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h2><span class="h2-icon">🌡️</span> ストレス管理 ── 暑熱と寒冷</h2>
+        <p>牛は暑さに弱い動物です。<strong>THI（温湿度指数）が72を超える</strong>と暑熱ストレスが始まります。日本の夏はTHI 80以上が常態化するため、暑熱対策は必須です。</p>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>THI</th>
+                <th>ストレスレベル</th>
+                <th>牛の反応</th>
+                <th>営業提案のチャンス</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>68-71</td>
+                <td>軽度</td>
+                <td>わずかな呼吸数増加</td>
+                <td>予防的な提案開始</td>
+              </tr>
+              <tr>
+                <td>72-79</td>
+                <td><strong>中度</strong></td>
+                <td>食欲低下、乳量1-2割減</td>
+                <td><strong>Richfat CA / 重曹</strong></td>
+              </tr>
+              <tr>
+                <td>80-89</td>
+                <td><strong>重度</strong></td>
+                <td>著しい食欲低下、立ちっぱなし</td>
+                <td><strong>ストレスマネージャーAST</strong></td>
+              </tr>
+              <tr>
+                <td>90+</td>
+                <td>危険</td>
+                <td>熱射病リスク、死亡例も</td>
+                <td>緊急対応＋環境改善資材</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          一方、寒冷ストレスは<strong>維持エネルギーの増大</strong>として現れます。気温が-5℃を下回ると、体温維持のために通常より<strong>10〜30%多くのエネルギー</strong>が必要に。冬場は「食い込みを維持する」ための粗飼料品質と、エネルギー補給の添加剤が重要です。
+        </p>
+        <div class="summary-box">
+          <h4 style="margin-top:0;">📌 第2章のポイント</h4>
+          <ol>
+            <li><strong>ルーメンが全ての中心</strong>。飼料提案 = ルーメン微生物の管理。</li>
+            <li><strong>成長ステージで必要な飼料が変わる</strong>。哺乳→育成→搾乳→乾乳のサイクルを把握。</li>
+            <li><strong>乳牛と肉牛では設計思想が根本的に異なる</strong>。顧客の牛種を必ず確認。</li>
+            <li><strong>暑熱ストレスは売上に直結</strong>。THIを意識した先回り提案が信頼を勝ち取る。</li>
+          </ol>
+        </div>
+      </div>
+      <div class="section" id="sec-ch2-lactation">
+        <div class="section-hero"><span class="hero-emoji">🤰</span>
+          <h1>牛の基礎知識 ── 泌乳サイクルとエネルギー</h1>
+          <p class="hero-sub">分娩前後のエネルギー変化と、時期別の適切なマネジメント</p>
+        </div>
+        <p>牛の分娩（出産）から次の分娩に向けた乾乳（搾乳を休む期間）までのサイクルにおいて、牛の体の中では劇的なエネルギーの増減が起きています。</p>
+
+        <h2><span class="h2-icon">🔄</span> 時期別の生理状態と管理のポイント</h2>
+        <div class="table-wrapper">
+          <table style="font-size: 0.9em; text-align: left;">
+            <thead>
+              <tr style="background:#2e7d32; color:#fff;">
+                <th>時期（分娩からの日数）</th>
+                <th>牛の体の状態（乳量・DMI・体重等）</th>
+                <th>管理・提案のポイント</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>乾乳期・クロースアップ期</strong><br>(-60日 〜 -21日)</td>
+                <td>胎児の急成長（生時体重の60%がここで成長）により、ルーメンが圧迫され、DMI（食い込み）が低下。しかし栄養要求量は増加する。次回の発情に向けた卵胞の発育も始まる。</td>
+                <td>食えない中でも栄養濃度を増し、適切な栄養を供給する。産後の低カルシウム血症予防のためDCAD（ミネラルバランス）を調整。デンプン給与によるルーメン絨毛の発達も重要。</td>
+              </tr>
+              <tr>
+                <td><strong>泌乳初期</strong><br>(0日 〜 80日)</td>
+                <td>乳量は分娩後4〜8週でピークに達するが、DMIの伸びが追いつかず<strong>「マイナスエネルギーバランス」</strong>になる。<br>体脂肪を削りながら（体重・BCS減少）泌乳するため、過度な体重減少は卵胞の質を悪化させる。</td>
+                <td>粗飼料の食い込み・糞の状態に留意しつつ給与量を上げる。食い込めない中でさらに栄養濃度を上げたい場合、<strong>サプリメント（バイパス脂肪など）</strong>の使用が非常に効果的。</td>
+              </tr>
+              <tr>
+                <td><strong>泌乳中期</strong><br>(80日 〜 140日)</td>
+                <td>DMIがピークを迎え、エネルギーバランスはようやくプラスに転じる。BCS（太り具合）と体重も徐々に回復へ向かう。</td>
+                <td>BCSと乳量を指標に、濃厚飼料の給与量を過剰にならないよう適切に調整する。</td>
+              </tr>
+              <tr>
+                <td><strong>泌乳後期</strong><br>(140日以降 〜 乾乳前)</td>
+                <td>乳量は徐々に低下するが、牛の食欲は高く（DMI 17〜18kg）、ほっておくと必要以上に食べてしまう。</td>
+                <td>DMIは確保した上で、泌乳量に見合うよう栄養濃度を下げないと、過肥（太り過ぎ）になり次回の分娩時に病気のリスクが高まる。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="section" id="sec-ch2-milk">
+        <div class="section-hero"><span class="hero-emoji">🥛</span>
+          <h1>牛の基礎知識 ── 乳成分とその合成メカニズム</h1>
+          <p class="hero-sub">エサがどのようにして牛乳の成分に変わるのか</p>
+        </div>
+        <p>牛乳はおもに水分（約87.6%）と固形分（約12.4%）で構成されます。固形分はさらに「乳脂肪分（3.8%等）」と「無脂乳固形分（SNF：水分と脂肪を抜いたタンパク質等の集まり、8.6%等）」に分かれます。（<span style="font-size:0.85em;">SNFの内訳：乳タンパク約3.1%、乳糖約4.6%、ビタミン/ミネラル約0.9%</span>）</p>
+
+        <h2><span class="h2-icon">🔄</span> エサから乳成分が作られるルート</h2>
+        <div class="table-wrapper">
+          <table style="text-align: left; font-size: 0.9em;">
+            <tr style="background:#1565c0; color:#fff;">
+              <th>作られる乳成分</th>
+              <th>元になるエサ</th>
+              <th>体内での変化・合成プロセス</th>
+            </tr>
+            <tr>
+              <td><strong>乳脂肪</strong></td>
+              <td>繊維・脂肪</td>
+              <td>・脂肪分 → 小腸等で吸収 → 長鎖脂肪酸（C18〜）へ<br>・繊維質 → ルーメン発酵で<strong>酢酸</strong>・<strong>酪酸</strong>が発生 → 肝臓等を経て脂肪酸（C4〜C14）へ<br>これらが乳腺で合わさって乳脂肪になります。（一部は蓄えられた体脂肪からも動員されます）</td>
+            </tr>
+            <tr>
+              <td><strong>乳糖</strong><br>(SNFの一部)</td>
+              <td>でんぷん・糖</td>
+              <td>でんぷんや糖がルーメンで発酵し、<strong>プロピオン酸</strong>が発生 → 肝臓でグルコース（ブドウ糖）に変換され、乳腺で乳糖になり乳量を増やす原動力になります。</td>
+            </tr>
+            <tr>
+              <td><strong>乳タンパク</strong><br>(SNFの一部)</td>
+              <td>タンパク質</td>
+              <td>飼料のタンパク質がルーメンでアンモニアに分解 → <strong>微生物の働きで形を変え、良質なタンパク質（微生物体タンパク）に生まれ変わる</strong> → 小腸でアミノ酸として吸収され、乳タンパクとして合成されます。</td>
+            </tr>
+          </table>
+        </div>
+
+        <h2><span class="h2-icon">📅</span> 乳成分の変動サイクル（季節と分娩後日数）</h2>
+        <p>乳成分は一年中一定ではなく、様々な要因で変動します。営業や提案の際は、時期による「当たり前の変動」を見越すことが重要です。</p>
+        <ul>
+          <li><strong>季節による変化：</strong> 夏場（7〜9月）は暑熱ストレスによる食い込み低下などで乳脂肪、SNF、乳タンパクいずれも低下しやすくなります。逆に冬場（11〜1月）は高まる傾向にあります。</li>
+          <li><strong>分娩後の日数による変化：</strong> 分娩直後高かった乳成分は、<strong>乳量が最も高くなるピークの時期（分娩後50〜100日頃）に反比例するように一番低くなり（底を打ち）</strong>、その後、乳量が減るにつれて徐々に回復（上昇）していくカーブを描きます。</li>
+        </ul>
+      </div>
+      <div class="section" id="sec-ch2-fatcalcium">
+        <div class="section-hero"><span class="hero-emoji">🧴</span>
+          <h1>牛の基礎知識 ── 脂肪酸カルシウムの役割と使い分け</h1>
+          <p class="hero-sub">「なぜ牛に脂肪が必要なのか？」現場の悩みに直結する提案力を身につける</p>
+        </div>
+
+        <h2><span class="h2-icon">⚡</span> なぜ牛に「脂肪」が必要なのか？</h2>
+        <p>高泌乳牛（たくさんミルクを出す牛）は、分娩直後に<strong>食べるエネルギーよりも出すエネルギーのほうが多い「負のエネルギーバランス」</strong>に陥ります。この時期、限られた食い込みの中で効率よくエネルギーを補う手段が「脂肪」です。</p>
+        <ul>
+          <li>脂肪は、炭水化物（穀類など）の<strong>約2.25倍のエネルギー</strong>を持っています。</li>
+          <li>つまり、少量でも効率よくエネルギー不足を防止できるのが最大のメリットです。</li>
+        </ul>
+
+        <h2><span class="h2-icon">🔬</span> 脂肪酸カルシウムの作用メカニズム</h2>
+        <p>普通の油（そのままの油）を牛に与えると、第一胃（ルーメン）の微生物の活動を阻害してしまいます。</p>
+        <div class="summary-box" style="margin: 15px 0;">
+          <h4 style="margin-top:0;">💡 脂肪酸カルシウムはどう違う？</h4>
+          <p>脂肪酸をカルシウムで<strong>コーティング（包み込む）</strong>することで、ルーメンでは微生物に影響を与えずに通過（バイパス）します。</p>
+          <ol>
+            <li><strong>第一胃（ルーメン）</strong>：コーティングされたまま通過。微生物の活動を邪魔しません。</li>
+            <li><strong>第四胃（しゅう胃）</strong>：酸性の環境でカルシウムと脂肪酸が分離されます。</li>
+            <li><strong>小腸</strong>：バラバラになった脂肪酸を効率よく吸収します。</li>
+          </ol>
+          <p style="margin-bottom:0;">→ つまり<strong>「ルーメン微生物を守りながら、効率よく脂肪を届ける仕組み」</strong>です。</p>
+        </div>
+
+        <h2><span class="h2-icon">📋</span> 脂肪酸の3つのタイプと特徴</h2>
+        <p>脂肪酸には大きく3つのタイプがあり、それぞれ牛の体内での役割が異なります。お客様の課題に合った脂肪酸を提案することが重要です。</p>
+        <div class="table-wrapper">
+          <table style="text-align: left; font-size: 0.9em;">
+            <thead>
+              <tr>
+                <th style="width:20%;">タイプ</th>
+                <th style="width:25%;">主な成分</th>
+                <th>牛の体内での主な役割・効果</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>① パーム系</strong><br>（飽和脂肪酸主体）</td>
+                <td>パルミチン酸 (C16:0)<br>ステアリン酸 (C18:0)</td>
+                <td>パルミチン酸は乳脂肪の「直接の材料」になります。<strong>乳脂率アップに直結</strong>します。<br><span style="font-size:0.85em;">（乳脂肪の30〜40%がパルミチン酸。牛に与えたパルミチン酸は小腸で吸収され乳腺で乳脂肪に直接合成されます）</span></td>
+              </tr>
+              <tr>
+                <td><strong>② 不飽和系</strong><br>（大豆・菜種）</td>
+                <td>オレイン酸 (C18:1)<br>リノール酸 (C18:2)</td>
+                <td><strong>BCS維持（体力の回復）</strong>に効果的。オレイン酸は脂肪に回らず体の維持に使われる傾向があり、牛が痩せずに元気を保ちます。<br>リノール酸は子宮の修復や卵胞の回復に関わり、<strong>繁殖改善</strong>にも効果。<br><span style="font-size:0.85em;">（リノール酸 → プロスタグランジンの原料 → 発情・排卵を促す体のスイッチを強化します）</span></td>
+              </tr>
+              <tr>
+                <td><strong>③ 機能性タイプ</strong><br>（オメガ3：魚油・亜麻仁など）</td>
+                <td>α-リノレン酸<br>EPA, DHA<br>（いわゆるオメガ3脂肪酸）</td>
+                <td><strong>牛のコンディションを整える「サプリメント的」な役割</strong>。<br>・炎症疾病・免疫強化：分娩前後のストレスや疾患を抑制し、牛の立ち上がりをスムーズに。<br>・生存率向上：妊娠を維持する力を強め、着床の確率を高める働きが期待されます。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2><span class="h2-icon">⚠️</span> 注意：なぜ不飽和脂肪酸は乳脂率を「上げにくい」のか？</h2>
+        <p>不飽和脂肪酸（特にリノール酸）はルーメン内で「共役リノール酸（CLA）」に変化し、これが乳腺に届くと<strong>「乳脂肪の合成スイッチ」をオフにしてしまう</strong>ことが知られています（MFD：乳脂肪低下症）。</p>
+        <div class="summary-box" style="margin: 15px 0;">
+          <h4 style="margin-top:0;">📌 製品の使い分けの基本的な考え方</h4>
+          <ul style="margin-bottom:0;">
+            <li><strong>乳脂率を上げたい</strong> → パルミチン酸主体の製品を選ぶ</li>
+            <li><strong>繁殖や体力回復を重視</strong> → 不飽和脂肪酸（オレイン酸・リノール酸）主体の製品を選ぶ</li>
+          </ul>
+        </div>
+
+        <h2><span class="h2-icon">☀️</span> 夏場に「綿実」や「脂肪酸カルシウム」が必要な理由</h2>
+        <p>暑い夏場に脂肪製品が特に重要になる理由は、<strong>脂肪の消化は「熱の発生が少ない」</strong>からです。</p>
+        <ul>
+          <li>繊維や糖の消化は体内で多くの熱（ヒートインクリメント）を発生させますが、脂肪は少ない熱で代謝できます。</li>
+          <li>暑熱で食い込みが落ちる夏に、少量で高エネルギーかつ「体を熱くしにくい」脂肪は最適な栄養源です。</li>
+        </ul>
+        <div class="summary-box" style="margin: 15px 0;">
+          <h4 style="margin-top:0;">🔥 暑熱期対策の鉄板</h4>
+          <ol style="margin-bottom:0;">
+            <li><strong>綿実</strong>でルーメンを安定させ、乳脂低下を防ぐ</li>
+            <li><strong>脂肪酸カルシウム</strong>で「食べられない分」のエネルギーを補う</li>
+          </ol>
+        </div>
+
+        <h2><span class="h2-icon">🌿</span> 綿実：一粒で三役こなす天然サプリ</h2>
+        <p>綿実（わたみ）は<strong>脂肪（約20%）・繊維・タンパク質</strong>を同時に含む天然の優秀な飼料素材です。</p>
+        <ul>
+          <li>リノール酸50%前後・パルミチン酸20%前後・オレイン酸15%前後の脂肪を含みます。</li>
+          <li>綿実の繊維はルーメン微生物を安定させ、乳脂・タンパクを維持できます。</li>
+          <li>日本より暑い畜産地帯で古くから利用されてきた、実績あるエネルギー食材です。</li>
+          <li><strong>はんすう（反芻：胃に戻して噛み直す動作）を促進</strong>し、牛の消化活動を活発にする効果もあります。</li>
+        </ul>
+
+        <h2><span class="h2-icon">🎯</span> 農家さんの悩み別：脂肪酸の選び方ガイド</h2>
+        <p>お客様の課題に合わせて、最適な脂肪酸タイプを提案できるようにしましょう。</p>
+        <div class="table-wrapper">
+          <table style="text-align: left; font-size: 0.9em;">
+            <thead>
+              <tr>
+                <th style="width:22%;">農家さんの悩み</th>
+                <th style="width:28%;">推奨する脂肪酸 / 飼料</th>
+                <th>提案のポイント（営業トーク）</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>乳脂率が上がらない</strong></td>
+                <td>飽和脂肪酸（パルミチン酸リッチ）</td>
+                <td>乳脂の材料をダイレクトに補給し、<strong>乳代を最大化</strong>しましょう。</td>
+              </tr>
+              <tr>
+                <td><strong>分娩後に痩せすぎる<br>（BCS低下）</strong></td>
+                <td>オレイン酸系脂肪酸</td>
+                <td>エネルギーを乳だけでなく<strong>「体」に戻し、次産次の健康を守ります</strong>。</td>
+              </tr>
+              <tr>
+                <td><strong>発情が来ない・弱い</strong></td>
+                <td>オレイン酸系＋リノール酸系</td>
+                <td><strong>体力を戻しつつ、卵を作るスイッチを入れましょう</strong>。</td>
+              </tr>
+              <tr>
+                <td><strong>種付けしても着かない<br>（リピート）</strong></td>
+                <td>リノール酸系＋オメガ3系</td>
+                <td>子宮の環境を整え、<strong>受精卵がしっかり着床する力</strong>をサポートします。</td>
+              </tr>
+              <tr>
+                <td><strong>夏場の食い止まり<br>乳量低下</strong></td>
+                <td>綿実＋飽和脂肪酸カルシウム</td>
+                <td>「繊維」と<strong>「熱の出ない油」</strong>でルーメンを安定させます。</td>
+              </tr>
+              <tr>
+                <td><strong>分娩後の病気<br>（乳房炎等）が多い</strong></td>
+                <td>機能性油脂（オメガ3：魚油）</td>
+                <td>体内の<strong>「火事（炎症）」を鎮め</strong>、免疫に取られるエネルギーを節約します。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="section" id="sec-ch2-analysis">
+        <div class="section-hero"><span class="hero-emoji">📊</span>
+          <h1>牛の基礎知識 ── 飼料分析項目の基本</h1>
+          <p class="hero-sub">価格と並んで最も頻繁に交わされる「価値の客観的ものさし」</p>
+        </div>
+        <p>日常の営業活動の中で、飼料の価値を決定する「分析値」は非常に重要です。個々の分析値の意味を正しく理解し、現場での提案や課題解決に有効に活用しましょう。</p>
+        
+        <h2><span class="h2-icon">🏢</span> 分析機関（当社の主な外注先）</h2>
+        <ul>
+          <li><strong>十勝農協連：</strong> 飼料全般の一般分析</li>
+          <li><strong>Dairy One（全酪連）：</strong> 飼料全般の分析。飼料設計ソフト「CNCPS」利用者に求められることが多い</li>
+          <li><strong>食品微生物センター：</strong> 飼料中の細菌の分析</li>
+          <li><strong>日本食品分析センター：</strong> ビタミン、糖類、アミノ酸、カビ毒など特定栄養素項目の分析時に活用</li>
+        </ul>
+
+        <h2><span class="h2-icon">📋</span> 主要分析項目一覧</h2>
+
+        <h3>1. 水分 / 乾物</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>英表記 / 略語</th><th>日本語</th><th>意味と影響</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Moisture</td><td>水分 (%)</td>
+                <td>飼料中の「水」の含量。サイレージの場合、品質が安定するのは60〜70%と言われ、80%を超えると酪酸発酵が起きやすく、養分損失や嗜好性低下の恐れがあります。</td>
+              </tr>
+              <tr>
+                <td>Dry Matter (DM)</td><td>乾物 (%)</td>
+                <td>飼料成分の水分以外の成分の総和。この中にすべての養分が含まれます。飼料計算で特に重要な<strong>乾物摂取量（DMI：Dry Matter Intake）</strong>の基礎となります。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>2. タンパク質</h3>
+        <p>タンパク質は牛の筋肉や乳を作る上で非常に重要です。<br>
+          特に第一胃（ルーメン）で水に溶けるように急速に分解される「溶解性タンパク質（SIP）」が多すぎると、胃の中で大量のアンモニアが発生します。アンモニアは微生物の貴重なエサにもなりますが、余った分は胃壁から血中へ吸収されてしまいます。その結果、<strong>牛乳中尿素窒素（MUN：おしっとして捨てられるはずの処理しきれなかったカス）</strong>が上昇したり、肝臓がアンモニアを無毒化するために無駄なエネルギーを使い、<strong>免疫力や生産性の低下</strong>を招くため注意が必要です。</p>
+        
+        <div class="summary-box" style="margin: 15px 0;">
+          <h4 style="margin-top:0;">📌 参考：チモシー（牧草）の生育期別 主要成分の推移</h4>
+          <table style="width:100%; margin-top:10px; font-size: 0.9em; text-align: center;">
+            <tr style="background:#4a76b8; color:white;">
+              <th style="padding: 5px;">生育期<br><span style="font-size:0.75em; font-weight:normal;">(成長の段階)</span></th>
+              <th style="padding: 5px;">CP<br><span style="font-size:0.75em; font-weight:normal;">(粗タンパク質)</span></th>
+              <th style="padding: 5px;">TDN<br><span style="font-size:0.75em; font-weight:normal;">(総合エネルギー)</span></th>
+              <th style="padding: 5px;">NDF<br><span style="font-size:0.75em; font-weight:normal;">(繊維・ガサ)</span></th>
+            </tr>
+            <tr><td>穂ばらみ期<br><span style="font-size:0.8em; font-weight:normal;">(穂が出る前)</span></td><td>18.3</td><td>71</td><td>56.6</td></tr>
+            <tr><td>出穂始</td><td>12.6</td><td>63</td><td>61.7</td></tr>
+            <tr><td>出穂期<br><span style="font-size:0.8em; font-weight:normal;">(50%以上の穂が出た状態)</span></td><td>10.6</td><td>60</td><td>64.8</td></tr>
+            <tr><td>開花期</td><td>9.5</td><td>55</td><td>70.8</td></tr>
+            <tr><td>結実期</td><td>7.1</td><td>50</td><td>73.8</td></tr>
+          </table>
+          <p style="font-size:0.85em; margin-bottom:0; text-align: left; padding-top: 5px;">※収穫時期が遅れるほどNDF（繊維・ガサ）が高くなり、CPやTDNが漸減します。</p>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>英表記 / 略語</th><th>日本語</th><th>意味と影響</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Crude Protein (CP)</td><td>粗蛋白質 (%)</td>
+                <td>飼料中の窒素含量を6.25倍したもの（蛋白質の平均窒素含量が16%であるため、100/16=6.25）。</td>
+              </tr>
+              <tr>
+                <td>Soluble Intake Protein (SIP)</td><td>溶解性タンパク質 (CP中%)</td>
+                <td>分解性タンパク質の一部で、ルーメン内で急速にアンモニアまで分解されます。SIP割合が高すぎると、ルーメンから吸収され肝臓で尿素になり尿として排出されます。</td>
+              </tr>
+              <tr>
+                <td>degraded Intake Protein (DIP)</td><td>分解性タンパク質 (CP中%)</td>
+                <td>ルーメン内で微生物によってアンモニアにされ、微生物タンパク質（BCP）の生成に利用されます。BCPは牛のアミノ酸の重要な供給源となります。</td>
+              </tr>
+              <tr>
+                <td>Undegraded Intake Protein (UIP)</td><td>非分解性タンパク質 (CP中%)</td>
+                <td>いわゆる<strong>バイパスプロテイン</strong>。ルーメンで分解されずに通過し、主に第四胃や小腸で消化されるため、直接的にアミノ酸として吸収される重要な区分です。</td>
+              </tr>
+              <tr>
+                <td>Bound Protein (BP)</td><td>結合蛋白質 (CP中%)</td>
+                <td>繊維と結合しており、消化管では分解・吸収されずに糞として排出されるタンパク質です。</td>
+              </tr>
+              <tr>
+                <td>Neutral Detergent Insoluble Crude Protein (NDICP)</td><td>中性デタージェント不溶性蛋白 (CP中%)</td>
+                <td>繊維成分と結合しているため消化が難しく、動物の消化管を通過してもほとんどが吸収されずに排出されます。飼料中のタンパク質の利用効率を低下させます。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>3. エネルギー</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>英表記 / 略語</th><th>日本語</th><th>意味と影響</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Total Digestible Nutrients (TDN)</td><td>可消化養分総量 (%)</td>
+                <td>飼料のエネルギー含量を示します。（粗蛋白質、粗脂肪、粗繊維、可溶無窒素物の消化率から算出）</td>
+              </tr>
+              <tr>
+                <td>Net Energy for Lactation (NEl)</td><td>正味エネルギー産乳 (Mcal/kg)</td>
+                <td>乳牛の生産に必要なエネルギーを評価する指標。飼料中のエネルギーがどれだけ効率的に「乳生産」に利用されるかを示します。</td>
+              </tr>
+              <tr>
+                <td>Net Energy for Maintenance (NEm)</td><td>正味エネルギー維持 (Mcal/kg)</td>
+                <td>絶食安静時に必要とする基礎代謝（呼吸、循環、体温維持などの基本的な生理機能）エネルギーを評価する指標。</td>
+              </tr>
+              <tr>
+                <td>Net Energy for Gain (NEg)</td><td>正味エネルギー増体 (Mcal/kg)</td>
+                <td>「成長や体重増加」に使われるエネルギーを評価する指標。NEgが高い飼料は、体重増加や肉質の向上に寄与します。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>4. 炭水化物</h3>
+        <p>炭水化物は主要なエネルギー源であり、「中性デタージェント繊維（NDF）」と「非繊維性炭水化物（NFC）」に大別されます。<br>
+          NDFは<strong>「植物の骨格となる硬いガサ」</strong>に相当し、第一胃の発酵安定性に必要です。<strong>イネ科牧草では60%程度が良好な目安</strong>とされますが、高すぎると消化が悪くすぐにお腹いっぱいになり、食い込み（乾物摂取量：DMI）が落ちてしまいます。<br>
+          一方、NFCは<strong>「細胞の中にある糖分やデンプン（中身）」</strong>であり、消化スピードが非常に速いのが特徴です。そのため、<strong>SIP（すぐに分解されるタンパク質）が多くアンモニアが発生しやすい牧草を与える際、NFC（すぐにエネルギーになる糖やデンプン）を一緒にバランス良く組み合わせて与える</strong>ことで、微生物がアンモニアとエネルギーを同時に利用できるようになり、牛の肝機能障害やケトーシスを効果的に防ぐことができます。<br>
+          <span style="font-size:0.85em;">（💡 消化のしやすさ： 糖 ＞ でんぷん ＞ ペクチン ＞ ヘミセルロース ＞ セルロース ＞ リグニン(木のように硬くほぼ消化しない)）</span>
+        </p>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>英表記 / 略語</th><th>日本語</th><th>意味と影響</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Acid Detergent Fiber (ADF)</td><td>酸性デタージェント繊維 (%)</td>
+                <td>セルロースおよびリグニンからなり、飼料の「消化性」に大きく関係してきます。</td>
+              </tr>
+              <tr>
+                <td>Organic Cell Wall (OCW)</td><td>総繊維 (%)</td>
+                <td>NDF（中性デタージェント繊維）と同様に繊維を分析する方法。セルロース、ヘミセルロース、リグニンからなり、飼料の「乾物摂取量（DMI）」に大きく関係します。</td>
+              </tr>
+              <tr>
+                <td>Organic Cell Contents (OCC)</td><td>細胞内容物 (%)</td>
+                <td>細胞内容物質（糖、澱粉、有機酸、蛋白質、脂肪など）。</td>
+              </tr>
+              <tr>
+                <td>Organic a fraction in OCW (Oa)</td><td>高消化性繊維 (%)</td>
+                <td>OCW中で非常に消化率の高い区分（セルラーゼ可溶）。Oa含量が高い飼料を給与することでDMIが向上します。また、粗飼料が早刈〜適期刈であることを示す数値です。</td>
+              </tr>
+              <tr>
+                <td>Organic b fraction in OCW (Ob)</td><td>低消化性繊維 (%)</td>
+                <td>OCW中で消化率の低い区分（セルラーゼ不溶）。</td>
+              </tr>
+              <tr>
+                <td>Non Fibrous Carbohydrate (NFC)</td><td>非繊維性炭水化物 (%)</td>
+                <td>細胞内容物（OCC）に含まれる炭水化物で、糖、澱粉、ペクチンを含みます。全炭水化物からNDFを除いたもの。同様のものにNSC（非構造性炭水化物）等があります。</td>
+              </tr>
+              <tr>
+                <td>Water Soluble Carbohydrate (WSC)</td><td>可溶性炭水化物 (%)</td>
+                <td>単糖類、二糖類、オリゴ糖、フルクタンなどを含み、動物にとって消化しやすいエネルギー源となります。動物の健康と生産性の改善が期待されます。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>5. 脂肪・粗灰分（ミネラル）</h3>
+        <p>粗灰分は飼料を焼いて残った無機物です。<strong>粗飼料分析時に粗灰分が10%を大きく超える場合は、土砂の混入を疑う</strong>必要があります。</p>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>英表記 / 略語</th><th>日本語</th><th>意味と影響</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Crude Fat (Ether Extract) (EE)</td><td>粗脂肪 (%)</td>
+                <td>中性脂肪の他に、リン脂質、遊離脂肪色素なども含んでいます。栄養成分の中でエネルギーが高い分画です。</td>
+              </tr>
+              <tr>
+                <td>Calcium (Ca) / Phosphorus (P) <br>Magnesium (Mg) / Potassium (K)</td><td>カルシウム / リン<br>マグネシウム / カリウム (%)</td>
+                <td>主要ミネラル。酵素の活性化、筋肉の収縮、神経伝達、エネルギー代謝（ATP）、浸透圧調整など様々な役割を果たします。</td>
+              </tr>
+              <tr>
+                <td>K/(Ca + Mg)</td><td>当量比</td>
+                <td>カリウム、カルシウム、マグネシウムのバランスを示す指標。適正値は2.2以下とされ、これを超えるとカリウムが過剰、もしくはカルシウムとマグネシウムが不足していることを指します。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="summary-box" style="margin-top: 15px;">
+          <h4 style="margin-top:0;">⚠️ 参考：牧草・飼料作物の硝酸態窒素（NO3-N）含量と家畜中毒</h4>
+          <p style="font-size:0.9em; margin-bottom: 5px;">硝酸態窒素は多量に摂取すると中毒を起こします。乾物中の含量に基づく危険度の目安（※0.1% = 1000ppm）</p>
+          <table style="width:100%; font-size: 0.85em; text-align: left; border-collapse: collapse;">
+            <tr style="background:#ddd;">
+              <th style="padding: 8px; border-bottom: 1px solid #ccc; color:#111 !important;">NO3-N含量 (乾物中%)</th>
+              <th style="padding: 8px; border-bottom: 1px solid #ccc; color:#111 !important;">危険の有無・給与基準</th>
+            </tr>
+            <tr style="background:#eafaf1;">
+              <td style="padding: 6px 8px; border-bottom: 1px solid #ccc; color:#111 !important;">〜0.10 未満</td>
+              <td style="padding: 6px 8px; border-bottom: 1px solid #ccc; color:#111 !important;">安全</td>
+            </tr>
+            <tr style="background:#e6f9ff;">
+              <td style="padding: 6px 8px; border-bottom: 1px solid #ccc; color:#111 !important;">0.10 〜 0.15</td>
+              <td style="padding: 6px 8px; border-bottom: 1px solid #ccc; color:#111 !important;">妊娠家畜では総飼料の50%給与では安全</td>
+            </tr>
+            <tr style="background:#fffbcc;">
+              <td style="padding: 6px 8px; border-bottom: 1px solid #ccc; color:#111 !important;">0.15 〜 0.20</td>
+              <td style="padding: 6px 8px; border-bottom: 1px solid #ccc; color:#111 !important;">乾物量では総飼料の50%までは安全</td>
+            </tr>
+            <tr style="background:#ffeea8;">
+              <td style="padding: 6px 8px; border-bottom: 1px solid #ccc; color:#111 !important;">0.20 〜 0.35</td>
+              <td style="padding: 6px 8px; border-bottom: 1px solid #ccc; color:#111 !important;">飼料の35〜40%に制限。<strong style="color:#c62828 !important;">妊娠家畜には給与しない</strong></td>
+            </tr>
+            <tr style="background:#ffbda8;">
+              <td style="padding: 6px 8px; border-bottom: 1px solid #ccc; color:#111 !important;">0.35 〜 0.40</td>
+              <td style="padding: 6px 8px; border-bottom: 1px solid #ccc; color:#111 !important;">飼料の25%以下に制限。<strong style="color:#c62828 !important;">妊娠家畜には給与しない</strong></td>
+            </tr>
+            <tr style="background:#e53935;">
+              <td style="padding: 6px 8px; color:#fff !important;">0.45 以上</td>
+              <td style="padding: 6px 8px; color:#fff !important;">中毒の恐れがあるため給与しないほうがよい</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div class="section" id="sec-ch2-vitmin">
+        <div class="section-hero"><span class="hero-emoji">💊</span>
+          <h1>牛の基礎知識 ── ビタミン・ミネラルの役割</h1>
+          <p class="hero-sub">欠乏が引き起こす甚大なロスを防ぐ必須栄養素</p>
+        </div>
+        <h2><span class="h2-icon">🌟</span> ビタミンの乳牛体内での役割の概略</h2>
+        <p>ビタミン類は微量ながら、牛の生産性や健康維持に直結します。大きく「脂溶性」と「水溶性（主にB群）」に分かれます。</p>
+        
+        <h3>脂溶性ビタミン（A・D・E・K）</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>ビタミンの名前</th>
+                <th>役割・効果</th>
+                <th>欠乏症</th>
+                <th>主な供給源</th>
+                <th>要求量（目安）</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>ビタミンA</strong><br>（レチノール）</td>
+                <td>成長、視覚、免疫機能の維持、繁殖機能の向上。<br><span style="font-size:0.85em;color:#666;">（夜盲症の予防、繁殖障害の改善、免疫機能の強化）</span></td>
+                <td>夜盲症、繁殖障害、免疫低下</td>
+                <td>生草、ニンジン、乳脂、黄色トウモロコシ</td>
+                <td>93,832.0 IU/日</td>
+              </tr>
+              <tr>
+                <td><strong>ビタミンD</strong><br>（カルシフェロール）</td>
+                <td>カルシウムの吸収促進、骨や歯の発育促進。<br><span style="font-size:0.85em;color:#666;">（くる病の予防、骨軟化症の改善、カルシウム代謝の正常化）</span></td>
+                <td>くる病、骨軟化症</td>
+                <td>天日乾燥した粗飼料、日光による体内合成</td>
+                <td>20,400 IU/日</td>
+              </tr>
+              <tr>
+                <td><strong>ビタミンE</strong><br>（トコフェロール）</td>
+                <td>抗酸化作用、細胞膜の保護、繁殖機能の維持。<br><span style="font-size:0.85em;color:#666;">（筋萎縮の予防、繁殖障害の改善、免疫機能の強化）</span></td>
+                <td>筋萎縮、繁殖障害</td>
+                <td>生草、乾草、植物油</td>
+                <td>3,000 IU/頭日 (分娩前)<br>1,000 IU/頭日 (分娩後)</td>
+              </tr>
+              <tr>
+                <td><strong>ビタミンK</strong><br>（メナジオン）</td>
+                <td>血液凝固作用</td>
+                <td>血液凝固不全</td>
+                <td>生草、魚粉</td>
+                <td>―</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>水溶性ビタミン（B群）</h3>
+        <p>B群はエネルギー代謝に不可欠です。基本的に反芻動物（口に戻して噛み直す牛などの動物）は<strong>ルーメン微生物によって体内合成（分解・生成）される</strong>ため、通常は外部から補給しなくても不足しませんが、微生物バランスが崩れると欠乏します。（※いずれも主な供給源は酵母、穀類、牧草などで、ルーメン微生物の活動によるものです）</p>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>ビタミン</th>
+                <th>役割</th>
+                <th>欠乏症</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>B1</strong> (チアミン)</td>
+                <td>エネルギー代謝、神経機能の維持</td>
+                <td>食欲不振、成長遅延、神経障害</td>
+              </tr>
+              <tr>
+                <td><strong>B2</strong> (リボフラビン)</td>
+                <td>酵素の補助、エネルギー代謝</td>
+                <td>皮膚炎、口内炎、成長遅延</td>
+              </tr>
+              <tr>
+                <td><strong>B3</strong> (ナイアシン)</td>
+                <td>エネルギー代謝、皮膚と消化器官の健康維持</td>
+                <td>皮膚炎、消化不良、成長遅延</td>
+              </tr>
+              <tr>
+                <td><strong>B5</strong> (パントテン酸)</td>
+                <td>エネルギー代謝、脂肪酸合成</td>
+                <td>成長遅延、皮膚炎、消化不良</td>
+              </tr>
+              <tr>
+                <td><strong>B6</strong> (ピリドキシン)</td>
+                <td>アミノ酸代謝、神経機能の維持</td>
+                <td>成長遅延、皮膚炎、神経障害</td>
+              </tr>
+              <tr>
+                <td><strong>B7</strong> (ビオチン)</td>
+                <td>エネルギー代謝、皮膚と毛の健康維持</td>
+                <td>皮膚炎、毛の脱落、成長遅延</td>
+              </tr>
+              <tr>
+                <td><strong>B9</strong> (葉酸)</td>
+                <td>DNA合成、細胞分裂</td>
+                <td>成長遅延、貧血、免疫低下</td>
+              </tr>
+              <tr>
+                <td><strong>B12</strong> (コバラミン)</td>
+                <td>赤血球の生成、神経機能の維持</td>
+                <td>貧血、成長遅延、神経障害</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h2><span class="h2-icon">🪨</span> マクロミネラルの役割と特徴</h2>
+        <p>乳牛は大量の牛乳を生産するため、骨格の維持や体液バランスに必要な「多量ミネラル」を多く必要とします。</p>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>ミネラル</th>
+                <th>役割・ポイント</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>カルシウム (Ca)</strong></td>
+                <td><strong>骨の形成、筋肉の収縮、神経伝達、血液凝固。</strong><br>泌乳期や初乳分泌時に要求量が跳ね上がります。不足すると分娩前後に「乳熱（低カルシウム血症）」を引き起こし、重篤化すると起立不能になります。</td>
+              </tr>
+              <tr>
+                <td><strong>リン (P)</strong></td>
+                <td><strong>エネルギー代謝(ATP)、細胞膜・DNAの構成、骨の形成。</strong><br>健康維持に不可欠ですが、過剰給与すると糞尿として排出されて環境汚染の原因になるため、適切な管理が求められます。</td>
+              </tr>
+              <tr>
+                <td><strong>マグネシウム (Mg)</strong></td>
+                <td><strong>筋肉の収縮、神経伝達、酵素の活性化、ルーメン発酵の補助。</strong><br>不足すると「グラス（草地）テタニー」と呼ばれる低マグネシウム血症になり、筋肉の痙攣（けいれん）から起立不能などを引き起こします。</td>
+              </tr>
+              <tr>
+                <td><strong>カリウム (K)</strong></td>
+                <td><strong>細胞内の浸透圧調整、飲水量の増加、神経伝達。</strong><br>飲水量を増やして乳量を上げる効果がありますが、粗飼料から過剰摂取すると、分娩前のカルシウム吸収を阻害し乳熱の原因（DCADバランスの崩れ）になります。</td>
+              </tr>
+              <tr>
+                <td><strong>ナトリウム (Na)</strong></td>
+                <td><strong>体液のバランス維持、神経伝達、飲水量の調整。</strong><br>乳牛の水分バランスを保ち、栄養素の輸送をスムーズにします。</td>
+              </tr>
+              <tr>
+                <td><strong>塩素 (Cl)</strong></td>
+                <td><strong>胃酸（塩酸）の主成分、体液バランスや電解質の調整。</strong><br>飼料を効率的に消化し、栄養を吸収するために重要です。</td>
+              </tr>
+              <tr>
+                <td><strong>硫黄 (S)</strong></td>
+                <td><strong>含硫アミノ酸（メチオニン・システイン等）やビタミンの構成要素。</strong><br>ルーメン細菌が非タンパク質窒素から細菌タンパク質（バイオマス）を合成する際や、ビタミンB1・B7を合成する際に不可欠な材料です。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2><span class="h2-icon">🔬</span> 微量ミネラルの役割と特徴</h2>
+        <p>必要量はごくわずかですが、免疫、蹄（ひづめ）の健康、繁殖機能などに絶大な影響を与えます。</p>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>ミネラル</th>
+                <th>役割・ポイント</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>亜鉛 (Zn)</strong></td>
+                <td><strong>蹄の角質の合成（ケラチン）、細胞修復、免疫・インスリン機能。</strong><br>上皮細胞や結合組織の健康に直結し、蹄病予防の要です。ダメージから細胞膜を保護する強力な抗酸化作用（スーパーオキシドジスムターゼ等）もあります。</td>
+              </tr>
+              <tr>
+                <td><strong>銅 (Cu)</strong></td>
+                <td><strong>靭帯・腱・軟骨など結合組織の強度維持、メラニン色素の合成。</strong><br>コラーゲンやケラチンを強固に結びつける酵素の働きを助け、蹄が完全に角質化する際の強度に多大な影響を及ぼします。</td>
+              </tr>
+              <tr>
+                <td><strong>マンガン (Mn)</strong></td>
+                <td><strong>軟骨組織の形成（コンドロイチン硫酸の合成）、骨密度の向上。</strong><br>蹄壁そのものよりも、肢（あし）の内部結合組織や関節の健康状態を高めるために重要です。</td>
+              </tr>
+              <tr>
+                <td><strong>セレン (Se)</strong></td>
+                <td><strong>強力な抗酸化作用（グルタチオンペルオキシダーゼ）、免疫力維持。</strong><br>不足すると白筋症などを起こしますが、一方で過度な摂取は蹄の角質組織を逆に弱体化させるリスクがあります。</td>
+              </tr>
+              <tr>
+                <td><strong>コバルト (Co)</strong></td>
+                <td><strong>ルーメン微生物によるビタミンB12の生成に不可欠。</strong><br>不足すると効率的な繊維消化やプロピオン酸の産生が低下し、エネルギー代謝が阻害されることで成長不良や貧血を引き起こします。</td>
+              </tr>
+              <tr>
+                <td><strong>ヨウ素 (I)</strong></td>
+                <td><strong>甲状腺ホルモンの合成、発情周期の正常化。</strong><br>エネルギー代謝率の調節を担い、白血球の機能向上による免疫維持、エストロゲン分泌調節による繁殖機能の向上に必須です。</td>
+              </tr>
+              <tr>
+                <td><strong>鉄 (Fe)</strong></td>
+                <td><strong>酸素の運搬（ヘモグロビン構成要素）、血液の健康維持。</strong><br>酵素（カタラーゼ等）の構成要素としても働き、免疫細胞の酸化ストレスを軽減する働きがあります。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="section" id="sec-ch3">
+        <div class="section-hero"><span class="hero-emoji">🔍</span>
+          <h1>第3章　逆引きインデックス</h1>
+          <p class="hero-sub">顧客の「課題」「牛の成長ステージ」「季節」から、最適な商品を見つける</p>
+        </div>
+        <h2><span class="h2-icon">🎯</span> 課題別クイックガイド</h2>
+        <p>酪農・畜産の現場でよくある相談内容から、提案すべき商品カテゴリをガイドします。</p>
+        <div class="accordion">
+          <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(this)"><span>🥛 ①「乳量・乳質を上げたい」</span><span
+                class="accordion-arrow">▼</span></div>
+            <div class="accordion-body">
+              <p class="rc-scene" style="margin-top:8px;">
+                顧客からの声：<strong>「最近、乳脂率が落ちてきてね。バルクの成績気になってるんだよ。もっと搾りたいんだけど何かいい手ないかな？」（A酪農牧場・搾乳牛150頭 / 採用：アルファルファ、Richfat
+                  CA）</strong></p>
+              <div class="table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>提案カテゴリ</th>
+                      <th>代表商品</th>
+                      <th>ロジック</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>牧草</td>
+                      <td><a href="#" class="tree-link"
+                          onclick="navigateTo('ch4-hay');event.stopPropagation();">アルファルファヘイ</a></td>
+                      <td>高タンパク・高Ca で乳量の基盤を作る（※詳細は<a href="#" class="tree-link"
+                          onclick="navigateTo('appendix');event.stopPropagation();">用語集 <span>CP</span></a>参照）</td>
+                    </tr>
+                    <tr>
+                      <td>添加剤</td>
+                      <td><a href="#" class="tree-link" onclick="navigateTo('ch4-byp');event.stopPropagation();">Richfat
+                          CA / Rumifat R100</a></td>
+                      <td>バイパス脂肪→エネルギー密度UP→乳脂率UP</td>
+                    </tr>
+                    <tr>
+                      <td>自社PX</td>
+                      <td><a href="#" class="tree-link"
+                          onclick="navigateTo('ch4-px');event.stopPropagation();">BFプレミアム搾乳用VIT</a></td>
+                      <td>搾乳期最適化ビタミン・ミネラル</td>
+                    </tr>
+                    <tr>
+                      <td>混合飼料</td>
+                      <td>VM MIX</td>
+                      <td>ビタミン・ミネラルの網羅的補給</td>
+                    </tr>
+                    <tr>
+                      <td>副産物</td>
+                      <td>ビートパルプ / 綿実</td>
+                      <td>エネルギー＋繊維の同時補給</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="success-case"> <strong>🏆 成功事例：A牧場様</strong><br>
+                <p style="font-size: 0.8rem; margin-bottom: 5px;">Richfat CAとアルファルファの組み合わせ提案で、1ヶ月後に乳脂率が0.2%改善。「バイパス脂肪（<a
+                    href="#" class="tree-link"
+                    onclick="navigateTo('appendix');event.stopPropagation();">用語集参照</a>）」で的確にエネルギー補填できたことが勝因。</p> <a
+                  href="#" class="log-link">📄 田中 営業日報（25/11/12）</a> <a href="#" class="log-link">🏢 顧客カルテ（A牧場）</a>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(this)"><span>🍼 ②「仔牛を元気に育てたい」</span><span
+                class="accordion-arrow">▼</span></div>
+            <div class="accordion-body">
+              <p class="rc-scene" style="margin-top:8px;">「仔牛の下痢が多い」「発育ムラがある」と言われた時</p>
+              <div class="table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>提案カテゴリ</th>
+                      <th>代表商品</th>
+                      <th>ロジック</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>代用乳</td>
+                      <td>スタートトゥフィニッシュ</td>
+                      <td>哺乳〜離乳までオールインワン栄養</td>
+                    </tr>
+                    <tr>
+                      <td>自社PX</td>
+                      <td>万田酵素カーフバランス</td>
+                      <td>腸内環境改善・免疫力UP</td>
+                    </tr>
+                    <tr>
+                      <td>配合飼料</td>
+                      <td>パワーカーフMO</td>
+                      <td>育成期スターターフィード</td>
+                    </tr>
+                    <tr>
+                      <td>混合飼料</td>
+                      <td>カーフガードEX</td>
+                      <td>仔牛専用の健康サポート</td>
+                    </tr>
+                    <tr>
+                      <td>資材</td>
+                      <td>POEシート（仔牛のベッド）</td>
+                      <td>衛生環境改善→疾病リスク低減</td>
+                    </tr>
+                    <tr>
+                      <td>IoT機器</td>
+                      <td><a href="#" class="tree-link"
+                          onclick="navigateTo('ch4-eqp');event.stopPropagation();">@mowment（アットモーメント）</a></td>
+                      <td>活動量低下から疾病（下痢等）の兆候を早期発見</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="success-case"> <strong>🏆 成功事例：B牧場様（@mowment導入）</strong><br>
+                <p style="font-size: 0.8rem; margin-bottom: 5px;">
+                  「@mowment」導入により、スタッフが目視で異変に気づく約2日前に活動量データから疾病兆候（アラート）を検知。早期治療介入により重症化を防ぎ、仔牛の回復率が向上しただけでなく、治療にかかるコストと期間の削減に成功。
+                </p> <a href="#" class="log-link">📄 高橋 営業日報（25/11/20）</a>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(this)"><span>🌡️ ③「暑熱ストレスに対処したい」</span><span
+                class="accordion-arrow">▼</span></div>
+            <div class="accordion-body">
+              <p class="rc-scene" style="margin-top:8px;">
+                顧客からの声：<strong>「最近急に暑くなって、エサの食い込みが一気に落ちたよ。受胎率も下がってるし…」（C農場・繁殖和牛250頭規模 / 採用：ストレスマネージャーAST）</strong></p>
+              <div class="table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>提案カテゴリ</th>
+                      <th>代表商品</th>
+                      <th>ロジック</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>添加剤</td>
+                      <td>重曹 / 酸化Mg</td>
+                      <td>ルーメンpH改善、<a href="#" class="tree-link"
+                          onclick="navigateTo('appendix');event.stopPropagation();">アシドーシス</a>予防</td>
+                    </tr>
+                    <tr>
+                      <td>添加剤</td>
+                      <td><a href="#" class="tree-link" onclick="navigateTo('ch4-byp');event.stopPropagation();">Richfat
+                          CA</a></td>
+                      <td>少量高エネ→発酵熱を抑制</td>
+                    </tr>
+                    <tr>
+                      <td>混合飼料</td>
+                      <td><a href="#" class="tree-link"
+                          onclick="navigateTo('ch4-px');event.stopPropagation();">ストレスマネージャーAST</a></td>
+                      <td>暑熱ストレス専用設計</td>
+                    </tr>
+                    <tr>
+                      <td>自社PX</td>
+                      <td>レバチャージ</td>
+                      <td>肝機能サポートで体力維持</td>
+                    </tr>
+                    <tr>
+                      <td>牧草</td>
+                      <td>チモシーヘイ</td>
+                      <td>消化性の良い繊維源で食い込み維持</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="success-case"> <strong>🏆 成功事例：C農場様</strong><br>
+                <p style="font-size: 0.8rem; margin-bottom: 5px;">
+                  梅雨明けに「ストレスマネージャーAST」を一斉投与。ルーメン環境の急変を防ぎ、THI80超えの猛暑月も採食量をキープ。秋の繁殖成績低下を最小限にとどめた。</p> <a href="#"
+                  class="log-link">📄 鈴木 営業日報（25/08/05）</a>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(this)"><span>🦶 ④「蹄・脚の健康を守りたい」</span><span
+                class="accordion-arrow">▼</span></div>
+            <div class="accordion-body">
+              <p class="rc-scene" style="margin-top:8px;">「蹄病が増えた」「跛行する牛が出た」</p>
+              <div class="table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>提案カテゴリ</th>
+                      <th>代表商品</th>
+                      <th>ロジック</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>混合飼料</td>
+                      <td>フットプロテクト</td>
+                      <td>蹄の健康に特化した栄養設計</td>
+                    </tr>
+                    <tr>
+                      <td>添加剤</td>
+                      <td>天然石膏粉末 / ゼオライト</td>
+                      <td>ミネラル補給で蹄質改善</td>
+                    </tr>
+                    <tr>
+                      <td>自社PX</td>
+                      <td>サルバスター成牛用</td>
+                      <td>ビタミン・亜鉛で蹄の成長促進</td>
+                    </tr>
+                    <tr>
+                      <td>資材</td>
+                      <td>キャトルフレックスマット</td>
+                      <td>牛床環境改善→蹄への負担軽減</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(this)"><span>🐄 ⑤「乾乳期〜分娩前後の管理強化」</span><span
+                class="accordion-arrow">▼</span></div>
+            <div class="accordion-body">
+              <p class="rc-scene" style="margin-top:8px;">「分娩事故が多い」「周産期病が心配」</p>
+              <div class="table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>提案カテゴリ</th>
+                      <th>代表商品</th>
+                      <th>ロジック</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>自社PX</td>
+                      <td>ビッグF乾乳用VIT</td>
+                      <td>乾乳期専用ビタミン設計</td>
+                    </tr>
+                    <tr>
+                      <td>添加剤</td>
+                      <td>プロピオン酸Ca（液状/粉剤）</td>
+                      <td>ケトーシス予防、エネルギー補給</td>
+                    </tr>
+                    <tr>
+                      <td>自社PX</td>
+                      <td>グルトリス</td>
+                      <td>分娩前後のグルコース・電解質管理</td>
+                    </tr>
+                    <tr>
+                      <td>牧草</td>
+                      <td>チモシーヘイ / ストロー類</td>
+                      <td>低Ca粗飼料で乳熱予防</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(this)"><span>💰 ⑥「飼料コストを最適化したい」</span><span
+                class="accordion-arrow">▼</span></div>
+            <div class="accordion-body">
+              <p class="rc-scene" style="margin-top:8px;">「配合飼料の値上がりがキツい」「自家配に切り替えたい」</p>
+              <div class="table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>提案カテゴリ</th>
+                      <th>代表商品</th>
+                      <th>ロジック</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>副産物</td>
+                      <td>ビール粕 / 茶飼料 / おから</td>
+                      <td>低コスト代替エネルギー源</td>
+                    </tr>
+                    <tr>
+                      <td>単体飼料</td>
+                      <td>燕麦TRO・DRO</td>
+                      <td>エネルギー＋繊維のコスパ飼料</td>
+                    </tr>
+                    <tr>
+                      <td>牧草</td>
+                      <td>ストロー類</td>
+                      <td>牧草より安価な繊維源</td>
+                    </tr>
+                    <tr>
+                      <td>配合飼料</td>
+                      <td>CDSベースミックス</td>
+                      <td>自家配合のベースとして柔軟に使える</td>
+                    </tr>
+                    <tr>
+                      <td>IoT</td>
+                      <td>@mowment</td>
+                      <td>行動データで無駄な飼料を削減</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <h2><span class="h2-icon">📈</span> ステージ別ガイド</h2>
+        <p>牛の成長段階ごとに「まず揃えるべき商品群」を整理しています。</p>
+        <div class="accordion">
+          <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(this)"><span>🍼 哺乳期（0〜2ヶ月）</span><span
+                class="accordion-arrow">▼</span></div>
+            <div class="accordion-body">
+              <div class="table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>必須カテゴリ</th>
+                      <th>代表商品</th>
+                      <th>用途</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>代用乳</strong></td>
+                      <td>スタートトゥフィニッシュ</td>
+                      <td>母乳代替・栄養基盤</td>
+                    </tr>
+                    <tr>
+                      <td>配合飼料</td>
+                      <td>パワーカーフMO</td>
+                      <td>ルーメン発達促進スターター</td>
+                    </tr>
+                    <tr>
+                      <td>自社PX</td>
+                      <td>万田酵素カーフバランス</td>
+                      <td>腸内環境改善</td>
+                    </tr>
+                    <tr>
+                      <td>資材</td>
+                      <td>POEシート</td>
+                      <td>衛生的な飼養環境確保</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(this)"><span>🌱 育成期（2〜15ヶ月）</span><span
+                class="accordion-arrow">▼</span></div>
+            <div class="accordion-body">
+              <div class="table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>必須カテゴリ</th>
+                      <th>代表商品</th>
+                      <th>用途</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>牧草</strong></td>
+                      <td>チモシーヘイ</td>
+                      <td>ルーメン発達の鍵となる粗飼料</td>
+                    </tr>
+                    <tr>
+                      <td>自社PX</td>
+                      <td>サルバスターP育成用VIT</td>
+                      <td>成長期に必要なビタミン・ミネラル</td>
+                    </tr>
+                    <tr>
+                      <td>配合飼料</td>
+                      <td>GYU LABシリーズ</td>
+                      <td>育成期専用配合</td>
+                    </tr>
+                    <tr>
+                      <td>混合飼料</td>
+                      <td>ビタミンE100</td>
+                      <td>免疫機能サポート</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(this)"><span>🥛 搾乳期</span><span
+                class="accordion-arrow">▼</span></div>
+            <div class="accordion-body">
+              <div class="table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>必須カテゴリ</th>
+                      <th>代表商品</th>
+                      <th>用途</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>牧草</strong></td>
+                      <td>アルファルファヘイ</td>
+                      <td>高CP・高Ca でタンパク基盤</td>
+                    </tr>
+                    <tr>
+                      <td>添加剤</td>
+                      <td>Richfat CA / Rumifat R100</td>
+                      <td>バイパス脂肪でエネルギー強化</td>
+                    </tr>
+                    <tr>
+                      <td>自社PX</td>
+                      <td>BFプレミアム搾乳用VIT</td>
+                      <td>搾乳期最適化ビタミン</td>
+                    </tr>
+                    <tr>
+                      <td>副産物</td>
+                      <td>ビートパルプ / グルテンフィード</td>
+                      <td>エネルギー＋繊維補給</td>
+                    </tr>
+                    <tr>
+                      <td>混合飼料</td>
+                      <td>VM MIX</td>
+                      <td>総合ミネラル・ビタミン</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(this)"><span>💤 乾乳期</span><span
+                class="accordion-arrow">▼</span></div>
+            <div class="accordion-body">
+              <div class="table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>必須カテゴリ</th>
+                      <th>代表商品</th>
+                      <th>用途</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>牧草</strong></td>
+                      <td>チモシーヘイ / ストロー</td>
+                      <td>低Caで乳熱予防</td>
+                    </tr>
+                    <tr>
+                      <td>自社PX</td>
+                      <td>ビッグF乾乳用VIT</td>
+                      <td>乾乳専用ビタミン</td>
+                    </tr>
+                    <tr>
+                      <td>添加剤</td>
+                      <td>プロピオン酸Ca</td>
+                      <td>ケトーシス予防</td>
+                    </tr>
+                    <tr>
+                      <td>自社PX</td>
+                      <td>グルトリス</td>
+                      <td>分娩直後のリカバリー</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <h2><span class="h2-icon">🗓️</span> 季節別ガイド</h2>
+        <p>季節ごとの「先回り提案」は、営業の腕の見せどころ。顧客が困る前に提案することで信頼を勝ち取れます。</p>
+        <div class="accordion">
+          <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(this)"><span>🌸 春（3〜5月）── 放牧開始・繁殖準備</span><span
+                class="accordion-arrow">▼</span></div>
+            <div class="accordion-body">
+              <div class="table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>テーマ</th>
+                      <th>提案商品</th>
+                      <th>ポイント</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>放牧開始</td>
+                      <td>牧柵資材（センフレックス等）</td>
+                      <td>放牧シーズンの準備資材</td>
+                    </tr>
+                    <tr>
+                      <td>青草への移行</td>
+                      <td>重曹 / 酸化Mg</td>
+                      <td>急激な青草摂取によるアシドーシス予防</td>
+                    </tr>
+                    <tr>
+                      <td>繁殖準備</td>
+                      <td>VM MIX / サルバスター</td>
+                      <td>ミネラルバランスで受胎率向上</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(this)"><span>☀️ 夏（6〜9月）── 暑熱対策の最重要シーズン</span><span
+                class="accordion-arrow">▼</span></div>
+            <div class="accordion-body">
+              <div class="table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>テーマ</th>
+                      <th>提案商品</th>
+                      <th>ポイント</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>食欲低下対策</td>
+                      <td>Richfat CA</td>
+                      <td>少量高エネルギーで熱負荷軽減</td>
+                    </tr>
+                    <tr>
+                      <td>ルーメン安定</td>
+                      <td>重曹 / 酸化Mg</td>
+                      <td>暑熱によるpH低下を緩衝</td>
+                    </tr>
+                    <tr>
+                      <td>総合対策</td>
+                      <td>ストレスマネージャーAST</td>
+                      <td>暑熱専用サプリメント</td>
+                    </tr>
+                    <tr>
+                      <td>肝機能</td>
+                      <td>レバチャージ</td>
+                      <td>暑熱→肝臓負荷への対策</td>
+                    </tr>
+                    <tr>
+                      <td>環境改善</td>
+                      <td>牛床マット / おが粉</td>
+                      <td>快適な休息環境の確保</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(this)"><span>🍂 秋（10〜11月）── 繁殖盛期・冬の準備</span><span
+                class="accordion-arrow">▼</span></div>
+            <div class="accordion-body">
+              <div class="table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>テーマ</th>
+                      <th>提案商品</th>
+                      <th>ポイント</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>繁殖期の栄養</td>
+                      <td>アルファルファヘイ / VM MIX</td>
+                      <td>受胎率向上のための栄養充実</td>
+                    </tr>
+                    <tr>
+                      <td>冬場の粗飼料確保</td>
+                      <td>チモシーヘイ / オーツヘイ</td>
+                      <td>年末在庫確保の提案チャンス</td>
+                    </tr>
+                    <tr>
+                      <td>仔牛の秋産まれ対応</td>
+                      <td>代用乳 / カーフガードEX</td>
+                      <td>秋生まれ仔牛の越冬準備</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(this)"><span>❄️ 冬（12〜2月）── 寒冷対策・乾草需要増</span><span
+                class="accordion-arrow">▼</span></div>
+            <div class="accordion-body">
+              <div class="table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>テーマ</th>
+                      <th>提案商品</th>
+                      <th>ポイント</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>エネルギー補給強化</td>
+                      <td>Richfat CA / 糖蜜</td>
+                      <td>寒冷による維持エネルギー増大に対応</td>
+                    </tr>
+                    <tr>
+                      <td>乾草の安定供給</td>
+                      <td>全牧草ラインナップ</td>
+                      <td>年明け〜春先の在庫切れ防止</td>
+                    </tr>
+                    <tr>
+                      <td>ビタミン補給</td>
+                      <td>サルバスター / ビタミンE100</td>
+                      <td>日照不足によるビタミン欠乏対策</td>
+                    </tr>
+                    <tr>
+                      <td>敷料の確保</td>
+                      <td>木質ペレット / おが粉</td>
+                      <td>保温・衛生のための敷料増量</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="callout tip">
+          <div class="callout-title">💡 逆引きの活用法</div>
+          <p style="margin:0;">
+            各テーブルの「代表商品」をクリックすると第4章の商品詳細ページに遷移します（将来実装予定）。まずは「この課題にはこのカテゴリ」という大きな対応を覚え、具体的な商品知識は第4章で深めていきましょう。</p>
+        </div>
+      </div>
+      <div class="section" id="sec-ch4">
+        <div class="section-hero"><span class="hero-emoji">📦</span>
+          <h1>第4章　商品カタログ</h1>
+          <p class="hero-sub">自社製品を体系的に学ぶ ── カテゴリツリーから各商品の詳細ページへ</p>
+        </div>
+        <div class="callout info" style="margin:28px 0">
+          <div class="callout-title">🔎 品番の読み解き方</div>
+          <p style="margin:0 0 10px;">カスケディアの品番は <strong>事業区分 ＋ 分類 ＋ 品目 ＋ 産地 ＋ 枝番</strong> の構造です。覚えると注文・在庫管理がスムーズに。</p>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:100px">例</th>
+                  <th colspan="5" style="text-align:center">A 01 003 02 01</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>位置</strong></td>
+                  <td style="text-align:center"><strong>A</strong></td>
+                  <td style="text-align:center"><strong>01</strong></td>
+                  <td style="text-align:center"><strong>003</strong></td>
+                  <td style="text-align:center"><strong>02</strong></td>
+                  <td style="text-align:center"><strong>01</strong></td>
+                </tr>
+                <tr>
+                  <td>意味</td>
+                  <td style="text-align:center">事業区分</td>
+                  <td style="text-align:center">商品分類</td>
+                  <td style="text-align:center">品目番号</td>
+                  <td style="text-align:center">産地コード</td>
+                  <td style="text-align:center">枝番</td>
+                </tr>
+                <tr>
+                  <td>この例では</td>
+                  <td style="text-align:center">A=飼料</td>
+                  <td style="text-align:center">01=粗飼料</td>
+                  <td style="text-align:center">003=アルファルファ</td>
+                  <td style="text-align:center">02=アメリカ</td>
+                  <td style="text-align:center">01=荷姿No.1</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-wrapper" style="margin-top:12px">
+            <table>
+              <thead>
+                <tr>
+                  <th colspan="2">事業区分</th>
+                  <th colspan="2">商品分類（2桁目）</th>
+                  <th colspan="2">主な産地コード</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>A</strong></td>
+                  <td>飼料事業</td>
+                  <td><strong>01</strong></td>
+                  <td>粗飼料/商品</td>
+                  <td><strong>01</strong></td>
+                  <td>国内</td>
+                </tr>
+                <tr>
+                  <td><strong>B</strong></td>
+                  <td>資材事業</td>
+                  <td><strong>02</strong></td>
+                  <td>濃厚飼料/商品</td>
+                  <td><strong>02</strong></td>
+                  <td>アメリカ 🇺🇸</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td><strong>03</strong></td>
+                  <td>濃厚飼料/製品</td>
+                  <td><strong>03</strong></td>
+                  <td>カナダ 🇨🇦</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td><strong>04</strong></td>
+                  <td>オーストラリア 🇦🇺</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td><strong>05</strong></td>
+                  <td>中国 🇨🇳</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td><strong>06</strong></td>
+                  <td>ベトナム 🇻🇳</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td><strong>07</strong></td>
+                  <td>インドネシア 🇮🇩</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td><strong>10</strong></td>
+                  <td>スペイン 🇪🇸</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="margin:10px 0 0;font-size:0.78rem;color:var(--text-muted);">💡
+            <strong>枝番</strong>は同一品目・同一産地内での荷姿やロット違いを表します（例：01=ハーフカット、02=シングル等）。顧客への見積り時に枝番まで確認すると納期・価格が正確になります。
+          </p>
+        </div>
+        <h2><span class="h2-icon">🌲</span> カテゴリツリー</h2>
+        <p>下の各カテゴリ名をクリックすると、詳細ページに移動できます。</p>
+        <h3>A. 飼料事業</h3>
+        <ul class="tree">
+          <li><span class="tree-label"><span class="tree-code">01</span> 粗飼料（商品）</span>
+            <ul class="tree">
+              <li><span class="tree-label tree-link" onclick="navigateTo('ch4-hay')"><span
+                    class="tree-code">0001</span><span class="tree-icon">🌾</span> 牧草 →</span></li>
+              <li><span class="tree-label tree-link" onclick="navigateTo('ch4-sil')"><span
+                    class="tree-code">0002</span><span class="tree-icon">🌽</span> サイレージ →</span></li>
+            </ul>
+          </li>
+          <li><span class="tree-label"><span class="tree-code">02</span> 濃厚飼料（商品）</span>
+            <ul class="tree">
+              <li><span class="tree-label tree-link" onclick="navigateTo('ch4-byp')"><span
+                    class="tree-code">0003-0005</span><span class="tree-icon">🧪</span> 単体飼料・副産物・添加剤 →</span></li>
+              <li><span class="tree-label tree-link" onclick="navigateTo('ch4-comp')"><span
+                    class="tree-code">0006-0007</span><span class="tree-icon">🥛</span> 配合飼料・代用乳 →</span></li>
+              <li><span class="tree-label tree-link" onclick="navigateTo('ch4-px')"><span
+                    class="tree-code">0008-0009</span><span class="tree-icon">⚗️</span> 混合飼料・自社PX →</span></li>
+            </ul>
+          </li>
+          <li><span class="tree-label"><span class="tree-code">03</span> 濃厚飼料（製品）── アブソイ / 緑茶ドライ / リンゴドライ</span></li>
+        </ul>
+        <h3>B. 資材事業</h3>
+        <ul class="tree">
+          <li><span class="tree-label tree-link" onclick="navigateTo('ch4-eqp')"><span
+                class="tree-code">0010-0014</span><span class="tree-icon">🔧</span> 資材/IoT/肥料 →</span></li>
+        </ul>
+        <h3>C. 食糧事業</h3>
+        <ul class="tree">
+          <li><span class="tree-label tree-link" onclick="navigateTo('ch4-food')"><span
+                class="tree-code">0015</span><span class="tree-icon">🫒</span> 食糧原料（RBDパームオイル / パームオレイン） <span
+                class="badge-new">NEW</span>→</span></li>
+        </ul>
+        <h3>D. 付帯・機能サービス（C,D,E,F）</h3>
+        <ul class="tree">
+          <li><span class="tree-label tree-link" onclick="navigateTo('ch4-svc')"><span
+                class="tree-code">0020</span><span class="tree-icon">🧾</span> 物流手配・作業加工・調整費 など <span
+                class="badge-new">NEW</span>→</span></li>
+        </ul>
+      </div>
+      <div class="section" id="sec-ch4-hay">
+        <div class="section-hero"><span class="hero-emoji">🌾</span>
+          <h1>粗飼料 ── 牧草（Hay &amp; Straw）</h1>
+          <p class="hero-sub">分類: A-01 粗飼料/商品 ＞ 牧草｜A飼料</p>
+        </div>
+        <h2><span class="h2-icon">📖</span> グローバルストーリー</h2>
+        <p>
+          あなたが顧客の牧場に届ける1ベールのアルファルファヘイ。その裏側には壮大なストーリーがあります。<strong>アメリカ・ワシントン州</strong>のコロンビア川流域の灌漑で育ったアルファルファ、<strong>カナダ・アルバータ州</strong>の冷涼な気候が生むプレミアムチモシー、<strong>オーストラリア</strong>の太陽が乾燥させたオーツヘイ
+          ── それぞれの産地の自然が凝縮された「地球からの贈り物」です。</p>
+        <div class="callout info">
+          <div class="callout-title">💡 営業として覚えておきたいこと</div>
+          <p style="margin:0;">私たちは「干し草を売っている」のではなく、<strong>「世界各国の自然資源を、日本の畜産に接続するパイプライン」</strong>です。</p>
+        </div>
+        <h2><span class="h2-icon">📋</span> 商品ラインナップ</h2>
+        <h3>ヘイ（乾草）類</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>品番</th>
+                <th>商品名</th>
+                <th>産地</th>
+                <th>特徴</th>
+                <th>主な用途</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>A01003-02</code></td>
+                <td><strong>アルファルファヘイ</strong></td>
+                <td>🇺🇸🇨🇦</td>
+                <td>CP 17-22%、高Ca。マメ科</td>
+                <td>搾乳牛のタンパク補給</td>
+              </tr>
+              <tr>
+                <td><code>A01010-02/03</code></td>
+                <td><strong>チモシーヘイ</strong></td>
+                <td>🇺🇸🇨🇦</td>
+                <td>CP 8-12%、低Ca。イネ科</td>
+                <td>乾乳牛・育成牛、乳熱予防</td>
+              </tr>
+              <tr>
+                <td><code>A01020-02</code></td>
+                <td><strong>オーチャードグラスヘイ</strong></td>
+                <td>🇺🇸</td>
+                <td>嗜好性が高い。イネ科</td>
+                <td>食い込み改善</td>
+              </tr>
+              <tr>
+                <td><code>A01030-04</code></td>
+                <td><strong>オーツヘイ</strong></td>
+                <td>🇦🇺</td>
+                <td>繊維＋適度なエネルギー</td>
+                <td>幅広く利用可能</td>
+              </tr>
+              <tr>
+                <td><code>A01050-02</code></td>
+                <td><strong>バミューダヘイ</strong></td>
+                <td>🇺🇸</td>
+                <td>暖地型。耐暑性</td>
+                <td>夏場の粗飼料確保</td>
+              </tr>
+              <tr>
+                <td><code>A01006-02</code></td>
+                <td><strong>スーダングラスヘイ</strong></td>
+                <td>🇺🇸</td>
+                <td>高収量・コスト効率</td>
+                <td>コスト重視</td>
+              </tr>
+              <tr>
+                <td><code>A01007-02</code></td>
+                <td><strong>ミックスヘイ</strong></td>
+                <td>🇺🇸</td>
+                <td>複数草種のブレンド。バランス型</td>
+                <td>汎用・なじみやすい入門品</td>
+              </tr>
+              <tr>
+                <td><code>A01008-02</code></td>
+                <td><strong>クレイングラスヘイ</strong></td>
+                <td>🇺🇸</td>
+                <td>暖地性イネ科。耐暑・高収量</td>
+                <td>夏場の粗飼料確保・コスト優先</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>ストロー類</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>品番</th>
+                <th>商品名</th>
+                <th>産地</th>
+                <th>特徴</th>
+                <th>主な用途</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>A01101-02</code></td>
+                <td><strong>ペレニアルライストロー</strong></td>
+                <td>🇺🇸</td>
+                <td>繊維源</td>
+                <td>乾乳牛のフィラー</td>
+              </tr>
+              <tr>
+                <td><code>A01105-03/04/10</code></td>
+                <td><strong>オーツストロー</strong></td>
+                <td>🇨🇦🇦🇺🇪🇸</td>
+                <td>安価な繊維源</td>
+                <td>敷料兼繊維源</td>
+              </tr>
+              <tr>
+                <td><code>A01106-04</code></td>
+                <td><strong>ウィートストロー</strong></td>
+                <td>🇦🇺</td>
+                <td>物理的効果重視</td>
+                <td>反芻促進、敷料</td>
+              </tr>
+              <tr>
+                <td><code>A01107-04</code></td>
+                <td><strong>バーレーストロー</strong></td>
+                <td>🇦🇺</td>
+                <td>安価</td>
+                <td>コスト優先の繊維確保</td>
+              </tr>
+              <tr>
+                <td><code>A01102-02</code></td>
+                <td><strong>アニュアルライストロー</strong></td>
+                <td>🇺🇸</td>
+                <td>一年草ライ麦の茎。安価な繊維源</td>
+                <td>乾乳牛のフィラー</td>
+              </tr>
+              <tr>
+                <td><code>A01104-02</code></td>
+                <td><strong>バミューダグラスストロー</strong></td>
+                <td>🇺🇸</td>
+                <td>暖地性。繊維質が高い</td>
+                <td>繊維補給・敷料</td>
+              </tr>
+              <tr>
+                <td><code>A01108-05/01</code></td>
+                <td><strong>稲わら</strong></td>
+                <td>🇨🇳🇯🇵</td>
+                <td>国内稲作副産物</td>
+                <td>肉牛中心に広く利用</td>
+              </tr>
+              <tr>
+                <td><code>A01109-01</code></td>
+                <td><strong>稲わらロール（国内）</strong></td>
+                <td>🇯🇵</td>
+                <td>国産ロール梱包。国産粗飼料の安定確保</td>
+                <td>国内調達コスト重視農場</td>
+              </tr>
+              <tr>
+                <td><code>A01110-03</code></td>
+                <td><strong>チモシーストロー（カナダ）</strong></td>
+                <td>🇨🇦</td>
+                <td>チモシー刈り取り後の茎。低Ca</td>
+                <td>乳熱予防の繊維源</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>加工品</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>品番</th>
+                <th>商品名</th>
+                <th>産地</th>
+                <th>特徴</th>
+                <th>主な用途</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>A01121-02</code></td>
+                <td><strong>ALFキューブ</strong></td>
+                <td>🇺🇸</td>
+                <td>圧縮成形で保管効率UP</td>
+                <td>TMR原料</td>
+              </tr>
+              <tr>
+                <td><code>A01122-02</code></td>
+                <td><strong>スライスキューブ（アルファルファ）</strong></td>
+                <td>🇺🇸</td>
+                <td>スライス角型圧縮。均一な給与量管理</td>
+                <td>TMR原料・自動給餌対応</td>
+              </tr>
+              <tr>
+                <td><code>A01131-02/A02132-13</code></td>
+                <td><strong>ALFペレット</strong></td>
+                <td>🇺🇸🇮🇹</td>
+                <td>粒状加工で取扱い容易</td>
+                <td>TMR原料</td>
+              </tr>
+              <tr>
+                <td><code>B12002-04</code></td>
+                <td><strong>ウィートストローペレット（オーストラリア）</strong></td>
+                <td>🇦🇺</td>
+                <td>小麦わらのペレット加工。取扱い容易</td>
+                <td>配合飼料工場・TMR繊維源</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h2><span class="h2-icon">🎯</span> 営業トーク例</h2>
+        <div class="talk-box">
+          <div class="talk-header">💬 シーン①「牧草なんてどこで買っても同じでしょ？」</div>
+          <div class="talk-body">
+            <div><span class="talk-label ng">NG</span></div>
+            <p class="talk-text">「いえ、うちのは品質が良いです」（根拠なく主張）</p>
+            <div><span class="talk-label ok">OK</span></div>
+            <p class="talk-text">
+              「おっしゃる通り、見た目は同じに見えますよね。ただ、牧草は<strong>産地の天候と刈り取りタイミング</strong>で成分が大きく変わるんです。例えばアルファルファのCPは<strong>16%〜22%</strong>まで6ポイントも差が出ます。うちは産地の天候をリアルタイムで把握しているので、<strong>今シーズンのベストなロット</strong>をご提案できますよ。」
+            </p>
+            <div class="talk-point">💡 <strong>ポイント</strong>：「品質が良い」ではなく「なぜ品質が変わるか」の構造を説明。</div>
+          </div>
+        </div>
+        <div class="talk-box">
+          <div class="talk-header">💬 シーン②「チモシーとアルファルファ、どっちがいいの？」</div>
+          <div class="talk-body">
+            <div><span class="talk-label ok">OK</span></div>
+            <p class="talk-text">「どちらが良いかは<strong>牛のステージと今の課題次第</strong>ですね。<br>• 搾乳牛の乳量を伸ばしたい →
+              高CPの<strong>アルファルファ</strong><br>• 乾乳牛の乳熱が心配 → 低Caの<strong>チモシー</strong><br>• 育成牛のルーメン発達 →
+              繊維質の<strong>チモシー</strong><br>牛群構成と課題を教えていただければ、最適な組み合わせをご提案しますよ。」</p>
+            <div class="talk-point">💡 <strong>ポイント</strong>：二者択一で答えず、ヒアリングに持ち込む。</div>
+          </div>
+        </div>
+        <div class="summary-box">
+          <h4 style="margin-top:0;">📌 牧草カテゴリの3つの鉄則</h4>
+          <ol>
+            <li><strong>粗飼料は「健康の土台」</strong>。濃厚飼料の前にまず粗飼料の充足を確認。</li>
+            <li><strong>「何がいいですか？」には「どんな牛に？」で返す</strong>。ヒアリングなしに勧めない。</li>
+            <li><strong>産地・荷姿・ロットの知識は差別化の武器</strong>。</li>
+          </ol>
+        </div>
+      </div>
+      <div class="section" id="sec-ch4-sil">
+        <div class="section-hero"><span class="hero-emoji">🌽</span>
+          <h1>粗飼料 ── サイレージ</h1>
+          <p class="hero-sub">分類: A-01 粗飼料/商品 ＞ サイレージ</p>
+        </div>
+        <h2><span class="h2-icon">🔬</span> サイレージとは？</h2>
+        <p>サイレージとは、飼料作物を<strong>嫌気発酵</strong>（乳酸発酵）させて長期保存した飼料です。ヘイが水分15%以下なのに対し、サイレージは<strong>50〜70%</strong>と高水分。</p>
+        <h2><span class="h2-icon">📋</span> 商品ラインナップ</h2>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>品番</th>
+                <th>商品名</th>
+                <th>特徴</th>
+                <th>主な用途</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>A01115-01</code></td>
+                <td><strong>おからサイレージ</strong></td>
+                <td>豆腐副産物発酵。高タンパク</td>
+                <td>エネルギー＋タンパク補給</td>
+              </tr>
+              <tr>
+                <td><code>A01141-02</code></td>
+                <td><strong>フレッシュパック</strong></td>
+                <td>新鮮パッキング。嗜好性良好</td>
+                <td>食い込み改善</td>
+              </tr>
+              <tr>
+                <td><code>A01143-06</code></td>
+                <td><strong>コーンサイレージ</strong></td>
+                <td>トウモロコシ全草。高エネルギー</td>
+                <td>肥育・乳牛エネルギー源</td>
+              </tr>
+              <tr>
+                <td><code>A01145-01</code></td>
+                <td><strong>イネWCS</strong></td>
+                <td>国産稲発酵粗飼料</td>
+                <td>国産粗飼料の安定確保</td>
+              </tr>
+              <tr>
+                <td><code>A01142-02</code></td>
+                <td><strong>トライアンフホース（アメリカ）</strong></td>
+                <td>高嗜好性アルファルファ系サイレージ。甘みがあり食い込み◎</td>
+                <td>食欲低下牛・高泌乳牛の嗜好性改善</td>
+              </tr>
+              <tr>
+                <td><code>A01143-02</code></td>
+                <td><strong>コープランドALF（アメリカ）</strong></td>
+                <td>アルファルファ主体。高CP・高Ca</td>
+                <td>タンパク・カルシウム補給</td>
+              </tr>
+              <tr>
+                <td><code>A32000-04/05</code></td>
+                <td><strong>ホップペレット</strong></td>
+                <td>ビール醸造副産物。抗菌・嗜好性改善</td>
+                <td>食欲増進・腸内環境サポート</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="talk-box">
+          <div class="talk-header">💬 「サイレージは品質が安定しないから不安」と言われたら</div>
+          <div class="talk-body">
+            <div><span class="talk-label ok">OK</span></div>
+            <p class="talk-text">
+              「その不安、よく分かります。サイレージの品質は<strong>発酵状態（pH・乳酸含量）</strong>で判断できます。うちのおからサイレージは製造ロットごとに品質分析を実施していますので、成分表付きでお届けしますよ。まずはサンプルで1ロットお試ししませんか？」
+            </p>
+            <div class="talk-point">💡 <strong>ポイント</strong>：品質の「見える化」が不安解消の鍵。分析データの提供を武器に。</div>
+          </div>
+        </div>
+      </div>
+      <div class="section" id="sec-ch4-byp">
+        <div class="section-hero"><span class="hero-emoji">🧪</span>
+          <h1>濃厚飼料 ── 副産物・添加剤</h1>
+          <p class="hero-sub">分類: A-02 濃厚飼料/商品 ＞ 単体飼料 / 副産物 / 添加剤</p>
+        </div>
+        <h3>単体飼料</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>品番</th>
+                <th>商品名</th>
+                <th>特徴</th>
+                <th>用途</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>A02201-01/02</code></td>
+                <td><strong>ソイパス</strong></td>
+                <td>大豆粕バイパス処理品</td>
+                <td>効率的タンパク補給</td>
+              </tr>
+              <tr>
+                <td><code>A02202-02/04</code></td>
+                <td><strong>綿実</strong></td>
+                <td>脂肪＋タンパク＋繊維</td>
+                <td>搾乳牛のエネルギー・繊維源</td>
+              </tr>
+              <tr>
+                <td><code>A02203〜207-03</code></td>
+                <td><strong>燕麦DRO/TRO/MHO</strong></td>
+                <td>丸粒〜圧ぺん各種</td>
+                <td>自家配合の原料</td>
+              </tr>
+              <tr>
+                <td><code>A02222-01</code></td>
+                <td><strong>大麦若葉粉末</strong></td>
+                <td>機能性成分豊富</td>
+                <td>健康増進サポート</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="accordion" style="margin-bottom: 24px;">
+          <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(this)"><span>🔍
+                【深掘り】ソイパス（SoyPass）の圧倒的な強みと営業提案</span><span class="accordion-arrow">▼</span></div>
+            <div class="accordion-body">
+              <p style="margin-top:8px;">
+                ソイパスは単なる「加熱大豆粕」ではありません。「<strong>加糖加熱処理</strong>」という特殊加工により、良質なアミノ酸（特にリジン）を壊すことなくルーメンをバイパス（非分解）させ、第四胃以降で直接吸収させる実績のあるバイパスたん白の先駆的商品です。通常の大豆粕のようにルーメンに負担をかけず、アンモニア毒素による下痢も防ぎます。
+              </p>
+              <h4>🐮 乳牛への提案：アミノ酸バランスによる乳量・乳たん白の最大化</h4>
+              <p>
+                搾乳牛の最大の乳たん白生産（＝乳量増加）にはリジンとメチオニンのバランスが重要です。ソイパスは要求量に近い理想のアミノ酸バランスを補えます。また、急激に胎児が成長する<strong>妊娠末期（乾乳期）</strong>に2〜3kg/日給与することで、高い溶解性によりルーメン微生物に消費されてしまうことなく、直接牛のエネルギーとして利用させることができます。
+              </p>
+              <h4>🥩 肉牛・繁殖への提案：赤肉増大と過肥の防止</h4>
+              <p>
+                仔牛の赤肉（筋肉）生産が最大になるのは<strong>4〜15ヶ月齢（育成〜肥育前期）</strong>です。この時期にソイパス給与でリジンを強化することで体躯改善・将来的な枝肉重量増加につながります（九州の肥育農場試験では4ヶ月で対照区より<strong>＋20kgの増体</strong>を確認）。さらに、圧ペン大豆等の加熱大豆と比べ<strong>「粗脂肪率が低く」「アレルゲン値が著しく低い」</strong>ため、若齢時からの過肥（太りすぎによる尾枕や食い込み低下）や下痢を心配することなく給与できます。黒毛繁殖では乾乳期給与により、出生仔牛の胸筋が発達し「生まれつきの自己呼吸が良くなり死産が減る」という事例も報告されています。
+              </p>
+              <div class="talk-box">
+                <div class="talk-header">💬 「他のバイパス蛋白じゃダメなの？」と言われたら</div>
+                <div class="talk-body">
+                  <div><span class="talk-label ok">OK</span></div>
+                  <p class="talk-text">
+                    「バイパスされること以上に重要なのは『<strong>アミノ酸（リジン）が壊れていないこと</strong>』です。他社の加熱品は、過加熱によってリジンが壊れたり、加熱不足でルーメンで溶けてしまったりします。ソイパスは『加糖して低温・短時間処理』することでこの課題を解決しています。だから結果（枝肉成績や乳量の向上）が確実に違うんです！」
+                  </p>
+                  <div class="talk-point">💡 <strong>ポイント</strong>：「バイパス」ではなく「生きたリジン」が届くこと、そして低脂肪による「過肥の防止」が最大の武器です。
+                  </div>
+                </div>
+              </div>
+              <div class="success-case">
+                <strong>🏆 大型成約事例：ウェルシーファーム様（竹内社長宛メールより）</strong><br>
+                <p style="font-size: 0.8rem; margin-bottom: 5px;">
+                  長時間の面談後、即座に最適な補足資料をメールで提示して成約に結びつけた実例です。単に資料を送るだけでなく、「なぜ今の課題に必要なのか」を独自の視点（考察）を添えて送ることがポイントです。
+                </p>
+                <div
+                  style="background: var(--bg-tertiary); padding: 12px; border-radius: 8px; margin-top: 8px; border: 1px solid var(--border-subtle); color: var(--text-secondary); font-size: 0.78rem;">
+                  <strong style="color: var(--text-primary);">【活用した4つの資料と解説内容】</strong><br>
+                  <ol style="padding-left: 20px; margin-top: 6px; margin-bottom: 10px;">
+                    <li style="margin-bottom: 6px;">
+                      <strong>ソイパス（乳牛用）</strong>：加熱の「加減」の重要性を説明。過加熱はアミノ酸（リジン）破壊、加熱不足はルーメン分解を招くが、ソイパスは「加糖」でこれを解決した先駆的商品。
+                    </li>
+                    <li style="margin-bottom: 6px;">
+                      <strong>ソイパス（肉牛用）</strong>：豚の栄養学（哺乳期後期のアミノ酸要求）をヒントに、仔牛の赤肉生産（4〜15ヶ月齢）には「バイパス蛋白」以上に「リジン」が重要であることを提示。
+                    </li>
+                    <li style="margin-bottom: 6px;">
+                      <strong>給与試験データ（九州）</strong>：他社品との給与比較試験において、4ヶ月で他社品に対し<strong>＋20kgの増体</strong>を確認。「他社品は加熱でリジンが壊れ、アミノ酸バランスが崩れている」という考察を付与。
+                    </li>
+                    <li style="margin-bottom: 0;">
+                      <strong>島根県畜産技術センター資料</strong>：早期出荷に向け、赤肉生産の最大期にアミノ酸バランスを整えることで「期待通りに体躯が大きくなる（通常出荷なら枝肉増）」ことを裏付け。
+                    </li>
+                  </ol>
+                  <strong style="color: var(--text-primary);">【他ステージへの応用事例（その他）】</strong><br>
+                  <p style="margin-top: 4px; margin-bottom: 10px; line-height: 1.6;">
+                    ・<strong>乳牛/黒毛繁殖の乾乳期</strong>：妊娠末期はたんぱく質が重要だが溶解性が高いと効果がない。ソイパスは直接仔牛の発達に利用され、死産減少にも有効という生の声を紹介。
+                  </p>
+                  <strong style="color: var(--text-primary); color: var(--accent-blue);">【自信と専門性の提示】</strong><br>
+                  <p style="margin-top: 4px; margin-bottom: 0; line-height: 1.6; font-style: italic;">
+                    「日本（海外含め）でバイパス蛋白に精通しているのは私だと自負しています。単胃動物の栄養学（アミノ酸設計）の知識と、輸入商社時代の国産化経験により、ノウハウとカギとなる成分を熟知しているからです。」
+                    ── この圧倒的な自信が顧客の背中を押しました。
+                  </p>
+                </div>
+                <a href="#" class="log-link">📄 荻根 営業・提案メール（26/01/23）</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <h3>食品製造副産物</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>品番</th>
+                <th>商品名</th>
+                <th>原料</th>
+                <th>主な用途</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>A02208-02 / A02209-01</code></td>
+                <td><strong>ビートパルプ</strong></td>
+                <td>砂糖大根</td>
+                <td>TMRのエネルギー源（超定番）</td>
+              </tr>
+              <tr>
+                <td><code>A01144-01</code></td>
+                <td><strong>マッシュレージ</strong></td>
+                <td>じゃがいも残渣</td>
+                <td>エネルギー補給</td>
+              </tr>
+              <tr>
+                <td><code>A02217-01</code></td>
+                <td><strong>グルテンフィード</strong></td>
+                <td>トウモロコシ</td>
+                <td>タンパク＋繊維</td>
+              </tr>
+              <tr>
+                <td><code>A02901〜906-01</code></td>
+                <td><strong>茶飼料（緑茶/麦茶/混合）</strong></td>
+                <td>飲料工場残渣</td>
+                <td>嗜好性改善・抗酸化</td>
+              </tr>
+              <tr>
+                <td><code>A02904-01</code></td>
+                <td><strong>リンゴ飼料</strong></td>
+                <td>ジュース粕</td>
+                <td>嗜好性◎</td>
+              </tr>
+              <tr>
+                <td><code>A02905-01</code></td>
+                <td><strong>黒大豆茶飼料</strong></td>
+                <td>黒大豆茶製造副産物</td>
+                <td>嗜好性改善・抗酸化</td>
+              </tr>
+              <tr>
+                <td><code>A02906-01</code></td>
+                <td><strong>ごぼう茶飼料</strong></td>
+                <td>ごぼう茶製造副産物</td>
+                <td>嗜好性改善・腸内環境</td>
+              </tr>
+              <tr>
+                <td><code>A02501-02</code></td>
+                <td><strong>オリーブ粕ミール（アメリカ）</strong></td>
+                <td>オリーブ搾油残渣</td>
+                <td>繊維源・抗酸化成分含有</td>
+              </tr>
+              <tr>
+                <td><code>A02502-01</code></td>
+                <td><strong>濃縮焼酎粕</strong></td>
+                <td>焼酎製造副産物（濃縮）</td>
+                <td>エネルギー補給・嗜好性◎</td>
+              </tr>
+              <tr>
+                <td><code>A02503-01</code></td>
+                <td><strong>ウィスキー粕</strong></td>
+                <td>ウィスキー蒸留残渣</td>
+                <td>エネルギー補給・嗜好性改善</td>
+              </tr>
+              <tr>
+                <td><code>A02504-01</code></td>
+                <td><strong>マッシュルームパルプ ドライ</strong></td>
+                <td>マッシュルーム培地残渣</td>
+                <td>繊維源・低コスト</td>
+              </tr>
+              <tr>
+                <td><code>A02505-05</code></td>
+                <td><strong>リンゴ粕ミール（中国）</strong></td>
+                <td>リンゴジュース搾汁残渣</td>
+                <td>嗜好性◎・エネルギー補給</td>
+              </tr>
+              <tr>
+                <td><code>A02506-01</code></td>
+                <td><strong>ビール粕</strong></td>
+                <td>麦芽醸造副産物（乾燥）</td>
+                <td>高タンパク・低コスト代替原料</td>
+              </tr>
+              <tr>
+                <td><code>A02507-02</code></td>
+                <td><strong>グレープ粕ミール（アメリカ）</strong></td>
+                <td>ぶどう搾汁残渣</td>
+                <td>抗酸化・ポリフェノール含有</td>
+              </tr>
+              <tr>
+                <td><code>A02508-06</code></td>
+                <td><strong>グリーンピース皮（ベトナム）</strong></td>
+                <td>グリーンピース加工副産物</td>
+                <td>繊維源・コスト優先</td>
+              </tr>
+              <tr>
+                <td><code>A02509-01</code></td>
+                <td><strong>酒粕</strong></td>
+                <td>日本酒製造副産物</td>
+                <td>嗜好性◎・エネルギー補給</td>
+              </tr>
+              <tr>
+                <td><code>A02510-01</code></td>
+                <td><strong>醤油粕</strong></td>
+                <td>醤油製造副産物</td>
+                <td>タンパク補給・繊維源</td>
+              </tr>
+              <tr>
+                <td><code>A02511-06</code></td>
+                <td><strong>コーヒーハスク（ベトナム）</strong></td>
+                <td>コーヒー豆の外皮</td>
+                <td>繊維源・コスト優先</td>
+              </tr>
+              <tr>
+                <td><code>A02512-06</code></td>
+                <td><strong>セサミミール</strong></td>
+                <td>ごま搾油残渣</td>
+                <td>高タンパク・アミノ酸補給</td>
+              </tr>
+              <tr>
+                <td><code>A02513-05</code></td>
+                <td><strong>大豆ミール</strong></td>
+                <td>大豆搾油残渣</td>
+                <td>高CP・標準的タンパク源</td>
+              </tr>
+              <tr>
+                <td><code>A02514-06</code></td>
+                <td><strong>キャッサバミール</strong></td>
+                <td>キャッサバ澱粉製造副産物</td>
+                <td>低コストエネルギー源</td>
+              </tr>
+              <tr>
+                <td><code>A02515-01</code></td>
+                <td><strong>一般ふすま</strong></td>
+                <td>小麦製粉副産物</td>
+                <td>繊維＋タンパク補給</td>
+              </tr>
+              <tr>
+                <td><code>A02516-01</code></td>
+                <td><strong>そば粉</strong></td>
+                <td>そば製粉副産物</td>
+                <td>嗜好性改善・繊維源</td>
+              </tr>
+              <tr>
+                <td><code>A02517-01</code></td>
+                <td><strong>CSL（コーンスティープリカー）</strong></td>
+                <td>トウモロコシ浸漬液（液状）</td>
+                <td>高タンパク・液状飼料として利用</td>
+              </tr>
+              <tr>
+                <td><code>A02260-01</code></td>
+                <td><strong>バガスチップ</strong></td>
+                <td>サトウキビ搾汁残渣</td>
+                <td>低コスト繊維源・敷料兼用</td>
+              </tr>
+              <tr>
+                <td><code>A02280-01</code></td>
+                <td><strong>発酵バガス</strong></td>
+                <td>バガスの発酵処理品</td>
+                <td>嗜好性改善・繊維源</td>
+              </tr>
+              <tr>
+                <td><code>A32000-06</code></td>
+                <td><strong>きのこ菌床</strong></td>
+                <td>きのこ栽培後の菌床（廃菌床）</td>
+                <td>低コスト繊維源</td>
+              </tr>
+              <tr>
+                <td><code>B12007-01</code></td>
+                <td><strong>コーヒー豆粕</strong></td>
+                <td>コーヒー抽出残渣</td>
+                <td>繊維源・香りによる嗜好性改善</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>添加剤</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>品番</th>
+                <th>商品名</th>
+                <th>効果</th>
+                <th>主な対象</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>A02211-07/19</code></td>
+                <td><strong>Richfat CA</strong></td>
+                <td>バイパス脂肪でエネルギー供給</td>
+                <td>搾乳牛・暑熱対策</td>
+              </tr>
+              <tr>
+                <td><code>A02212-01/19</code></td>
+                <td><strong>Richfat EX PA</strong></td>
+                <td>パルミチン酸→乳脂率UP</td>
+                <td>乳脂率改善</td>
+              </tr>
+              <tr>
+                <td><code>A02213-01</code></td>
+                <td><strong>Rumifat R100</strong></td>
+                <td>コスト効率の良いバイパス脂肪</td>
+                <td>汎用</td>
+              </tr>
+              <tr>
+                <td><code>A02210-04</code></td>
+                <td><strong>糖蜜</strong></td>
+                <td>高い嗜好性、ルーメン微生物活性化</td>
+                <td>食い込み改善</td>
+              </tr>
+              <tr>
+                <td><code>A02214-05</code></td>
+                <td><strong>酸化マグネシウム</strong></td>
+                <td>ルーメンpH安定化</td>
+                <td>アシドーシス予防</td>
+              </tr>
+              <tr>
+                <td><code>A02215-05</code></td>
+                <td><strong>重曹</strong></td>
+                <td>ルーメンpH安定化の定番</td>
+                <td>暑熱対策・高濃厚飼料時</td>
+              </tr>
+              <tr>
+                <td><code>A02224-01</code></td>
+                <td><strong>ゼオライト</strong></td>
+                <td>ミネラル吸着・放出</td>
+                <td>総合ミネラル管理</td>
+              </tr>
+              <tr>
+                <td><code>A02229-01 / A32-02</code></td>
+                <td><strong>プロピオン酸Ca（液状/粉剤）</strong></td>
+                <td>ケトーシス予防</td>
+                <td>分娩前後</td>
+              </tr>
+              <tr>
+                <td><code>A02216-01</code></td>
+                <td><strong>天然石膏粉末</strong></td>
+                <td>カルシウム・硫黄補給。ルーメン環境調整</td>
+                <td>DCAD調整・乳熱リスク低減</td>
+              </tr>
+              <tr>
+                <td><code>A02223-01</code></td>
+                <td><strong>ウィルファリン</strong></td>
+                <td>ビタミンK拮抗。出血コントロール</td>
+                <td>特定農場の処方管理</td>
+              </tr>
+              <tr>
+                <td><code>A02302-01</code></td>
+                <td><strong>ヘルシーセルバランス</strong></td>
+                <td>細胞機能サポート複合添加剤</td>
+                <td>全ステージ健康増進</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout important">
+          <div class="callout-title">⚠️ バイパス脂肪3商品の使い分け</div>
+          <p style="margin:0;"><strong>A02211 Richfat CA</strong>＝最もバランスの良い万能型。迷ったらまずこれ。<br><strong>A02212 Richfat EX
+              PA</strong>＝パルミチン酸主体で乳脂率UPに特化。<br><strong>A02213 Rumifat R100</strong>＝コスト重視のエントリーモデル。</p>
+        </div>
+      </div>
+      <div class="section" id="sec-ch4-comp">
+        <div class="section-hero"><span class="hero-emoji">🥛</span>
+          <h1>濃厚飼料 ── 配合飼料・代用乳</h1>
+          <p class="hero-sub">分類: A-02 ＞ 配合飼料 / 代用乳</p>
+        </div>
+        <h3>配合飼料</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>品番</th>
+                <th>商品名</th>
+                <th>対象</th>
+                <th>営業ポイント</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>A029990101</code></td>
+                <td><strong>マザーくろうし</strong></td>
+                <td>繁殖母牛</td>
+                <td>繁殖農家の定番商品</td>
+              </tr>
+              <tr>
+                <td><code>A029990103</code></td>
+                <td><strong>ベストMIX</strong></td>
+                <td>汎用</td>
+                <td>幅広い農家に提案可能</td>
+              </tr>
+              <tr>
+                <td><code>A029990105</code></td>
+                <td><strong>MONEO</strong></td>
+                <td>搾乳牛</td>
+                <td>大規模酪農家向け</td>
+              </tr>
+              <tr>
+                <td><code>A029990108</code></td>
+                <td><strong>GYU LAB MB 75</strong></td>
+                <td>肉牛（肥育前期）</td>
+                <td>マルブレンド設計・前期肥育に最適</td>
+              </tr>
+              <tr>
+                <td><code>A029990110</code></td>
+                <td><strong>GYU LAB SB 74</strong></td>
+                <td>肉牛（肥育後期）</td>
+                <td>脂肪交雑促進に特化したSB設計</td>
+              </tr>
+              <tr>
+                <td><code>A029990112</code></td>
+                <td><strong>GYU LAB ベース</strong></td>
+                <td>肉牛（汎用）</td>
+                <td>自家配合のベース原料として柔軟に活用</td>
+              </tr>
+              <tr>
+                <td><code>A029990113</code></td>
+                <td><strong>マザーペレット</strong></td>
+                <td>繁殖母牛</td>
+                <td>ペレット形状で給与管理が容易</td>
+              </tr>
+              <tr>
+                <td><code>A320000008</code></td>
+                <td><strong>パワーカーフMO</strong></td>
+                <td>仔牛</td>
+                <td>育成スターターフィード</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout tip">
+          <div class="callout-title">💡 品番のパターン</div>
+          <p style="margin:0;">配合飼料は品番が <code>A02999xxxx</code> に集約されています。品目番号999が「カスケディア企画の配合飼料」を意味し、末尾2桁で個別商品を識別できます。
+          </p>
+        </div>
+        <h3>代用乳</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>品番</th>
+                <th>商品名</th>
+                <th>特徴</th>
+                <th>セールスポイント</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>A023060101</code></td>
+                <td><strong>スタートトゥフィニッシュ</strong></td>
+                <td>哺乳〜離乳オールインワン</td>
+                <td>管理の手間を大幅削減。「1つで哺乳期完結」がセールストーク</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="talk-box">
+          <div class="talk-header">💬 「代用乳なんてどれも同じでしょ？」</div>
+          <div class="talk-body">
+            <div><span class="talk-label ok">OK</span></div>
+            <p class="talk-text">
+              「確かに見た目は同じ白い粉ですよね。でも、脂肪の<strong>由来</strong>（動物性vs植物性）と<strong>溶解性</strong>で消化吸収率が大きく変わるんです。スタートトゥフィニッシュは<strong>溶解性テスト済み</strong>で、40℃のお湯でダマなく溶けます。実際にお試しいただけますか？」
+            </p>
+            <div class="talk-point">💡 <strong>ポイント</strong>：「百聞は一見に如かず」。デモンストレーションが最強の営業ツール。</div>
+          </div>
+        </div>
+      </div>
+      <div class="section" id="sec-ch4-px">
+        <div class="section-hero"><span class="hero-emoji">⚗️</span>
+          <h1>混合飼料・自社企画プレミックス</h1>
+          <p class="hero-sub">分類: A-02 ＞ 混合飼料 / 自社企画PX</p>
+        </div>
+        <div class="callout tip">
+          <div class="callout-title">🏭 [LIVE更新] 工場稼働状況・生産能力</div>
+          <p style="margin:0; font-size:0.75rem;"><strong>関東第1工場 PXライン：</strong> 月間生産能力 350トン（現在の稼働率:
+            82%・◎余裕あり）<br>※特注品（農場別カスタムPX）の新規リードタイム：現在<strong>試作完了まで約2週間</strong>。積極的な提案が可能です！</p>
+        </div>
+        <h3>混合飼料</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>品番</th>
+                <th>商品名</th>
+                <th>機能</th>
+                <th>対象ステージ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>A023080101</code></td>
+                <td><strong>VM MIX</strong></td>
+                <td>ビタミン・ミネラル総合</td>
+                <td>全ステージ汎用</td>
+              </tr>
+              <tr>
+                <td><code>A023090101</code></td>
+                <td><strong>ファイブロザイム</strong></td>
+                <td>繊維分解酵素配合</td>
+                <td>粗飼料の消化率向上</td>
+              </tr>
+              <tr>
+                <td><code>A024200101</code></td>
+                <td><strong>ストレスマネージャーAST</strong></td>
+                <td>暑熱ストレス専用設計</td>
+                <td>搾乳牛の夏場</td>
+              </tr>
+              <tr>
+                <td><code>A023130101</code></td>
+                <td><strong>カーフガードEX</strong></td>
+                <td>仔牛の免疫・腸内環境</td>
+                <td>哺乳〜育成期</td>
+              </tr>
+              <tr>
+                <td><code>A023100101</code></td>
+                <td><strong>フットプロテクト</strong></td>
+                <td>蹄の健康（亜鉛・ビオチン等）</td>
+                <td>蹄病リスクの高い農場</td>
+              </tr>
+              <tr>
+                <td><code>A320000007</code></td>
+                <td><strong>ビタミンE100</strong></td>
+                <td>抗酸化・免疫賦活</td>
+                <td>育成牛・乾乳牛</td>
+              </tr>
+              <tr>
+                <td><code>A022250101</code></td>
+                <td><strong>EXこうじ90</strong></td>
+                <td>麹菌発酵による消化促進</td>
+                <td>TMR添加・消化改善</td>
+              </tr>
+              <tr>
+                <td><code>A022270101</code></td>
+                <td><strong>サイマスターSPパウダー</strong></td>
+                <td>サイレージ発酵安定化</td>
+                <td>自家製サイレージ調製時</td>
+              </tr>
+              <tr>
+                <td><code>A023040101</code></td>
+                <td><strong>ヘルスレバープラスA</strong></td>
+                <td>肝機能サポート・解毒促進</td>
+                <td>泌乳ピーク期・暑熱時</td>
+              </tr>
+              <tr>
+                <td><code>A023050101</code></td>
+                <td><strong>元気なカルシウムM</strong></td>
+                <td>即効性カルシウム補給</td>
+                <td>分娩前後・低Ca血症予防</td>
+              </tr>
+              <tr>
+                <td><code>A023070101</code></td>
+                <td><strong>ホースフローラN</strong></td>
+                <td>腸内フローラ改善・プロバイオティクス</td>
+                <td>仔牛・育成牛の腸内環境管理</td>
+              </tr>
+              <tr>
+                <td><code>A023090101</code></td>
+                <td><strong>テクノコートV-70</strong></td>
+                <td>ビタミン・ミネラルコーティング製剤</td>
+                <td>効率的ビタミン補給</td>
+              </tr>
+              <tr>
+                <td><code>A320000003</code></td>
+                <td><strong>マンダFキューブ</strong></td>
+                <td>万田酵素配合。腸内活性化</td>
+                <td>哺乳〜育成期の腸内環境改善</td>
+              </tr>
+              <tr>
+                <td><code>A024190101</code></td>
+                <td><strong>ドリームアップD</strong></td>
+                <td>ビタミンD強化設計</td>
+                <td>冬場・日照不足時のビタミンD補給</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout tip">
+          <div class="callout-title">💡 ここがカスケディアの強み</div>
+          <p style="margin:0;">
+            自社PXは<strong>農場ごとの課題に合わせて独自設計</strong>した商品群。大手メーカーの汎用品にはない「農場カスタマイズ」ができることが競合との最大の差別化ポイントです。品番
+            <code>A024xx</code> が自社企画PXの識別コードです。
+          </p>
+        </div>
+        <h3>自社企画PX（汎用シリーズ）</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>品番</th>
+                <th>商品名</th>
+                <th>対象</th>
+                <th>特徴</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>A023110101</code></td>
+                <td><strong>サルバスター成牛用VIT</strong></td>
+                <td>搾乳牛</td>
+                <td>全ビタミン・ミネラル網羅</td>
+              </tr>
+              <tr>
+                <td><code>A023110103</code></td>
+                <td><strong>サルバスターP育成用VIT</strong></td>
+                <td>育成牛</td>
+                <td>骨格・ルーメン発達に最適化</td>
+              </tr>
+              <tr>
+                <td><code>A024010101</code></td>
+                <td><strong>BFプレミアム搾乳用VIT</strong></td>
+                <td>搾乳牛</td>
+                <td>泌乳期に特化した高配合</td>
+              </tr>
+              <tr>
+                <td><code>A024090101</code></td>
+                <td><strong>レバチャージ</strong></td>
+                <td>全ステージ</td>
+                <td>肝機能サポート（暑熱時に特に有効）</td>
+              </tr>
+              <tr>
+                <td><code>A320000001</code></td>
+                <td><strong>グルトリス</strong></td>
+                <td>周産期</td>
+                <td>分娩前後のグルコース・電解質管理</td>
+              </tr>
+              <tr>
+                <td><code>A024080101</code></td>
+                <td><strong>ビッグF乾乳用VIT</strong></td>
+                <td>乾乳牛</td>
+                <td>乾乳期専用ビタミン設計</td>
+              </tr>
+              <tr>
+                <td><code>A024110101</code></td>
+                <td><strong>万田酵素カーフバランス</strong></td>
+                <td>仔牛</td>
+                <td>酵素による腸内環境改善</td>
+              </tr>
+              <tr>
+                <td><code>A023110102</code></td>
+                <td><strong>サルバスターP成牛用VIT</strong></td>
+                <td>搾乳牛</td>
+                <td>P（高パフォーマンス）タイプの泌乳設計</td>
+              </tr>
+              <tr>
+                <td><code>A023120101</code></td>
+                <td><strong>サルバスター瑞穂ビタミン</strong></td>
+                <td>搾乳牛</td>
+                <td>瑞穂ブランド専用設計のビタミンPX</td>
+              </tr>
+              <tr>
+                <td><code>A024020101</code></td>
+                <td><strong>NEWあじさい野牧場</strong></td>
+                <td>搾乳牛</td>
+                <td>放牧型酪農専用設計（放牧履歴あり）</td>
+              </tr>
+              <tr>
+                <td><code>A024050101</code></td>
+                <td><strong>MS P-5</strong></td>
+                <td>全ステージ</td>
+                <td>ミネラル5種配合のコスパ色びない江辺型</td>
+              </tr>
+              <tr>
+                <td><code>A024060101</code></td>
+                <td><strong>NJFマッシュ</strong></td>
+                <td>搾乳牛</td>
+                <td>北海道ブランド向けマッシュタイプPX</td>
+              </tr>
+              <tr>
+                <td><code>A024070101</code></td>
+                <td><strong>NVミックス</strong></td>
+                <td>全ステージ</td>
+                <td>江辺型ミネラル・ビタミン汎用品</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>農場別カスタムPX</h3>
+        <p>特定農場の課題に合わせた<strong>オーダーメイド設計</strong>PX。「あなたの農場専用」が作れることをアピールしましょう。</p>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>品番</th>
+                <th>商品名</th>
+                <th>設計コンセプト</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>A024100101</code></td>
+                <td>長嶋F搾乳用VIT</td>
+                <td>大規模酪農の泌乳期最適化</td>
+              </tr>
+              <tr>
+                <td><code>A024180101</code></td>
+                <td>長嶋F乾乳用VIT</td>
+                <td>乾乳期専用設計</td>
+              </tr>
+              <tr>
+                <td><code>A024120101</code></td>
+                <td>今村ふれあい牧場PX</td>
+                <td>繁殖成績向上に特化</td>
+              </tr>
+              <tr>
+                <td><code>A024130101</code></td>
+                <td>阿蘇ファームPX</td>
+                <td>放牧型酪農に対応</td>
+              </tr>
+              <tr>
+                <td><code>A024220101</code></td>
+                <td>CDSベースミックス</td>
+                <td>自家配合のベースとして柔軟に</td>
+              </tr>
+              <tr>
+                <td><code>A024220102</code></td>
+                <td>CDSベースミックス40</td>
+                <td>同上・40%配合タイプ</td>
+              </tr>
+              <tr>
+                <td><code>A024140101</code></td>
+                <td>セレクト30用PX</td>
+                <td>セレクト30配合飼料専用プレミックス</td>
+              </tr>
+              <tr>
+                <td><code>A024160101</code></td>
+                <td>セレクト30</td>
+                <td>セレクト30配合飼料完成品</td>
+              </tr>
+              <tr>
+                <td><code>A024150101</code></td>
+                <td>ハイチャージ7用PX</td>
+                <td>ハイチャージ7配合飼料専用プレミックス</td>
+              </tr>
+              <tr>
+                <td><code>A024170101</code></td>
+                <td>ハイチャージ7</td>
+                <td>ハイチャージ7配合飼料完成品</td>
+              </tr>
+              <tr>
+                <td><code>A024210101</code></td>
+                <td>成田ゆめ牧場搞乳用ミックス（マッシュ）</td>
+                <td>大規模酸農の泌乳期最適化</td>
+              </tr>
+              <tr>
+                <td><code>A024230101</code></td>
+                <td>平山牧場搞乳用ミックスNew</td>
+                <td>平山牧場専用設計</td>
+              </tr>
+              <tr>
+                <td><code>A024240101</code></td>
+                <td>小澤牧場搞乳用ミックスNew</td>
+                <td>小澤牧場専用設計</td>
+              </tr>
+              <tr>
+                <td><code>A024250101</code></td>
+                <td>越川牧場-乾乳用VIT</td>
+                <td>越川牧場乾乳期専用設計</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="talk-box">
+          <div class="talk-header">💬 「既にメーカーのビタミン剤を使ってるから大丈夫」</div>
+          <div class="talk-body">
+            <div><span class="talk-label ok">OK</span></div>
+            <p class="talk-text">
+              「メーカーさんの製品も良いものですよね。ただ、その配合は<strong>全国平均の牛群</strong>を想定した設計なんです。○○さんの農場は標高が高くて冬が長く、ビタミンDの要求量が一般より多い可能性があります。もし良ければ、<strong>今の血液検査データ</strong>を見せていただいて、農場に最適化したPXを設計してみませんか？」
+            </p>
+            <div class="talk-point">💡 <strong>ポイント</strong>：「汎用品 vs カスタム品」の差を具体的に見せる。データがあれば説得力が段違い。</div>
+          </div>
+        </div>
+      </div>
+      <div class="section" id="sec-ch4-eqp">
+        <div class="section-hero"><span class="hero-emoji">🔧</span>
+          <h1>資材・IoT機器</h1>
+          <p class="hero-sub">分類: B ＞ 資材 / IoT / 肥料</p>
+        </div>
+        <h3>敷料</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>品番</th>
+                <th>商品名</th>
+                <th>特徴</th>
+                <th>用途</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>B12001-03</code></td>
+                <td><strong>木質ペレット</strong></td>
+                <td>高吸水性・環境配慮</td>
+                <td>牛床敷料スタンダード</td>
+              </tr>
+              <tr>
+                <td><code>B12004-06</code></td>
+                <td><strong>おが粉</strong></td>
+                <td>定番・嵩高い</td>
+                <td>中〜大規模農場</td>
+              </tr>
+              <tr>
+                <td><code>B12006-06</code></td>
+                <td><strong>パイン材ペレット</strong></td>
+                <td>針葉樹由来・抗菌</td>
+                <td>衛生管理重視</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>マット・仔牛用品</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>品番</th>
+                <th>商品名</th>
+                <th>特徴</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>B12006-12</code></td>
+                <td><strong>キャトルフレックスマット</strong></td>
+                <td>高弾性ゴム。蹄負担軽減</td>
+              </tr>
+              <tr>
+                <td><code>B12007-05</code></td>
+                <td><strong>エアーファイバーシート</strong></td>
+                <td>高通気性。暑熱対策にも</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>IoT機器</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>品番</th>
+                <th>商品名</th>
+                <th>機能</th>
+                <th>営業ポイント</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>B12010-12xx</code></td>
+                <td><strong>@mowment</strong></td>
+                <td>活動計測</td>
+                <td>
+                  【成牛】発情検知精度90%+。繁殖改善の切り札<br>
+                  【仔牛】首輪型タグ（60g/電池レス）で活動量を24時間365日モニタリング。目視より早く疾病の兆候を検知し、早期治療を実現。ストレスや飼育環境の影響評価にも活用可能（特許取得済）。
+                </td>
+              </tr>
+              <tr>
+                <td><code>B12011-12xx</code></td>
+                <td><strong>MOWCAM</strong></td>
+                <td>牛舎カメラ</td>
+                <td>夜間分娩の見逃し防止</td>
+              </tr>
+              <tr>
+                <td><code>E21001-E21006</code></td>
+                <td><strong>IoTシステム利用料・保守費</strong></td>
+                <td>サブスク利用料・初期費用</td>
+                <td>@mowmentパッケージ利用料・クラウド費・開発費など</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout tip">
+          <div class="callout-title">💡 IoTの営業アプローチ</div>
+          <p style="margin:0;">「タグ1個○円」ではなく<strong>「発情見逃し1頭減=年間○万円のコスト削減」</strong>のROIで語りましょう。飼料と組合せたトータル提案が差別化のカギです。
+          </p>
+        </div>
+        <h3>肥料・堆肥原料</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>品番</th>
+                <th>商品名</th>
+                <th>用途</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>B12005-01</code></td>
+                <td><strong>堆肥原料</strong></td>
+                <td>堆肥生産の基材</td>
+              </tr>
+              <tr>
+                <td><code>B12011-01</code></td>
+                <td><strong>バイオシャワー</strong></td>
+                <td>微生物活性剤。悪臭対策・堆肥発酵促進</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>一般資材・その他</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>品番</th>
+                <th>商品名</th>
+                <th>特徴</th>
+                <th>用途</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>B12003-02</code></td>
+                <td><strong>除角ペースト（アメリカ）</strong></td>
+                <td>薬品塗布型の除角剤。ストレス少ない除角</td>
+                <td>仔牛の除角処理</td>
+              </tr>
+              <tr>
+                <td><code>B33000-13/14/15/16</code></td>
+                <td><strong>POEシートシリーズ</strong></td>
+                <td>ポリオレフィン系高機能シート（4種）</td>
+                <td>牛床・通路等の環境改善シート</td>
+              </tr>
+              <tr>
+                <td><code>B33000-04〜13</code></td>
+                <td><strong>スピードライト電牧資材シリーズ</strong></td>
+                <td>電気牧柵用部材一式（エネルジャイザー・コンパス・ケーブル等8種）</td>
+                <td>放牧場の電牧設置・メンテナンス</td>
+              </tr>
+              <tr>
+                <td><code>B33000-12</code></td>
+                <td><strong>1000L液体コンテナ</strong></td>
+                <td>IBC型大型コンテナ。糖蜜等液体飼料の輸送・保管</td>
+                <td>液体飼料の農場貯蔵</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="section" id="sec-ch4-food">
+        <div class="section-hero"><span class="hero-emoji">🫒</span>
+          <h1>食糧事業 ── 食糧原料</h1>
+          <p class="hero-sub">分類: B-11 食糧/食糧 ＞ 食糧原料</p>
+        </div>
+        <div class="callout info">
+          <div class="callout-title">🌴 食糧事業とは？</div>
+          <p style="margin:0;">カスケディアは畜産飼料だけでなく、<strong>食用油脂の原料</strong>となるパーム油の輸入も手がけています。インドネシア・マレーシアから国内の食品メーカーへ供給するB
+            to Bビジネスです。畜産部門との複合提案でトータルの取引金額拡大も狙えます。</p>
+        </div>
+        <h2><span class="h2-icon">📋</span> 商品ラインナップ</h2>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>品番</th>
+                <th>商品名</th>
+                <th>産地</th>
+                <th>特徴</th>
+                <th>主な用途</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>B11001-07</code></td>
+                <td><strong>RBDパームオイル</strong></td>
+                <td>🇮🇩</td>
+                <td>精製・漂白・脱臭処理済み。常温で固体（融点34℃付近）</td>
+                <td>食品加工用油脂・マーガリン原料</td>
+              </tr>
+              <tr>
+                <td><code>B11002-07</code></td>
+                <td><strong>RBDパームオレイン</strong></td>
+                <td>🇮🇩</td>
+                <td>パームオイルの液体分。常温液体。酸化安定性が高い</td>
+                <td>フライ油・食品加工・飼料用油脂</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout tip">
+          <div class="callout-title">💡 営業アプローチ：飼料×食糧のクロスセル</div>
+          <p style="margin:0;">
+            パームオレインは<strong>飼料用の油脂</strong>としても活用可能です。「食糧原料としての実績」を切り口に、畜産農家への「コスト削減目的の油脂添加」提案にも応用できます。飼料部門との情報共有を積極的に行いましょう。
+          </p>
+        </div>
+      </div>
+      <div class="section" id="sec-ch4-svc">
+        <div class="section-hero"><span class="hero-emoji">🧾</span>
+          <h1>付帯手配 ── 物流・業務サービス</h1>
+          <p class="hero-sub">分類: C, D, E, F 等 ＞ サービス・諸雑費</p>
+        </div>
+        <div class="callout info">
+          <div class="callout-title">💡 モノ以外の提案も重要な売上要素</div>
+          <p style="margin:0;">
+            飼料や資材といった「モノ」だけでなく、<strong>物流手配・加工・システム利用料</strong>といった「サービス（コト）」もカスケディアの重要なしのぎ（売上要素）です。見積や請求の際、顧客の要望に応じて細やかに手配できる体制が整っています。
+          </p>
+        </div>
+        <h2><span class="h2-icon">🚚</span> 物流・荷役・保管サービス</h2>
+        <p>単なる港渡しだけでなく、自社・提携倉庫を活用した柔軟な物流対応が可能です。</p>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>品番コード帯</th>
+                <th>代表的な項目</th>
+                <th>概要・営業ポイント</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>D0001-D0007</code></td>
+                <td><strong>デマレージ / ディテンション / 保管料</strong></td>
+                <td>港湾での超過留置費用や、自社倉庫での保管費用に関する清算項目です。「農場に置ききれない分をカスケディアで数日預かる」といった柔軟な対応もサービスの一環として提供できます。</td>
+              </tr>
+              <tr>
+                <td><code>D0013 / D0020</code></td>
+                <td><strong>アッペン加工作業 / 袋詰め作業料</strong></td>
+                <td>単なる原料提供だけでなく、フレコン詰めや小分け・再加工なども手配可能です。</td>
+              </tr>
+              <tr>
+                <td><code>D0003 / D0021-22</code></td>
+                <td><strong>運搬料 / 荷役・一貫作業料</strong></td>
+                <td>コンテナのドレージ手配から、農場までのトラック配送、フォークリフトでの荷降ろし（リフトON/OFF料）まで、ラストワンマイルの作業全般を引き受けます。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h2><span class="h2-icon">📦</span> 梱包資材・販売品</h2>
+        <p>お客様の作業効率化に向け、飼料メーカーや大型農場向けにフレコン等の資材も提供しています。</p>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>品番コード帯</th>
+                <th>代表的な項目</th>
+                <th>概要・営業ポイント</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>F0001-F0004</code></td>
+                <td><strong>フレコン（全開/半開等） / PP袋 / 紙袋</strong></td>
+                <td>混合飼料の充填用や、自社ブレンドを行う農場向けに、作業用途に合わせた最適なフレコンを提供します。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h2><span class="h2-icon">💰</span> 立替金・精算・事務手数料</h2>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>品番コード帯</th>
+                <th>代表的な項目</th>
+                <th>概要</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>C0001-C0005</code></td>
+                <td><strong>貿易費用・立替金（デマレージ / 税関検査費 等）</strong></td>
+                <td>
+                  通関・輸入時に発生した突発的な費用等の立替精算に使用するコードです。見積りには載らない「イレギュラーな貿易費用」が含まれるため、営業マンとして「なぜこの費用が発生したか」を顧客に透明性をもって説明することが求められます。
+                  <ul
+                    style="margin-top: 8px; margin-bottom: 0; padding-left: 20px; font-size: 0.9em; color: var(--text-secondary);">
+                    <li><strong><code>C0001 / C0002</code> デマレージ /
+                        ディテンション</strong>：コンテナの引き取り遅延や、空コンテナの返却遅延に伴うペナルティ費用（留置料・延滞料）。</li>
+                    <li><strong><code>C0003 / C0004</code> 運搬料 /
+                        デバン作業料（立替）</strong>：港から指定倉庫などへの突発的なドレージ（輸送）や、デバンニング（荷降ろし）作業の実費立替分。</li>
+                    <li><strong><code>C0005</code>
+                        税関検査シフト料</strong>：税関の抜き打ち検査（大型X線検査や動植物検疫のための開梱検査）に指定された場合の、コンテナ移動・検査手配費用。これはランダムに発生する不可抗力（輸入者の義務）であるため、原則として顧客負担となるケースが多く、事前に「検査に当たった場合は実費請求となります」と営業段階で握っておくことが重要です。
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+              <tr>
+                <td><code>E0001-E0008</code></td>
+                <td><strong>インボイス調整 / 決済・為替調整</strong></td>
+                <td>為替差額の精算や決済手数料、値引き調整などの経理的アジャストに用いられます。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout tip">
+          <div class="callout-title">⚠️ デマレージ（Demurrage）とディテンション（Detention）の違い</div>
+          <p style="margin:0;">新人営業が必ずつまずく物流用語です！<br>
+            <strong>デマレージ</strong>：CY（コンテナヤード）における<strong>無料引き取り期間（フリータイム）を超過</strong>した際の「コンテナ留置料」。<br>
+            <strong>ディテンション</strong>：コンテナをCYから持ち出し、農場等で荷下ろしした後に、<strong>船会社への空コンテナ返却期限を超過</strong>した際の「コンテナ延滞料」。
+          </p>
+        </div>
+      </div>
+      <div class="section" id="sec-ch4-fat">
+        <div class="section-hero"><span class="hero-emoji">💧</span>
+          <h1>商品カタログ ── 脂肪酸カルシウムの基礎</h1>
+          <p class="hero-sub">マイナスエネルギーを「高エネルギー・低発熱」で補う切り札</p>
+        </div>
+        <h2><span class="h2-icon">🤔</span> なぜ「脂肪」が必要か？</h2>
+        <p>高泌乳牛が陥りやすい「食べる量 ＜ 出すエネルギー」という負の状態。炭水化物（穀類）の約2.25倍という高エネルギーを持つ「油」は、少量で効率的なエネルギー源ですが、普通の油をあげるのはNGです。油膜がルーメン内で繊維を覆ってしまい、微生物が消化できなくなってしまうからです。</p>
+        <p><strong>解決策＝バイパス脂肪（脂肪酸カルシウム）：</strong>
+          脂肪をカルシウムと結合（石鹸化）させることで第一胃（中性）を溶けずに素通り（バイパス）し、第四胃（酸性）の胃酸によって分解され、小腸でバラバラになった脂肪酸を効率よく吸収できるように設計されています。</p>
+        <h2><span class="h2-icon">🧪</span> 脂肪酸の組成による「使い分け」</h2>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>脂肪酸タイプ</th>
+                <th>成分と特徴・作用機序</th>
+                <th>こんな農場の悩みに提案！</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>パーム系</strong><br>（飽和脂肪酸）</td>
+                <td>【パルミチン酸等】乳脂肪の<strong>「直接の材料」</strong>となるため、<strong>乳脂率アップ</strong>にすぐに直結する。ただし牛の体力や体型回復には回りにくい。</td>
+                <td>「夏場で乳脂が落ちて乳代が下がった」<br>「乳脂肪分をダイレクトに補給したい」</td>
+              </tr>
+              <tr>
+                <td><strong>大豆・菜種等</strong><br>（不飽和脂肪酸）</td>
+                <td>【オレイン酸、リノール酸】消化効率が高く、<strong>牛の体脂肪（BCS）の回復</strong>に寄与。インスリン感受性（ホルモンの効きやすさ）を改善して卵胞発育を促したり、プロスタグランジン（子宮回復ホルモン）の原料となる。乳脂は抑制ぎみ。</td>
+                <td>「分娩後に痩せすぎる」<br>「栄養をつけて発情・着床を促したい」</td>
+              </tr>
+              <tr>
+                <td><strong>機能性（オメガ3）</strong></td>
+                <td>【亜麻仁・魚油】細胞膜を保護し、抗炎症作用により分娩前後のストレスを抑制。胚の生存率向上。</td>
+                <td>「病気・乳房炎による炎症を鎮めたい」</td>
+              </tr>
+              <tr>
+                <td><strong>綿実</strong><br>（天然バイパス）</td>
+                <td>硬い殻が天然のバイパス機能を果たし、リノール酸（50%）・オレイン酸（15%）・パルミチン酸（20%）を緩やかに放出。良質な粗タンパク質や有効繊維にもなる一石三鳥サプリ。</td>
+                <td>「夏場の食い止まりと乳量低下を同時に防ぎたい（暑熱対策の鉄板）」</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout tip">
+          <div class="callout-title">💡 脂肪のもう一つのメリット「暑熱の救世主」</div>
+          <p style="margin:0;">繊維や糖の消化には体熱が発生（Heat
+            Increment：消化熱）しますが、脂肪の代謝プロセスでは熱の発生が非常に少なくて済みます。暑い時期、牛は熱を出したくないので食い止まりがちですが、ここに「熱の出ない油（脂肪酸Ca）」で不足するエネルギーを補うのが夏のセオリーです。
+          </p>
+        </div>
+      </div>
+      <div class="section" id="sec-appendix">
+        <div class="section-hero"><span class="hero-emoji">📎</span>
+          <h1>付録 ── 用語集</h1>
+          <p class="hero-sub">営業現場で頻出する業界用語・略語をまとめています</p>
+        </div>
+        <h2><span class="h2-icon">📖</span> 飼料・栄養の用語</h2>
+        <div class="glossary-grid">
+          <div class="glossary-item">
+            <div class="glossary-term">CP（粗タンパク質）</div>
+            <div class="glossary-def">Crude Protein。飼料中のタンパク質含量。牧草の品質指標として最も重要。アルファルファ：CP 17-22%、チモシー：CP 8-12%。</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">TDN（可消化養分総量）</div>
+            <div class="glossary-def">Total Digestible Nutrients。飼料のエネルギー価を示す指標。値が高いほど高エネルギー。</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">NDF / ADF</div>
+            <div class="glossary-def">中性/酸性デタージェント繊維。繊維の質を示す。NDFが高いと食い込みが低下、ADFが高いと消化性が低い。</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">DM（乾物）</div>
+            <div class="glossary-def">Dry Matter。水分を除いた飼料の重量。「DM中○%」という表記は水分を除いたベースでの含量。</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">VFA（揮発性脂肪酸）</div>
+            <div class="glossary-def">ルーメン微生物が繊維を分解して生成。酢酸（→乳脂肪）、プロピオン酸（→グルコース）、酪酸（→ルーメン発達）。</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">TMR</div>
+            <div class="glossary-def">Total Mixed Ration。粗飼料と濃厚飼料を均一に混合した完全混合飼料。大規模農場で主流。</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">バイパス脂肪</div>
+            <div class="glossary-def">ルーメンで分解されずに小腸で吸収される脂肪。Richfat CA等。効率的にエネルギーを供給。</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">プレミックス（PX）</div>
+            <div class="glossary-def">ビタミン・ミネラル・機能性成分を事前に混合した添加物。飼料に少量混ぜて使う。</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">アシドーシス</div>
+            <div class="glossary-def">ルーメン内のpHが異常に低下した状態（pH 5.5以下）。濃厚飼料の過剰給与や粗飼料不足が原因。</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">ケトーシス</div>
+            <div class="glossary-def">分娩前後にエネルギーが不足し、体脂肪を過剰に分解→ケトン体が蓄積する代謝病。</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">乳熱（低Ca血症）</div>
+            <div class="glossary-def">分娩直後にカルシウムが急激に不足して起きる。低Ca飼料（チモシー等）で予防。</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">BCS</div>
+            <div class="glossary-def">Body Condition Score。牛の体型を1〜5段階で評価。適正は搾乳牛で3.0〜3.5、肉牛で3.0〜4.0。</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">活動量モニタリング</div>
+            <div class="glossary-def">
+              牛の首に付けたタグ等で動きを24時間計測すること。活動量の「低下」は疾病やストレスの早期発見に繋がり、「増加」は発情発見の指標となる。客観的データにより経験に頼らない飼養管理が可能になる。</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">ルーメン（第一胃）</div>
+            <div class="glossary-def">
+              反芻動物（牛・羊等）が持つ4つの胃のうち最も大きな最初の胃。ここに生息する無数の微生物が繊維を分解し、牛の主要なエネルギー源となるVFAを作り出す。「牛を飼う前に微生物を飼え」と言われるほど重要。</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">バイパス蛋白（UDP）</div>
+            <div class="glossary-def">ルーメン内の微生物に分解されず、そのまま小腸に到達（バイパス）して直接牛自身の栄養として吸収されるタンパク質。搾乳牛の乳量アップには欠かせない指標。</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">DCAD（カチオン・アニオン差）</div>
+            <div class="glossary-def">Dietary Cation-Anion Difference。飼料中の陽イオン（Na, K等）と陰イオン（Cl,
+              S等）のバランス。分娩前（乾乳後期）にDCADをマイナスに傾けることでカルシウム代謝を活性化させ、乳熱を予防する高度な設計手法。</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">WCS（ホールクロップサイレージ）</div>
+            <div class="glossary-def">稲などの作物を、実（子実）だけでなく茎や葉（茎葉）も含めて全体（ホール）を収穫し、サイレージ化した自給飼料。「稲WCS」が国内で広く普及している。</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">エコフィード（食品製造副産物）</div>
+            <div class="glossary-def">
+              ビール粕、オリーブ粕、ビートパルプなど食品製造の過程で出る副産物を飼料化したもの。資源循環・コスト削減の観点から年々重要度が増しており、当社でも大きく取り扱っている。</div>
+          </div>
+        </div>
+        <h2><span class="h2-icon">🚚</span> 物流・貿易の用語</h2>
+        <div class="glossary-grid">
+          <div class="glossary-item">
+            <div class="glossary-term">CIF</div>
+            <div class="glossary-def">Cost, Insurance and Freight。保険料・運賃込みの価格条件。日本の港まで込みの価格。</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">FOB</div>
+            <div class="glossary-def">Free On Board。本船渡し。船積み時点で費用・リスクが移転。</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">L/C（信用状）</div>
+            <div class="glossary-def">Letter of Credit。銀行が支払いを保証する書類。国際取引のリスクヘッジ。</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">コンテナ（20ft/40ft）</div>
+            <div class="glossary-def">20ft：約28㎥、40ft：約58㎥。牧草なら40ftで約20〜24トン。<br><span
+                style="color:var(--accent-blue);font-weight:600;font-size:0.75rem;">🚢
+                カスケディアの経験値：</span><br>実際のCCB（ダブルコンプレッション）の場合、40ftHCにて約24〜25トン（約500ベール）を積載。奥から隙間なく井桁積みにすることで積載効率を最大化しています。輸入時のダメージを防ぐため、一番ドア側には「捨てベール」を入れる等のノウハウがあります。
+            </div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">フレコン</div>
+            <div class="glossary-def">フレキシブルコンテナ。大型のバッグ。粉末・ペレット飼料の輸送に使用。</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">デバンニング</div>
+            <div class="glossary-def">コンテナから荷物を取り出す作業。受入農場の設備（フォークリフト等）要確認。</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">ETD / ETA</div>
+            <div class="glossary-def">出発予定日 / 到着予定日。顧客への納期連絡で必須。</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">ロット</div>
+            <div class="glossary-def">同一条件で生産された製品の単位。牧草は刈り取り時期・圃場で品質がロットごとに異なる。</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">CCB（シングル / ダブル圧縮）</div>
+            <div class="glossary-def">収穫した牧草を海上輸送用に圧縮してブロック状にした荷姿。さらに強力に二重圧縮したものが「Double Compressed
+              Bale（CCB）」。コンテナの積載効率を極限まで高めるための標準規格。</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">IBC（液体コンテナ）</div>
+            <div class="glossary-def">Intermediate Bulk
+              Containerの略称。糖蜜などの液体飼料を約1000L単位で輸送・保管できる大型樹脂タンクで、フォークリフトでの荷役性に優れる。</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">クロスセル / アップセル</div>
+            <div class="glossary-def">
+              既存顧客に対し「別の商品も併買してもらう」のがクロスセル（例：牧草を買っている農家に、IoT機器や添加剤を提案する）。より高単価・多機能な商品を提案するのがアップセル。営業の基本戦術。</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">B to B / B to C</div>
+            <div class="glossary-def">B to B（Business to Business /
+              企業間取引）の略。カスケディアの畜産部門や食糧事業（食品メーカーへのパーム油原料供給）はこれに当たる。対して一般消費者向けがB to C。</div>
+          </div>
+        </div>
+      </div>
+      <div class="section" id="sec-app-pack">
+        <div class="section-hero"><span class="hero-emoji">📦</span>
+          <h1>付録 ── 荷姿ガイド</h1>
+          <p class="hero-sub">牧草・飼料の荷姿（パッケージ）の違いと選び方</p>
+        </div>
+        <h2><span class="h2-icon">🌾</span> 牧草の荷姿</h2>
+        <p><span style="color:var(--accent-blue);font-weight:600;font-size:0.8rem;">🚚
+            カスケディアの経験値（大型車積載）：</span><br><span
+            style="font-size:0.8rem;">ハーフカットラップの場合、10t車で約28本（14t）、トレーラーで約40本（20t）まで積載可能。ただし現場のデバンニング（フォークの有無等）によっては10t車しか入れない農道もあるため、初回訪問時に必ず「搬入経路の道幅」をGoogle
+            Earth等で確認、または現地で実測しましょう。</span></p>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>荷姿</th>
+                <th>重量目安</th>
+                <th>サイズ感</th>
+                <th>特徴</th>
+                <th>向いている農場</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>ハーフカットラップ</td>
+                <td>約500kg</td>
+                <td>高さ約120cm</td>
+                <td>最も一般的。フィルムラップで密封。フォークリフトで扱いやすい</td>
+                <td>中〜大規模。TMRミキサー使用農場</td>
+              </tr>
+              <tr>
+                <td>ビッグベール</td>
+                <td>約500-600kg</td>
+                <td>高さ約120cm</td>
+                <td>ラップなし。結束バンドのみ。乾燥地域向け</td>
+                <td>乾燥した倉庫保管が可能な農場</td>
+              </tr>
+              <tr>
+                <td>ハーフカットバラ</td>
+                <td>ベール崩し出荷</td>
+                <td>—</td>
+                <td>ベールを崩した状態で納品。すぐにTMRに混合可能</td>
+                <td>TMR工場・大規模農場</td>
+              </tr>
+              <tr>
+                <td>シングルベール</td>
+                <td>約25-30kg</td>
+                <td>約40×50×90cm</td>
+                <td>1人で持てるサイズ。小分け手作業向け</td>
+                <td>小規模農場・個人酪農家</td>
+              </tr>
+              <tr>
+                <td>キューブ</td>
+                <td>—</td>
+                <td>約3-4cm角</td>
+                <td>圧縮成形。保管効率◎。自動給餌対応</td>
+                <td>TMR原料・自動化農場</td>
+              </tr>
+              <tr>
+                <td>ペレット</td>
+                <td>—</td>
+                <td>約1cm径</td>
+                <td>粒状加工。計量・混合が容易</td>
+                <td>配合飼料工場・TMR</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h2><span class="h2-icon">🧪</span> 濃厚飼料・添加剤の荷姿</h2>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>荷姿</th>
+                <th>重量</th>
+                <th>主な対象商品</th>
+                <th>注意点</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>紙袋</td>
+                <td>20-30kg</td>
+                <td>プレミックス / ビタミン剤 / 添加剤</td>
+                <td>湿気に注意。屋内保管必須</td>
+              </tr>
+              <tr>
+                <td>フレコン</td>
+                <td>500-1000kg</td>
+                <td>ビートパルプ / グルテンフィード / 酸化Mg</td>
+                <td>フォークリフト必要。場所確保</td>
+              </tr>
+              <tr>
+                <td>タンクローリー</td>
+                <td>バラ積み</td>
+                <td>糖蜜 / 液状飼料</td>
+                <td>受入タンクの容量を事前確認</td>
+              </tr>
+              <tr>
+                <td>ドラム缶</td>
+                <td>200L</td>
+                <td>液状プロピオン酸Ca 等</td>
+                <td>保管温度に注意</td>
+              </tr>
+              <tr>
+                <td>段ボール</td>
+                <td>10-20kg</td>
+                <td>代用乳 / 少量添加剤</td>
+                <td>積み重ね保管してOK</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout tip">
+          <div class="callout-title">💡 荷姿提案のコツ</div>
+          <p style="margin:0;">荷姿の選択は「給餌方式」と「保管環境」で決まります。初回訪問時に<strong>①TMRミキサーの有無 ②倉庫の広さ
+              ③フォークリフトの有無</strong>を確認しておくと、最適な荷姿をスムーズに提案できます。</p>
+        </div>
+      </div>
+    </div><!-- /content-area -->
+  </main>
+
+  <nav class="bottom-nav" id="bottomNav">
+    <a class="bottom-nav-item active" data-section="home" onclick="navigateTo('home')"><span
+        class="bn-icon">🏠</span>ホーム</a>
+    <a class="bottom-nav-item" data-section="ch2" onclick="navigateTo('ch2')"><span class="bn-icon">🐮</span>基礎知識</a>
+    <a class="bottom-nav-item" data-section="ch3" onclick="navigateTo('ch3')"><span class="bn-icon">🔍</span>逆引き</a>
+    <a class="bottom-nav-item" data-section="ch4" onclick="navigateTo('ch4')"><span class="bn-icon">📦</span>カタログ</a>
+    <a class="bottom-nav-item" data-section="appendix" onclick="navigateTo('appendix')"><span
+        class="bn-icon">📎</span>付録</a>
+  </nav>
+
+  <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+</div><!-- /app-layout -->
+<script>
+  const sectionMeta = {
+    'home': { b: 'ホーム', p: null }, 'ch1': { b: '第1章 フィロソフィー', p: null }, 'ch2': { b: '第2章 牛の基礎知識', p: null },
+    'ch3': { b: '第3章 逆引きインデックス', p: null }, 'ch4': { b: '第4章 商品カタログ', p: null },
+    'ch4-hay': { b: '粗飼料・牧草', p: 'ch4' }, 'ch4-sil': { b: 'サイレージ', p: 'ch4' },
+    'ch4-byp': { b: '副産物・添加剤', p: 'ch4' }, 'ch4-comp': { b: '配合飼料・代用乳', p: 'ch4' },
+    'ch4-px': { b: '自社企画PX', p: 'ch4' }, 'ch4-eqp': { b: '資材・IoT', p: 'ch4' },
+    'ch4-food': { b: '食糧事業', p: 'ch4' }, 'ch4-svc': { b: '付帯手配・サービス', p: 'ch4' },
+    'ch4-fat': { b: '脂肪酸Caの基礎', p: 'ch4' },
+    'ch2-lactation': { b: '泌乳サイクル', p: 'ch2' }, 'ch2-milk': { b: '乳成分と合成', p: 'ch2' },
+    'ch2-analysis': { b: '飼料分析', p: 'ch2' }, 'ch2-vitmin': { b: 'ビタミン・ミネラル', p: 'ch2' },
+    'appendix': { b: '付録 用語集', p: null }, 'app-pack': { b: '荷姿ガイド', p: 'appendix' }
+  };
+  let cur = 'home';
+  function navigateTo(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    const t = document.getElementById('sec-' + id); if (t) { t.classList.add('active'); t.style.animation = 'none'; t.offsetHeight; t.style.animation = ''; }
+    document.querySelectorAll('.nav-chapter,.nav-child').forEach(e => e.classList.remove('active'));
+    const m = sectionMeta[id], pid = m?.p || id;
+    document.querySelectorAll('.nav-chapter').forEach(c => { if (c.dataset.section === pid) c.classList.add('active'); });
+    if (m?.p) {
+      document.querySelectorAll('.nav-child').forEach(c => { if (c.dataset.section === id) c.classList.add('active'); });
+      const pc = document.querySelector('.nav-chapter[data-section="' + pid + '"]');
+      if (pc) { pc.classList.add('expanded'); const ch = document.getElementById(pid + '-children') || document.getElementById('app-children'); if (ch) ch.classList.add('open'); }
+    }
+    updateBC(id); closeSidebar(); window.scrollTo(0, 0); cur = id;
+    document.querySelectorAll('.bottom-nav-item').forEach(b => {
+      b.classList.remove('active');
+      const bs = b.dataset.section; if (bs === id || (m?.p && bs === m.p)) b.classList.add('active');
+    });
+  }
+  function updateBC(id) {
+    const m = sectionMeta[id], bc = document.getElementById('breadcrumb'); if (!m) return;
+    if (m.p) { const pm = sectionMeta[m.p]; bc.innerHTML = '<span>🐄 営業マニュアル</span><span class="sep">/</span><span style="cursor:pointer" onclick="navigateTo(\'' + m.p + '\')">' + pm.b + '</span><span class="sep">/</span><span class="current">' + m.b + '</span>'; }
+    else { bc.innerHTML = '<span>🐄 営業マニュアル</span><span class="sep">/</span><span class="current">' + m.b + '</span>'; }
+  }
+  function toggleChapter(el, cid) {
+    const ch = document.getElementById(cid), o = el.classList.contains('expanded');
+    if (o) { el.classList.remove('expanded'); ch.classList.remove('open'); }
+    else { el.classList.add('expanded'); ch.classList.add('open'); navigateTo(el.dataset.section); }
+  }
+  function toggleAccordion(h) {
+    const it = h.parentElement, o = it.classList.contains('open'), g = h.closest('.accordion');
+    if (g) g.querySelectorAll('.accordion-item').forEach(a => a.classList.remove('open')); if (!o) it.classList.add('open');
+  }
+  function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebarOverlay').classList.toggle('show'); }
+  function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('show'); }
+  document.getElementById('sidebarOverlay').addEventListener('click', closeSidebar);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSidebar(); });
+  window.addEventListener('scroll', () => {
+    const btn = document.getElementById('backToTop'), pb = document.getElementById('progressBar');
+    const st = window.scrollY; btn.classList.toggle('show', st > 300);
+    const h = document.documentElement.scrollHeight - window.innerHeight; pb.style.width = h > 0 ? (st / h * 100) + '%' : '0%';
+  });
+  function handleHash() {
+    const hash = window.location.hash.replace('#', '');
+    if (hash && document.getElementById('sec-' + hash)) {
+      if (cur !== hash) navigateTo(hash);
+    } else if (cur === 'search-results') {
+      // do nothing if search
+    } else {
+      if (cur !== 'home') navigateTo('home');
+    }
+  }
+
+  window.addEventListener('hashchange', handleHash);
+  
+  if (window.location.hash) {
+    handleHash();
+  } else {
+    navigateTo('home');
+  }
+
+  /* ===== Search Logic ===== */
+  const searchInput = document.getElementById('searchInput');
+  const searchClear = document.getElementById('searchClear');
+  let searchTimeout = null;
+
+  // Perform Search
+  function performSearch(query) {
+    query = query.trim().toLowerCase();
+    const list = document.getElementById('searchResultsList');
+    const status = document.getElementById('searchStatus');
+    list.innerHTML = '';
+
+    if (!query) {
+      if (cur === 'search-results') navigateTo('home');
+      return;
+    }
+
+    navigateTo('search-results');
+    status.innerHTML = `「<span style="color:var(--accent-green);font-weight:bold;">${query}</span>」の検索結果`;
+
+    // Elements to search within each section
+    const searchableSelectors = 'h1, h2, h3, h4, p, td, th, li, .glossary-term, .glossary-def, .talk-text';
+    let resultsCount = 0;
+
+    document.querySelectorAll('.section').forEach(sec => {
+      if (sec.id === 'sec-search-results') return; // Skip search section itself
+      const secId = sec.id.replace('sec-', '');
+      const secName = sectionMeta[secId] ? sectionMeta[secId].b : 'コンテンツ';
+
+      let secMatches = [];
+      sec.querySelectorAll(searchableSelectors).forEach(el => {
+        const text = el.textContent || '';
+        const lowerText = text.toLowerCase();
+        const idx = lowerText.indexOf(query);
+
+        if (idx !== -1) {
+          // Extract snippet (around 40 chars before and after)
+          const start = Math.max(0, idx - 40);
+          const end = Math.min(text.length, idx + query.length + 40);
+          let snippet = text.substring(start, end);
+          if (start > 0) snippet = '...' + snippet;
+          if (end < text.length) snippet = snippet + '...';
+
+          // Highlight match
+          const regex = new RegExp(query, 'gi');
+          snippet = snippet.replace(regex, match => `<span class="sr-highlight">${match}</span>`);
+
+          // Avoid duplicate snippets from the same element type nearby
+          if (!secMatches.some(m => m.snippet === snippet)) {
+            secMatches.push({ snippet, element: el.tagName.toLowerCase() });
+          }
+        }
+      });
+
+      // If matches found in this section, create a result card
+      if (secMatches.length > 0) {
+        resultsCount++;
+        const card = document.createElement('div');
+        card.className = 'search-result-item';
+        card.onclick = () => {
+          searchInput.value = ''; // clear search on navigation
+          searchClear.style.display = 'none';
+          navigateTo(secId);
+        };
+
+        let snippetsHtml = secMatches.slice(0, 3).map(m => `<div class="sr-snippet">${m.snippet}</div>`).join('');
+        if (secMatches.length > 3) snippetsHtml += `<div class="sr-snippet" style="margin-top:4px; font-style:italic; font-size:0.7rem;">他 ${secMatches.length - 3} 件の関連事項</div>`;
+
+        card.innerHTML = `
+          <div class="sr-title">📄 ${secName}</div>
+          ${snippetsHtml}
+        `;
+        list.appendChild(card);
+      }
+    });
+
+    if (resultsCount === 0) {
+      list.innerHTML = `<div class="sr-empty">該当する内容が見つかりませんでした。<br>別のキーワードをお試しください。</div>`;
+    }
+  }
+
+  // Event Listeners
+  searchInput.addEventListener('input', (e) => {
+    const val = e.target.value;
+    searchClear.style.display = val.length > 0 ? 'block' : 'none';
+
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      performSearch(val);
+    }, 300); // 300ms debounce
+  });
+
+  searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      clearTimeout(searchTimeout);
+      performSearch(searchInput.value);
+    }
+  });
+
+  searchClear.addEventListener('click', () => {
+    searchInput.value = '';
+    searchClear.style.display = 'none';
+    if (cur === 'search-results') navigateTo('home');
+    searchInput.focus();
+  });
+
+  // ===== TABLE SORTING FUNCTIONALITY =====
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.table-wrapper table').forEach(table => {
+      // 第4章(sec-ch4-xxx)内のテーブルのみ、かつ4行以上の場合のみソートを有効化する
+      const section = table.closest('.section');
+      if (!section || !section.id.startsWith('sec-ch4-')) return;
+
+      const tbody = table.querySelector('tbody');
+      if (!tbody || tbody.querySelectorAll('tr').length < 4) return;
+
+      const headers = table.querySelectorAll('thead th');
+      headers.forEach((th, index) => {
+        th.classList.add('sortable');
+        th.addEventListener('click', () => {
+          const tbody = table.querySelector('tbody');
+          if (!tbody) return;
+          const rows = Array.from(tbody.querySelectorAll('tr'));
+          const isAsc = th.classList.contains('asc');
+
+          headers.forEach(h => { h.classList.remove('asc', 'desc'); });
+          th.classList.add(isAsc ? 'desc' : 'asc');
+
+          rows.sort((a, b) => {
+            const aText = a.children[index]?.textContent?.trim() || '';
+            const bText = b.children[index]?.textContent?.trim() || '';
+            // Try numeric sort first, fallback to localeCompare
+            const aNum = parseFloat(aText.replace(/[^0-9.-]+/g, ''));
+            const bNum = parseFloat(bText.replace(/[^0-9.-]+/g, ''));
+            if (!isNaN(aNum) && !isNaN(bNum)) {
+              return isAsc ? bNum - aNum : aNum - bNum;
+            }
+            return isAsc ? bText.localeCompare(aText, 'ja') : aText.localeCompare(bText, 'ja');
+          });
+
+          rows.forEach(row => tbody.appendChild(row));
+        });
+      });
+    });
+  });
+
+</script>
+</body>
+
+</html>
