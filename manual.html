@@ -3,13 +3,16 @@
 
 <head>
   <meta charset="UTF-8">
+  <style id="auth-guard">html { visibility: hidden !important; }</style>
   <script>
     (function() {
       var pass = prompt('パスワードを入力してください');
       if (pass !== 'cascadia2026') {
+        window.location.href = 'about:blank';
         document.documentElement.innerHTML = '';
         throw new Error('Access denied');
       }
+      document.getElementById('auth-guard').remove();
     })();
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
