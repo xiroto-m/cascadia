@@ -1846,6 +1846,550 @@
         flex: 1;
       }
     }
+
+    /* ===== @MOWMENT SECTION ===== */
+    .mow-hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, rgba(52, 211, 153, 0.15), rgba(45, 212, 191, 0.10));
+      border: 1px solid rgba(52, 211, 153, 0.25);
+      color: var(--accent-green);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-top: 10px;
+    }
+
+    .mow-overview {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    .mow-overview-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.2s var(--ease-out);
+    }
+
+    .mow-overview-card:hover {
+      border-color: rgba(52, 211, 153, 0.2);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .mow-overview-card .mow-card-icon {
+      font-size: 1.6rem;
+      margin-bottom: 8px;
+    }
+
+    .mow-overview-card .mow-card-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .mow-overview-card .mow-card-value {
+      font-size: 1.3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent-green), var(--accent-teal));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .mow-overview-card .mow-card-desc {
+      font-size: 0.76rem;
+      color: var(--text-secondary);
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+
+    .mow-flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .mow-flow-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 14px 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      min-width: 100px;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .mow-flow-item:hover {
+      border-color: rgba(52, 211, 153, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .mow-flow-item .flow-icon {
+      font-size: 1.5rem;
+    }
+
+    .mow-flow-item .flow-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .mow-flow-item .flow-sub {
+      font-size: 0.66rem;
+      color: var(--text-muted);
+    }
+
+    .mow-flow-arrow {
+      font-size: 1.2rem;
+      color: var(--accent-green);
+      padding: 0 6px;
+      flex-shrink: 0;
+    }
+
+    .mow-benefits {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .mow-benefit-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 18px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.2s var(--ease-out);
+    }
+
+    .mow-benefit-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-green), var(--accent-teal));
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .mow-benefit-card:hover {
+      border-color: rgba(52, 211, 153, 0.2);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .mow-benefit-card:hover::before {
+      opacity: 1;
+    }
+
+    .mow-benefit-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-green), var(--accent-teal));
+      color: var(--text-inverse);
+      font-size: 0.72rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .mow-benefit-card h4 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin: 0 0 6px;
+      color: var(--text-primary);
+    }
+
+    .mow-benefit-card p {
+      font-size: 0.76rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      margin: 0;
+    }
+
+    .mow-scenes {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 16px 0;
+    }
+
+    .mow-scene-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 16px 12px;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .mow-scene-card:hover {
+      border-color: rgba(52, 211, 153, 0.2);
+      background: var(--bg-card-hover);
+    }
+
+    .mow-scene-card .scene-icon {
+      font-size: 1.5rem;
+      margin-bottom: 6px;
+    }
+
+    .mow-scene-card .scene-name {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .mow-scene-card .scene-desc {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    .mow-feature-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .mow-feature-item {
+      background: linear-gradient(135deg, rgba(52, 211, 153, 0.06), rgba(96, 165, 250, 0.04));
+      border: 1px solid rgba(52, 211, 153, 0.12);
+      border-radius: 12px;
+      padding: 18px;
+      text-align: center;
+    }
+
+    .mow-feature-item .feat-icon {
+      font-size: 1.6rem;
+      margin-bottom: 8px;
+    }
+
+    .mow-feature-item .feat-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--accent-green);
+      margin-bottom: 4px;
+    }
+
+    .mow-feature-item .feat-desc {
+      font-size: 0.74rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .mow-alert-colors {
+      display: flex;
+      gap: 8px;
+      margin: 12px 0;
+      flex-wrap: wrap;
+    }
+
+    .mow-alert-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.74rem;
+      font-weight: 600;
+    }
+
+    .mow-alert-chip.al-red {
+      background: rgba(251, 113, 133, 0.12);
+      color: var(--accent-rose);
+      border: 1px solid rgba(251, 113, 133, 0.25);
+    }
+
+    .mow-alert-chip.al-yellow {
+      background: rgba(251, 191, 36, 0.12);
+      color: var(--accent-amber);
+      border: 1px solid rgba(251, 191, 36, 0.25);
+    }
+
+    .mow-alert-chip.al-green {
+      background: rgba(52, 211, 153, 0.12);
+      color: var(--accent-green);
+      border: 1px solid rgba(52, 211, 153, 0.25);
+    }
+
+    .mow-alert-chip.al-stop {
+      background: rgba(107, 114, 128, 0.15);
+      color: var(--text-muted);
+      border: 1px solid rgba(107, 114, 128, 0.3);
+    }
+
+    .mow-price-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin: 16px 0;
+    }
+
+    .mow-price-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mow-price-card.main-product {
+      border-color: rgba(52, 211, 153, 0.25);
+      background: linear-gradient(135deg, rgba(52, 211, 153, 0.06), var(--bg-card));
+    }
+
+    .mow-price-card .price-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .mow-price-card .price-desc {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    .mow-price-card .price-amount {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--accent-green);
+    }
+
+    .mow-price-card .price-amount small {
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: none;
+      padding: 0;
+    }
+
+    .mow-price-card .price-monthly {
+      font-size: 0.76rem;
+      color: var(--accent-blue);
+      margin-top: 6px;
+    }
+
+    .mow-price-card .price-monthly small {
+      font-size: 0.66rem;
+      color: var(--text-muted);
+      background: none;
+      padding: 0;
+    }
+
+    .mow-timeline {
+      position: relative;
+      padding-left: 28px;
+      margin: 16px 0;
+    }
+
+    .mow-timeline::before {
+      content: '';
+      position: absolute;
+      left: 10px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--accent-green), var(--accent-rose));
+      border-radius: 2px;
+    }
+
+    .mow-timeline-item {
+      position: relative;
+      padding: 12px 0;
+    }
+
+    .mow-timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -22px;
+      top: 18px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      border: 2px solid var(--bg-primary);
+      box-shadow: 0 0 0 2px var(--accent-green);
+    }
+
+    .mow-timeline-item.alert-point::before {
+      background: var(--accent-rose);
+      box-shadow: 0 0 0 2px var(--accent-rose);
+    }
+
+    .mow-timeline-item .tl-day {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 3px;
+    }
+
+    .mow-timeline-item .tl-desc {
+      font-size: 0.74rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* Case study cards */
+    .mow-case-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      margin: 16px 0;
+    }
+
+    .mow-case-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .mow-case-header {
+      padding: 16px 20px;
+      background: linear-gradient(135deg, rgba(52, 211, 153, 0.08), rgba(96, 165, 250, 0.04));
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .mow-case-header .case-farm {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .mow-case-header .case-meta {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .mow-case-header .case-quote {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--accent-green);
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+
+    .mow-case-body {
+      padding: 18px 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+    }
+
+    .mow-case-item h4 {
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--accent-blue);
+      margin: 0 0 6px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .mow-case-item p {
+      font-size: 0.76rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      margin: 0;
+    }
+
+    /* Cost compare table highlight */
+    .cost-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .cost-total {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--accent-green);
+    }
+
+    /* Subsidy badge */
+    .subsidy-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      background: rgba(251, 191, 36, 0.12);
+      color: var(--accent-amber);
+      border: 1px solid rgba(251, 191, 36, 0.25);
+      padding: 3px 10px;
+      border-radius: 16px;
+    }
+
+    @media(max-width:900px) {
+      .mow-overview,
+      .mow-benefits {
+        grid-template-columns: 1fr 1fr;
+      }
+      .mow-case-body {
+        grid-template-columns: 1fr;
+      }
+      .mow-scenes {
+        grid-template-columns: 1fr 1fr;
+      }
+      .mow-feature-list {
+        grid-template-columns: 1fr;
+      }
+      .mow-price-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media(max-width:480px) {
+      .mow-overview,
+      .mow-benefits {
+        grid-template-columns: 1fr;
+      }
+      .mow-scenes {
+        grid-template-columns: 1fr 1fr;
+      }
+      .mow-flow {
+        flex-direction: column;
+      }
+      .mow-flow-arrow {
+        transform: rotate(90deg);
+        padding: 4px 0;
+      }
+      .mow-case-body {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 
@@ -1908,6 +2452,7 @@
           <a class="nav-child" data-section="ch4-comp" onclick="navigateTo('ch4-comp')">🥛 配合飼料・代用乳</a>
           <a class="nav-child" data-section="ch4-px" onclick="navigateTo('ch4-px')">⚗️ 自社企画PX</a>
           <a class="nav-child" data-section="ch4-eqp" onclick="navigateTo('ch4-eqp')">🔧 資材・IoT</a>
+          <a class="nav-child" data-section="ch4-mowment" onclick="navigateTo('ch4-mowment')">📡 @mowment<span class="badge-new">NEW</span></a>
           <a class="nav-child" data-section="ch4-food" onclick="navigateTo('ch4-food')">🫒 食糧事業</a>
           <a class="nav-child" data-section="ch4-svc" onclick="navigateTo('ch4-svc')">🧾 付帯手配・サービス</a>
           <a class="nav-child" data-section="ch4-fat" onclick="navigateTo('ch4-fat')">💧 脂肪酸Ca<span
@@ -3004,7 +3549,7 @@
                     <tr>
                       <td>IoT機器</td>
                       <td><a href="#" class="tree-link"
-                          onclick="navigateTo('ch4-eqp');event.stopPropagation();">@mowment（アットモーメント）</a></td>
+                          onclick="navigateTo('ch4-mowment');event.stopPropagation();">@mowment（アットモーメント）</a></td>
                       <td>活動量低下から疾病（下痢等）の兆候を早期発見</td>
                     </tr>
                   </tbody>
@@ -4964,6 +5509,752 @@
           </table>
         </div>
       </div>
+      <div class="section" id="sec-ch4-mowment">
+        <div class="section-hero"><span class="hero-emoji">📡</span>
+          <h1>@mowment ── クラウドタグで仔牛の命を守る</h1>
+          <p class="hero-sub">仔牛の活動量を24時間365日モニタリングし、疾病の予防を行うIoTソリューション</p>
+          <div class="mow-hero-badge">🏅 特許取得済（特許第7156616号）</div>
+        </div>
+
+        <!-- ソリューション概要 -->
+        <h2><span class="h2-icon">🎯</span> ソリューション概要</h2>
+        <div class="callout info">
+          <div class="callout-title">📡 @mowment（アットモーメント）とは？</div>
+          <p style="margin:0;">仔牛の首に装着する<strong>超軽量タグ（60g）</strong>で活動量を24時間365日モニタリングし、<strong>疾病になる前</strong>に兆候を検知するクラウドベースのIoTソリューションです。電池レス・振動発電式のため、電池交換や充電のコスト・手間が一切不要。目視よりも<strong>約2日早く</strong>疾病兆候を発見でき、早期治療による仔牛の回復率向上とコスト削減を実現します。</p>
+        </div>
+
+        <div class="mow-overview">
+          <div class="mow-overview-card">
+            <div class="mow-card-icon">⚡</div>
+            <div class="mow-card-title">電源方式</div>
+            <div class="mow-card-value">振動発電式</div>
+            <div class="mow-card-desc">電池レス。仔牛の動きで自動発電するため、電池交換・充電が一切不要</div>
+          </div>
+          <div class="mow-overview-card">
+            <div class="mow-card-icon">🪶</div>
+            <div class="mow-card-title">タグ重量</div>
+            <div class="mow-card-value">60g</div>
+            <div class="mow-card-desc">超軽量設計。生後0日の仔牛にも負担なく装着可能</div>
+          </div>
+          <div class="mow-overview-card">
+            <div class="mow-card-icon">📶</div>
+            <div class="mow-card-title">通信距離</div>
+            <div class="mow-card-value">半径 30m</div>
+            <div class="mow-card-desc">Bluetooth通信。牛舎内の設置環境に対応（牛舎の構造によって変動あり）</div>
+          </div>
+          <div class="mow-overview-card">
+            <div class="mow-card-icon">📊</div>
+            <div class="mow-card-title">モニタリング</div>
+            <div class="mow-card-value">24時間 365日</div>
+            <div class="mow-card-desc">クラウド上でリアルタイムに活動状態を確認。PC・スマートフォン対応</div>
+          </div>
+        </div>
+
+        <!-- システム構成 -->
+        <h2><span class="h2-icon">🔗</span> システム構成</h2>
+        <p>@mowmentは、軽量タグ → 受信機 → クラウドサーバー → 閲覧端末の4ステップで構成されるシンプルなシステムです。受信機は100V電源につなぐだけで使用可能。専用アプリのインストールは不要で、WEBブラウザからクラウドを参照するだけで手軽にスタートできます。</p>
+        <div class="mow-flow">
+          <div class="mow-flow-item">
+            <span class="flow-icon">🏷️</span>
+            <span class="flow-label">軽量タグ</span>
+            <span class="flow-sub">60g / 振動発電式</span>
+          </div>
+          <span class="mow-flow-arrow">→</span>
+          <div class="mow-flow-item">
+            <span class="flow-icon">📡</span>
+            <span class="flow-label">受信機</span>
+            <span class="flow-sub">100V電源のみ</span>
+          </div>
+          <span class="mow-flow-arrow">→</span>
+          <div class="mow-flow-item">
+            <span class="flow-icon">☁️</span>
+            <span class="flow-label">クラウドサーバー</span>
+            <span class="flow-sub">データ蓄積・分析</span>
+          </div>
+          <span class="mow-flow-arrow">→</span>
+          <div class="mow-flow-item">
+            <span class="flow-icon">📱</span>
+            <span class="flow-label">PC / スマホ</span>
+            <span class="flow-sub">WEBブラウザで閲覧</span>
+          </div>
+        </div>
+        <div class="callout tip">
+          <div class="callout-title">💡 導入のハードル</div>
+          <p style="margin:0;">受信機は<strong>100V電源につなぐだけ</strong>で使用可能。クラウドシステムのため端末に専用アプリのインストールは不要で、<strong>WEBブラウザによるクラウドの参照のみ</strong>で利用開始できます。AU版も設置可能なため受信距離の問題を解決でき、電源もPOE供給が可能です。</p>
+        </div>
+
+        <!-- 導入効果 -->
+        <h2><span class="h2-icon">📈</span> 導入効果</h2>
+        <div class="mow-benefits">
+          <div class="mow-benefit-card">
+            <div class="mow-benefit-num">1</div>
+            <h4>疾病の早期発見・早期治療</h4>
+            <p>活動量の低下している子牛を検知し、<strong>疾病になる前に早期に処置が可能</strong>。早期発見・早期治療により治療費の削減と、牛の育成状態が改善します。</p>
+          </div>
+          <div class="mow-benefit-card">
+            <div class="mow-benefit-num">2</div>
+            <h4>見回り業務の平準化</h4>
+            <p>活動状態が<strong>視覚化</strong>されるので、業務経験が浅くても簡単に子牛の状態を把握できます。ベテランに頼らない管理体制を構築可能。</p>
+          </div>
+          <div class="mow-benefit-card">
+            <div class="mow-benefit-num">3</div>
+            <h4>24時間の遠隔モニタリング</h4>
+            <p>クラウド上で24時間子牛の活動状態の確認が可能。<strong>牛舎に居ないときでも</strong>、子牛の活動状態の確認ができるようになります。</p>
+          </div>
+          <div class="mow-benefit-card">
+            <div class="mow-benefit-num">4</div>
+            <h4>業務効率化・経営強化</h4>
+            <p>治療期間の短縮や死亡率の改善に伴い、<strong>業務の効率化や収益の改善</strong>につなげることが可能です。</p>
+          </div>
+        </div>
+
+        <!-- 製品の特徴 -->
+        <h2><span class="h2-icon">✨</span> 製品の特徴</h2>
+        <div class="mow-feature-list">
+          <div class="mow-feature-item">
+            <div class="feat-icon">🔋</div>
+            <div class="feat-title">振動発電式</div>
+            <div class="feat-desc">センサーは振動発電式の為、定期的に電池交換や充電といった<strong>手間やコストが発生しません</strong></div>
+          </div>
+          <div class="mow-feature-item">
+            <div class="feat-icon">☁️</div>
+            <div class="feat-title">アプリ不要</div>
+            <div class="feat-desc">クラウドシステムの為、端末に<strong>専用アプリのインストールは不要</strong>。WEBブラウザのみで利用可能</div>
+          </div>
+          <div class="mow-feature-item">
+            <div class="feat-icon">🏠</div>
+            <div class="feat-title">多環境対応</div>
+            <div class="feat-desc">ハッチ、自動哺乳牛舎、群飼育と<strong>さまざまな飼育環境</strong>での利用が可能</div>
+          </div>
+        </div>
+
+        <!-- 利用シーン -->
+        <h2><span class="h2-icon">🐄</span> 利用シーン</h2>
+        <p><strong>生後0日〜離乳前後まで</strong>、様々なタイプの牛舎でのデータ収集が可能です。</p>
+        <div class="mow-scenes">
+          <div class="mow-scene-card">
+            <div class="scene-icon">🏠</div>
+            <div class="scene-name">ハッチ牛舎</div>
+            <div class="scene-desc">個別飼育の子牛に</div>
+          </div>
+          <div class="mow-scene-card">
+            <div class="scene-icon">🐮</div>
+            <div class="scene-name">親付け牛舎</div>
+            <div class="scene-desc">母牛と同居の環境に</div>
+          </div>
+          <div class="mow-scene-card">
+            <div class="scene-icon">🤖</div>
+            <div class="scene-name">ロボット牛舎</div>
+            <div class="scene-desc">自動哺乳機併用に</div>
+          </div>
+          <div class="mow-scene-card">
+            <div class="scene-icon">🐂</div>
+            <div class="scene-name">離乳牛舎</div>
+            <div class="scene-desc">離乳後の群飼育に</div>
+          </div>
+        </div>
+
+        <!-- 機能概要 -->
+        <h2><span class="h2-icon">🖥️</span> 機能概要（アラート表示）</h2>
+        <p>活動量の状況を色分けで一覧表示します。各仔牛の詳細画面では、直近24時間の活動グラフ・アラート履歴・治療履歴を確認でき、PC画面・スマートフォンの両方に対応しています。</p>
+        <h3>アラートの色分け</h3>
+        <div class="mow-alert-colors">
+          <span class="mow-alert-chip al-stop">⏹ 止 ─ 活動停止</span>
+          <span class="mow-alert-chip al-red">🔴 赤 ─ 要注意（活動量の著しい低下）</span>
+          <span class="mow-alert-chip al-yellow">🟡 黄 ─ 注意（活動量の低下傾向）</span>
+          <span class="mow-alert-chip al-green">🟢 緑 ─ 正常</span>
+        </div>
+        <h3>確認できる情報</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>情報カテゴリ</th>
+                <th>内容</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>一覧画面</strong></td>
+                <td>全仔牛の活動状況を色分けで一覧表示。ソート・フィルター機能付き</td>
+              </tr>
+              <tr>
+                <td><strong>登録情報</strong></td>
+                <td>個体識別番号、品種、誕生日、母牛情報、導入日、タグ番号など</td>
+              </tr>
+              <tr>
+                <td><strong>活動詳細</strong></td>
+                <td>直近24時間の活動量グラフ（時間帯別推移）</td>
+              </tr>
+              <tr>
+                <td><strong>アラート履歴</strong></td>
+                <td>過去のアラート発生日時と色の変遷</td>
+              </tr>
+              <tr>
+                <td><strong>治療履歴</strong></td>
+                <td>治療内容・投薬記録の時系列表示</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 疾病兆候の早期検知 -->
+        <h2><span class="h2-icon">🩺</span> 疾病兆候の早期検知</h2>
+        <div class="callout important">
+          <div class="callout-title">⚠️ 目視の約2日前にアラートを検知</div>
+          <p style="margin:0;">@mowmentは日々の活動量の推移をモニタリングしており、<strong>普段の活動量の推移のパターンと異なり、活動量が落ち込めた仔牛を早期に発見</strong>することができます。疾病になりそうな仔牛や、これから疾病になる可能性の高い仔牛を見つけ、<strong>早期に治療を始める事で疾病の予防を行う</strong>のが目的です。この結果、治療期間の短縮やコスト削減、重症化の抑制につながります。</p>
+        </div>
+        <h3>検知タイミングの例</h3>
+        <div class="mow-timeline">
+          <div class="mow-timeline-item">
+            <div class="tl-day">Day 1（11/17）</div>
+            <div class="tl-desc">通常の活動パターン。異常なし。</div>
+          </div>
+          <div class="mow-timeline-item alert-point">
+            <div class="tl-day">Day 2（11/18）18〜23時</div>
+            <div class="tl-desc"><strong>活動量低下を検知 → アラート発報</strong>。この時点ではスタッフの目視では気づけない段階。</div>
+          </div>
+          <div class="mow-timeline-item alert-point">
+            <div class="tl-day">Day 3（11/19）20〜21時</div>
+            <div class="tl-desc">活動量の低下が継続。アラートによる<strong>先回りの治療検討</strong>が可能に。</div>
+          </div>
+          <div class="mow-timeline-item">
+            <div class="tl-day">Day 4（11/20）</div>
+            <div class="tl-desc">目視でも異常が確認され、<strong>スタッフが治療を開始</strong>。アラートから約2日遅れ。</div>
+          </div>
+          <div class="mow-timeline-item">
+            <div class="tl-day">Day 5（11/21）</div>
+            <div class="tl-desc">治療の効果が出始め、活動量が回復傾向に。</div>
+          </div>
+        </div>
+        <div class="callout tip">
+          <div class="callout-title">💡 営業トーク</div>
+          <p style="margin:0;">「活動量の低下とアラートによる<strong>先手は18日交間から</strong>。スタッフが治療に入るのは20日。この<strong>約2日間のリードタイム</strong>こそが@mowmentの最大の価値です。早期治療で重症化を防ぎ、治療費を削減し、仔牛の生存率を大きく改善できます。」</p>
+        </div>
+
+        <!-- 導入実績 -->
+        <h2><span class="h2-icon">🏆</span> 導入実績（効果一例）</h2>
+        <p>全国の牧場様での導入実績をご紹介します。疾病発生率の低減、点滴頭数の削減、死亡率の改善など、様々な効果が確認されています。</p>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>牧場</th>
+                <th>導入日</th>
+                <th>導入規模（タグ数）</th>
+                <th>効果内容</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>A牧場</strong>（ホルス）</td>
+                <td>R4.03月</td>
+                <td>80個</td>
+                <td>疾病発生率 <strong>前年比で約30%減</strong></td>
+              </tr>
+              <tr>
+                <td><strong>B牧場</strong>（リッチ）</td>
+                <td>R3.11月</td>
+                <td>80個</td>
+                <td>点滴頭数 <strong>100%減</strong>（月平均4〜5頭→0頭）</td>
+              </tr>
+              <tr>
+                <td><strong>C牧場</strong></td>
+                <td>R4.06月</td>
+                <td>150個</td>
+                <td>中耳炎発生率 <strong>約50%減</strong>（月平均1日10頭→5頭）</td>
+              </tr>
+              <tr>
+                <td><strong>D牧場</strong></td>
+                <td>R3.10月</td>
+                <td>200個</td>
+                <td>死亡率 前年比<strong>5%→1%</strong>（月平均2.6頭→0.4頭）</td>
+              </tr>
+              <tr>
+                <td><strong>E牧場</strong>（前月）</td>
+                <td>—</td>
+                <td>1200個</td>
+                <td>死亡率 前年比<strong>7%→0.4%</strong>（月平均30頭→2頭）</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout tip">
+          <div class="callout-title">💡 提案のポイント</div>
+          <p style="margin:0;">上記の事例では、<strong>全ての牧場で明確な改善効果が確認</strong>されています。特にD牧場・E牧場のように死亡率を80%以上削減したケースは、ROI算出において極めて説得力のある数値です。1頭あたりの損失額（素牛価格30〜60万円+育成コスト）から逆算すると、<strong>タグ投資の回収は早期に実現</strong>できます。</p>
+        </div>
+
+        <!-- 使用機材と取付状況 -->
+        <h2><span class="h2-icon">🔧</span> 使用機材</h2>
+        <p>@mowmentの使用機材は、<strong>タグ</strong>（仔牛の首に装着）と<strong>受信機</strong>（牛舎内に設置）のシンプルな構成です。受信機は牛舎の柱や壁面にアンテナとともに設置し、AC100V電源（家庭用2口コンセント）に接続するだけで動作します。</p>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>機材</th>
+                <th>仕様</th>
+                <th>備考</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>モーメントタグ</strong></td>
+                <td>重量60g / 電池レス振動発電式 / 首輪装着型</td>
+                <td>高圧洗浄等の洗浄に対応。品番：B12010-12xx</td>
+              </tr>
+              <tr>
+                <td><strong>首輪</strong></td>
+                <td>リングキャッチ・ベルト金具セット</td>
+                <td>自動哺乳牛舎で使用している首輪と同等品。自動哺乳器への導入の場合は自動哺乳乳首の首輪付けが可能</td>
+              </tr>
+              <tr>
+                <td><strong>受信機</strong></td>
+                <td>Bluetooth受信 / 通信距離半径30m</td>
+                <td>使用電源：AC100V（家庭用2口コンセントでOK）。AU版も設置可能なため受信距離の問題も解決可能。信号強度が弱い場合はケーブル延長で受信機の配置を調整可能</td>
+              </tr>
+              <tr>
+                <td><strong>高感度アンテナ</strong>（単体使用不可）</td>
+                <td>受信エリアを拡張。幹線にLANケーブル供給</td>
+                <td>受信エリアを広げたい場合やアンテナの設置が離れた場合の強化用。電源：POE供給（受信機ボックスLANケーブルによって電源供給）</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 操作方法・運用ガイド -->
+        <h2><span class="h2-icon">📱</span> 操作手順・サポート体制（運用ガイド）</h2>
+        <p>導入後のセットアップから日々のアプリ操作、トラブルシューティングまでの運用フローをまとめました。現場での取り回しやサポートに関する質問への回答にお役立てください。</p>
+
+        <h3>1. 設置とセットアップ</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>ステップ</th>
+                <th>作業内容</th>
+                <th>注意事項・ポイント</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>①受信機の設置</strong></td>
+                <td>仔牛のいる場所の中心付近、高所にAC100V電源を確保して設置。背面磁石とバンドで固定。</td>
+                <td>安全に注意。半径約30mが受信範囲です。高圧洗浄時の漏電等にご注意ください。</td>
+              </tr>
+              <tr>
+                <td><strong>②首輪・タグの装着</strong></td>
+                <td>ベルトをバックル内側に通し、指3本程度の余裕を持たせて固定。ハッチ形状に合わせて長さを調節。</td>
+                <td>ハッチの柵などにタグが挟まらないよう注意。余ったベルト部分は結束バンドで固定。</td>
+              </tr>
+              <tr>
+                <td><strong>③アプリ登録・管理</strong></td>
+                <td>専用URLにアクセスし、メニュー「牛の管理(個別管理)」からタグ番号と仔牛の情報を紐づけ。</td>
+                <td>治療履歴や「注目牛」のピン留め機能もここから設定可能です。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>2. アプリ操作とステータスの見方（疾病予測）</h3>
+        <p>仔牛の活動量は24時間グラフ化され、過去の「自分自身の活動データ」と比較してステータスが自動判定されます。</p>
+        <div class="mow-timeline">
+          <div class="mow-timeline-item" style="border-left-color: #27ae60;">
+            <div class="tl-day" style="color: #27ae60; font-size: 1.1em;">🟢 正常（緑色）</div>
+            <div class="tl-desc">活動量グラフ画面も緑色。いつもの活動パターンを維持しており、異常は見られません。</div>
+          </div>
+          <div class="mow-timeline-item alert-point" style="border-left-color: #f39c12;">
+            <div class="tl-day" style="color: #f39c12; font-size: 1.1em;">🟡 要注意（黄色）</div>
+            <div class="tl-desc"><strong>【条件】活動率40%以下が「3時間」継続</strong><br>いつもよりじっとしている時間が長い状態。熱や下痢などの初期症状が疑われるため、優先的な経過観察を推奨します。</div>
+          </div>
+          <div class="mow-timeline-item alert-point" style="border-left-color: #e74c3c;">
+            <div class="tl-day" style="color: #e74c3c; font-size: 1.1em;">🔴 危険（赤色）</div>
+            <div class="tl-desc"><strong>【条件】活動率40%以下が「6時間」継続</strong><br>体調が急変している、または深刻な疾病状態。大至急の確認と、場合によっては即時の治療介入が必要です。</div>
+          </div>
+        </div>
+
+        <div class="callout info">
+          <div class="callout-title">📝 アラートの受け取り設定（LINE・メール）</div>
+          <p style="margin:0;">「要注意」「危険」のステータスに変化した際、スタッフへ自動で通知を送ることができます。<br>
+          ・<strong>通知方法：</strong>メールアドレス宛、または<strong>スタッフのLINE連携</strong>による通知<br>
+          ・<strong>設定方法：</strong>「各種設定」＞「ユーザー情報」から設定。通知時間帯（例：5時〜18時）や受信回数を個人のシフトや希望に合わせて柔軟に制限可能です。夜間の不要なアラートによるストレスを防ぎます。</p>
+        </div>
+
+        <h3>3. トラブルシューティング（故障・未受信）</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>発生している現象</th>
+                <th>原因・確認すべき項目</th>
+                <th>対応・判定</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>一部の牛・タグが<br>未受信状態になった</strong></td>
+                <td>・首輪が外れている<br>・タグ単体の故障</td>
+                <td>至急首輪の有無を確認。首輪がついていた場合、タグを手に持ち縦に振る。グラフの赤字が消えれば正常、赤字のままなら故障（LATへ連絡し交換）。</td>
+              </tr>
+              <tr>
+                <td><strong>全頭が一斉に<br>未受信状態になった</strong></td>
+                <td>受信機が停止している（コンセント抜け、ブレーカー落ち）</td>
+                <td>コンセントを抜き差しして再起動。受信機ボックスを開け、本体ランプが「白」または「水色」に点滅すれば正常復帰です。</td>
+              </tr>
+              <tr>
+                <td><strong>牛舎を新設・増築した<br>受信機から離れた</strong></td>
+                <td>受信機の通信範囲（30m）からの逸脱</td>
+                <td>受信機の位置を移動調整するか、受信機およびアンテナの追加購入が可能です。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="callout danger" style="background:#fff3f3; border-left:4px solid #d32f2f; margin-bottom: 2rem;">
+          <div class="callout-title" style="color:#d32f2f;">⚠️ 運用上の重要事項（免責・注意事項）</div>
+          <p style="margin:0;">
+          1. <strong>診療機器ではありません。</strong>本システムは活動量の変化を可視化するツールです。最終的な診断・対処は必ず担当獣医とご相談ください。<br>
+          2. 安全のため、重篤な治療中、著しい衰弱時、分娩直後など、牛に通常以上の負荷がかかっている際は、タグ・首輪を一時的に取り外してください。<br>
+          3. 首輪のリングキャッチ・ベルト金具類は、仔牛の成長に合わせてこまめに長さの調節を行ってください。<br>
+          4. 他の仔牛へ首輪を<strong>付け替える際は、防疫の観点からしっかりと洗浄消毒</strong>を行ってから再利用してください。
+          </p>
+        </div>
+
+        <!-- 価格情報：ハードウェア小売価格 -->
+        <h2><span class="h2-icon">💰</span> 販売希望小売価格 ── ハードウェア（税別）</h2>
+        <p>ハードウェア保証は<strong>導入後1年間</strong>です（通常販売の場合）。1年経過後の故障は有償対応となります。</p>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>名称</th>
+                <th>単価（税別）</th>
+                <th>備考</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>MOWMENTタグ</strong></td>
+                <td><strong>¥12,500</strong></td>
+                <td>故障時無償交換（導入後1年）</td>
+              </tr>
+              <tr>
+                <td><strong>首輪</strong>*</td>
+                <td><strong>¥3,500</strong></td>
+                <td>首輪＋リングキャッチ＋アジャスター</td>
+              </tr>
+              <tr>
+                <td><strong>受信機</strong></td>
+                <td><strong>¥298,000</strong></td>
+                <td>保証期間1年</td>
+              </tr>
+              <tr>
+                <td><strong>高感度アンテナ</strong>（現行モデル）</td>
+                <td><strong>¥190,000</strong></td>
+                <td>保証期間1年</td>
+              </tr>
+              <tr>
+                <td><strong>高感度アンテナ</strong>（次期モデル）</td>
+                <td><strong>¥215,000</strong></td>
+                <td>保証期間1年</td>
+              </tr>
+              <tr>
+                <td>機器設置・操作説明費用（作業者1人当り）</td>
+                <td>別途見積</td>
+                <td>エリアにより異なる。交通費等別途</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:0.76rem; color:var(--text-muted);">* 飼養・牛舎環境により、設置が必要と判断された場合に導入していただく機材です。上記価格は消費税抜きの価格です。別途消費税を申し受けます。</p>
+
+        <!-- 導入モデル比較 -->
+        <h2><span class="h2-icon">📊</span> 導入モデル比較（税別）</h2>
+        <p>@mowmentは<strong>通常販売（買い切り）</strong>と<strong>サブスクリプション（5年契約）</strong>の2つの導入モデルがあります。</p>
+
+        <h3>パターン1：通常販売での導入</h3>
+        <p>タグ100個＋首輪セット100個＋受信機2台構成の場合：</p>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>費目</th>
+                <th style="text-align:right;">金額（税別）</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>ハードウェア・設置</td>
+                <td style="text-align:right;"><strong>¥2,001,000</strong></td>
+              </tr>
+              <tr>
+                <td>5年間利用料</td>
+                <td style="text-align:right;"><strong>¥3,318,000</strong></td>
+              </tr>
+              <tr style="background:rgba(52,211,153,0.08);">
+                <td><strong>合 計</strong></td>
+                <td style="text-align:right;"><span class="cost-total">¥5,319,000</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout caution">
+          <div class="callout-title">⚠️ 通常販売の注意点</div>
+          <p style="margin:0;">ハードウェア保証は<strong>導入後1年間</strong>のみ。1年経過後の故障は有償対応となります。</p>
+        </div>
+
+        <h3>パターン2：サブスクでの導入（契約期間5年間）</h3>
+        <p>補助金の申請採択後に2年分の利用料を一括でお支払い。お支払い後約2〜3ヶ月で<strong>補助金（半額）を入金</strong>。2年間は他の費用負担無し。3年目〜5年目は月額でお支払いいただきます。</p>
+        <div class="callout info">
+          <div class="callout-title">🛡️ サブスクの大きなメリット</div>
+          <p style="margin:0;"><strong>5年間のハードウェア保証対応</strong>を含みます（センサー・受信機・アンテナ類）。ただし首輪/金具類は除く。通常販売の1年保証に比べ、長期の安心を提供できます。</p>
+        </div>
+
+        <h3>■ サブスクモデル ── 月額料金体系</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>名称</th>
+                <th style="text-align:right;">月額単価</th>
+                <th>備考</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>システムパック <strong>30頭〜100頭</strong>まで</td>
+                <td style="text-align:right;"><strong>¥1,000</strong>/頭</td>
+                <td>5年間の契約が必要</td>
+              </tr>
+              <tr>
+                <td>システムパック <strong>101頭〜200頭</strong>まで</td>
+                <td style="text-align:right;"><strong>¥900</strong>/頭</td>
+                <td>5年間の契約が必要</td>
+              </tr>
+              <tr>
+                <td>システムパック <strong>201頭〜300頭</strong>まで</td>
+                <td style="text-align:right;"><strong>¥800</strong>/頭</td>
+                <td>5年間の契約が必要</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>■ 補助金対応プラン <span class="subsidy-badge">🏛️ デジタル化・AI補助金</span></h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>プラン</th>
+                <th style="text-align:right;">一括支払額（税別）</th>
+                <th>補助金額</th>
+                <th>備考</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>SP30</strong></td>
+                <td style="text-align:right;"><strong>¥2,080,000</strong></td>
+                <td>¥1,040,000補助</td>
+                <td>利用期間最大5年間</td>
+              </tr>
+              <tr>
+                <td><strong>SP50</strong></td>
+                <td style="text-align:right;"><strong>¥2,940,000</strong></td>
+                <td>¥1,470,000補助</td>
+                <td>利用期間最大5年間</td>
+              </tr>
+              <tr>
+                <td><strong>SPFree</strong></td>
+                <td style="text-align:right;">頭数により変動</td>
+                <td>最大¥1,499,999補助</td>
+                <td>5年間契約必要。補助期間最大2年間</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>■ コスト比較例（SPFree 100頭の場合）</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>期間</th>
+                <th>頭数</th>
+                <th style="text-align:right;">月額単価</th>
+                <th style="text-align:right;">月額利用料</th>
+                <th style="text-align:right;">期間合計</th>
+                <th style="text-align:right;">補助適用分</th>
+                <th style="text-align:right;">実質ご負担分</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>1〜2年目</strong> <small>（24ヶ月）</small></td>
+                <td>100</td>
+                <td style="text-align:right;">¥1,000</td>
+                <td style="text-align:right;">¥100,000</td>
+                <td style="text-align:right;">¥2,400,000</td>
+                <td style="text-align:right; color:var(--accent-amber);"><strong>▲¥1,200,000</strong></td>
+                <td style="text-align:right;"><strong>¥1,200,000</strong></td>
+              </tr>
+              <tr>
+                <td><strong>3〜5年目</strong> <small>（36ヶ月）</small></td>
+                <td>100</td>
+                <td style="text-align:right;">¥1,000</td>
+                <td style="text-align:right;">¥100,000</td>
+                <td style="text-align:right;">¥3,600,000</td>
+                <td style="text-align:right; color:var(--text-muted);">¥0</td>
+                <td style="text-align:right;"><strong>¥3,600,000</strong></td>
+              </tr>
+              <tr style="background:rgba(52,211,153,0.08);">
+                <td colspan="4"><strong>5年間合計</strong></td>
+                <td style="text-align:right;"><strong>¥6,000,000</strong></td>
+                <td style="text-align:right; color:var(--accent-amber);"><strong>▲¥1,200,000</strong></td>
+                <td style="text-align:right;"><span class="cost-total">¥4,800,000</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout tip">
+          <div class="callout-title">💡 補助金を活用したトーク</div>
+          <p style="margin:0;">上記SPFree 100頭の場合、実質月額負担は<strong>¥800/頭</strong>。1〜2年目は一括お支払い後に補助金（半額）が入金されるため、キャッシュフロー的にも助かります。「<strong>通常販売5年間合計 ¥5,319,000 に対し、サブスク+補助金なら実質 ¥4,800,000</strong>」と比較提案が効果的です。</p>
+        </div>
+
+        <!-- タグ・首輪の追加購入 -->
+        <h3>■ タグ・首輪の追加購入（1セット＝タグ5個＋首輪5本）</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>契約経過期間</th>
+                <th style="text-align:right;">単価（税別）</th>
+                <th>内容</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>契約後<strong>1年未満</strong></td>
+                <td style="text-align:right;"><strong>¥7,500</strong></td>
+                <td>タグ5個＋首輪（取付金具付）5本 セット</td>
+              </tr>
+              <tr>
+                <td>契約後<strong>1年以上</strong></td>
+                <td style="text-align:right;"><strong>¥6,500</strong></td>
+                <td>タグ5個＋首輪（取付金具付）5本 セット</td>
+              </tr>
+              <tr>
+                <td>契約後<strong>2年以上</strong></td>
+                <td style="text-align:right;"><strong>¥5,500</strong></td>
+                <td>タグ5個＋首輪（取付金具付）5本 セット</td>
+              </tr>
+              <tr>
+                <td>契約後<strong>3年以上</strong></td>
+                <td style="text-align:right;"><strong>¥4,500</strong></td>
+                <td>タグ5個＋首輪（取付金具付）5本 セット</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 保証・注意事項 -->
+        <h3>■ 保証と契約上の注意</h3>
+        <div class="callout info">
+          <div class="callout-title">🛡️ 保証について</div>
+          <p style="margin:0;"><strong>タグ・受信機・アンテナは5年間無償交換</strong>（サブスクモデルの場合）。首輪セット（リングキャッチ・ベルト・金具類）は有償となります。</p>
+        </div>
+        <div class="callout caution">
+          <div class="callout-title">⚠️ 契約上の注意事項</div>
+          <p style="margin:0;">1）<strong>5年間の利用契約が前提</strong>となります。<br>
+          2）途中でのプラン変更は不可。タグの追加購入のみ可能ですが、利用期間は<strong>初回導入から最大5年</strong>です。<br>
+          3）受信機1台の通信範囲は<strong>半径約30m</strong>。牛舎の構造によって複数台必要になるケースがあります。</p>
+        </div>
+
+        <!-- 導入事例 -->
+        <h2><span class="h2-icon">🗣️</span> 導入事例 ── ご利用者の声</h2>
+        <p>実際に@mowmentを導入された牧場様の声をご紹介します。導入のきっかけ、導入後の成果、今後の目標をお聞きしました。</p>
+
+        <div class="mow-case-grid">
+          <!-- 事例1 -->
+          <div class="mow-case-card">
+            <div class="mow-case-header">
+              <div>
+                <div class="case-farm">🏠 （農）さらべつカーフセンター様</div>
+                <div class="case-meta">📍 更別村 ｜ 頭数 700頭</div>
+                <div class="case-quote">「若齢に関しては、相当信頼できる。」</div>
+              </div>
+            </div>
+            <div class="mow-case-body">
+              <div class="mow-case-item">
+                <h4>🔑 導入のきっかけ</h4>
+                <p>治療頭数・疾病を減らしたい。</p>
+              </div>
+              <div class="mow-case-item">
+                <h4>📈 導入後の成果</h4>
+                <p>若齢には相当敏感に反応してくれる。<strong>危険アラートが出たものは獣医に見せる</strong>運用で、早期発見により重症化が減った。<strong>作業効率も上がり作業時間の短縮</strong>につながった。</p>
+              </div>
+              <div class="mow-case-item">
+                <h4>🎯 今後の目標</h4>
+                <p>次の世代の人がICT機器を使い、<strong>若い世代でも管理できる体制</strong>にしたい。</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 事例2 -->
+          <div class="mow-case-card">
+            <div class="mow-case-header">
+              <div>
+                <div class="case-farm">🏠 三好牧場様</div>
+                <div class="case-meta">📍 富良野市 ｜ 総頭数 520頭</div>
+                <div class="case-quote">「元気でもアラートで発見、体温40度」</div>
+              </div>
+            </div>
+            <div class="mow-case-body">
+              <div class="mow-case-item">
+                <h4>🔑 導入のきっかけ</h4>
+                <p>哺乳担当者の<strong>気持ちの負担と労働の負担</strong>を減らしてあげたい。</p>
+              </div>
+              <div class="mow-case-item">
+                <h4>📈 導入後の成果</h4>
+                <p>早期発見できるようになり<strong>重症化が減った</strong>。元気に走り回るが体温測ってみると40度、<strong>危険アラートで知る</strong>ことができた。</p>
+              </div>
+              <div class="mow-case-item">
+                <h4>🎯 今後の目標</h4>
+                <p>危険アラートが鳴らない管理、<strong>ストレスの少ない飼養環境</strong>を作りたい。</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 事例3 -->
+          <div class="mow-case-card">
+            <div class="mow-case-header">
+              <div>
+                <div class="case-farm">🏠 片岡ファーム様</div>
+                <div class="case-meta">📍 新ひだか町 ｜ 繁殖肥牛 70頭</div>
+                <div class="case-quote">「哺育後期の隠れ肺炎が見つけられる。」</div>
+              </div>
+            </div>
+            <div class="mow-case-body">
+              <div class="mow-case-item">
+                <h4>🔑 導入のきっかけ</h4>
+                <p>テスト期間に<strong>人では見つけられない肺炎</strong>が見つけられた。</p>
+              </div>
+              <div class="mow-case-item">
+                <h4>📈 導入後の成果</h4>
+                <p>特に哺育後期で危険アラートが鳴って処置をすると<strong>ほぼ肺炎が無くなった</strong>のは実感している。危険アラート、<strong>活動グラフで解析</strong>できるのはとても良い。</p>
+              </div>
+              <div class="mow-case-item">
+                <h4>🎯 今後の目標</h4>
+                <p>出荷まで全ての期間を@mowmentで管理できるようになればと思う。<strong>こじれた牛がいない牧場</strong>として取引先に信頼される牧場でありたい。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout tip">
+          <div class="callout-title">💡 IoTの営業アプローチ</div>
+          <p style="margin:0;">「タグ1個○円」ではなく<strong>「死亡率5%→1%で年間○頭の損失を防止=年間○○万円のコスト削減」</strong>のROIで語りましょう。素牛の価格（30〜60万円）に育成コストを加えた1頭あたりの損失額から、@mowment導入による年間コスト削減額を算出するのが最も効果的です。<strong>補助金の活用</strong>で初期負担を軽減し、飼料と組合せたトータル提案が差別化のカギです。</p>
+        </div>
+      </div>
       <div class="section" id="sec-ch4-food">
         <div class="section-hero"><span class="hero-emoji">🫒</span>
           <h1>食糧事業 ── 食糧原料</h1>
@@ -5453,6 +6744,7 @@
     'ch4-hay': { b: '粗飼料・牧草', p: 'ch4' }, 'ch4-sil': { b: 'サイレージ', p: 'ch4' },
     'ch4-byp': { b: '副産物・添加剤', p: 'ch4' }, 'ch4-comp': { b: '配合飼料・代用乳', p: 'ch4' },
     'ch4-px': { b: '自社企画PX', p: 'ch4' }, 'ch4-eqp': { b: '資材・IoT', p: 'ch4' },
+    'ch4-mowment': { b: '@mowment', p: 'ch4' },
     'ch4-food': { b: '食糧事業', p: 'ch4' }, 'ch4-svc': { b: '付帯手配・サービス', p: 'ch4' },
     'ch4-fat': { b: '脂肪酸Caの基礎', p: 'ch4' },
     'ch2-lactation': { b: '泌乳サイクル', p: 'ch2' }, 'ch2-milk': { b: '乳成分と合成', p: 'ch2' },
