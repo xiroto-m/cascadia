@@ -411,7 +411,7 @@ function openPreQuizModal(chId) {
   document.getElementById('preQuizTitle').textContent = ch.emoji + ' ' + ch.title;
   document.getElementById('preQuizPurpose').textContent = ch.purpose;
   document.getElementById('preQuizVision').textContent = ch.vision;
-  document.getElementById('btnPreviewManual').href = 'manual.html#' + ch.id;
+  document.getElementById('btnPreviewManual').href = 'index.html#' + ch.id;
   document.getElementById('preQuizModal').classList.add('active');
 }
 function closeModal() {
@@ -448,7 +448,7 @@ function renderQuestion(){
   document.getElementById('qProg').style.width=((curIdx)/qs.length*100)+'%';
   quizAnswered=false;
   let html=`<div class="q-card"><div class="q-num">Q${curIdx+1}</div>`;
-  if(q.ref) { html+=`<button class="hint-btn" onclick="window.open('manual.html#${q.ref}','_blank')">📖 マニュアルで調べる</button>`; }
+  if(q.ref) { html+=`<button class="hint-btn" onclick="window.open('index.html#${q.ref}','_blank')">📖 マニュアルで調べる</button>`; }
   html+=`<div class="q-text">${q.q}</div><div class="q-opts">`;
   q.o.forEach((o,i)=>{html+=`<div class="q-opt" data-i="${i}" onclick="selectAnswer(${i})">${o}</div>`});
   html+=`</div><div class="q-explain" id="qEx"></div></div>`;
@@ -489,7 +489,7 @@ function selectAnswer(i){
     let wrongMsg = (q.we && q.we[i]) ? `<div style="margin-bottom:8px;padding:8px;background:rgba(251,113,133,0.1);border-radius:6px;"><span style="color:var(--rose);font-weight:700;">【なぜ違うの？👀】</span> <span style="color:var(--txt)">${q.we[i]}</span></div>` : '';
     exHtml = '💡 <strong>失敗は成長のチャンス！</strong><br>' + wrongMsg + '<strong>【解説】</strong><br>' + q.ex;
   }
-  if(q.ref) { exHtml += `<div style="margin-top:10px;"><a href="manual.html#${q.ref}" target="_blank" class="deep-link-btn">👉 この部分をマニュアルでしっかり復習する</a></div>`; }
+  if(q.ref) { exHtml += `<div style="margin-top:10px;"><a href="index.html#${q.ref}" target="_blank" class="deep-link-btn">👉 この部分をマニュアルでしっかり復習する</a></div>`; }
   ex.innerHTML=exHtml;
   save();updateStats();
   const isLast=curIdx>=curQuiz.questions.length-1;
