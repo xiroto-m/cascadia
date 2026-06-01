@@ -28,8 +28,8 @@ let curCorrect = 0;
 let quizAnswered = false;
 let pendingChId = null;
 
-// 有識者確認モードおよびチェックリストのグローバル状態
-let expertVerifyModeActive = localStorage.getItem('cascadia_verify_mode') === 'true';
+// 有識者確認モードおよびチェックリストのグローバル状態（確認モードは常にONに固定）
+let expertVerifyModeActive = true;
 let verifiedItems = JSON.parse(localStorage.getItem('cascadia_verified_items') || '[]');
 
 // Initialize app after auth verification
@@ -50,17 +50,8 @@ function initApp() {
 }
 
 function updateExpertVerifyModeUI() {
-  const smeToggleBtn = document.getElementById('smeToggleBtn');
-  if (!smeToggleBtn) return;
-  if (expertVerifyModeActive) {
-    document.body.classList.add('sme-mode-active');
-    smeToggleBtn.classList.add('active');
-    smeToggleBtn.textContent = '🔍 有識者確認モード: ON';
-  } else {
-    document.body.classList.remove('sme-mode-active');
-    smeToggleBtn.classList.remove('active');
-    smeToggleBtn.textContent = '🔍 有識者確認モード: OFF';
-  }
+  // 有識者確認モードは常にONに固定されるため、常にクラスを追加
+  document.body.classList.add('sme-mode-active');
 }
 
 // Generate the sidebar navigation dynamically
@@ -187,16 +178,7 @@ function setupEventListeners() {
     if (e.target.id === 'quizModal') closeModal();
   });
 
-  // 有識者確認モードトグルのバインド
-  const smeToggleBtn = document.getElementById('smeToggleBtn');
-  if (smeToggleBtn) {
-    smeToggleBtn.addEventListener('click', () => {
-      expertVerifyModeActive = !expertVerifyModeActive;
-      localStorage.setItem('cascadia_verify_mode', expertVerifyModeActive);
-      updateExpertVerifyModeUI();
-      navigateTo(activePage); // ページを再ロードして適用
-    });
-  }
+  // 有識者確認モードは常にONに固定されるため、トグルのバインドは不要
 }
 
 // Router to handle page switches
