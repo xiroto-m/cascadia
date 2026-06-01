@@ -4,6 +4,31 @@
 <meta charset="UTF-8">
 <style id="auth-guard">body > :not(#auth-overlay) { visibility: hidden !important; }</style>
 <script src="src/auth.js"></script>
+<script>
+(function() {
+  function unlock() {
+    const guard = document.getElementById('auth-guard');
+    if (guard) guard.remove();
+    document.documentElement.style.visibility = 'visible';
+    document.body.style.visibility = 'visible';
+  }
+  if (window.checkSession && window.checkSession()) {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', unlock);
+    } else {
+      unlock();
+    }
+  } else if (window.showLogin) {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        window.showLogin(unlock);
+      });
+    } else {
+      window.showLogin(unlock);
+    }
+  }
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>カスケディア営業マニュアル 理解度チェック</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
