@@ -706,10 +706,6 @@ window.navigateToAndHighlight = function(pageId, elementId) {
 
 // Render Portal Home Page
 function renderPortalHome() {
-  const verifyStats = getOverallVerificationStats();
-  const checklistStats = getOverallChecklistStats();
-  const quizStats = getQuizProgressStats();
-
   // 未確定の有識者確認待ち項目をすべて動的に抽出
   const pendingItems = getPendingVerificationItems();
   let pendingVerifyHtml = '';
@@ -752,21 +748,6 @@ function renderPortalHome() {
       </div>
       <h1 class="page-title" style="margin-top: 8px;">Cascadia Trading 総合ナレッジポータル</h1>
       <p class="page-subtitle">営業マニュアルと業務マニュアルを共有するポータルです。</p>
-    </div>
-
-    <div class="stats-row">
-      <div class="stat-card" style="border-color: rgba(96, 165, 250, 0.25);">
-        <div class="stat-value" style="color: var(--accent-blue);">${verifyStats.resolved} / ${verifyStats.total} <span style="font-size:12px; font-weight:400; color:var(--text-muted);">項目</span></div>
-        <div class="stat-label">有識者確認済み (実務適用率 ${verifyStats.pct}%)</div>
-      </div>
-      <div class="stat-card" style="border-color: rgba(52, 211, 153, 0.25);">
-        <div class="stat-value" style="color: var(--accent-green);">${checklistStats.checked} / ${checklistStats.total} <span style="font-size:12px; font-weight:400; color:var(--text-muted);">項目</span></div>
-        <div class="stat-label">業務ダブルチェック実行中</div>
-      </div>
-      <div class="stat-card" style="border-color: rgba(167, 139, 250, 0.25);">
-        <div class="stat-value" style="color: var(--accent-violet);">${quizStats.completed} / ${quizStats.total} <span style="font-size:12px; font-weight:400; color:var(--text-muted);">章</span></div>
-        <div class="stat-label">理解度クイズ全問クリア</div>
-      </div>
     </div>
 
     <div class="alert alert-note">
