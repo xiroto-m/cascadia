@@ -2381,13 +2381,11 @@ tbody tr:last-child td {
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  background: #ffffff; /* 白背景でロゴを際立たせる */
+  background: transparent; /* マーク画像をそのまま配置するため透過に変更 */
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px;
   flex-shrink: 0;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3), inset 0 0 4px rgba(0,0,0,0.15);
   overflow: hidden;
 }
 
