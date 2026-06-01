@@ -1731,17 +1731,11 @@ function injectSalesDiagrams(pageId) {
           <path d="M 50,150 C 70,120 100,100 130,100 C 160,100 180,120 200,110 C 220,100 230,80 250,80 C 270,80 290,100 300,120 C 310,140 310,160 320,170 C 340,190 380,180 420,180 C 460,180 500,170 540,160 C 580,150 620,140 650,150 C 680,160 700,200 720,240 C 730,260 740,280 750,290 L 730,300 C 700,300 680,260 670,250 C 650,270 610,280 570,290 C 530,300 480,300 440,290 C 400,280 380,270 360,260 L 320,280 L 300,290 C 280,290 260,260 250,240 C 240,220 200,210 180,200 C 160,190 140,200 120,210 C 100,220 80,230 60,230 Z" 
                 fill="none" stroke="var(--border-subtle, rgba(226, 232, 240, 0.5))" stroke-width="1.5" stroke-dasharray="4,4" opacity="0.12" />
 
-          <!-- フロー矢印と流れ -->
-          <!-- 口から第一胃へ -->
-          <path d="M 40,45 L 140,45 C 180,45 200,80 250,90" fill="none" stroke="var(--text-muted, #94a3b8)" stroke-width="3" stroke-dasharray="5,5" marker-end="url(#arrow)" />
+          <!-- ラベルテキスト要素の定義（線より手前に描画） -->
           <text x="40" y="30" fill="var(--text-primary, #1e293b)" font-size="13" font-weight="800">🌾 食べる (粗飼料・濃厚飼料)</text>
-
-          <!-- 反芻のループ (口 ↔ 第一胃) とテキストの重なりを完全解決 -->
-          <path d="M 260,105 C 190,75 130,75 105,105" fill="none" stroke="#fbbf24" stroke-width="2.2" stroke-dasharray="3,3" />
-          <path d="M 105,105 C 130,135 180,135 260,105" fill="none" stroke="#fbbf24" stroke-width="2.2" stroke-dasharray="3,3" marker-end="url(#arrow)" />
           <text x="165" y="152" fill="#d97706" font-size="11" font-weight="800" text-anchor="middle">🔄 反芻 (口に戻して再咀嚼)</text>
 
-          <!-- 4つの胃のビジュアル要素 -->
+          <!-- 4つの胃のビジュアル要素 (重ね順を考慮してフロー線の前に記述することで、すべての接続線・矢印が上に描画され隠れるのを完全解決) -->
           <!-- 第一胃 (ルーメン)：サイズとx座標を微調整し左右に十分な余白を確保 -->
           <g transform="translate(250, 65)" filter="url(#shadow-stomach)" class="stomach-node" style="cursor: pointer;">
             <rect width="225" height="110" rx="14" fill="url(#grad-rumen)" stroke="#047857" stroke-width="2" />
@@ -1775,15 +1769,25 @@ function injectSalesDiagrams(pageId) {
             <text x="15" y="64" fill="#fee2e2" font-size="10" font-weight="700">・強酸性の胃液で微生物をタンパク質分解</text>
           </g>
 
-          <!-- フロー線 (胃どうしの接続) -->
-          <!-- 第一胃 → 第二胃：滑らかな曲線でプロフェッショナル化 -->
-          <path d="M 475,115 C 485,115 495,95 505,90" fill="none" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow-blue)" />
-          <!-- 第二胃 → 第三胃 -->
-          <path d="M 615,125 L 615,155" fill="none" stroke="#d97706" stroke-width="2.5" marker-end="url(#arrow-orange)" />
-          <!-- 第三胃 → 第四胃 -->
-          <path d="M 510,202 C 495,202 493,225 491,232" fill="none" stroke="#dc2626" stroke-width="2.5" marker-end="url(#arrow-red)" />
+          <!-- 全フロー線 (カードの上に乗るように最後に一括描画、隠れを完全防止し、数学的にガタつきのない滑らかなS字曲線や垂直・水平接線を再計算) -->
+          <!-- 口から第一胃へ (x=243 の位置で水平右向きに綺麗に接し、カードとの重なりを防止) -->
+          <path d="M 40,45 L 140,45 C 180,45 210,90 243,90" fill="none" stroke="var(--text-muted, #94a3b8)" stroke-width="3" stroke-dasharray="5,5" marker-end="url(#arrow)" />
+          
+          <!-- 反芻のループ (口 ↔ 第一胃) (第一胃の左境界 x=250 からはみ出ないよう x=243〜246 の範囲に再計算し、双方向にオレンジの矢印を配備) -->
+          <path d="M 246,110 C 190,80 130,80 106,105" fill="none" stroke="#fbbf24" stroke-width="2.2" stroke-dasharray="3,3" marker-end="url(#arrow-orange)" />
+          <path d="M 105,105 C 130,130 200,120 243,120" fill="none" stroke="#fbbf24" stroke-width="2.2" stroke-dasharray="3,3" marker-end="url(#arrow-orange)" />
+
+          <!-- 第一胃 → 第二胃 (第一胃中央右端 475,120 から滑らかなS字曲線で第二胃中央左端手前 503,87.5 に水平進入) -->
+          <path d="M 475,120 C 488,120 492,87.5 503,87.5" fill="none" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow-blue)" />
+          
+          <!-- 第二胃 → 第三胃 (中心軸 615 上を綺麗に垂直下落。第三胃天面 165 から 6px 手前の 159 で綺麗に接する) -->
+          <path d="M 615,125 L 615,159" fill="none" stroke="#d97706" stroke-width="2.5" marker-end="url(#arrow-orange)" />
+          
+          <!-- 第三胃 → 第四胃 (第三胃左端 510,202.5 から左に滑らかに出て、第四胃上面 x=470 に垂直に美しく着地し、角の隠れ・干渉を100%回避) -->
+          <path d="M 510,202.5 C 470,202.5 470,215 470,228" fill="none" stroke="#dc2626" stroke-width="2.5" marker-end="url(#arrow-red)" />
+          
           <!-- 第四胃 → 十二指腸・小腸 -->
-          <path d="M 270,272 C 210,272 170,305 120,305" fill="none" stroke="var(--text-muted, #94a3b8)" stroke-width="3" stroke-dasharray="3,3" marker-end="url(#arrow)" />
+          <path d="M 268,272.5 C 210,272.5 170,305 125,305" fill="none" stroke="var(--text-muted, #94a3b8)" stroke-width="3" stroke-dasharray="3,3" marker-end="url(#arrow)" />
           <text x="120" y="325" fill="var(--text-primary, #1e293b)" font-size="11.5" font-weight="800" text-anchor="middle">小腸へ ➔ 消化物・栄養吸収</text>
         </svg>
       `;
