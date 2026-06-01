@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Cascadia Trading | 総合マニュアルポータル</title>
+  <meta name="description" content="株式会社カスケディア・トレーディング 総合マニュアルポータル（営業部・業務部・営業クイズ）">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="src/style.css">
+</head>
+<body class="auth-guarded">
+  <!-- Progress Bar -->
+  <div class="progress-bar" id="progressBar"></div>
+
+  <!-- App Layout -->
+  <div class="app-layout" id="appLayout">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="#" class="sidebar-logo" id="logoLink">
+          <div class="logo-icon">🐄</div>
+          <div class="logo-text">
+            <span class="logo-title">Cascadia Trading</span>
+            <span class="logo-sub">総合ポータルマニュアル</span>
+          </div>
+        </a>
+        <button class="sidebar-toggle" id="sidebarToggle" aria-label="メニュー切替">☰</button>
+      </div>
+
+      <div class="search-box">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" id="searchInput" placeholder="マニュアルを横断検索…" autocomplete="off">
+      </div>
+
+      <nav class="sidebar-nav" id="sidebarNav">
+        <!-- Navigation sections will be generated dynamically by JS -->
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="version-badge">v1.5 統合ポータル</div>
+        <div class="last-updated">最終更新: 2026-06-01</div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+      <header class="topbar">
+        <button class="hamburger" id="hamburgerBtn" aria-label="メニューを開く">☰</button>
+        <div class="topbar-breadcrumb" id="breadcrumb">
+          <span>Cascadia Trading</span>
+          <span class="sep">/</span>
+          <span class="current" id="currentPath">ホーム</span>
+        </div>
+        <div class="topbar-actions">
+          <span class="status-badge" id="statusBadge">ポータル</span>
+        </div>
+      </header>
+
+      <div class="content-area" id="contentArea">
+        <!-- Rendered dynamically by main.js -->
+      </div>
+    </main>
+  </div>
+
+  <!-- Combo Display (For Quiz) -->
+  <div class="combo-display" id="combo">🔥 <span id="comboNum">0</span>連続正解!</div>
+  
+  <!-- Global Toast -->
+  <div class="toast" id="toast">
+    <span class="toast-emoji"></span>
+    <span class="toast-text"></span>
+  </div>
+
+  <!-- Modal for Quiz Mission -->
+  <div class="modal-overlay" id="quizModal">
+    <div class="modal-box">
+      <div class="modal-mission-badge">MISSION</div>
+      <h3 id="modalQuizTitle">チャプタータイトル</h3>
+      
+      <div class="mission-box">
+         <div class="purpose-title">🎯 学ぶ目的</div>
+         <p id="modalQuizPurpose">ここに目的が入ります</p>
+         
+         <div class="vision-title">🚀 クリアしたらどうなるか？</div>
+         <p id="modalQuizVision">ここにビジョンが入ります</p>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="btnPreviewManual">📚 まずマニュアルを読む</button>
+        <button class="btn btn-primary" id="btnStartQuiz" style="background:linear-gradient(135deg,var(--accent-blue),var(--accent-violet));color:#fff;">💡 いきなりクイズに挑戦！</button>
+        <button class="btn btn-muted" id="btnCloseModal">キャンセル</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
