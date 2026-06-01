@@ -552,8 +552,8 @@ function renderPortalHome() {
   contentArea.innerHTML = `
     <div class="page-hero">
       <span class="hero-emoji">🐄</span>
-      <h1 class="page-title">Cascadia Trading 総合マニュアル</h1>
-      <p class="page-subtitle">カスケディア・トレーディングの営業部・業務部の知見を一本化した、新しいナレッジシェア・ポータルです。</p>
+      <h1 class="page-title">Cascadia Trading 総合ナレッジポータル</h1>
+      <p class="page-subtitle">営業部・業務部の知見を一本化した、直感的で美しいナレッジシェア・ポータルです。</p>
     </div>
 
     <div class="stats-row">
@@ -577,39 +577,121 @@ function renderPortalHome() {
 
     <div class="alert alert-note">
       <div class="alert-title">📘 統合ポータルの使い方</div>
-      左側のサイドバーメニューから、各部門のマニュアルを閲覧できます。
-      上部の検索窓を使用すると、<b>営業マニュアルと業務マニュアルの両方のデータを横断的に高速検索</b>できます。
+      左側のサイドバーメニューのほか、<b>本画面の各カードから目的の章や手順書へダイレクトにアクセス可能</b>です。
+      上部の検索窓からは、営業マニュアルと業務手順書を横断的にキーワード検索できます。
     </div>
 
-    <h2>📚 部門別ショートカット</h2>
-    <div class="card-grid">
-      <div class="card" id="btnGoSales">
-        <span class="card-icon">👑</span>
-        <h4 class="card-title">営業部マニュアル</h4>
-        <p class="card-desc">フィロソフィーから牛の生理学、商品カタログ、逆引きインデックスまで体系化された営業マニュアル。</p>
-        <span class="card-arrow">➔</span>
+    <h3 class="portal-section-title">👑 営業部マニュアル — ダイレクトアクセス</h3>
+    <div class="mini-card-grid">
+      <div class="mini-card mini-card-sales" data-target="ch1">
+        <div class="mini-card-icon">🌍</div>
+        <div class="mini-card-title">第1章 フィロソフィー</div>
+        <div class="mini-card-desc">使命と向き合い方の根本</div>
+        <span class="mini-card-badge tag-manual">営業</span>
       </div>
-
-      <div class="card" id="btnGoOps">
-        <span class="card-icon">⚙️</span>
-        <h4 class="card-title">業務部マニュアル</h4>
-        <p class="card-desc">国内買継、在庫取引、輸入諸掛、倉庫移動、返品など全10件の業務プロセスチェックリストとフロー。</p>
-        <span class="card-arrow">➔</span>
+      <div class="mini-card mini-card-sales" data-target="ch2">
+        <div class="mini-card-icon">🐮</div>
+        <div class="mini-card-title">第2章 牛の基礎知識</div>
+        <div class="mini-card-desc">消化・生理・ストレス</div>
+        <span class="mini-card-badge tag-manual">営業</span>
       </div>
+      <div class="mini-card mini-card-sales" data-target="ch3">
+        <div class="mini-card-icon">🔍</div>
+        <div class="mini-card-title">第3章 逆引き索引</div>
+        <div class="mini-card-desc">課題から解決策を引き出す</div>
+        <span class="mini-card-badge tag-manual">営業</span>
+      </div>
+      <div class="mini-card mini-card-sales" data-target="ch4">
+        <div class="mini-card-icon">📦</div>
+        <div class="mini-card-title">第4章 商品カタログ</div>
+        <div class="mini-card-desc">主力商品群の特長と導入効果</div>
+        <span class="mini-card-badge tag-manual">営業</span>
+      </div>
+      <div class="mini-card mini-card-sales" data-target="appendix">
+        <div class="mini-card-icon">📎</div>
+        <div class="mini-card-title">業界用語・辞書</div>
+        <div class="mini-card-desc">TMR・BCS・CIFなど解説</div>
+        <span class="mini-card-badge tag-manual">営業</span>
+      </div>
+      <div class="mini-card mini-card-sales" data-target="quiz-dashboard">
+        <div class="mini-card-icon">🎯</div>
+        <div class="mini-card-title">理解度クイズゲーム</div>
+        <div class="mini-card-desc">ゲーム感覚で知識力をテスト！</div>
+        <span class="mini-card-badge tag-manual" style="background:var(--accent-amber); color:var(--text-inverse);">学習</span>
+      </div>
+    </div>
 
-      <div class="card" id="btnGoQuiz">
-        <span class="card-icon">🎯</span>
-        <h4 class="card-title">営業力チェック</h4>
-        <p class="card-desc">ゲーム感覚で営業知識と牛の生態知識をテスト！全5章の難関クイズをクリアしてバッジを集めよう。</p>
-        <span class="card-arrow">➔</span>
+    <h3 class="portal-section-title">⚙️ 業務部マニュアル — プロセスダイレクトアクセス</h3>
+    <div class="mini-card-grid">
+      <div class="mini-card mini-card-ops" data-target="dom-buy">
+        <div class="mini-card-icon">🚚</div>
+        <div class="mini-card-title">01-1 国内買継取引</div>
+        <div class="mini-card-desc">受発注同時計上・荷渡指図</div>
+        <span class="mini-card-badge tag-system">業務</span>
+      </div>
+      <div class="mini-card mini-card-ops" data-target="dom-stock">
+        <div class="mini-card-icon">📦</div>
+        <div class="mini-card-title">01-2 国内在庫取引</div>
+        <div class="mini-card-desc">倉庫出庫・複数倉庫出荷</div>
+        <span class="mini-card-badge tag-system">業務</span>
+      </div>
+      <div class="mini-card mini-card-ops" data-target="imp-buy">
+        <div class="mini-card-icon">🚢</div>
+        <div class="mini-card-title">02-1 輸入買継取引</div>
+        <div class="mini-card-desc">SO発注・船積管理・為替予約</div>
+        <span class="mini-card-badge tag-system">業務</span>
+      </div>
+      <div class="mini-card mini-card-ops" data-target="expense">
+        <div class="mini-card-icon">💰</div>
+        <div class="mini-card-title">03-1 諸掛処理</div>
+        <div class="mini-card-desc">輸入諸掛入力・配賦・原価洗替</div>
+        <span class="mini-card-badge tag-system">業務</span>
+      </div>
+      <div class="mini-card mini-card-ops" data-target="warehouse">
+        <div class="mini-card-icon">🏢</div>
+        <div class="mini-card-title">03-2 倉庫移動</div>
+        <div class="mini-card-desc">港・営業倉庫間の移動指示</div>
+        <span class="mini-card-badge tag-system">業務</span>
+      </div>
+      <div class="mini-card mini-card-ops" data-target="returns">
+        <div class="mini-card-icon">🔄</div>
+        <div class="mini-card-title">04 返品処理</div>
+        <div class="mini-card-desc">仕入先返品・得意先返品3種</div>
+        <span class="mini-card-badge tag-system">業務</span>
+      </div>
+      <div class="mini-card mini-card-ops" data-target="billing">
+        <div class="mini-card-icon">📝</div>
+        <div class="mini-card-title">05 請求〜回収</div>
+        <div class="mini-card-desc">請求締切・回収消込・残高確認</div>
+        <span class="mini-card-badge tag-system">業務</span>
+      </div>
+      <div class="mini-card mini-card-ops" data-target="pay-dom">
+        <div class="mini-card-icon">💵</div>
+        <div class="mini-card-title">06-1 支払(国内)</div>
+        <div class="mini-card-desc">営業事務照合・経理出金</div>
+        <span class="mini-card-badge tag-system">業務</span>
+      </div>
+      <div class="mini-card mini-card-ops" data-target="pay-intl">
+        <div class="mini-card-icon">💱</div>
+        <div class="mini-card-title">06-2 支払(海外)</div>
+        <div class="mini-card-desc">外貨TT送金・出金計上処理</div>
+        <span class="mini-card-badge tag-system">業務</span>
+      </div>
+      <div class="mini-card mini-card-ops" data-target="accounting">
+        <div class="mini-card-icon">📊</div>
+        <div class="mini-card-title">07 会計連携</div>
+        <div class="mini-card-desc">売上仕入データ連携・自動仕訳</div>
+        <span class="mini-card-badge tag-system">業務</span>
       </div>
     </div>
   `;
 
-  // Bind cards inside home dashboard
-  document.getElementById('btnGoSales').addEventListener('click', () => navigateTo('ch1'));
-  document.getElementById('btnGoOps').addEventListener('click', () => navigateTo('dom-buy'));
-  document.getElementById('btnGoQuiz').addEventListener('click', () => navigateTo('quiz-dashboard'));
+  // Bind click listeners dynamically for all mini-cards
+  document.querySelectorAll('.mini-card').forEach(card => {
+    card.addEventListener('click', () => {
+      navigateTo(card.dataset.target);
+    });
+  });
 }
 
 // ==========================================
