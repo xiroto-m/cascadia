@@ -634,11 +634,115 @@ function getQuizProgressStats() {
   return { total, completed };
 }
 
+// 業務マニュアル全体から、未解決の「有識者確認必須事項」を動的に抽出する
+function getPendingVerificationItems() {
+  const pendingItems = [];
+  const tempDiv = document.createElement('div');
+  
+  Object.keys(OPS_PAGES).forEach(pageId => {
+    tempDiv.innerHTML = OPS_PAGES[pageId].html;
+    const cautions = tempDiv.querySelectorAll('.alert-caution, .alert-warning');
+    
+    // パンくず情報から適切なマニュアル名を取得
+    const breadcrumb = OPS_PAGES[pageId].breadcrumb || '';
+    const cleanBreadcrumb = breadcrumb.replace(/\s*＞\s*/g, ' ＞ ');
+    
+    // マニュアルの h1 タイトルを取得
+    const pageTitle = OPS_PAGES[pageId].html.match(/<h1 class="page-title">(.*?)<\/h1>/)?.[1] || pageId;
+    
+    cautions.forEach((element, index) => {
+      const elementId = `${pageId}-caution-${index}`;
+      const isResolved = verifiedItems.includes(elementId);
+      
+      if (!isResolved) {
+        let textContent = "";
+        const lis = element.querySelectorAll('li');
+        if (lis.length > 0) {
+          textContent = Array.from(lis).map(li => li.textContent.trim()).join(' / ');
+        } else {
+          // タイトルを除去して本文だけを抽出
+          const clone = element.cloneNode(true);
+          const title = clone.querySelector('.alert-title');
+          if (title) title.remove();
+          textContent = clone.textContent.trim();
+        }
+        
+        pendingItems.push({
+          id: elementId,
+          pageId: pageId,
+          pageTitle: `${cleanBreadcrumb} ＞ ${pageTitle}`,
+          text: textContent
+        });
+      }
+    });
+  });
+  
+  return pendingItems;
+}
+
+// ホーム一覧から該当マニュアルページの該当確認箇所へダイレクトにジャンプ＆ハイライト表示する
+window.navigateToAndHighlight = function(pageId, elementId) {
+  navigateTo(pageId);
+  
+  // ページレンダリングの完了を待って、該当要素へスクロール＆一時フラッシュ
+  setTimeout(() => {
+    const targetElement = document.querySelector(`[data-caution-id="${elementId}"]`);
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      
+      // 一時的なオレンジのフチ取りで強調表示（3秒間）
+      targetElement.style.outline = '3px solid var(--accent-amber)';
+      targetElement.style.outlineOffset = '4px';
+      targetElement.style.borderRadius = '12px';
+      targetElement.style.transition = 'outline 0.3s ease';
+      
+      setTimeout(() => {
+        targetElement.style.outline = 'none';
+      }, 3000);
+    }
+  }, 150);
+};
+
 // Render Portal Home Page
 function renderPortalHome() {
   const verifyStats = getOverallVerificationStats();
   const checklistStats = getOverallChecklistStats();
   const quizStats = getQuizProgressStats();
+
+  // 未確定の有識者確認待ち項目をすべて動的に抽出
+  const pendingItems = getPendingVerificationItems();
+  let pendingVerifyHtml = '';
+  
+  if (pendingItems.length === 0) {
+    pendingVerifyHtml = `
+      <div style="color: var(--accent-green); font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 13.5px;">
+        <span>✅ 現在、すべての要確認項目が有識者確認を通過し、実務に適用されています。</span>
+      </div>
+    `;
+  } else {
+    pendingVerifyHtml = `
+      <div style="margin-bottom: 12px; font-size: 12.5px; color: var(--text-muted);">
+        ※各項目をクリックすると、該当マニュアルの確認箇所へ直接移動できます。
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 10px; max-height: 400px; overflow-y: auto; padding-right: 4px;">
+        ${pendingItems.map((item, idx) => `
+          <div class="pending-verify-item" onclick="navigateToAndHighlight('${item.pageId}', '${item.id}')" style="cursor: pointer; padding: 12px 16px; border: 1px solid var(--border-subtle); border-radius: 12px; background: var(--bg-primary); transition: all 0.2s; display: flex; flex-direction: column; gap: 6px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+              <span style="font-size: 11px; font-weight: 700; color: var(--accent-blue); background: rgba(30, 58, 138, 0.08); padding: 2px 8px; border-radius: 20px;">
+                ${item.pageTitle}
+              </span>
+              <span style="font-size: 11px; font-weight: 700; color: var(--accent-amber); background: rgba(180, 83, 9, 0.08); padding: 2px 8px; border-radius: 20px;">
+                要確認 [No.${idx + 1}]
+              </span>
+            </div>
+            <div style="font-size: 13.5px; font-weight: 600; color: var(--text-primary); line-height: 1.6;">
+              ${item.text}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
 
   contentArea.innerHTML = `
     <div class="page-hero" style="display: flex; flex-direction: column; gap: 16px; align-items: flex-start;">
@@ -668,6 +772,13 @@ function renderPortalHome() {
       <div class="alert-title">📘 統合ポータルの使い方</div>
       左側のサイドバーメニューのほか、<b>本画面の各カードから目的の章や手順書へダイレクトにアクセス可能</b>です。
       上部の検索窓からは、営業マニュアルと業務手順書を横断的にキーワード検索できます。
+    </div>
+
+    <h3 class="portal-section-title" style="display: flex; align-items: center; gap: 8px; margin-top: 32px;">
+      <span style="font-size: 20px;">🔴</span> 有識者への要確認事項（確認待ちリスト）
+    </h3>
+    <div class="pending-verifications-list" style="background: var(--bg-card); border: 1px solid var(--border-medium); border-radius: 16px; padding: 20px; margin: 16px 0 32px; box-shadow: var(--shadow-sm);">
+      ${pendingVerifyHtml}
     </div>
 
     <h3 class="portal-section-title">👑 営業部マニュアル — ダイレクトアクセス</h3>

@@ -3014,4 +3014,16 @@ tbody tr:last-child td {
   }
 }
 
+/* 5. ポータルホーム：有識者確認待ち項目リスト用プレミアムホバースタイル */
+.pending-verify-item {
+  transition: all 0.25s var(--ease-out);
+}
+
+.pending-verify-item:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-amber) !important;
+  box-shadow: 0 6px 16px rgba(180, 83, 9, 0.08);
+  background: var(--bg-secondary) !important;
+}
+
 
