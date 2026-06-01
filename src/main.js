@@ -1996,7 +1996,7 @@ function injectSalesDiagrams(pageId) {
             <text x="12" y="44" fill="#fecaca" font-size="10.5">・ルーメンで「超急速」に分解</text>
           </g>
           <path d="M 330,90 L 375,90" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="3,3" marker-end="url(#arrow-red-p)" />
-          <text x="382" y="108" fill="#dc2626" font-size="10.5" font-weight="700">⚠️ 多すぎるとアンモニアが過剰に</text>
+          <text x="340" y="83" fill="#dc2626" font-size="9.5" font-weight="700" text-anchor="start">⚠️ 多すぎるとアンモニアが過剰に（ロス）</text>
 
           <!-- 2. DIP -->
           <g transform="translate(170, 130)" filter="url(#shadow-soft)">
@@ -2005,7 +2005,7 @@ function injectSalesDiagrams(pageId) {
             <text x="12" y="44" fill="#bfdbfe" font-size="10.5">・微生物がゆっくり分解・利用</text>
           </g>
           <path d="M 330,160 L 380,160 C 410,160 420,135 440,135 L 530,135" fill="none" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow-blue-p)" />
-          <text x="355" y="148" fill="#2563eb" font-size="11" font-weight="800">微生物のエサに 🦠</text>
+          <text x="340" y="153" fill="#2563eb" font-size="9.5" font-weight="800" text-anchor="start">微生物のエサに 🦠</text>
 
           <!-- 3. UIP -->
           <g transform="translate(170, 200)" filter="url(#shadow-soft)">
@@ -2014,7 +2014,7 @@ function injectSalesDiagrams(pageId) {
             <text x="12" y="44" fill="#ecfdf5" font-size="10.5" font-weight="700">・ルーメンを完全にスルー！</text>
           </g>
           <path d="M 330,230 L 530,230" fill="none" stroke="#059669" stroke-width="4" marker-end="url(#arrow-green-p)" />
-          <text x="360" y="252" fill="#047857" font-size="11.5" font-weight="900">✨ 最も重要：バイパスプロテイン</text>
+          <text x="340" y="222" fill="#047857" font-size="9.5" font-weight="900" text-anchor="start">✨ 最も重要：バイパスプロテイン</text>
 
           <!-- 4. BP -->
           <g transform="translate(170, 270)" filter="url(#shadow-soft)">
@@ -2023,7 +2023,7 @@ function injectSalesDiagrams(pageId) {
             <text x="12" y="38" fill="#e4e4e7" font-size="10">・繊維と結合して消化不可</text>
           </g>
           <path d="M 330,295 L 430,295 C 460,295 470,305 490,305 L 530,305" fill="none" stroke="#71717a" stroke-width="2" marker-end="url(#arrow-gray-p)" />
-          <text x="440" y="316" fill="#71717a" font-size="10">そのまま糞として排出 💩</text>
+          <text x="340" y="288" fill="#71717a" font-size="9.5" text-anchor="start">そのまま糞として排出 💩</text>
 
           <!-- 右側：最終消化・合流 -->
           <!-- DIP ➔ BCP -->
@@ -2058,7 +2058,70 @@ function injectSalesDiagrams(pageId) {
         <div class="diagram-header-wrapper" style="margin: 20px 0 12px; display: flex; align-items: center; gap: 8px;">
           <h4 style="margin: 0; font-size: 15px; font-weight: 800; color: var(--accent-blue);">🧬 粗タンパク質（CP）の画分分類とルーメン内外での挙動フロー</h4>
         </div>
-      ` + proteinFractionSvg;
+      ` + proteinFractionSvg + `
+        <div class="so-what-section" style="margin-top: 25px;">
+          <div class="so-what-header">
+            <span>📢</span> 酪農営業の「だから何？（勘所）」── 飼料分析のタンパク質画分をどう提案に活かすか？
+          </div>
+          <p class="so-what-intro">
+            農家から「CP（粗タンパク質）が高いエサをあげているのに乳量が伸びない」「乳中尿素窒素（MUN）が高い」と言われた時こそ、この画分フローの出番です。単なるタンパク質の「量」ではなく、「ルーメン内での挙動（質とタイミング）」を紐解くことで、他社と次元の違う飼料コンサルティングが可能になります。
+          </p>
+          <div class="so-what-grid">
+            <!-- 勘所① -->
+            <div class="so-what-card type-1">
+              <div class="so-what-title-container">
+                <span class="so-what-number">勘所①</span>
+                <span class="so-what-title">SIP（溶解性タンパク）の「無駄遣い」と「エネルギーロス」を突く</span>
+              </div>
+              <div class="so-what-body">
+                SIPはルーメン内で「超急速」に分解されますが、微生物の利用スピードを超えるとアンモニアとして血液に吸収され、肝臓で尿素に変換されて尿や乳（BUN/MUN）として排出されます。これは高価なタンパク質をドブに捨てているだけでなく、<span class="marker-highlight">肝臓での尿素合成に余計なエネルギーを浪費し、牛の痩せ（NEB）を悪化させる最悪のロス</span>です。
+              </div>
+              <div class="action-box">
+                <div class="action-icon">👉</div>
+                <div class="action-content">
+                  <span class="action-label">営業のアクション</span>
+                  「MUNが高い」農家に対し、「タンパク質がルーメン内で利用しきれずロスになっており、さらに牛の体力を奪っています。SIPの低い高品質アルファルファやバイパス製品に切り替えて、<strong>窒素利用効率（コストパフォーマンス）を最大化</strong>しましょう」と提案します。
+                </div>
+              </div>
+            </div>
+
+            <!-- 勘所② -->
+            <div class="so-what-card type-2">
+              <div class="so-what-title-container">
+                <span class="so-what-number">勘所②</span>
+                <span class="so-what-title">安価で極上なタンパク源「BCP（微生物蛋白）」を最大化する「同期」提案</span>
+              </div>
+              <div class="so-what-body">
+                牛にとって最もアミノ酸バランスが良い理想のタンパク源は、ルーメン微生物の死骸である「BCP（微生物体蛋白）」です。微生物がDIP（分解性タンパク）を材料に自分の体（BCP）を作るには、<span class="marker-highlight">同時に「燃料」となるでんぷん・糖などの発酵性炭水化物が必要</span>です。エネルギーが足りないと、せっかくのタンパクがBCPに合成されずロスになります。
+              </div>
+              <div class="action-box">
+                <div class="action-icon">👉</div>
+                <div class="action-content">
+                  <span class="action-label">営業のアクション</span>
+                  「タンパクを与えているのに乳量が伸びない」農家に対し、「タンパクとでんぷんのタイミングが『同期』していません。<strong>発酵性エネルギー飼料（コーンサイレージや加熱加工麦等）をセットで給与</strong>し、ルーメン内での極上BCP合成量を最大化させましょう」と、飼料全体のバランス設計を提案します。
+                </div>
+              </div>
+            </div>
+
+            <!-- 勘所③ -->
+            <div class="so-what-card type-3">
+              <div class="so-what-title-container">
+                <span class="so-what-number">勘所③</span>
+                <span class="so-what-title">高泌乳牛の「限界突破」にはバイパス蛋白（UIP）が絶対必須</span>
+              </div>
+              <div class="so-what-body">
+                乳量が1日40kgを超えるような高泌乳牛は、ルーメン微生物（BCP）が作るアミノ酸だけでは絶対に足りません。しかし、これ以上濃厚飼料（DIP等）を増やすとルーメンアシドーシスの危険が高まります。そこで、ルーメンを完全にスルーして小腸へ直行する<span class="marker-highlight">「UIP（バイパス蛋白）」をダイレクトに送り込むこと</span>が、安全に乳量を伸ばす唯一の手段になります。
+              </div>
+              <div class="action-box">
+                <div class="action-icon">👉</div>
+                <div class="action-content">
+                  <span class="action-label">営業のアクション</span>
+                  「これ以上エサを増やすと胃が心配、でも乳量を伸ばしたい」農家に対し、「ルーメンに一切負担をかけず小腸で100%吸収される<strong>バイパス大豆製品や高品質アルファルファ</strong>の給与が唯一の解決策です。安全に乳量と乳タンパク質の上限を突破しましょう」と提案します。
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>`;
       
       // h3 の次の要素（通常は説明のpタグ）を見つけて、その後に挿入する
       const nextSibling = targetH3.nextElementSibling;
