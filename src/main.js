@@ -1745,16 +1745,16 @@ function injectSalesDiagrams(pageId) {
             <text x="15" y="94" fill="#ecfdf5" font-size="10.5" font-weight="700">・エネルギー源の約70% (VFA) を生成</text>
           </g>
 
-          <!-- 第二胃 (網胃)：y座標を調整して第一胃・第三胃と美しく調和 -->
-          <g transform="translate(510, 50)" filter="url(#shadow-stomach)" class="stomach-node">
+          <!-- 第二胃 (網胃)：y座標を調整して第一胃・第三胃と美しく調和。右に20pxシフトして間隔を最適化 -->
+          <g transform="translate(530, 50)" filter="url(#shadow-stomach)" class="stomach-node">
             <rect width="210" height="75" rx="12" fill="url(#grad-reticulum)" stroke="#1d4ed8" stroke-width="2" />
             <text x="15" y="28" fill="#fff" font-size="13.5" font-weight="800">🔵 第二胃 (網胃)</text>
             <text x="15" y="48" fill="#eff6ff" font-size="10.5" font-weight="700">異物除去フィルター</text>
             <text x="15" y="64" fill="#dbeafe" font-size="10" font-weight="700">・蜂の巣状の壁で金属等の異物を捕獲</text>
           </g>
 
-          <!-- 第三胃 (葉胃)：高コントラストなテキスト色を採用 -->
-          <g transform="translate(510, 165)" filter="url(#shadow-stomach)" class="stomach-node">
+          <!-- 第三胃 (葉胃)：高コントラストなテキスト色を採用。第二胃と揃えて右に20pxシフト -->
+          <g transform="translate(530, 165)" filter="url(#shadow-stomach)" class="stomach-node">
             <rect width="210" height="75" rx="12" fill="url(#grad-omasum)" stroke="#b45309" stroke-width="2" />
             <text x="15" y="28" fill="#fff" font-size="13.5" font-weight="800">🟡 第三胃 (葉胃)</text>
             <text x="15" y="48" fill="#fffbeb" font-size="10.5" font-weight="700">水分とミネラルの吸収</text>
@@ -1777,14 +1777,14 @@ function injectSalesDiagrams(pageId) {
           <path d="M 246,110 C 190,90 135,105 106,105" fill="none" stroke="#fbbf24" stroke-width="2.2" stroke-dasharray="3,3" marker-end="url(#arrow-orange)" />
           <path d="M 105,105 C 135,120 205,120 243,120" fill="none" stroke="#fbbf24" stroke-width="2.2" stroke-dasharray="3,3" marker-end="url(#arrow-orange)" />
 
-          <!-- 第一胃 → 第二胃 (最後の14pxを完全に水平 y=87.5 にすることで、回転による三角と線の結合ズレを数学的に0へ解消) -->
-          <path d="M 475,120 C 485,120 490,87.5 504,87.5" fill="none" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow-blue)" />
+          <!-- 第一胃 → 第二胃 (間隔が55pxに広がったことで、よりのびのびと極めて滑らかなS字を描き、最後の14pxを完全に水平 y=87.5 にして結合ズレもゼロへ解消) -->
+          <path d="M 475,120 C 495,120 510,87.5 524,87.5" fill="none" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow-blue)" />
           
-          <!-- 第二胃 → 第三胃 (中心軸 615 上を綺麗に垂直下落。第三胃天面 165 から 6px 手前の 159 で綺麗に接する) -->
-          <path d="M 615,125 L 615,159" fill="none" stroke="#d97706" stroke-width="2.5" marker-end="url(#arrow-orange)" />
+          <!-- 第二胃 → 第三胃 (右シフトに追従し、新しい中心軸 635 上を綺麗に垂直下落) -->
+          <path d="M 635,125 L 635,159" fill="none" stroke="#d97706" stroke-width="2.5" marker-end="url(#arrow-orange)" />
           
-          <!-- 第三胃 → 第四胃 (カクつきを排除し、滑らかな孤を描きながら斜め約120度方向のまま第四胃の右上 483,231 にアプローチ) -->
-          <path d="M 510,202.5 C 495,202.5 488,222.5 483,231" fill="none" stroke="#dc2626" stroke-width="2.5" marker-end="url(#arrow-red)" />
+          <!-- 第三胃 → 第四胃 (右シフトに伴う十分な距離により、さらに滑らかな弧を描きながら第四胃の右上 483,231 に斜めアプローチ) -->
+          <path d="M 530,202.5 C 500,202.5 488,222.5 483,231" fill="none" stroke="#dc2626" stroke-width="2.5" marker-end="url(#arrow-red)" />
           
           <!-- 第四胃 → 十二指腸・小腸 -->
           <path d="M 268,272.5 C 210,272.5 170,305 125,305" fill="none" stroke="var(--text-muted, #94a3b8)" stroke-width="3" stroke-dasharray="3,3" marker-end="url(#arrow)" />
