@@ -3318,3 +3318,144 @@ tbody tr:last-child td {
     margin: 18px 0;
   }
 }
+
+/* =========================================================================
+   6. 営業の「だから何？（勘所）」専用プレミアムカード (So What? Section)
+   ========================================================================= */
+.so-what-section {
+  background: #f8fafc;
+  border-left: 6px solid var(--accent-amber, #d97706);
+  border-radius: 16px;
+  padding: 32px;
+  margin: 32px 0;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-subtle);
+  border-left-width: 6px;
+}
+
+.so-what-header {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.so-what-intro {
+  font-size: 0.98rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  margin-bottom: 28px;
+  font-weight: 500;
+}
+
+.so-what-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* 各勘所のカード */
+.so-what-card {
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 26px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
+}
+
+.so-what-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* 勘所タイトル */
+.so-what-title-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed var(--border-subtle);
+}
+
+.so-what-number {
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  padding: 4px 10px;
+  border-radius: 20px;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+.so-what-card.type-1 .so-what-number {
+  background: var(--accent-blue, #1e3a8a);
+}
+.so-what-card.type-2 .so-what-number {
+  background: var(--accent-amber, #b45309);
+}
+.so-what-card.type-3 .so-what-number {
+  background: var(--accent-rose, #be123c);
+}
+
+.so-what-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.so-what-card.type-1 .so-what-title { color: var(--accent-blue, #1e3a8a); }
+.so-what-card.type-2 .so-what-title { color: var(--accent-amber, #b45309); }
+.so-what-card.type-3 .so-what-title { color: var(--accent-rose, #be123c); }
+
+/* 生理状態・背景の解説テキスト */
+.so-what-body {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  margin-bottom: 20px;
+}
+
+/* 営業のアクション（コールアウト風ボックス） */
+.action-box {
+  background: rgba(40, 95, 45, 0.04); /* 淡いフォレストグリーン */
+  border-left: 4px solid var(--accent-green, #285f2d);
+  border-radius: 10px;
+  padding: 18px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.action-icon {
+  font-size: 1.4rem;
+  line-height: 1.2;
+}
+
+.action-content {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  line-height: 1.7;
+}
+
+.action-label {
+  font-weight: 800;
+  color: var(--accent-green, #285f2d);
+  margin-bottom: 6px;
+  display: block;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* 強調マーカー */
+.marker-highlight {
+  background: linear-gradient(transparent 60%, rgba(180, 83, 9, 0.12) 40%);
+  font-weight: 700;
+  padding: 0 2px;
+}
