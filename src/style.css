@@ -1,38 +1,48 @@
 /* src/style.css - Premium Glassmorphism & Sleek Dark Theme for Cascadia Portal */
 
 :root {
-  --bg-primary: #0a0c14;
-  --bg-secondary: #111422;
-  --bg-tertiary: #171a2e;
-  --bg-card: #181d30;
-  --bg-card-hover: #222947;
-  --accent-green: #34d399;
-  --accent-green-dim: #22a67a;
-  --accent-green-glow: rgba(52, 211, 153, 0.12);
-  --accent-blue: #60a5fa;
-  --accent-blue-dim: #3b82f6;
-  --accent-blue-glow: rgba(96, 165, 250, 0.12);
-  --accent-amber: #fbbf24;
-  --accent-amber-dim: #d97706;
-  --accent-rose: #fb7185;
-  --accent-violet: #a78bfa;
-  --accent-teal: #2dd4bf;
-  --accent-orange: #fb923c;
+  /* =========================================================================
+     新・プレミアム・ライトテーマ (プレステージ・オフィシャル・スタイル)
+     ========================================================================= */
+  --bg-primary: #f8fafc;       /* メインコンテンツ背景：極めて淡いスレートグレー（目に優しい） */
+  --bg-secondary: #ffffff;     /* 各種枠線等の補助背景 */
+  --bg-tertiary: #ffffff;      /* トップバー等背景 */
+  --bg-card: #ffffff;          /* カード要素背景（浮き上がるクリーンな白） */
+  --bg-card-hover: #f1f5f9;    /* カードホバー時 */
   
-  --text-primary: #e8eaed;
-  --text-secondary: #9ca3af;
-  --text-muted: #6b7280;
-  --text-inverse: #0a0c14;
+  /* ブランドカラー & アクセントカラー */
+  --accent-green: #285f2d;     /* 公式の主役：フォレストグリーン（深緑） */
+  --accent-green-dim: #1e4621;
+  --accent-green-glow: rgba(40, 95, 45, 0.06);
   
-  --border-subtle: rgba(255, 255, 255, 0.05);
-  --border-medium: rgba(255, 255, 255, 0.09);
-  --glass: rgba(255, 255, 255, 0.02);
-  --glass-heavy: rgba(255, 255, 255, 0.05);
+  --accent-blue: #1e3a8a;      /* 公式の準主役：ロイヤルディープブルー */
+  --accent-blue-dim: #1d4ed8;
+  --accent-blue-glow: rgba(30, 58, 138, 0.06);
   
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.5);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.6);
-  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.7);
-  --shadow-glow: 0 0 30px rgba(52, 211, 153, 0.06);
+  --accent-amber: #b45309;     /* 有識者確認等 */
+  --accent-amber-dim: #92400e;
+  --accent-rose: #be123c;
+  --accent-violet: #6d28d9;    /* クイズ用など */
+  --accent-teal: #0f766e;
+  --accent-orange: #c2410c;
+  
+  /* テキストカラー（可読性を極限まで高めたチャコール＆ネイビー） */
+  --text-primary: #1e293b;     /* 主要な文章：ダークスレート */
+  --text-secondary: #475569;   /* 補足文章・サブテキスト */
+  --text-muted: #64748b;       /* 暗黙のテキスト */
+  --text-inverse: #ffffff;     /* 反転カラー（ダーク背景用） */
+  
+  /* 境界線とガラスモーフィズム */
+  --border-subtle: #e2e8f0;    /* やわらかい境界線 */
+  --border-medium: #cbd5e1;    /* 中密度の境界線 */
+  --glass: rgba(255, 255, 255, 0.7); /* ライトガラスモーフィズム */
+  --glass-heavy: rgba(255, 255, 255, 0.95);
+  
+  /* 影（ライトテーマに最適化した、やわらかく深みのあるシャドウ） */
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 20px 50px -12px rgba(15, 23, 42, 0.12);
+  --shadow-glow: 0 0 30px rgba(40, 95, 45, 0.04);
   
   --font-sans: 'Noto Sans JP', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'SF Mono', 'Fira Code', monospace;
@@ -42,6 +52,11 @@
   --content-max: 960px;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --duration: 0.35s;
+
+  /* 環境対応型UIカラー変数 */
+  --scrollbar-thumb: rgba(15, 23, 42, 0.15);
+  --scrollbar-thumb-hover: rgba(15, 23, 42, 0.3);
+  --topbar-bg: rgba(255, 255, 255, 0.85);
 }
 
 /* Global Reset & Base */
@@ -76,12 +91,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--scrollbar-thumb);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--scrollbar-thumb-hover);
 }
 
 /* Progress bar */
@@ -116,6 +131,24 @@ body {
   z-index: 100;
   transition: transform var(--duration) var(--ease-out);
   overflow: hidden;
+
+  /* =========================================================================
+     サイドバー専用カラーオーバーライド（スプリット・スタイル用）
+     カスケディア伝統の深緑とクリアなホワイトテキストを固定
+     ========================================================================= */
+  --bg-secondary: #16241b;      /* サイドバー背景：フォレストグリーン */
+  --bg-tertiary: #1f3326;       /* 検索インプット等の背景 */
+  --text-primary: #ffffff;      /* 主要テキスト：完全な白 */
+  --text-secondary: #a3b899;    /* サブテキスト：明るいオリーブグレー */
+  --text-muted: #6b8c66;        /* ミュートテキスト：深めのセージグリーン */
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-medium: rgba(255, 255, 255, 0.12);
+  --glass: rgba(255, 255, 255, 0.05);
+  --accent-green: #34d399;      /* 深緑の上で映えるネオングリーンを適用 */
+  --accent-green-dim: #22a67a;
+  --accent-green-glow: rgba(52, 211, 153, 0.15);
+  --scrollbar-thumb: rgba(255, 255, 255, 0.15);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.3);
 }
 
 .sidebar-header {
@@ -339,7 +372,7 @@ body {
   position: sticky;
   top: 0;
   height: var(--header-height);
-  background: rgba(10, 12, 20, 0.85);
+  background: var(--topbar-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border-subtle);
