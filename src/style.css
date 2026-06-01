@@ -3245,3 +3245,76 @@ tbody tr:last-child td {
 .summary-box th[style*="color:#111"] {
   color: #1e293b !important;
 }
+
+/* =========================================================================
+   営業部マニュアル用 プレミアムSVG図解スタイル
+   ========================================================================= */
+
+.digest-diagram-svg-container,
+.diagram-container-wrapper {
+  margin: 28px 0;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-subtle, #e2e8f0);
+  box-shadow: var(--shadow-sm);
+  padding: 20px;
+  transition: all 0.3s var(--ease-out);
+}
+
+.digest-diagram-svg-container:hover,
+.diagram-container-wrapper:hover {
+  border-color: var(--border-medium, #cbd5e1);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.diagram-svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+
+.diagram-svg text {
+  font-family: var(--font-sans);
+  user-select: none;
+}
+
+/* stomachs: 胃ノードのインタラクティブ表現 */
+.stomach-node rect {
+  transition: fill 0.25s, stroke 0.25s, filter 0.25s;
+}
+
+.stomach-node:hover rect {
+  filter: brightness(1.06) saturate(1.1);
+  stroke-width: 2.5px;
+}
+
+/* 泌乳曲線 & タンパク質フローのSVG要素アニメーション */
+@keyframes dash {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+
+.diagram-svg path[stroke-dasharray] {
+  animation: dash 15s linear infinite;
+}
+
+.diagram-svg path[stroke-linecap="round"] {
+  transition: stroke-width 0.2s;
+}
+
+.diagram-svg path[stroke-linecap="round"]:hover {
+  stroke-width: 6px;
+  cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .digest-diagram-svg-container,
+  .diagram-container-wrapper {
+    padding: 12px;
+    margin: 18px 0;
+  }
+}
