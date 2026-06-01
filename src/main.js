@@ -1777,8 +1777,8 @@ function injectSalesDiagrams(pageId) {
           <path d="M 246,110 C 190,90 135,105 106,105" fill="none" stroke="#fbbf24" stroke-width="2.2" stroke-dasharray="3,3" marker-end="url(#arrow-orange)" />
           <path d="M 105,105 C 135,120 205,120 243,120" fill="none" stroke="#fbbf24" stroke-width="2.2" stroke-dasharray="3,3" marker-end="url(#arrow-orange)" />
 
-          <!-- 第一胃 → 第二胃 (間隔が55pxに広がったことで、よりのびのびと極めて滑らかなS字を描き、最後の14pxを完全に水平 y=87.5 にして結合ズレもゼロへ解消) -->
-          <path d="M 475,120 C 495,120 510,87.5 524,87.5" fill="none" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow-blue)" />
+          <!-- 第一胃 → 第二胃 (ベジェ曲線と直線Lを組み合わせ、終点手前19pxを完全な水平直線Lにすることで、マーカー底辺との幾何学的結合ズレを数学的に完全ゼロへ解消) -->
+          <path d="M 475,120 C 485,120 495,87.5 505,87.5 L 524,87.5" fill="none" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow-blue)" />
           
           <!-- 第二胃 → 第三胃 (右シフトに追従し、新しい中心軸 635 上を綺麗に垂直下落) -->
           <path d="M 635,125 L 635,159" fill="none" stroke="#d97706" stroke-width="2.5" marker-end="url(#arrow-orange)" />
