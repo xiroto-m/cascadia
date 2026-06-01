@@ -2414,17 +2414,18 @@ tbody tr:last-child td {
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  background: transparent; /* マーク画像をそのまま配置するため透過に変更 */
+  background: #ffffff; /* ユーザーの要請：ロゴ本来の印象を保つため白背景に変更 */
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* 白背景を引き締め、深緑の背景の上で美しく際立たせるやわらかい影 */
 }
 
 .logo-img-sidebar {
-  max-width: 100%;
-  max-height: 100%;
+  max-width: 80%; /* 白背景の中で窮屈にならないよう80%に調整して呼吸スペースを確保 */
+  max-height: 80%;
   object-fit: contain;
 }
 
