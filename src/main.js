@@ -28,6 +28,10 @@ let curCorrect = 0;
 let quizAnswered = false;
 let pendingChId = null;
 
+// 有識者確認モードおよびチェックリストのグローバル状態
+let expertVerifyModeActive = localStorage.getItem('cascadia_verify_mode') === 'true';
+let verifiedItems = JSON.parse(localStorage.getItem('cascadia_verified_items') || '[]');
+
 // Initialize app after auth verification
 document.addEventListener('DOMContentLoaded', () => {
   if (checkSession()) {
@@ -40,8 +44,23 @@ document.addEventListener('DOMContentLoaded', () => {
 function initApp() {
   generateNavTree();
   setupEventListeners();
+  updateExpertVerifyModeUI();
   navigateTo('home');
   updateProgress();
+}
+
+function updateExpertVerifyModeUI() {
+  const smeToggleBtn = document.getElementById('smeToggleBtn');
+  if (!smeToggleBtn) return;
+  if (expertVerifyModeActive) {
+    document.body.classList.add('sme-mode-active');
+    smeToggleBtn.classList.add('active');
+    smeToggleBtn.textContent = '🔍 有識者確認モード: ON';
+  } else {
+    document.body.classList.remove('sme-mode-active');
+    smeToggleBtn.classList.remove('active');
+    smeToggleBtn.textContent = '🔍 有識者確認モード: OFF';
+  }
 }
 
 // Generate the sidebar navigation dynamically
@@ -167,6 +186,17 @@ function setupEventListeners() {
   document.getElementById('quizModal').addEventListener('click', (e) => {
     if (e.target.id === 'quizModal') closeModal();
   });
+
+  // 有識者確認モードトグルのバインド
+  const smeToggleBtn = document.getElementById('smeToggleBtn');
+  if (smeToggleBtn) {
+    smeToggleBtn.addEventListener('click', () => {
+      expertVerifyModeActive = !expertVerifyModeActive;
+      localStorage.setItem('cascadia_verify_mode', expertVerifyModeActive);
+      updateExpertVerifyModeUI();
+      navigateTo(activePage); // ページを再ロードして適用
+    });
+  }
 }
 
 // Router to handle page switches
@@ -235,6 +265,7 @@ function navigateTo(pageId, highlightSearch = null) {
     statusBadge.className = 'status-badge status-ops-draft';
     content.innerHTML = OPS_PAGES[pageId].html;
     bindInteractiveElements();
+    setupOperationsFeatures(pageId);
 
     if (highlightSearch) {
       highlightTextOnPage(highlightSearch);
@@ -532,20 +563,101 @@ function filterStepsByPattern(clickedTab, pattern) {
         if (pattern === 'c' && matchesC) isCollecting = true;
         if (pattern === 'd' && matchesD) isCollecting = true;
         
-        child.style.display = isCollecting ? 'block' : 'none';
+        if (isCollecting) {
+          child.style.display = 'block';
+          child.classList.remove('tab-fade-in');
+          void child.offsetWidth; // reflowをトリガーしてアニメーションを最初から実行させる
+          child.classList.add('tab-fade-in');
+        } else {
+          child.style.display = 'none';
+          child.classList.remove('tab-fade-in');
+        }
         continue;
       }
     }
     
     // Hide/show the steps list or table content after a matching subtitle
-    if (child.classList.contains('step-list') || child.classList.contains('table-wrapper') || child.classList.contains('alert')) {
-      child.style.display = isCollecting ? 'block' : 'none';
+    if (child.classList.contains('step-list') || child.classList.contains('table-wrapper') || child.classList.contains('alert') || child.classList.contains('checklist-container')) {
+      if (isCollecting) {
+        child.style.display = 'block';
+        child.classList.remove('tab-fade-in');
+        void child.offsetWidth; // reflowをトリガー
+        child.classList.add('tab-fade-in');
+      } else {
+        child.style.display = 'none';
+        child.classList.remove('tab-fade-in');
+      }
     }
   }
 }
 
+// --- ダッシュボード統計集計用ヘルパー関数 ---
+function getOverallVerificationStats() {
+  let total = 0;
+  let resolved = 0;
+  
+  const tempDiv = document.createElement('div');
+  Object.keys(OPS_PAGES).forEach(pageId => {
+    tempDiv.innerHTML = OPS_PAGES[pageId].html;
+    const cautions = tempDiv.querySelectorAll('.alert-caution, .alert-warning');
+    total += cautions.length;
+    
+    cautions.forEach((_, index) => {
+      const elementId = `${pageId}-caution-${index}`;
+      if (verifiedItems.includes(elementId)) {
+        resolved++;
+      }
+    });
+  });
+  
+  return { total, resolved, pct: total > 0 ? Math.round(resolved / total * 100) : 0 };
+}
+
+function getOverallChecklistStats() {
+  let total = 0;
+  let checked = 0;
+  
+  const tempDiv = document.createElement('div');
+  Object.keys(OPS_PAGES).forEach(pageId => {
+    tempDiv.innerHTML = OPS_PAGES[pageId].html;
+    const checklists = tempDiv.querySelectorAll('.checklist');
+    checklists.forEach((ul, index) => {
+      const checklistId = `${pageId}-checklist-${index}`;
+      const lis = ul.querySelectorAll('li');
+      total += lis.length;
+      
+      lis.forEach((_, liIndex) => {
+        const itemKey = `${checklistId}-item-${liIndex}`;
+        if (localStorage.getItem(itemKey) === 'true') {
+          checked++;
+        }
+      });
+    });
+  });
+  
+  return { total, checked };
+}
+
+function getQuizProgressStats() {
+  let total = SALES_QUIZ.length;
+  let completed = 0;
+  
+  SALES_QUIZ.forEach(ch => {
+    const sc = quizState.chapterScores[ch.id];
+    if (sc && sc.best === ch.questions.length) {
+      completed++;
+    }
+  });
+  
+  return { total, completed };
+}
+
 // Render Portal Home Page
 function renderPortalHome() {
+  const verifyStats = getOverallVerificationStats();
+  const checklistStats = getOverallChecklistStats();
+  const quizStats = getQuizProgressStats();
+
   contentArea.innerHTML = `
     <div class="page-hero">
       <span class="hero-emoji">🐄</span>
@@ -554,20 +666,20 @@ function renderPortalHome() {
     </div>
 
     <div class="stats-row">
-      <div class="stat-card">
-        <div class="stat-value">22</div>
-        <div class="stat-label">営業ナレッジ</div>
+      <div class="stat-card" style="border-color: rgba(96, 165, 250, 0.25);">
+        <div class="stat-value" style="color: var(--accent-blue);">${verifyStats.resolved} / ${verifyStats.total} <span style="font-size:12px; font-weight:400; color:var(--text-muted);">項目</span></div>
+        <div class="stat-label">有識者確認済み (実務適用率 ${verifyStats.pct}%)</div>
       </div>
-      <div class="stat-card">
-        <div class="stat-value">10</div>
-        <div class="stat-label">業務部プロセス</div>
+      <div class="stat-card" style="border-color: rgba(52, 211, 153, 0.25);">
+        <div class="stat-value" style="color: var(--accent-green);">${checklistStats.checked} / ${checklistStats.total} <span style="font-size:12px; font-weight:400; color:var(--text-muted);">項目</span></div>
+        <div class="stat-label">業務ダブルチェック実行中</div>
       </div>
-      <div class="stat-card">
-        <div class="stat-value">5章</div>
-        <div class="stat-label">理解度クイズ</div>
+      <div class="stat-card" style="border-color: rgba(167, 139, 250, 0.25);">
+        <div class="stat-value" style="color: var(--accent-violet);">${quizStats.completed} / ${quizStats.total} <span style="font-size:12px; font-weight:400; color:var(--text-muted);">章</span></div>
+        <div class="stat-label">理解度クイズ全問クリア</div>
       </div>
-      <div class="stat-card">
-        <div class="stat-value" id="dashboardXP">${quizState.xp}</div>
+      <div class="stat-card" style="border-color: rgba(251, 191, 36, 0.25);">
+        <div class="stat-value" id="dashboardXP" style="color: var(--accent-amber);">${quizState.xp}</div>
         <div class="stat-label">獲得総合XP</div>
       </div>
     </div>
@@ -1223,4 +1335,257 @@ function shuffle(array) {
       array[randomIndex], array[currentIndex]];
   }
   return array;
+}
+
+// =========================================================================
+//   業務有識者確認モード ＆ 実務チェックリスト永続化・エビデンス印刷ロジック
+// =========================================================================
+
+function setupOperationsFeatures(pageId) {
+  // --- 1. 有識者確認モードの適用ロジック ---
+  const cautions = document.querySelectorAll('.alert-caution, .alert-warning');
+  let totalCautions = cautions.length;
+  let resolvedCautionsCount = 0;
+
+  cautions.forEach((el, index) => {
+    // 一意のIDを付与
+    const elementId = `${pageId}-caution-${index}`;
+    el.setAttribute('data-caution-id', elementId);
+
+    // 解決済みかをチェック
+    const isResolved = verifiedItems.includes(elementId);
+    if (isResolved) {
+      el.classList.add('alert-sme-resolved');
+      resolvedCautionsCount++;
+    }
+
+    // 解決アクションバーを挿入 (無ければ作成)
+    if (!el.querySelector('.verify-action-bar')) {
+      const actionBar = document.createElement('div');
+      actionBar.className = 'verify-action-bar';
+      
+      const resolveBtn = document.createElement('button');
+      resolveBtn.className = 'btn-verify-resolve';
+      resolveBtn.textContent = isResolved ? '未確認に戻す' : '実務で確認済み';
+      
+      resolveBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const currentId = el.getAttribute('data-caution-id');
+        const currentlyResolved = verifiedItems.includes(currentId);
+
+        if (currentlyResolved) {
+          // 解決済みから未解決に戻す
+          verifiedItems = verifiedItems.filter(id => id !== currentId);
+          el.classList.remove('alert-sme-resolved');
+          resolveBtn.textContent = '実務で確認済み';
+          showGlobalToast('↩️', '未確認の状態に戻しました');
+        } else {
+          // 解決済みにする
+          verifiedItems.push(currentId);
+          el.classList.add('alert-sme-resolved');
+          resolveBtn.textContent = '未確認に戻す';
+          showGlobalToast('✅', '実務確認済みに設定しました');
+        }
+        
+        localStorage.setItem('cascadia_verified_items', JSON.stringify(verifiedItems));
+        // 再評価してステータスバッジを更新
+        updatePageVerificationStatus(pageId);
+      });
+
+      actionBar.appendChild(resolveBtn);
+      el.appendChild(actionBar);
+    }
+  });
+
+  // ページの初期検証ステータス更新
+  updatePageVerificationStatus(pageId);
+
+  // --- 2. 実務チェックリスト永続化・操作盤挿入 ---
+  const checklists = document.querySelectorAll('.checklist');
+  checklists.forEach((ul, index) => {
+    // すでに操作盤で囲まれているかチェック
+    if (ul.closest('.checklist-container')) return;
+
+    const checklistId = `${pageId}-checklist-${index}`;
+    ul.setAttribute('data-checklist-id', checklistId);
+
+    // 各 li 要素に対して、保存されたチェック状態を復元
+    const lis = ul.querySelectorAll('li');
+    lis.forEach((li, liIndex) => {
+      const itemKey = `${checklistId}-item-${liIndex}`;
+      const isChecked = localStorage.getItem(itemKey) === 'true';
+      const box = li.querySelector('.check-box');
+      
+      if (isChecked) {
+        li.classList.add('checked-item');
+        if (box) box.classList.add('checked');
+      }
+
+      // クリックイベントで localStorage に保存する処理
+      li.addEventListener('click', () => {
+        setTimeout(() => {
+          const currentlyChecked = li.classList.contains('checked-item');
+          localStorage.setItem(itemKey, currentlyChecked);
+        }, 50);
+      });
+    });
+
+    // チェックリストを囲むコンテナと操作パネルの動的構築
+    const container = document.createElement('div');
+    container.className = 'checklist-container';
+    
+    // ヘッダー
+    const header = document.createElement('div');
+    header.className = 'checklist-header';
+    
+    const title = document.createElement('div');
+    title.className = 'checklist-title-label';
+    title.textContent = '📋 ミス防止ダブルチェック盤';
+    
+    const actions = document.createElement('div');
+    actions.className = 'checklist-actions';
+    
+    const clearBtn = document.createElement('button');
+    clearBtn.className = 'btn-check-action btn-clear-checks';
+    clearBtn.innerHTML = '🧹 クリア';
+    clearBtn.addEventListener('click', () => {
+      if (confirm('このチェックリストの選択状態をすべてリセットしますか？')) {
+        lis.forEach((li, liIndex) => {
+          const itemKey = `${checklistId}-item-${liIndex}`;
+          li.classList.remove('checked-item');
+          const box = li.querySelector('.check-box');
+          if (box) box.classList.remove('checked');
+          localStorage.removeItem(itemKey);
+        });
+        showGlobalToast('🧹', 'チェック状態をリセットしました');
+      }
+    });
+
+    const printBtn = document.createElement('button');
+    printBtn.className = 'btn-check-action btn-print';
+    printBtn.innerHTML = '🖨️ エビデンス印刷 / PDF出力';
+    printBtn.addEventListener('click', () => {
+      exportChecklistEvidence(pageId, ul);
+    });
+
+    actions.appendChild(clearBtn);
+    actions.appendChild(printBtn);
+    header.appendChild(title);
+    header.appendChild(actions);
+    
+    // 要素をコンテナ内に配置
+    ul.parentNode.insertBefore(container, ul);
+    container.appendChild(header);
+    container.appendChild(ul);
+  });
+}
+
+function updatePageVerificationStatus(pageId) {
+  const cautions = document.querySelectorAll('.alert-caution, .alert-warning');
+  const badge = document.getElementById('statusBadge');
+  if (!badge) return;
+
+  if (cautions.length === 0) return;
+
+  let allResolved = true;
+  cautions.forEach((el) => {
+    const currentId = el.getAttribute('data-caution-id');
+    if (!verifiedItems.includes(currentId)) {
+      allResolved = false;
+    }
+  });
+
+  if (allResolved) {
+    badge.textContent = '実務適用（確認済）';
+    badge.className = 'status-badge status-ops-approved';
+  } else {
+    badge.textContent = '有識者確認待ち';
+    badge.className = 'status-badge status-ops-draft';
+  }
+}
+
+function exportChecklistEvidence(pageId, ulElement) {
+  const pageTitle = currentPath.textContent;
+  const lis = ulElement.querySelectorAll('li');
+  
+  let itemsHtml = '';
+  lis.forEach((li) => {
+    const isChecked = li.classList.contains('checked-item');
+    const text = li.querySelector('span') ? li.querySelector('span').textContent : li.textContent;
+    const marker = isChecked ? '<span class="check-marker">☑</span>' : '<span class="uncheck-marker">☐</span>';
+    const textStyle = isChecked ? 'color: #111; font-weight: 500;' : 'color: #999; text-decoration: line-through;';
+    
+    itemsHtml += `
+      <div class="checklist-item">
+        ${marker}
+        <span style="${textStyle}">${text}</span>
+      </div>
+    `;
+  });
+
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>業務チェックエビデンス - Cascadia Trading</title>
+      <style>
+        body { font-family: 'Noto Sans JP', 'Helvetica Neue', Arial, sans-serif; color: #333; padding: 50px; line-height: 1.6; background: #fff; }
+        .header { border-bottom: 3px solid #111; padding-bottom: 12px; margin-bottom: 30px; position: relative; }
+        .title { font-size: 26px; font-weight: 800; color: #111; letter-spacing: -0.01em; }
+        .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; font-size: 13px; color: #555; background: #f5f7fa; padding: 12px 18px; border-radius: 6px; }
+        .meta-item strong { color: #111; }
+        .evidence-title { font-size: 16px; font-weight: 700; color: #111; margin: 30px 0 15px; border-left: 4px solid #111; padding-left: 10px; }
+        .evidence-box { border: 1px solid #e1e8ed; border-radius: 8px; overflow: hidden; margin-bottom: 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        .checklist-item { padding: 12px 20px; border-bottom: 1px solid #f0f3f5; display: flex; align-items: center; font-size: 14.5px; }
+        .checklist-item:last-child { border-bottom: none; }
+        .check-marker { color: #10b981; margin-right: 12px; font-size: 20px; font-weight: bold; line-height: 1; }
+        .uncheck-marker { color: #cbd5e1; margin-right: 12px; font-size: 20px; font-weight: bold; line-height: 1; }
+        .sig-area { display: flex; justify-content: space-between; margin-top: 60px; page-break-inside: avoid; }
+        .sig-box { width: 45%; border-top: 1px solid #111; padding-top: 12px; text-align: center; font-size: 13px; font-weight: 600; color: #444; }
+        .footer-note { text-align: center; margin-top: 80px; font-size: 11px; color: #999; border-top: 1px dashed #e1e8ed; padding-top: 15px; }
+        @media print {
+          body { padding: 20px; }
+          .evidence-box { box-shadow: none; border-color: #333; }
+          .checklist-item { border-bottom-color: #ccc; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <div class="title">📋 業務実施チェック完了エビデンス</div>
+        <div class="meta-grid">
+          <div class="meta-item"><strong>対象業務:</strong> ${pageTitle}</div>
+          <div class="meta-item"><strong>実施日時:</strong> ${new Date().toLocaleString()}</div>
+          <div class="meta-item"><strong>提供元システム:</strong> Cascadia Trading 総合ナレッジポータル</div>
+          <div class="meta-item"><strong>検証ステータス:</strong> 正常完了</div>
+        </div>
+      </div>
+      
+      <div class="evidence-title">【ダブルチェック項目 実施結果】</div>
+      <div class="evidence-box">
+        ${itemsHtml}
+      </div>
+      
+      <div class="sig-area">
+        <div class="sig-box">実施担当者 署名欄</div>
+        <div class="sig-box">承認責任者 署名欄</div>
+      </div>
+      
+      <div class="footer-note">
+        ※本紙は株式会社カスケディア・トレーディングの業務プロセスに基づき、マニュアルに準拠して業務が実施されたことを証明するものです。
+      </div>
+      
+      <script>
+        window.onload = function() {
+          setTimeout(function() {
+            window.print();
+          }, 300);
+        };
+      </script>
+    </body>
+    </html>
+  `);
+  printWindow.document.close();
 }
