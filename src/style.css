@@ -3026,4 +3026,46 @@ tbody tr:last-child td {
   background: var(--bg-secondary) !important;
 }
 
+/* 6. 付録：用語集（Glossary）用プレミアムグリッド・カードレイアウト */
+.glossary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin: 24px 0 36px;
+}
+
+.glossary-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 18px 20px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.25s var(--ease-out);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.glossary-item:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-green);
+  box-shadow: var(--shadow-md);
+  background: var(--bg-secondary);
+}
+
+.glossary-term {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--accent-green-dim); /* 深緑のブランドカラー */
+  border-left: 3px solid var(--accent-green);
+  padding-left: 8px;
+  line-height: 1.4;
+}
+
+.glossary-def {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
 
