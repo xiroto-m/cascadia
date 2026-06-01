@@ -1727,64 +1727,64 @@ function injectSalesDiagrams(pageId) {
           <!-- 背景ベース -->
           <rect width="800" height="350" rx="16" fill="var(--bg-card, #ffffff)" stroke="var(--border-subtle, #e2e8f0)" stroke-width="1.5"/>
 
-          <!-- 牛のシルエット（背景アート） -->
+          <!-- 牛のシルエット：破線を細く・薄くしてプロフェッショナルな見た目へ -->
           <path d="M 50,150 C 70,120 100,100 130,100 C 160,100 180,120 200,110 C 220,100 230,80 250,80 C 270,80 290,100 300,120 C 310,140 310,160 320,170 C 340,190 380,180 420,180 C 460,180 500,170 540,160 C 580,150 620,140 650,150 C 680,160 700,200 720,240 C 730,260 740,280 750,290 L 730,300 C 700,300 680,260 670,250 C 650,270 610,280 570,290 C 530,300 480,300 440,290 C 400,280 380,270 360,260 L 320,280 L 300,290 C 280,290 260,260 250,240 C 240,220 200,210 180,200 C 160,190 140,200 120,210 C 100,220 80,230 60,230 Z" 
-                fill="none" stroke="var(--border-subtle, rgba(226, 232, 240, 0.5))" stroke-width="2.5" stroke-dasharray="6,6" opacity="0.45" />
+                fill="none" stroke="var(--border-subtle, rgba(226, 232, 240, 0.5))" stroke-width="1.5" stroke-dasharray="4,4" opacity="0.12" />
 
           <!-- フロー矢印と流れ -->
           <!-- 口から第一胃へ -->
-          <path d="M 50,70 L 150,70 C 190,70 210,110 250,130" fill="none" stroke="var(--text-muted, #94a3b8)" stroke-width="3" stroke-dasharray="5,5" marker-end="url(#arrow)" />
-          <text x="50" y="52" fill="var(--text-primary, #1e293b)" font-size="13.5" font-weight="800">🌾 食べる (粗飼料・濃厚飼料)</text>
+          <path d="M 40,45 L 140,45 C 180,45 200,80 250,90" fill="none" stroke="var(--text-muted, #94a3b8)" stroke-width="3" stroke-dasharray="5,5" marker-end="url(#arrow)" />
+          <text x="40" y="30" fill="var(--text-primary, #1e293b)" font-size="13" font-weight="800">🌾 食べる (粗飼料・濃厚飼料)</text>
 
-          <!-- 反芻のループ (口 ↔ 第一胃) -->
-          <path d="M 120,95 C 150,80 185,95 200,110" fill="none" stroke="#fbbf24" stroke-width="2.5" stroke-dasharray="3,3" />
-          <path d="M 200,110 C 185,125 150,110 120,95" fill="none" stroke="#fbbf24" stroke-width="2.5" stroke-dasharray="3,3" />
-          <text x="110" y="125" fill="#d97706" font-size="11.5" font-weight="800">🔄 反芻 (口に戻して再咀嚼)</text>
+          <!-- 反芻のループ (口 ↔ 第一胃) とテキストの重なりを完全解決 -->
+          <path d="M 260,105 C 190,75 130,75 105,105" fill="none" stroke="#fbbf24" stroke-width="2.2" stroke-dasharray="3,3" />
+          <path d="M 105,105 C 130,135 180,135 260,105" fill="none" stroke="#fbbf24" stroke-width="2.2" stroke-dasharray="3,3" marker-end="url(#arrow)" />
+          <text x="165" y="152" fill="#d97706" font-size="11" font-weight="800" text-anchor="middle">🔄 反芻 (口に戻して再咀嚼)</text>
 
           <!-- 4つの胃のビジュアル要素 -->
-          <!-- 第一胃 (ルーメン) -->
-          <g transform="translate(240, 90)" filter="url(#shadow-stomach)" class="stomach-node" style="cursor: pointer;">
-            <rect width="220" height="110" rx="14" fill="url(#grad-rumen)" stroke="#047857" stroke-width="2" />
+          <!-- 第一胃 (ルーメン)：サイズとx座標を微調整し左右に十分な余白を確保 -->
+          <g transform="translate(260, 65)" filter="url(#shadow-stomach)" class="stomach-node" style="cursor: pointer;">
+            <rect width="210" height="110" rx="14" fill="url(#grad-rumen)" stroke="#047857" stroke-width="2" />
             <text x="15" y="32" fill="#fff" font-size="15" font-weight="800">🟢 第一胃 (ルーメン)</text>
             <text x="15" y="58" fill="#ecfdf5" font-size="12" font-weight="700">容量: 150〜200L (巨大な発酵タンク)</text>
-            <text x="15" y="78" fill="#a7f3d0" font-size="11">・数十兆の微生物が繊維を発酵分解</text>
-            <text x="15" y="94" fill="#a7f3d0" font-size="11">・エネルギー源の約70% (VFA) を生成</text>
+            <text x="15" y="78" fill="#ecfdf5" font-size="11" font-weight="700">・数十兆の微生物が繊維を発酵分解</text>
+            <text x="15" y="94" fill="#ecfdf5" font-size="11" font-weight="700">・エネルギー源の約70% (VFA) を生成</text>
           </g>
 
-          <!-- 第二胃 (網胃) -->
-          <g transform="translate(490, 80)" filter="url(#shadow-stomach)" class="stomach-node">
+          <!-- 第二胃 (網胃)：y座標を調整して第一胃・第三胃と美しく調和 -->
+          <g transform="translate(510, 50)" filter="url(#shadow-stomach)" class="stomach-node">
             <rect width="180" height="75" rx="12" fill="url(#grad-reticulum)" stroke="#1d4ed8" stroke-width="2" />
             <text x="15" y="28" fill="#fff" font-size="14" font-weight="800">🔵 第二胃 (網胃)</text>
             <text x="15" y="48" fill="#eff6ff" font-size="11" font-weight="700">異物除去フィルター</text>
-            <text x="15" y="64" fill="#bfdbfe" font-size="10.5">・蜂の巣状の壁で金属等の異物を捕獲</text>
+            <text x="15" y="64" fill="#dbeafe" font-size="10.5" font-weight="700">・蜂の巣状の壁で金属等の異物を捕獲</text>
           </g>
 
-          <!-- 第三胃 (葉胃) -->
-          <g transform="translate(490, 175)" filter="url(#shadow-stomach)" class="stomach-node">
+          <!-- 第三胃 (葉胃)：高コントラストなテキスト色を採用 -->
+          <g transform="translate(510, 165)" filter="url(#shadow-stomach)" class="stomach-node">
             <rect width="180" height="75" rx="12" fill="url(#grad-omasum)" stroke="#b45309" stroke-width="2" />
             <text x="15" y="28" fill="#fff" font-size="14" font-weight="800">🟡 第三胃 (葉胃)</text>
             <text x="15" y="48" fill="#fffbeb" font-size="11" font-weight="700">水分とミネラルの吸収</text>
-            <text x="15" y="64" fill="#fde68a" font-size="10.5">・何百枚もの葉状のひだで水分を吸収</text>
+            <text x="15" y="64" fill="#fef3c7" font-size="10.5" font-weight="700">・何百枚もの葉状のひだで水分を吸収</text>
           </g>
 
           <!-- 第四胃 (皺胃) -->
-          <g transform="translate(260, 230)" filter="url(#shadow-stomach)" class="stomach-node">
+          <g transform="translate(270, 235)" filter="url(#shadow-stomach)" class="stomach-node">
             <rect width="200" height="75" rx="12" fill="url(#grad-abomasum)" stroke="#b91c1c" stroke-width="2" />
             <text x="15" y="28" fill="#fff" font-size="14" font-weight="800">🔴 第四胃 (皺胃)</text>
             <text x="15" y="48" fill="#fef2f2" font-size="11" font-weight="700">ヒトの胃と同等 (真胃)</text>
-            <text x="15" y="64" fill="#fecaca" font-size="10.5">・強酸性の胃液で微生物をタンパク質分解</text>
+            <text x="15" y="64" fill="#fee2e2" font-size="10.5" font-weight="700">・強酸性の胃液で微生物をタンパク質分解</text>
           </g>
 
           <!-- フロー線 (胃どうしの接続) -->
-          <!-- 第一胃 → 第二胃 -->
-          <path d="M 460,140 L 485,120" fill="none" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow-blue)" />
+          <!-- 第一胃 → 第二胃：滑らかな曲線でプロフェッショナル化 -->
+          <path d="M 470,115 C 485,115 495,95 505,90" fill="none" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow-blue)" />
           <!-- 第二胃 → 第三胃 -->
-          <path d="M 580,155 L 580,170" fill="none" stroke="#d97706" stroke-width="2.5" marker-end="url(#arrow-orange)" />
+          <path d="M 600,125 L 600,155" fill="none" stroke="#d97706" stroke-width="2.5" marker-end="url(#arrow-orange)" />
           <!-- 第三胃 → 第四胃 -->
-          <path d="M 490,215 C 460,215 470,240 465,245" fill="none" stroke="#dc2626" stroke-width="2.5" marker-end="url(#arrow-red)" />
+          <path d="M 510,202 C 490,202 485,225 480,230" fill="none" stroke="#dc2626" stroke-width="2.5" marker-end="url(#arrow-red)" />
           <!-- 第四胃 → 十二指腸・小腸 -->
-          <path d="M 260,270 C 200,270 180,310 120,310" fill="none" stroke="var(--text-muted, #94a3b8)" stroke-width="3" stroke-dasharray="3,3" marker-end="url(#arrow)" />
-          <text x="125" y="328" fill="var(--text-primary, #1e293b)" font-size="12" font-weight="800">小腸へ ➔ 消化物・栄養吸収</text>
+          <path d="M 270,272 C 210,272 170,305 120,305" fill="none" stroke="var(--text-muted, #94a3b8)" stroke-width="3" stroke-dasharray="3,3" marker-end="url(#arrow)" />
+          <text x="120" y="325" fill="var(--text-primary, #1e293b)" font-size="11.5" font-weight="800" text-anchor="middle">小腸へ ➔ 消化物・栄養吸収</text>
         </svg>
       `;
       digestDiagramEl.innerHTML = stomachsSvg;
@@ -1803,7 +1803,7 @@ function injectSalesDiagrams(pageId) {
         diagWrapper.className = 'diagram-container-wrapper lactation-diagram-wrapper';
         
         const lactationSvg = `
-          <svg viewBox="0 0 800 380" width="100%" height="auto" class="diagram-svg lactation-svg">
+          <svg viewBox="0 0 800 420" width="100%" height="auto" class="diagram-svg lactation-svg">
             <defs>
               <linearGradient id="neg-energy-grad" x1="0%" y1="0%" x2="100%" y2="0%">
                 <stop offset="0%" stop-color="#ef4444" stop-opacity="0.14"/>
@@ -1811,85 +1811,89 @@ function injectSalesDiagrams(pageId) {
               </linearGradient>
             </defs>
 
-            <rect width="800" height="380" rx="16" fill="var(--bg-card, #ffffff)" stroke="var(--border-subtle, #e2e8f0)" stroke-width="1.5"/>
+            <rect width="800" height="420" rx="16" fill="var(--bg-card, #ffffff)" stroke="var(--border-subtle, #e2e8f0)" stroke-width="1.5"/>
 
-            <!-- グリッド線 -->
+            <!-- グリッド背景：y軸数値を30px下へずらして視認性アップ -->
             <g stroke="var(--border-subtle, #e2e8f0)" stroke-width="1" stroke-dasharray="4,4">
-              <line x1="80" y1="60" x2="740" y2="60" />
-              <line x1="80" y1="120" x2="740" y2="120" />
-              <line x1="80" y1="180" x2="740" y2="180" />
-              <line x1="80" y1="240" x2="740" y2="240" />
-              <line x1="80" y1="300" x2="740" y2="300" />
+              <line x1="80" y1="110" x2="740" y2="110" />
+              <line x1="80" y1="170" x2="740" y2="170" />
+              <line x1="80" y1="230" x2="740" y2="230" />
+              <line x1="80" y1="290" x2="740" y2="290" />
+              <line x1="80" y1="350" x2="740" y2="350" />
               
-              <line x1="180" y1="40" x2="180" y2="310" stroke="#f87171" stroke-dasharray="none" stroke-width="1.5" />
-              <line x1="300" y1="40" x2="300" y2="310" />
-              <line x1="480" y1="40" x2="480" y2="310" />
-              <line x1="660" y1="40" x2="660" y2="310" stroke="#60a5fa" stroke-dasharray="none" stroke-width="1.5" />
+              <line x1="180" y1="90" x2="180" y2="360" stroke="#f87171" stroke-dasharray="none" stroke-width="1.5" />
+              <line x1="300" y1="90" x2="300" y2="360" />
+              <line x1="480" y1="90" x2="480" y2="360" />
+              <line x1="660" y1="90" x2="660" y2="360" stroke="#60a5fa" stroke-dasharray="none" stroke-width="1.5" />
             </g>
 
-            <!-- 負のエネルギーバランス領域ハイライト -->
-            <rect x="180" y="40" width="160" height="270" fill="url(#neg-energy-grad)" />
-            <text x="200" y="282" fill="#dc2626" font-size="12" font-weight="900" letter-spacing="0.05em">⚠️ 負のエネルギーバランス期 (NEB)</text>
-            <text x="200" y="299" fill="#e11d48" font-size="10.5" font-weight="800">（少量で高エネなバイパス脂肪酸・Caが最も重要！）</text>
+            <!-- 負のエネルギーバランス期 (NEB) の視認性向上 -->
+            <rect x="180" y="90" width="160" height="270" fill="url(#neg-energy-grad)" />
+            <text x="200" y="325" fill="#dc2626" font-size="12" font-weight="900" letter-spacing="0.05em">⚠️ 負のエネルギーバランス期 (NEB)</text>
+            <text x="200" y="342" fill="#e11d48" font-size="10.5" font-weight="800">（少量で高エネなバイパス脂肪酸・Caが最も重要！）</text>
 
-            <!-- 軸ラベル -->
-            <text x="40" y="65" fill="var(--text-muted, #64748b)" font-size="11" text-anchor="end">50 kg</text>
-            <text x="40" y="125" fill="var(--text-muted, #64748b)" font-size="11" text-anchor="end">40 kg</text>
-            <text x="40" y="185" fill="var(--text-muted, #64748b)" font-size="11" text-anchor="end">30 kg</text>
-            <text x="40" y="245" fill="var(--text-muted, #64748b)" font-size="11" text-anchor="end">20 kg</text>
-            <text x="40" y="305" fill="var(--text-muted, #64748b)" font-size="11" text-anchor="end">10 kg</text>
-            <text x="25" y="30" fill="var(--text-primary, #0f172a)" font-size="12" font-weight="800">乳量/DMI</text>
+            <!-- 左右の縦軸ラベル -->
+            <text x="80" y="60" fill="var(--text-primary, #0f172a)" font-size="12.5" font-weight="800" text-anchor="middle">乳量/DMI</text>
+            <text x="740" y="60" fill="var(--text-primary, #0f172a)" font-size="12.5" font-weight="800" text-anchor="middle">体重/BCS</text>
 
-            <text x="755" y="65" fill="var(--text-muted, #64748b)" font-size="11" text-anchor="start">高 (BCS 3.5)</text>
-            <text x="755" y="185" fill="var(--text-muted, #64748b)" font-size="11" text-anchor="start">中 (BCS 3.0)</text>
-            <text x="755" y="305" fill="var(--text-muted, #64748b)" font-size="11" text-anchor="start">低 (BCS 2.5)</text>
-            <text x="755" y="30" fill="var(--text-primary, #0f172a)" font-size="12" font-weight="800">体重/BCS</text>
+            <!-- 左側縦軸数値 -->
+            <text x="40" y="115" fill="var(--text-muted, #64748b)" font-size="11" text-anchor="end">50 kg</text>
+            <text x="40" y="175" fill="var(--text-muted, #64748b)" font-size="11" text-anchor="end">40 kg</text>
+            <text x="40" y="235" fill="var(--text-muted, #64748b)" font-size="11" text-anchor="end">30 kg</text>
+            <text x="40" y="295" fill="var(--text-muted, #64748b)" font-size="11" text-anchor="end">20 kg</text>
+            <text x="40" y="355" fill="var(--text-muted, #64748b)" font-size="11" text-anchor="end">10 kg</text>
 
-            <text x="130" y="335" fill="var(--text-secondary, #475569)" font-size="11.5" font-weight="800" text-anchor="middle">乾乳期 (-60〜0日)</text>
-            <text x="180" y="352" fill="#b91c1c" font-size="13" font-weight="900" text-anchor="middle">分娩 (0日)</text>
-            <text x="240" y="335" fill="var(--text-secondary, #475569)" font-size="11" text-anchor="middle">4週</text>
-            <text x="300" y="335" fill="var(--text-secondary, #475569)" font-size="11.5" font-weight="800" text-anchor="middle">泌乳初期 (〜80日)</text>
-            <text x="400" y="335" fill="var(--text-secondary, #475569)" font-size="11" text-anchor="middle">120日</text>
-            <text x="480" y="335" fill="var(--text-secondary, #475569)" font-size="11.5" font-weight="800" text-anchor="middle">泌乳中期 (〜200日)</text>
-            <text x="580" y="335" fill="var(--text-secondary, #475569)" font-size="11" text-anchor="middle">280日</text>
-            <text x="660" y="335" fill="var(--text-secondary, #475569)" font-size="11.5" font-weight="800" text-anchor="middle">乾乳 (305日〜)</text>
+            <!-- 右側縦軸数値 (BCS) -->
+            <text x="755" y="115" fill="var(--text-muted, #64748b)" font-size="11" text-anchor="start">高 (BCS 3.5)</text>
+            <text x="755" y="235" fill="var(--text-muted, #64748b)" font-size="11" text-anchor="start">中 (BCS 3.0)</text>
+            <text x="755" y="355" fill="var(--text-muted, #64748b)" font-size="11" text-anchor="start">低 (BCS 2.5)</text>
 
-            <!-- 凡例 -->
-            <g transform="translate(100, 25)">
-              <line x1="0" y1="5" x2="25" y2="5" stroke="#2563eb" stroke-width="4.5" />
-              <text x="32" y="9" fill="var(--text-primary, #0f172a)" font-size="12" font-weight="800">🥛 乳量 (Milk Yield)</text>
+            <!-- 横軸 (ステージラベル) -->
+            <text x="130" y="385" fill="var(--text-secondary, #475569)" font-size="11.5" font-weight="800" text-anchor="middle">乾乳期 (-60〜0日)</text>
+            <text x="180" y="402" fill="#b91c1c" font-size="13" font-weight="900" text-anchor="middle">分娩 (0日)</text>
+            <text x="240" y="385" fill="var(--text-secondary, #475569)" font-size="11" text-anchor="middle">4週</text>
+            <text x="300" y="385" fill="var(--text-secondary, #475569)" font-size="11.5" font-weight="800" text-anchor="middle">泌乳初期 (〜80日)</text>
+            <text x="400" y="385" fill="var(--text-secondary, #475569)" font-size="11" text-anchor="middle">120日</text>
+            <text x="480" y="385" fill="var(--text-secondary, #475569)" font-size="11.5" font-weight="800" text-anchor="middle">泌乳中期 (〜200日)</text>
+            <text x="580" y="385" fill="var(--text-secondary, #475569)" font-size="11" text-anchor="middle">280日</text>
+            <text x="660" y="385" fill="var(--text-secondary, #475569)" font-size="11.5" font-weight="800" text-anchor="middle">乾乳 (305日〜)</text>
+
+            <!-- グラフ上部に完璧に分離された凡例：もう絶対線やピーク文字と重ならない -->
+            <g transform="translate(130, 25)">
+              <line x1="0" y1="5" x2="20" y2="5" stroke="#2563eb" stroke-width="4.5" />
+              <text x="28" y="9" fill="var(--text-primary, #0f172a)" font-size="11.5" font-weight="800">🥛 乳量 (Milk)</text>
             </g>
-            <g transform="translate(300, 25)">
-              <line x1="0" y1="5" x2="25" y2="5" stroke="#d97706" stroke-width="4.5" />
-              <text x="32" y="9" fill="var(--text-primary, #0f172a)" font-size="12" font-weight="800">🌾 乾物摂取量 (DMI)</text>
+            <g transform="translate(290, 25)">
+              <line x1="0" y1="5" x2="20" y2="5" stroke="#d97706" stroke-width="4.5" />
+              <text x="28" y="9" fill="var(--text-primary, #0f172a)" font-size="11.5" font-weight="800">🌾 乾物摂取量 (DMI)</text>
             </g>
-            <g transform="translate(520, 25)">
-              <line x1="0" y1="5" x2="25" y2="5" stroke="#e11d48" stroke-width="3" stroke-dasharray="3,3" />
-              <text x="32" y="9" fill="var(--text-primary, #0f172a)" font-size="12" font-weight="800">⚖️ 体重 / BCS</text>
+            <g transform="translate(480, 25)">
+              <line x1="0" y1="5" x2="20" y2="5" stroke="#e11d48" stroke-width="3" stroke-dasharray="3,3" />
+              <text x="28" y="9" fill="var(--text-primary, #0f172a)" font-size="11.5" font-weight="800">⚖️ 体重 / BCS</text>
             </g>
 
-            <!-- グラフ線 -->
+            <!-- グラフ曲線：y座標を+30px補正して余裕のある描画へ -->
             <!-- 1. 乳量曲線 ── 青色 -->
-            <path d="M 80,240 C 130,230 180,210 180,200 C 190,160 220,70 260,70 C 300,70 380,105 480,140 C 580,175 660,215 660,225" 
+            <path d="M 80,290 C 130,280 180,260 180,250 C 190,210 220,120 260,120 C 300,120 380,155 480,190 C 580,225 660,265 660,275" 
                   fill="none" stroke="#2563eb" stroke-width="4.5" stroke-linecap="round" />
             
             <!-- 2. DMI（食い込み）曲線 ── オレンジ色 -->
-            <path d="M 80,270 C 130,275 180,250 180,245 C 195,230 250,150 320,150 C 380,150 480,165 580,185 C 660,205 660,240" 
+            <path d="M 80,320 C 130,325 180,300 180,295 C 195,280 250,200 320,200 C 380,200 480,215 580,235 C 660,255 660,290" 
                   fill="none" stroke="#d97706" stroke-width="4.5" stroke-linecap="round" />
 
             <!-- 3. 体重 / BCS 曲線 ── 赤破線 (U字) -->
-            <path d="M 80,110 C 130,100 180,120 180,130 C 200,165 240,210 270,210 C 320,210 380,175 480,140 C 580,115 660,95 660,90" 
+            <path d="M 80,160 C 130,150 180,170 180,180 C 200,215 240,260 270,260 C 320,260 380,225 480,190 C 580,165 660,145 660,140" 
                   fill="none" stroke="#e11d48" stroke-width="3" stroke-dasharray="3,3" stroke-linecap="round" />
 
-            <!-- ポイントインジケーター -->
-            <circle cx="260" cy="70" r="6" fill="#2563eb" stroke="#fff" stroke-width="2.5" />
-            <text x="260" y="48" fill="#1e3a8a" font-size="11" font-weight="900" text-anchor="middle">乳量ピーク (4〜8週)</text>
+            <!-- 各種ピークインジケーター：十分な距離を保ちクリーンに配置 -->
+            <circle cx="260" cy="120" r="6" fill="#2563eb" stroke="#fff" stroke-width="2.5" />
+            <text x="260" y="96" fill="#1e3a8a" font-size="11" font-weight="900" text-anchor="middle">乳量ピーク (4〜8週)</text>
 
-            <circle cx="320" cy="150" r="6" fill="#d97706" stroke="#fff" stroke-width="2.5" />
-            <text x="330" y="136" fill="#b45309" font-size="11" font-weight="900" text-anchor="middle">食い込みピーク (10〜12週)</text>
+            <circle cx="320" cy="200" r="6" fill="#d97706" stroke="#fff" stroke-width="2.5" />
+            <text x="330" y="186" fill="#b45309" font-size="11" font-weight="900" text-anchor="middle">食い込みピーク (10〜12週)</text>
 
-            <circle cx="270" cy="210" r="6" fill="#e11d48" stroke="#fff" stroke-width="2.5" />
-            <text x="270" y="232" fill="#be123c" font-size="11" font-weight="900" text-anchor="middle">体重の底 (BCS最低)</text>
+            <circle cx="270" cy="260" r="6" fill="#e11d48" stroke="#fff" stroke-width="2.5" />
+            <text x="270" y="282" fill="#be123c" font-size="11" font-weight="900" text-anchor="middle">体重の底 (BCS最低)</text>
           </svg>
         `;
         
@@ -1988,7 +1992,7 @@ function injectSalesDiagrams(pageId) {
             <text x="12" y="44" fill="#fecaca" font-size="10.5">・ルーメンで「超急速」に分解</text>
           </g>
           <path d="M 330,90 L 375,90" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="3,3" marker-end="url(#arrow-red-p)" />
-          <text x="382" y="93" fill="#dc2626" font-size="10.5" font-weight="700">⚠️ 多すぎるとアンモニアが過剰に</text>
+          <text x="382" y="108" fill="#dc2626" font-size="10.5" font-weight="700">⚠️ 多すぎるとアンモニアが過剰に</text>
 
           <!-- 2. DIP -->
           <g transform="translate(170, 130)" filter="url(#shadow-soft)">
@@ -1997,16 +2001,16 @@ function injectSalesDiagrams(pageId) {
             <text x="12" y="44" fill="#bfdbfe" font-size="10.5">・微生物がゆっくり分解・利用</text>
           </g>
           <path d="M 330,160 L 380,160 C 410,160 420,135 440,135 L 530,135" fill="none" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow-blue-p)" />
-          <text x="348" y="152" fill="#2563eb" font-size="10" font-weight="800">微生物のエサに 🦠</text>
+          <text x="355" y="148" fill="#2563eb" font-size="11" font-weight="800">微生物のエサに 🦠</text>
 
           <!-- 3. UIP -->
           <g transform="translate(170, 200)" filter="url(#shadow-soft)">
             <rect width="160" height="60" rx="8" fill="url(#grad-uip)" stroke="#047857" stroke-width="1.5" />
             <text x="12" y="24" fill="#fff" font-size="12" font-weight="800">非分解性タンパク (UIP)</text>
-            <text x="12" y="44" fill="#a7f3d0" font-size="10.5">・ルーメンを完全にスルー！</text>
+            <text x="12" y="44" fill="#ecfdf5" font-size="10.5" font-weight="700">・ルーメンを完全にスルー！</text>
           </g>
           <path d="M 330,230 L 530,230" fill="none" stroke="#059669" stroke-width="4" marker-end="url(#arrow-green-p)" />
-          <text x="360" y="248" fill="#047857" font-size="11" font-weight="900">✨ 最も重要：バイパスプロテイン</text>
+          <text x="360" y="252" fill="#047857" font-size="11.5" font-weight="900">✨ 最も重要：バイパスプロテイン</text>
 
           <!-- 4. BP -->
           <g transform="translate(170, 270)" filter="url(#shadow-soft)">
@@ -2038,8 +2042,11 @@ function injectSalesDiagrams(pageId) {
             <text x="105" y="25" fill="var(--text-primary, #0f172a)" font-size="12.5" font-weight="800" text-anchor="middle">🎯 小腸でアミノ酸として効率吸収</text>
           </g>
 
-          <path d="M 645,155 L 645,195" fill="none" stroke="#2563eb" stroke-width="2" />
-          <path d="M 645,250 L 645,270" fill="none" stroke="#059669" stroke-width="2" />
+          <!-- BCPからアミノ酸吸収へ：中間にあるUIPカードを右側に大きく美しく迂回する新規ライン（被りを100%解決） -->
+          <path d="M 645,155 L 645,175 L 765,175 L 765,260 L 735,268" fill="none" stroke="#2563eb" stroke-width="2.2" marker-end="url(#arrow-blue-p)" />
+
+          <!-- UIPからアミノ酸吸収へ -->
+          <path d="M 645,250 L 645,270" fill="none" stroke="#059669" stroke-width="2.5" marker-end="url(#arrow-green-p)" />
         </svg>
       `;
       
