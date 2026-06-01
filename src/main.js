@@ -1777,8 +1777,8 @@ function injectSalesDiagrams(pageId) {
           <path d="M 246,110 C 190,90 135,105 106,105" fill="none" stroke="#fbbf24" stroke-width="2.2" stroke-dasharray="3,3" marker-end="url(#arrow-orange)" />
           <path d="M 105,105 C 135,120 205,120 243,120" fill="none" stroke="#fbbf24" stroke-width="2.2" stroke-dasharray="3,3" marker-end="url(#arrow-orange)" />
 
-          <!-- 第一胃 → 第二胃 (登り傾斜約26.5度を保ったまま自然にタッチし、三角の向きと線の流れが綺麗に一体化) -->
-          <path d="M 475,120 C 485,120 493,92.5 503,87.5" fill="none" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow-blue)" />
+          <!-- 第一胃 → 第二胃 (最後の14pxを完全に水平 y=87.5 にすることで、回転による三角と線の結合ズレを数学的に0へ解消) -->
+          <path d="M 475,120 C 485,120 490,87.5 504,87.5" fill="none" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow-blue)" />
           
           <!-- 第二胃 → 第三胃 (中心軸 615 上を綺麗に垂直下落。第三胃天面 165 から 6px 手前の 159 で綺麗に接する) -->
           <path d="M 615,125 L 615,159" fill="none" stroke="#d97706" stroke-width="2.5" marker-end="url(#arrow-orange)" />
