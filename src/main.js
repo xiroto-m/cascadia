@@ -1743,45 +1743,45 @@ function injectSalesDiagrams(pageId) {
 
           <!-- 4つの胃のビジュアル要素 -->
           <!-- 第一胃 (ルーメン)：サイズとx座標を微調整し左右に十分な余白を確保 -->
-          <g transform="translate(260, 65)" filter="url(#shadow-stomach)" class="stomach-node" style="cursor: pointer;">
-            <rect width="210" height="110" rx="14" fill="url(#grad-rumen)" stroke="#047857" stroke-width="2" />
-            <text x="15" y="32" fill="#fff" font-size="15" font-weight="800">🟢 第一胃 (ルーメン)</text>
-            <text x="15" y="58" fill="#ecfdf5" font-size="12" font-weight="700">容量: 150〜200L (巨大な発酵タンク)</text>
-            <text x="15" y="78" fill="#ecfdf5" font-size="11" font-weight="700">・数十兆の微生物が繊維を発酵分解</text>
-            <text x="15" y="94" fill="#ecfdf5" font-size="11" font-weight="700">・エネルギー源の約70% (VFA) を生成</text>
+          <g transform="translate(250, 65)" filter="url(#shadow-stomach)" class="stomach-node" style="cursor: pointer;">
+            <rect width="225" height="110" rx="14" fill="url(#grad-rumen)" stroke="#047857" stroke-width="2" />
+            <text x="15" y="32" fill="#fff" font-size="14.5" font-weight="800">🟢 第一胃 (ルーメン)</text>
+            <text x="15" y="58" fill="#ecfdf5" font-size="11.5" font-weight="700">容量: 150〜200L (巨大な発酵タンク)</text>
+            <text x="15" y="78" fill="#ecfdf5" font-size="10.5" font-weight="700">・数十兆の微生物が繊維を発酵分解</text>
+            <text x="15" y="94" fill="#ecfdf5" font-size="10.5" font-weight="700">・エネルギー源の約70% (VFA) を生成</text>
           </g>
 
           <!-- 第二胃 (網胃)：y座標を調整して第一胃・第三胃と美しく調和 -->
           <g transform="translate(510, 50)" filter="url(#shadow-stomach)" class="stomach-node">
-            <rect width="180" height="75" rx="12" fill="url(#grad-reticulum)" stroke="#1d4ed8" stroke-width="2" />
-            <text x="15" y="28" fill="#fff" font-size="14" font-weight="800">🔵 第二胃 (網胃)</text>
-            <text x="15" y="48" fill="#eff6ff" font-size="11" font-weight="700">異物除去フィルター</text>
-            <text x="15" y="64" fill="#dbeafe" font-size="10.5" font-weight="700">・蜂の巣状の壁で金属等の異物を捕獲</text>
+            <rect width="210" height="75" rx="12" fill="url(#grad-reticulum)" stroke="#1d4ed8" stroke-width="2" />
+            <text x="15" y="28" fill="#fff" font-size="13.5" font-weight="800">🔵 第二胃 (網胃)</text>
+            <text x="15" y="48" fill="#eff6ff" font-size="10.5" font-weight="700">異物除去フィルター</text>
+            <text x="15" y="64" fill="#dbeafe" font-size="10" font-weight="700">・蜂の巣状の壁で金属等の異物を捕獲</text>
           </g>
 
           <!-- 第三胃 (葉胃)：高コントラストなテキスト色を採用 -->
           <g transform="translate(510, 165)" filter="url(#shadow-stomach)" class="stomach-node">
-            <rect width="180" height="75" rx="12" fill="url(#grad-omasum)" stroke="#b45309" stroke-width="2" />
-            <text x="15" y="28" fill="#fff" font-size="14" font-weight="800">🟡 第三胃 (葉胃)</text>
-            <text x="15" y="48" fill="#fffbeb" font-size="11" font-weight="700">水分とミネラルの吸収</text>
-            <text x="15" y="64" fill="#fef3c7" font-size="10.5" font-weight="700">・何百枚もの葉状のひだで水分を吸収</text>
+            <rect width="210" height="75" rx="12" fill="url(#grad-omasum)" stroke="#b45309" stroke-width="2" />
+            <text x="15" y="28" fill="#fff" font-size="13.5" font-weight="800">🟡 第三胃 (葉胃)</text>
+            <text x="15" y="48" fill="#fffbeb" font-size="10.5" font-weight="700">水分とミネラルの吸収</text>
+            <text x="15" y="64" fill="#fef3c7" font-size="10" font-weight="700">・何百枚もの葉状のひだで水分を吸収</text>
           </g>
 
           <!-- 第四胃 (皺胃) -->
           <g transform="translate(270, 235)" filter="url(#shadow-stomach)" class="stomach-node">
-            <rect width="200" height="75" rx="12" fill="url(#grad-abomasum)" stroke="#b91c1c" stroke-width="2" />
-            <text x="15" y="28" fill="#fff" font-size="14" font-weight="800">🔴 第四胃 (皺胃)</text>
-            <text x="15" y="48" fill="#fef2f2" font-size="11" font-weight="700">ヒトの胃と同等 (真胃)</text>
-            <text x="15" y="64" fill="#fee2e2" font-size="10.5" font-weight="700">・強酸性の胃液で微生物をタンパク質分解</text>
+            <rect width="220" height="75" rx="12" fill="url(#grad-abomasum)" stroke="#b91c1c" stroke-width="2" />
+            <text x="15" y="28" fill="#fff" font-size="13.5" font-weight="800">🔴 第四胃 (皺胃)</text>
+            <text x="15" y="48" fill="#fef2f2" font-size="10.5" font-weight="700">ヒトの胃と同等 (真胃)</text>
+            <text x="15" y="64" fill="#fee2e2" font-size="10" font-weight="700">・強酸性の胃液で微生物をタンパク質分解</text>
           </g>
 
           <!-- フロー線 (胃どうしの接続) -->
           <!-- 第一胃 → 第二胃：滑らかな曲線でプロフェッショナル化 -->
-          <path d="M 470,115 C 485,115 495,95 505,90" fill="none" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow-blue)" />
+          <path d="M 475,115 C 485,115 495,95 505,90" fill="none" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow-blue)" />
           <!-- 第二胃 → 第三胃 -->
-          <path d="M 600,125 L 600,155" fill="none" stroke="#d97706" stroke-width="2.5" marker-end="url(#arrow-orange)" />
+          <path d="M 615,125 L 615,155" fill="none" stroke="#d97706" stroke-width="2.5" marker-end="url(#arrow-orange)" />
           <!-- 第三胃 → 第四胃 -->
-          <path d="M 510,202 C 490,202 485,225 480,230" fill="none" stroke="#dc2626" stroke-width="2.5" marker-end="url(#arrow-red)" />
+          <path d="M 510,202 C 495,202 493,225 491,232" fill="none" stroke="#dc2626" stroke-width="2.5" marker-end="url(#arrow-red)" />
           <!-- 第四胃 → 十二指腸・小腸 -->
           <path d="M 270,272 C 210,272 170,305 120,305" fill="none" stroke="var(--text-muted, #94a3b8)" stroke-width="3" stroke-dasharray="3,3" marker-end="url(#arrow)" />
           <text x="120" y="325" fill="var(--text-primary, #1e293b)" font-size="11.5" font-weight="800" text-anchor="middle">小腸へ ➔ 消化物・栄養吸収</text>
