@@ -68,7 +68,7 @@ async function getHash(message) {
   return sha256_fallback(message);
 }
 
-export function checkSession() {
+function checkSession() {
   const session = localStorage.getItem(SESSION_KEY);
   if (!session) return false;
   try {
@@ -81,7 +81,7 @@ export function checkSession() {
   return false;
 }
 
-export function showLogin(onSuccess) {
+function showLogin(onSuccess) {
   const overlay = document.createElement('div');
   overlay.id = 'auth-overlay';
   overlay.innerHTML = `
@@ -177,3 +177,7 @@ export function showLogin(onSuccess) {
     }
   });
 }
+
+// Expose functions globally
+window.checkSession = checkSession;
+window.showLogin = showLogin;

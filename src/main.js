@@ -1,9 +1,6 @@
 // src/main.js - Core application logic, routing, search, and quiz engine
 
-import { checkSession, showLogin } from './auth.js';
-import { SALES_PAGES } from './data/sales-manual.js';
-import { SALES_QUIZ, ACHIEVEMENTS, RANKS } from './data/sales-quiz.js';
-import { OPS_PAGES } from './data/ops-manual.js';
+// Note: Imports removed to run correctly on local file:// protocol via global window scope.
 
 // DOM Elements
 const sidebarToggle = document.getElementById('sidebarToggle');

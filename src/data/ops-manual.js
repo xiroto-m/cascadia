@@ -395,4 +395,4 @@ ${caution(['CSV出力のタイミング（日次？月次？）','仕訳変換�
 
 
 // Export the data
-export const OPS_PAGES = PAGES_DATA;
+window.OPS_PAGES = PAGES_DATA;
