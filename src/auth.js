@@ -86,7 +86,9 @@ function showLogin(onSuccess) {
   overlay.id = 'auth-overlay';
   overlay.innerHTML = `
     <div class="auth-card">
-      <div class="auth-logo">🐄</div>
+      <div class="auth-logo-img-wrapper">
+        <img src="https://cascadiact.com/wp-content/uploads/2021/10/logo-1.png" alt="Cascadia Trading" class="auth-logo-img">
+      </div>
       <h1>Cascadia Trading</h1>
       <p>総合マニュアルポータル 認証</p>
       <form id="auth-form">

@@ -2372,3 +2372,47 @@ tbody tr:last-child td {
   margin-top: 14px;
 }
 
+/* =========================================================================
+   会社ロゴ表示用の追加デザインスタイル
+   ========================================================================= */
+
+/* サイドバーロゴ用ラッパー */
+.logo-icon-img-wrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #ffffff; /* 白背景でロゴを際立たせる */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3), inset 0 0 4px rgba(0,0,0,0.15);
+  overflow: hidden;
+}
+
+.logo-img-sidebar {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* ログイン画面用のロゴスタイル */
+.auth-logo-img-wrapper {
+  background: #ffffff;
+  padding: 16px 28px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.auth-logo-img {
+  height: 52px;
+  width: auto;
+}
+
+

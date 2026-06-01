@@ -659,9 +659,11 @@ function renderPortalHome() {
   const quizStats = getQuizProgressStats();
 
   contentArea.innerHTML = `
-    <div class="page-hero">
-      <span class="hero-emoji">🐄</span>
-      <h1 class="page-title">Cascadia Trading 総合ナレッジポータル</h1>
+    <div class="page-hero" style="display: flex; flex-direction: column; gap: 16px; align-items: flex-start;">
+      <div class="hero-logo-wrapper" style="background: #ffffff; border: 1px solid var(--border-medium); padding: 12px 24px; border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 8px 30px rgba(0,0,0,0.4);">
+        <img src="https://cascadiact.com/wp-content/uploads/2021/10/logo-1.png" alt="Cascadia Trading Logo" style="height: 48px; width: auto;">
+      </div>
+      <h1 class="page-title" style="margin-top: 8px;">Cascadia Trading 総合ナレッジポータル</h1>
       <p class="page-subtitle">営業部・業務部の知見を一本化した、直感的で美しいナレッジシェア・ポータルです。</p>
     </div>
 
