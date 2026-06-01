@@ -664,7 +664,7 @@ function renderPortalHome() {
         <img src="https://cascadiact.com/wp-content/uploads/2021/10/logo-1.png" alt="Cascadia Trading Logo" style="height: 48px; width: auto;">
       </div>
       <h1 class="page-title" style="margin-top: 8px;">Cascadia Trading 総合ナレッジポータル</h1>
-      <p class="page-subtitle">営業部・業務部の知見を一本化した、直感的で美しいナレッジシェア・ポータルです。</p>
+      <p class="page-subtitle">営業マニュアルと業務マニュアルを共有するポータルです。</p>
     </div>
 
     <div class="stats-row">
