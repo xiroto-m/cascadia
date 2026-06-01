@@ -7,9 +7,7 @@ const PAGES_DATA = {};
 // ===== Helper: build meta card =====
 function meta(id, sys, pages, status) {
   return `<div class="meta-card"><div class="meta-grid">
-    <div><div class="meta-item-label">文書ID</div><div class="meta-item-value">${id}</div></div>
     <div><div class="meta-item-label">対象システム</div><div class="meta-item-value"><span class="tag tag-system">${sys}</span></div></div>
-    <div><div class="meta-item-label">対象ページ</div><div class="meta-item-value">${pages}</div></div>
     <div><div class="meta-item-label">ステータス</div><div class="meta-item-value"><span class="tag tag-manual">${status||'有識者確認待ち'}</span></div></div>
   </div></div>`;
 }
