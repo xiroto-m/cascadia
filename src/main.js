@@ -1847,10 +1847,10 @@ function injectSalesDiagrams(pageId) {
             <text x="40" y="295" fill="var(--text-muted, #64748b)" font-size="11" text-anchor="end">20 kg</text>
             <text x="40" y="355" fill="var(--text-muted, #64748b)" font-size="11" text-anchor="end">10 kg</text>
 
-            <!-- 右側縦軸数値 (BCS) -->
-            <text x="755" y="115" fill="var(--text-muted, #64748b)" font-size="11" text-anchor="start">高 (BCS 3.5)</text>
-            <text x="755" y="235" fill="var(--text-muted, #64748b)" font-size="11" text-anchor="start">中 (BCS 3.0)</text>
-            <text x="755" y="355" fill="var(--text-muted, #64748b)" font-size="11" text-anchor="start">低 (BCS 2.5)</text>
+            <!-- 右側縦軸数値 (BCS) (枠内にはみ出しなく美しく収めるため、右端から20pxの余白を確保して右寄せ text-anchor="end" に最適化) -->
+            <text x="780" y="115" fill="var(--text-muted, #64748b)" font-size="11" text-anchor="end">高 (BCS 3.5)</text>
+            <text x="780" y="235" fill="var(--text-muted, #64748b)" font-size="11" text-anchor="end">中 (BCS 3.0)</text>
+            <text x="780" y="355" fill="var(--text-muted, #64748b)" font-size="11" text-anchor="end">低 (BCS 2.5)</text>
 
             <!-- 横軸 (ステージラベル) -->
             <text x="130" y="385" fill="var(--text-secondary, #475569)" font-size="11.5" font-weight="800" text-anchor="middle">乾乳期 (-60〜0日)</text>
