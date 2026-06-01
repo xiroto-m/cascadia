@@ -1,0 +1,6 @@
+以下の URL をブラウザで開いてみてください。
+
+マニュアル: https://xiroto-m.github.io/cascadia/manual.html
+クイズ: https://xiroto-m.github.io/cascadia/quiz.html
+
+アクセスした瞬間に、ブラウザの入力欄（プロンプト）が出てきて、パスワード cascadia2026 を求められる。
