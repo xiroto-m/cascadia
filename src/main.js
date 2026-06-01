@@ -782,7 +782,7 @@ function renderPortalHome() {
       ${pendingVerifyHtml}
     </div>
 
-    <h3 class="portal-section-title">👑 営業部マニュアル — ダイレクトアクセス</h3>
+    <h3 class="portal-section-title">👑 営業部マニュアル</h3>
     <div class="mini-card-grid">
       <div class="mini-card mini-card-sales" data-target="ch1">
         <div class="mini-card-icon">🌍</div>
@@ -822,7 +822,7 @@ function renderPortalHome() {
       </div>
     </div>
 
-    <h3 class="portal-section-title">⚙️ 業務部マニュアル — プロセスダイレクトアクセス</h3>
+    <h3 class="portal-section-title">⚙️ 業務部マニュアル</h3>
     <div class="mini-card-grid">
       <div class="mini-card mini-card-ops" data-target="dom-buy">
         <div class="mini-card-icon">🚚</div>
@@ -2061,7 +2061,7 @@ function injectSalesDiagrams(pageId) {
       ` + proteinFractionSvg + `
         <div class="so-what-section" style="margin-top: 25px;">
           <div class="so-what-header">
-            <span>📢</span> 酪農営業の「だから何？（勘所）」── 飼料分析のタンパク質画分をどう提案に活かすか？
+            <span>📢</span> 酪農営業の「提案への活かし方（勘所）」── 飼料分析のタンパク質画分をどう提案に活かすか？
           </div>
           <p class="so-what-intro">
             農家から「CP（粗タンパク質）が高いエサをあげているのに乳量が伸びない」「乳中尿素窒素（MUN）が高い」と言われた時こそ、この画分フローの出番です。単なるタンパク質の「量」ではなく、「ルーメン内での挙動（質とタイミング）」を紐解くことで、他社と次元の違う飼料コンサルティングが可能になります。

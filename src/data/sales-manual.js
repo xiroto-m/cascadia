@@ -53,7 +53,7 @@ window.SALES_PAGES = {
 
         <div class="so-what-section">
           <div class="so-what-header">
-            <span>📢</span> 酪農営業の「だから何？（勘所）」── このグラフをどう提案に活かすか？
+            <span>📢</span> 酪農営業の「提案への活かし方（勘所）」── このグラフをどう提案に活かすか？
           </div>
           <p class="so-what-intro">
             この相関図は、単なる牛の生理現象のグラフではありません。私たちの主力商品である「バイパス油脂（Richfat/Richfat CA）」や「高品質牧草（アルファルファ）」を農家に提案する際の、最強の論理的根拠（フック）です。
