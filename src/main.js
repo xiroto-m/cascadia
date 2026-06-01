@@ -680,10 +680,6 @@ function renderPortalHome() {
         <div class="stat-value" style="color: var(--accent-violet);">${quizStats.completed} / ${quizStats.total} <span style="font-size:12px; font-weight:400; color:var(--text-muted);">章</span></div>
         <div class="stat-label">理解度クイズ全問クリア</div>
       </div>
-      <div class="stat-card" style="border-color: rgba(251, 191, 36, 0.25);">
-        <div class="stat-value" id="dashboardXP" style="color: var(--accent-amber);">${quizState.xp}</div>
-        <div class="stat-label">獲得総合XP</div>
-      </div>
     </div>
 
     <div class="alert alert-note">
