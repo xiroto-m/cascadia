@@ -1769,22 +1769,22 @@ function injectSalesDiagrams(pageId) {
             <text x="15" y="64" fill="#fee2e2" font-size="10" font-weight="700">・強酸性の胃液で微生物をタンパク質分解</text>
           </g>
 
-          <!-- 全フロー線 (カードの上に乗るように最後に一括描画、隠れを完全防止し、数学的にガタつきのない滑らかなS字曲線や垂直・水平接線を再計算) -->
-          <!-- 口から第一胃へ (x=243 の位置で水平右向きに綺麗に接し、カードとの重なりを防止) -->
-          <path d="M 40,45 L 140,45 C 180,45 210,90 243,90" fill="none" stroke="var(--text-muted, #94a3b8)" stroke-width="3" stroke-dasharray="5,5" marker-end="url(#arrow)" />
+          <!-- 全フロー線 (カードの上に乗るように最後に一括描画、隠れを完全防止し、線と三角の進行方向・進入角を数学的に一致させて完璧に融合) -->
+          <!-- 口から第一胃へ (自然な約24度傾斜のまま直線的に進入し、三角と線の傾きを完全に一致) -->
+          <path d="M 40,45 L 140,45 C 175,45 205,73 243,90" fill="none" stroke="var(--text-muted, #94a3b8)" stroke-width="3" stroke-dasharray="5,5" marker-end="url(#arrow)" />
           
-          <!-- 反芻のループ (口 ↔ 第一胃) (第一胃の左境界 x=250 からはみ出ないよう x=243〜246 の範囲に再計算し、双方向にオレンジの矢印を配備) -->
-          <path d="M 246,110 C 190,80 130,80 106,105" fill="none" stroke="#fbbf24" stroke-width="2.2" stroke-dasharray="3,3" marker-end="url(#arrow-orange)" />
-          <path d="M 105,105 C 130,130 200,120 243,120" fill="none" stroke="#fbbf24" stroke-width="2.2" stroke-dasharray="3,3" marker-end="url(#arrow-orange)" />
+          <!-- 反芻のループ (口 ↔ 第一胃) (左右の進入角を完全な0度水平にして結合部のカクつきを100%排除) -->
+          <path d="M 246,110 C 190,90 135,105 106,105" fill="none" stroke="#fbbf24" stroke-width="2.2" stroke-dasharray="3,3" marker-end="url(#arrow-orange)" />
+          <path d="M 105,105 C 135,120 205,120 243,120" fill="none" stroke="#fbbf24" stroke-width="2.2" stroke-dasharray="3,3" marker-end="url(#arrow-orange)" />
 
-          <!-- 第一胃 → 第二胃 (第一胃中央右端 475,120 から滑らかなS字曲線で第二胃中央左端手前 503,87.5 に水平進入) -->
-          <path d="M 475,120 C 488,120 492,87.5 503,87.5" fill="none" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow-blue)" />
+          <!-- 第一胃 → 第二胃 (登り傾斜約26.5度を保ったまま自然にタッチし、三角の向きと線の流れが綺麗に一体化) -->
+          <path d="M 475,120 C 485,120 493,92.5 503,87.5" fill="none" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow-blue)" />
           
           <!-- 第二胃 → 第三胃 (中心軸 615 上を綺麗に垂直下落。第三胃天面 165 から 6px 手前の 159 で綺麗に接する) -->
           <path d="M 615,125 L 615,159" fill="none" stroke="#d97706" stroke-width="2.5" marker-end="url(#arrow-orange)" />
           
-          <!-- 第三胃 → 第四胃 (第三胃左端 510,202.5 から左に滑らかに出て、第四胃上面 x=470 に垂直に美しく着地し、角の隠れ・干渉を100%回避) -->
-          <path d="M 510,202.5 C 470,202.5 470,215 470,228" fill="none" stroke="#dc2626" stroke-width="2.5" marker-end="url(#arrow-red)" />
+          <!-- 第三胃 → 第四胃 (カクつきを排除し、滑らかな孤を描きながら斜め約120度方向のまま第四胃の右上 483,231 にアプローチ) -->
+          <path d="M 510,202.5 C 495,202.5 488,222.5 483,231" fill="none" stroke="#dc2626" stroke-width="2.5" marker-end="url(#arrow-red)" />
           
           <!-- 第四胃 → 十二指腸・小腸 -->
           <path d="M 268,272.5 C 210,272.5 170,305 125,305" fill="none" stroke="var(--text-muted, #94a3b8)" stroke-width="3" stroke-dasharray="3,3" marker-end="url(#arrow)" />
