@@ -983,11 +983,28 @@ function renderQuizDashboard() {
 
     <!-- Screen Home -->
     <div class="quiz-screen active" id="scrHome">
-      <h2 style="font-size:16px; font-weight:700; margin-bottom:4px;">📚 チャプターを選択</h2>
-      <p style="font-size:12px; color:var(--text-muted); margin-bottom: 12px;">各章をクリアしてXPを獲得し、ランクを上げよう！</p>
-      
-      <div class="ch-grid" id="chGrid"></div>
-      
+      <p style="font-size:12px; color:var(--text-muted); margin-bottom: 16px;">各章をクリアしてXPを獲得し、ランクを上げよう！</p>
+
+      <!-- 営業部セクション -->
+      <div class="quiz-dept-section">
+        <div class="quiz-dept-header quiz-dept-header--sales">
+          <span class="quiz-dept-icon">👑</span>
+          <span class="quiz-dept-title">営業部クイズ</span>
+          <span class="quiz-dept-badge">Sales</span>
+        </div>
+        <div class="ch-grid" id="chGridSales"></div>
+      </div>
+
+      <!-- 業務部セクション -->
+      <div class="quiz-dept-section" style="margin-top: 28px;">
+        <div class="quiz-dept-header quiz-dept-header--ops">
+          <span class="quiz-dept-icon">⚙️</span>
+          <span class="quiz-dept-title">業務部クイズ</span>
+          <span class="quiz-dept-badge">Operations</span>
+        </div>
+        <div class="ch-grid" id="chGridOps"></div>
+      </div>
+
       <div class="btn-row" style="margin-top:28px">
         <button class="btn btn-secondary" id="btnShowAchievements">🏆 解除実績</button>
         <button class="btn btn-primary" id="btnRandomQuiz">🎲 ランダム10問</button>
@@ -1069,18 +1086,23 @@ function showQuizScreen(screenId) {
 }
 
 function renderChaptersList() {
-  const g = document.getElementById('chGrid');
-  if(!g) return;
-  g.innerHTML = '';
-  
-  ALL_QUIZZES.forEach((ch) => {
+  const salesGrid = document.getElementById('chGridSales');
+  const opsGrid = document.getElementById('chGridOps');
+  if (!salesGrid || !opsGrid) return;
+  salesGrid.innerHTML = '';
+  opsGrid.innerHTML = '';
+
+  const salesQuizzes = (window.SALES_QUIZ || []);
+  const opsQuizzes   = (window.OPS_QUIZ || []);
+
+  function buildCard(ch, grid) {
     const sc = quizState.chapterScores[ch.id];
     const best = sc ? sc.best : 0;
     const total = ch.questions.length;
     const pct = sc ? Math.round(sc.best / total * 100) : 0;
     const stars = best === total ? '⭐⭐⭐' : best >= total * 0.7 ? '⭐⭐' : best >= total * 0.4 ? '⭐' : '☆☆☆';
     const completed = best === total;
-    
+
     const d = document.createElement('div');
     d.className = 'ch-card' + (completed ? ' completed' : '');
     d.innerHTML = `
@@ -1091,8 +1113,11 @@ function renderChaptersList() {
       <div class="progress-mini"><div style="width:${pct}%"></div></div>
     `;
     d.onclick = () => openQuizModal(ch.id);
-    g.appendChild(d);
-  });
+    grid.appendChild(d);
+  }
+
+  salesQuizzes.forEach(ch => buildCard(ch, salesGrid));
+  opsQuizzes.forEach(ch => buildCard(ch, opsGrid));
 }
 
 function openQuizModal(chId) {

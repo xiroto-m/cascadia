@@ -4156,3 +4156,69 @@ tbody tr:last-child td {
   stroke: currentColor;
 }
 
+/* =========================================================================
+   クイズ 部署区分セクションスタイル
+   ========================================================================= */
+
+.quiz-dept-section {
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border-medium);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-sm);
+}
+
+.quiz-dept-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.quiz-dept-header--sales {
+  background: linear-gradient(135deg, rgba(30, 58, 138, 0.08), rgba(124, 58, 237, 0.05));
+  border-bottom-color: rgba(30, 58, 138, 0.15);
+}
+
+.quiz-dept-header--ops {
+  background: linear-gradient(135deg, rgba(5, 150, 105, 0.08), rgba(16, 185, 129, 0.04));
+  border-bottom-color: rgba(5, 150, 105, 0.15);
+}
+
+.quiz-dept-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.quiz-dept-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.quiz-dept-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 2px 8px;
+  border-radius: 20px;
+  text-transform: uppercase;
+}
+
+.quiz-dept-header--sales .quiz-dept-badge {
+  background: rgba(30, 58, 138, 0.12);
+  color: var(--accent-blue);
+}
+
+.quiz-dept-header--ops .quiz-dept-badge {
+  background: rgba(5, 150, 105, 0.12);
+  color: var(--accent-green);
+}
+
+.quiz-dept-section .ch-grid {
+  padding: 16px;
+  gap: 12px;
+}
+
