@@ -15,6 +15,18 @@ function sec(n,t){return `<div class="section-header"><div class="section-number
 function sub(t){return `<h4 class="subsection-title">${t}</h4>`;}
 function note(t,cls='note',icon='📘 NOTE'){return `<div class="alert alert-${cls}"><div class="alert-title">${icon}</div>${t}</div>`;}
 function tbl(hd,rows){
+  function makeTrigger(sysVal, actionVal) {
+    let cleanSys = sysVal.replace(/<[^>]*>/g, '').trim();
+    let detail = actionVal ? actionVal.replace(/<[^>]*>/g, '').replace(/["']/g, '&quot;') : '見本';
+    if (cleanSys.includes('アラジン') || cleanSys.includes('Aladdin')) {
+      return `<span class="preview-trigger" data-preview-type="aladdin" data-preview-detail="${detail}">アラジン</span>`;
+    }
+    if (cleanSys.includes('Excel') || cleanSys.includes('エクセル')) {
+      return `<span class="preview-trigger" data-preview-type="excel" data-preview-detail="${detail}">Excel</span>`;
+    }
+    return null;
+  }
+
   if(hd[0] === 'Step') {
     let stepsHtml = rows.map(row => {
       let stepNum = row[0];
@@ -23,7 +35,8 @@ function tbl(hd,rows){
       let sys = row[3] || '—';
       let output = row[4] || '—';
       
-      let sysHtml = sys !== '—' ? `<span class="step-sys">${sys}</span>` : '';
+      let trigger = makeTrigger(sys, action);
+      let sysHtml = sys !== '—' ? (trigger ? trigger : `<span class="step-sys">${sys}</span>`) : '';
       let outHtml = output !== '—' ? `<div class="step-output">📄 出力: ${output}</div>` : '';
       
       return `<div class="step-item">
@@ -42,7 +55,16 @@ function tbl(hd,rows){
   }
 
   let h=hd.map(c=>`<th>${c}</th>`).join('');
-  let r=rows.map(row=>`<tr>${row.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('');
+  let r=rows.map(row=>`<tr>${row.map((c, idx) => {
+    let cellStr = String(c);
+    let headerName = hd[idx];
+    let trigger = null;
+    if (headerName === 'システム' || headerName === '使用システム/ツール' || headerName === '形式') {
+      trigger = makeTrigger(cellStr, row[2] || row[1]);
+    }
+    let cellHtml = trigger ? trigger : cellStr;
+    return `<td>${cellHtml}</td>`;
+  }).join('')}</tr>`).join('');
   return `<div class="table-wrapper"><table><thead><tr>${h}</tr></thead><tbody>${r}</tbody></table></div>`;
 }
 function cl(items){return `<ul class="checklist">${items.map(i=>`<li><div class="check-box"></div><span>${i}</span></li>`).join('')}</ul>`;}

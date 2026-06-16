@@ -3459,3 +3459,700 @@ tbody tr:last-child td {
   font-weight: 700;
   padding: 0 2px;
 }
+
+/* =========================================================================
+   業務部向け：便利ツール、計算ツール、および画面見本モーダルの追加スタイル
+   ========================================================================= */
+
+/* 1. 見本プレビューのインラインバッジスタイル */
+.preview-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  margin: 0 2px;
+  border-radius: 6px;
+  font-size: 0.85em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s var(--ease-out);
+  border: 1px solid transparent;
+}
+
+.preview-trigger[data-preview-type="aladdin"] {
+  background: rgba(30, 58, 138, 0.08);
+  color: var(--accent-blue);
+  border-color: rgba(30, 58, 138, 0.15);
+}
+.preview-trigger[data-preview-type="aladdin"]::before {
+  content: "🖥️";
+  font-size: 0.9em;
+}
+
+.preview-trigger[data-preview-type="excel"] {
+  background: rgba(40, 95, 45, 0.08);
+  color: var(--accent-green);
+  border-color: rgba(40, 95, 45, 0.15);
+}
+.preview-trigger[data-preview-type="excel"]::before {
+  content: "📊";
+  font-size: 0.9em;
+}
+
+.preview-trigger:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+  filter: brightness(1.05);
+}
+
+/* 2. プレビューモーダル */
+.preview-modal-box {
+  max-width: 900px !important;
+  width: 90% !important;
+  padding: 24px !important;
+  border-radius: 20px !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3) !important;
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-medium) !important;
+}
+
+/* 3. モックアップUI（アラジンオフィス） */
+.mockup-aladdin {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  color: #1e293b;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+  font-family: var(--font-sans);
+}
+
+.aladdin-title-bar {
+  background: linear-gradient(to right, #1e3a8a, #3b82f6);
+  color: #ffffff;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.aladdin-window-controls {
+  display: flex;
+  gap: 6px;
+}
+
+.aladdin-window-controls span {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ef4444;
+}
+
+.aladdin-window-controls span:nth-child(2) { background: #eab308; }
+.aladdin-window-controls span:nth-child(3) { background: #22c55e; }
+
+.aladdin-menu-bar {
+  background: #e2e8f0;
+  border-bottom: 1px solid #cbd5e1;
+  padding: 4px 12px;
+  font-size: 11px;
+  color: #475569;
+  display: flex;
+  gap: 12px;
+}
+
+.aladdin-toolbar {
+  background: #f8fafc;
+  border-bottom: 1px solid #cbd5e1;
+  padding: 6px 12px;
+  display: flex;
+  gap: 8px;
+}
+
+.aladdin-btn {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #334155;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.aladdin-btn.primary {
+  background: #3b82f6;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+.aladdin-form-container {
+  padding: 16px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  background: #f8fafc;
+}
+
+.aladdin-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.aladdin-field label {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #475569;
+}
+
+.aladdin-field input,
+.aladdin-field select {
+  padding: 4px 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  font-size: 12px;
+  background: #ffffff;
+  color: #1e293b;
+}
+
+.aladdin-field.highlight-field input,
+.aladdin-field.highlight-field select {
+  border-color: #f59e0b;
+  background: #fffbeb;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+}
+
+.aladdin-grid-section {
+  padding: 12px 16px 16px;
+  background: #ffffff;
+  border-top: 1px solid #cbd5e1;
+}
+
+.aladdin-grid-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #475569;
+  margin-bottom: 8px;
+}
+
+.aladdin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11.5px;
+}
+
+.aladdin-table th,
+.aladdin-table td {
+  border: 1px solid #cbd5e1;
+  padding: 6px 8px;
+  text-align: left;
+}
+
+.aladdin-table th {
+  background: #e2e8f0;
+  color: #334155;
+  font-weight: 700;
+}
+
+.aladdin-table td {
+  color: #475569;
+}
+
+.aladdin-table tr.highlight-row {
+  background: #fffbeb;
+}
+
+.aladdin-table tr.highlight-row td {
+  color: #b45309;
+  font-weight: 600;
+}
+
+/* 4. モックアップUI（Excel） */
+.mockup-excel {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  color: #1e293b;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  font-family: var(--font-sans);
+}
+
+.excel-header-ribbon {
+  background: #107c41; /* Excelの代表的なグリーン */
+  color: #ffffff;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.excel-tabs {
+  background: #f3f2f1;
+  border-bottom: 1px solid #cbd5e1;
+  padding: 4px 12px;
+  font-size: 11px;
+  color: #323130;
+  display: flex;
+  gap: 16px;
+}
+
+.excel-tabs span.active {
+  font-weight: 700;
+  color: #107c41;
+  border-bottom: 2px solid #107c41;
+  padding-bottom: 2px;
+}
+
+.excel-formula-bar {
+  background: #ffffff;
+  border-bottom: 1px solid #cbd5e1;
+  padding: 4px 8px;
+  font-size: 11px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.excel-formula-box {
+  flex-grow: 1;
+  border: 1px solid #cbd5e1;
+  padding: 2px 6px;
+  background: #f3f2f1;
+  color: #323130;
+  border-radius: 2px;
+}
+
+.excel-grid {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+.excel-grid th {
+  background: #f3f2f1;
+  color: #323130;
+  border: 1px solid #cbd5e1;
+  font-weight: 500;
+  text-align: center;
+  padding: 4px;
+}
+
+.excel-grid td {
+  border: 1px solid #e1dfdd;
+  padding: 4px 6px;
+  color: #323130;
+  white-space: nowrap;
+}
+
+.excel-grid td.excel-row-num {
+  background: #f3f2f1;
+  text-align: center;
+  font-weight: 500;
+  width: 30px;
+}
+
+.excel-grid tr.excel-table-header td {
+  background: #107c41;
+  color: #ffffff;
+  font-weight: 700;
+  text-align: center;
+  border-color: #107c41;
+}
+
+.excel-grid tr.excel-table-header-sub td {
+  background: #21a366;
+  color: #ffffff;
+  font-weight: 700;
+  text-align: center;
+  border-color: #21a366;
+}
+
+.excel-grid td.highlight-cell {
+  background: #fffbeb;
+  border: 2px solid #f59e0b;
+}
+
+.excel-grid td.error-cell {
+  background: #fef2f2;
+  border: 2px solid #ef4444;
+  color: #b91c1c;
+  font-weight: 700;
+}
+
+/* 5. 日付・デマレージ計算ツールのスタイル */
+.tool-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 20px;
+}
+
+@media(max-width: 900px) {
+  .tool-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.tool-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-medium);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.tool-card h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 16px;
+  color: var(--accent-blue);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tool-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tool-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tool-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.tool-group input[type="date"],
+.tool-group input[type="number"],
+.tool-group select {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border-medium);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.tool-group input:focus,
+.tool-group select:focus {
+  border-color: var(--accent-blue);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.tool-checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.tool-checkbox-group input {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.result-box {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(124, 58, 237, 0.04));
+  border: 1px solid rgba(37, 99, 235, 0.15);
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.result-box .result-date {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--accent-blue);
+  text-align: center;
+  margin: 4px 0;
+}
+
+.result-box .result-lbl {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.result-details {
+  border-top: 1px dashed var(--border-medium);
+  padding-top: 12px;
+  margin-top: 4px;
+}
+
+.result-details h4 {
+  font-size: 12px;
+  font-weight: 700;
+  margin: 0 0 8px;
+  color: var(--text-primary);
+}
+
+.skipped-list {
+  max-height: 140px;
+  overflow-y: auto;
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  padding-left: 16px;
+  margin: 0;
+}
+
+/* 6. カレンダービジュアライザ */
+.calendar-visualizer {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 12px;
+  margin-top: 16px;
+}
+
+.cal-day-name {
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--text-muted);
+  padding: 4px 0;
+}
+
+.cal-day-cell {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  border-radius: 6px;
+  color: var(--text-secondary);
+  position: relative;
+}
+
+.cal-day-cell.other-month {
+  opacity: 0.2;
+}
+
+.cal-day-cell.weekend-sat {
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.cal-day-cell.weekend-sun {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.cal-day-cell.holiday {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
+  font-weight: 600;
+}
+
+.cal-day-cell.skipped {
+  text-decoration: line-through;
+  opacity: 0.5;
+}
+
+.cal-day-cell.counted {
+  background: rgba(37, 99, 235, 0.12);
+  color: var(--accent-blue);
+  font-weight: 600;
+}
+
+.cal-day-cell.target {
+  background: var(--accent-blue) !important;
+  color: #ffffff !important;
+  font-weight: 800;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+}
+
+/* 7. 得意先スケジュール表更新支援ツールのスタイル */
+.input-paste-area {
+  width: 100%;
+  height: 120px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px dashed var(--border-medium);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: monospace;
+  font-size: 12px;
+  resize: vertical;
+  transition: all 0.2s;
+  margin-bottom: 12px;
+}
+
+.input-paste-area:focus {
+  border-color: var(--accent-blue);
+  border-style: solid;
+  outline: none;
+  background: var(--bg-card);
+}
+
+.assistant-grid-wrapper {
+  overflow-x: auto;
+  border: 1px solid var(--border-medium);
+  border-radius: 14px;
+  margin-top: 16px;
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-card);
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+.assistant-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  text-align: left;
+}
+
+.assistant-table th {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-weight: 700;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-medium);
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.assistant-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  white-space: nowrap;
+  color: var(--text-secondary);
+}
+
+.assistant-table tr:hover {
+  background: var(--bg-secondary);
+}
+
+.assistant-table input[type="date"],
+.assistant-table input[type="text"] {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-primary);
+  font-size: 12px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  width: 110px;
+}
+
+.assistant-table input[type="date"]:hover,
+.assistant-table input[type="text"]:hover {
+  border-color: var(--border-medium);
+  background: var(--bg-primary);
+}
+
+.assistant-table input[type="date"]:focus,
+.assistant-table input[type="text"]:focus {
+  border-color: var(--accent-blue);
+  background: var(--bg-primary);
+  outline: none;
+}
+
+.date-badge-calc {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  background: rgba(40, 95, 45, 0.08);
+  color: var(--accent-green);
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: 600;
+  margin-left: 6px;
+}
+
+.date-badge-mismatch {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--accent-amber);
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: 600;
+  margin-left: 6px;
+  animation: pulse 2s infinite;
+}
+
+.row-error-typo {
+  background: rgba(239, 68, 68, 0.04) !important;
+}
+
+.row-error-typo td:first-child {
+  border-left: 4px solid var(--accent-rose);
+}
+
+.typo-tag-alert {
+  font-size: 10px;
+  font-weight: 700;
+  background: var(--accent-rose);
+  color: #ffffff;
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-left: 6px;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.8; }
+  50% { opacity: 1; }
+  100% { opacity: 0.8; }
+}
+
+.import-zone-drop {
+  border: 2px dashed var(--border-medium);
+  border-radius: 14px;
+  padding: 24px;
+  text-align: center;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.import-zone-drop:hover,
+.import-zone-drop.dragover {
+  border-color: var(--accent-blue);
+  background: rgba(37, 99, 235, 0.03);
+  color: var(--accent-blue);
+}
+
+.import-zone-drop svg {
+  width: 36px;
+  height: 36px;
+  stroke: currentColor;
+}
+
