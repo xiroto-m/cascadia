@@ -117,8 +117,17 @@ function showLogin(onSuccess) {
         to { opacity: 1; transform: translateY(0); } 
       }
       .auth-logo { font-size: 64px; margin-bottom: 16px; filter: drop-shadow(0 0 15px rgba(52, 211, 153, 0.3)); }
+      .auth-logo-img-wrapper {
+        background: #ffffff; border-radius: 14px; padding: 12px 20px;
+        margin-bottom: 20px; display: flex; align-items: center; justify-content: center;
+        overflow: hidden; max-width: 100%; box-sizing: border-box;
+      }
+      .auth-logo-img {
+        max-width: 100%; height: auto; max-height: 52px; object-fit: contain; display: block;
+      }
       .auth-card h1 { font-size: 26px; font-weight: 800; margin: 0 0 6px; color: #34d399; letter-spacing: -0.5px; }
       .auth-card p { color: #9ca3af; font-size: 13px; margin-bottom: 28px; font-weight: 500; }
+
       #auth-pass {
         width: 100%; padding: 16px; border-radius: 12px; border: 2px solid #27314a;
         background: #090b11; color: white; font-size: 16px; margin-bottom: 16px; box-sizing: border-box;
