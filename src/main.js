@@ -22,6 +22,8 @@ let quizState = JSON.parse(localStorage.getItem('cascadia_quiz') || 'null') || {
   chapterScores: {}, achievements: []
 };
 
+let ALL_QUIZZES = [];
+
 let curQuiz = null;
 let curIdx = 0;
 let curCorrect = 0;
@@ -42,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initApp() {
+  ALL_QUIZZES = [...(window.SALES_QUIZ || []), ...(window.OPS_QUIZ || [])];
   generateNavTree();
   setupEventListeners();
   updateExpertVerifyModeUI();
@@ -98,6 +101,10 @@ function generateNavTree() {
         <a class="nav-item" data-page="ch4-fat"><span class="nav-dot"></span>└ 脂肪酸の機能使い分け</a>
         <a class="nav-item" data-page="appendix"><span class="nav-dot"></span>業界用語・辞書</a>
         <a class="nav-item" data-page="app-pack"><span class="nav-dot"></span>荷姿・物流・単位</a>
+        <a class="nav-item" data-page="ch5"><span class="nav-dot"></span>第5章 バックオフィス関連</a>
+        <a class="nav-item" data-page="ch5-car"><span class="nav-dot"></span>├ 総務：社用車トラブル・事故対応</a>
+        <a class="nav-item" data-page="ch5-hr"><span class="nav-dot"></span>├ 人事：貸与物品借用書の申請</a>
+        <a class="nav-item" data-page="ch5-acct"><span class="nav-dot"></span>└ 経理：準備中</a>
       </div>
     </div>
 
@@ -118,6 +125,18 @@ function generateNavTree() {
         <a class="nav-item" data-page="pay-dom"><span class="nav-dot"></span>06-1 支払〜出金（国内）</a>
         <a class="nav-item" data-page="pay-intl"><span class="nav-dot"></span>06-2 支払〜出金（海外）</a>
         <a class="nav-item" data-page="accounting"><span class="nav-dot"></span>07 会計連携</a>
+      </div>
+    </div>
+
+    <!-- Utility Tools -->
+    <div class="nav-section">
+      <div class="nav-section-title" data-section="tools">
+        <svg class="chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+        実務便利ツール
+      </div>
+      <div class="nav-section-items">
+        <a class="nav-item" data-page="date-calculator"><span class="nav-dot"></span>営業日・デマレージ計算</a>
+        <a class="nav-item" data-page="schedule-assistant"><span class="nav-dot"></span>得意先スケジュール支援</a>
       </div>
     </div>
 
@@ -178,6 +197,12 @@ function setupEventListeners() {
     if (e.target.id === 'quizModal') closeModal();
   });
 
+  // Screen preview modal event bindings
+  document.getElementById('btnClosePreviewModal').addEventListener('click', closePreviewModal);
+  document.getElementById('previewModal').addEventListener('click', (e) => {
+    if (e.target.id === 'previewModal') closePreviewModal();
+  });
+
   // 有識者確認モードは常にONに固定されるため、トグルのバインドは不要
 }
 
@@ -223,6 +248,23 @@ function navigateTo(pageId, highlightSearch = null) {
     statusBadge.textContent = '学習ゲーム';
     statusBadge.className = 'status-badge status-sales-approved';
     renderQuizDashboard();
+    return;
+  }
+
+  // 2.5 Utility Tools Rendering
+  if (pageId === 'date-calculator') {
+    currentPath.textContent = '便利ツール ＞ 営業日・デマレージ計算';
+    statusBadge.textContent = 'ツール';
+    statusBadge.className = 'status-badge status-sales-approved';
+    renderDateCalculator();
+    return;
+  }
+
+  if (pageId === 'schedule-assistant') {
+    currentPath.textContent = '便利ツール ＞ 得意先スケジュール支援';
+    statusBadge.textContent = 'ツール';
+    statusBadge.className = 'status-badge status-sales-approved';
+    renderScheduleAssistant();
     return;
   }
 
@@ -288,7 +330,11 @@ function getSalesPageTitle(pageId) {
     'ch4-svc': 'サービス・コンサル',
     'ch4-fat': '脂肪酸の機能使い分け',
     'appendix': '業界用語・辞書',
-    'app-pack': '荷姿・物流・単位'
+    'app-pack': '荷姿・物流・単位',
+    'ch5': '第5章 バックオフィス関連',
+    'ch5-car': '総務：社用車トラブル・事故対応',
+    'ch5-hr': '人事：貸与物品借用書の申請',
+    'ch5-acct': '経理：準備中'
   };
   return titles[pageId] || pageId;
 }
@@ -505,6 +551,14 @@ function bindInteractiveElements() {
       item.classList.toggle('open');
     });
   });
+
+  // 4. Screen Preview Triggers
+  document.querySelectorAll('.preview-trigger').forEach(trigger => {
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openPreviewModal(trigger.dataset.previewType, trigger.dataset.previewDetail);
+    });
+  });
 }
 
 // Custom tabs switcher helper
@@ -622,10 +676,10 @@ function getOverallChecklistStats() {
 }
 
 function getQuizProgressStats() {
-  let total = SALES_QUIZ.length;
+  let total = ALL_QUIZZES.length;
   let completed = 0;
   
-  SALES_QUIZ.forEach(ch => {
+  ALL_QUIZZES.forEach(ch => {
     const sc = quizState.chapterScores[ch.id];
     if (sc && sc.best === ch.questions.length) {
       completed++;
@@ -866,6 +920,22 @@ function renderPortalHome() {
         <span class="mini-card-badge tag-system">業務</span>
       </div>
     </div>
+
+    <h3 class="portal-section-title">🛠️ 実務便利ツール</h3>
+    <div class="mini-card-grid">
+      <div class="mini-card" data-target="date-calculator" style="background: linear-gradient(135deg, rgba(30,58,138,0.06), rgba(59,130,246,0.04)); border: 1px solid rgba(59,130,246,0.2);">
+        <div class="mini-card-icon">🗓️</div>
+        <div class="mini-card-title">営業日・デマレージ計算</div>
+        <div class="mini-card-desc">日本の祝日対応。デマレージ期間の起算日計算に。</div>
+        <span class="mini-card-badge" style="background:var(--accent-blue); color:#fff;">ツール</span>
+      </div>
+      <div class="mini-card" data-target="schedule-assistant" style="background: linear-gradient(135deg, rgba(5,150,105,0.06), rgba(16,185,129,0.04)); border: 1px solid rgba(5,150,105,0.2);">
+        <div class="mini-card-icon">📊</div>
+        <div class="mini-card-title">得意先スケジュール支援</div>
+        <div class="mini-card-desc">ExcelからコピペしてETA基準の植検日を自動推算。</div>
+        <span class="mini-card-badge" style="background:var(--accent-green); color:#fff;">ツール</span>
+      </div>
+    </div>
   `;
 
   // Bind click listeners dynamically for all mini-cards
@@ -882,7 +952,7 @@ function renderPortalHome() {
 
 function renderQuizDashboard() {
   let completedCount = 0;
-  SALES_QUIZ.forEach(ch => {
+  ALL_QUIZZES.forEach(ch => {
     const sc = quizState.chapterScores[ch.id];
     if (sc && sc.best === ch.questions.length) {
       completedCount++;
@@ -902,8 +972,8 @@ function renderQuizDashboard() {
 
   contentArea.innerHTML = `
     <div class="header-quiz">
-      <h1>🐄 カスケディア営業力チェック</h1>
-      <p>マニュアルの理解度をゲーム感覚でテストして、エース営業を目指そう！</p>
+      <h1>🎓 カスケディア・ナレッジクイズ</h1>
+      <p>営業・業務マニュアルの理解度をゲーム感覚でテストして、スキルアップを目指そう！</p>
     </div>
 
     <div class="stats-bar" style="margin-bottom: 24px;">
@@ -921,11 +991,28 @@ function renderQuizDashboard() {
 
     <!-- Screen Home -->
     <div class="quiz-screen active" id="scrHome">
-      <h2 style="font-size:16px; font-weight:700; margin-bottom:4px;">📚 チャプターを選択</h2>
-      <p style="font-size:12px; color:var(--text-muted); margin-bottom: 12px;">各章をクリアしてXPを獲得し、ランクを上げよう！</p>
-      
-      <div class="ch-grid" id="chGrid"></div>
-      
+      <p style="font-size:12px; color:var(--text-muted); margin-bottom: 16px;">各章をクリアしてXPを獲得し、ランクを上げよう！</p>
+
+      <!-- 営業部セクション -->
+      <div class="quiz-dept-section">
+        <div class="quiz-dept-header quiz-dept-header--sales">
+          <span class="quiz-dept-icon">👑</span>
+          <span class="quiz-dept-title">営業部クイズ</span>
+          <span class="quiz-dept-badge">Sales</span>
+        </div>
+        <div class="ch-grid" id="chGridSales"></div>
+      </div>
+
+      <!-- 業務部セクション -->
+      <div class="quiz-dept-section" style="margin-top: 28px;">
+        <div class="quiz-dept-header quiz-dept-header--ops">
+          <span class="quiz-dept-icon">⚙️</span>
+          <span class="quiz-dept-title">業務部クイズ</span>
+          <span class="quiz-dept-badge">Operations</span>
+        </div>
+        <div class="ch-grid" id="chGridOps"></div>
+      </div>
+
       <div class="btn-row" style="margin-top:28px">
         <button class="btn btn-secondary" id="btnShowAchievements">🏆 解除実績</button>
         <button class="btn btn-primary" id="btnRandomQuiz">🎲 ランダム10問</button>
@@ -1007,18 +1094,23 @@ function showQuizScreen(screenId) {
 }
 
 function renderChaptersList() {
-  const g = document.getElementById('chGrid');
-  if(!g) return;
-  g.innerHTML = '';
-  
-  SALES_QUIZ.forEach((ch) => {
+  const salesGrid = document.getElementById('chGridSales');
+  const opsGrid = document.getElementById('chGridOps');
+  if (!salesGrid || !opsGrid) return;
+  salesGrid.innerHTML = '';
+  opsGrid.innerHTML = '';
+
+  const salesQuizzes = (window.SALES_QUIZ || []);
+  const opsQuizzes   = (window.OPS_QUIZ || []);
+
+  function buildCard(ch, grid) {
     const sc = quizState.chapterScores[ch.id];
     const best = sc ? sc.best : 0;
     const total = ch.questions.length;
     const pct = sc ? Math.round(sc.best / total * 100) : 0;
     const stars = best === total ? '⭐⭐⭐' : best >= total * 0.7 ? '⭐⭐' : best >= total * 0.4 ? '⭐' : '☆☆☆';
     const completed = best === total;
-    
+
     const d = document.createElement('div');
     d.className = 'ch-card' + (completed ? ' completed' : '');
     d.innerHTML = `
@@ -1029,13 +1121,16 @@ function renderChaptersList() {
       <div class="progress-mini"><div style="width:${pct}%"></div></div>
     `;
     d.onclick = () => openQuizModal(ch.id);
-    g.appendChild(d);
-  });
+    grid.appendChild(d);
+  }
+
+  salesQuizzes.forEach(ch => buildCard(ch, salesGrid));
+  opsQuizzes.forEach(ch => buildCard(ch, opsGrid));
 }
 
 function openQuizModal(chId) {
   pendingChId = chId;
-  const ch = SALES_QUIZ.find(c => c.id === chId);
+  const ch = ALL_QUIZZES.find(c => c.id === chId);
   if (!ch) return;
   
   document.getElementById('modalQuizTitle').textContent = `${ch.emoji} ${ch.title}`;
@@ -1046,7 +1141,11 @@ function openQuizModal(chId) {
   const previewBtn = document.getElementById('btnPreviewManual');
   previewBtn.onclick = () => {
     closeModal();
-    navigateTo(chId); // Direct link to corresponding sales manual chapter
+    let targetPage = chId;
+    if (chId === 'ops-ch1') targetPage = 'imp-buy';
+    else if (chId === 'ops-ch2') targetPage = 'warehouse';
+    else if (chId === 'ops-ch3') targetPage = 'returns';
+    navigateTo(targetPage); // Direct link to corresponding manual page
   };
 
   const startBtn = document.getElementById('btnStartQuiz');
@@ -1064,7 +1163,7 @@ function closeModal() {
 }
 
 function startChapter(chId) {
-  const ch = SALES_QUIZ.find(c => c.id === chId);
+  const ch = ALL_QUIZZES.find(c => c.id === chId);
   if (!ch) return;
   
   curQuiz = {
@@ -1085,7 +1184,7 @@ function startChapter(chId) {
 
 function startRandomQuiz() {
   let all = [];
-  SALES_QUIZ.forEach(ch => {
+  ALL_QUIZZES.forEach(ch => {
     ch.questions.forEach(q => {
       all.push({ ...q, _ch: ch.title });
     });
@@ -1287,7 +1386,7 @@ function finishQuiz() {
 
     // Verify all chapters cleared
     let allCleared = true;
-    SALES_QUIZ.forEach(ch => {
+    ALL_QUIZZES.forEach(ch => {
       const score = quizState.chapterScores[ch.id];
       if(!score || score.best < ch.questions.length * 0.4) {
         allCleared = false;
@@ -1316,7 +1415,7 @@ function finishQuiz() {
   // Populate Skill Growth card
   const rVision = document.getElementById('rVision');
   const rVisionText = document.getElementById('rVisionText');
-  const chInfo = SALES_QUIZ.find(c => c.id === curQuiz.chId);
+  const chInfo = ALL_QUIZZES.find(c => c.id === curQuiz.chId);
   
   if (chInfo && curCorrect >= total * 0.6) {
     rVision.classList.add('show');
@@ -2114,3 +2213,897 @@ function injectSalesDiagrams(pageId) {
     }
   }
 }
+
+// =========================================================================
+//   日本の祝日判定ロジック ＆ 各種実務便利ツール（日付計算・スケジュール支援）
+// =========================================================================
+
+// 2023年〜2027年の日本の祝日（振替休日含む）を動的算出する関数
+function getJapanHolidays(year) {
+  const holidays = {};
+  function add(month, day, name) {
+    const mStr = String(month).padStart(2, '0');
+    const dStr = String(day).padStart(2, '0');
+    holidays[`${year}-${mStr}-${dStr}`] = name;
+  }
+  
+  // 1. 固定祝日
+  add(1, 1, "元日");
+  add(2, 11, "建国記念の日");
+  add(2, 23, "天皇誕生日");
+  add(4, 29, "昭和の日");
+  add(5, 3, "憲法記念日");
+  add(5, 4, "みどりの日");
+  add(5, 5, "こどもの日");
+  add(8, 11, "山の日");
+  add(11, 3, "文化の日");
+  add(11, 23, "勤労感謝の日");
+
+  // 2. ハッピーマンデー（1月第2月曜、7月第3月曜、10月第2月曜、9月第3月曜）
+  function getHappyMonday(month, nth) {
+    const firstDay = new Date(year, month - 1, 1).getDay();
+    let firstMondayDay = 1;
+    if (firstDay !== 1) {
+      firstMondayDay = 1 + (8 - firstDay) % 7;
+    }
+    return firstMondayDay + (nth - 1) * 7;
+  }
+  add(1, getHappyMonday(1, 2), "成人の日");
+  add(7, getHappyMonday(7, 3), "海の日");
+  add(10, getHappyMonday(10, 2), "スポーツの日");
+  add(9, getHappyMonday(9, 3), "敬老の日");
+
+  // 3. 春分・秋分の日（天文近似計算値）
+  const vernal = Math.floor(20.8431 + 0.242194 * (year - 1980) - Math.floor((year - 1980) / 4));
+  add(3, vernal, "春分の日");
+
+  const autumnal = Math.floor(23.2488 + 0.242194 * (year - 1980) - Math.floor((year - 1980) / 4));
+  add(9, autumnal, "秋分の日");
+
+  // 4. 振替休日（祝日が日曜の場合、翌日以降の祝日でない日を休日とする）
+  const baseKeys = Object.keys(holidays);
+  baseKeys.forEach(dateStr => {
+    const [y, m, d] = dateStr.split('-').map(Number);
+    const dateObj = new Date(y, m - 1, d);
+    if (dateObj.getDay() === 0) { // 日曜日
+      let checkDate = new Date(y, m - 1, d + 1);
+      let checkStr = `${checkDate.getFullYear()}-${String(checkDate.getMonth() + 1).padStart(2, '0')}-${String(checkDate.getDate()).padStart(2, '0')}`;
+      while (holidays[checkStr]) {
+        checkDate.setDate(checkDate.getDate() + 1);
+        checkStr = `${checkDate.getFullYear()}-${String(checkDate.getMonth() + 1).padStart(2, '0')}-${String(checkDate.getDate()).padStart(2, '0')}`;
+      }
+      holidays[checkStr] = `振替休日 (${holidays[dateStr]}の振替)`;
+    }
+  });
+
+  // 5. 国民の休日（祝日と祝日に挟まれた平日を休日とする）
+  const finalKeys = Object.keys(holidays).sort();
+  for (let i = 0; i < finalKeys.length - 1; i++) {
+    const d1 = new Date(finalKeys[i]);
+    const d2 = new Date(finalKeys[i+1]);
+    const diffDays = Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
+    if (diffDays === 2) {
+      const sandwiched = new Date(d1);
+      sandwiched.setDate(sandwiched.getDate() + 1);
+      if (sandwiched.getDay() !== 0) { // 日曜でなければ
+        const sandStr = `${sandwiched.getFullYear()}-${String(sandwiched.getMonth() + 1).padStart(2, '0')}-${String(sandwiched.getDate()).padStart(2, '0')}`;
+        if (!holidays[sandStr]) holidays[sandStr] = "国民の休日";
+      }
+    }
+  }
+
+  return holidays;
+}
+
+// 営業日・カレンダー日の加算計算関数
+function calculateBusinessDays(startDateStr, days, isBusinessOnly, includeStart) {
+  const startD = new Date(startDateStr);
+  const startYear = startD.getFullYear();
+  
+  // 必要な範囲の祝日カレンダーを用意（年またぎ対応として3カ年分取得）
+  const holidays = {
+    ...getJapanHolidays(startYear - 1),
+    ...getJapanHolidays(startYear),
+    ...getJapanHolidays(startYear + 1)
+  };
+
+  let currentDate = new Date(startDateStr);
+  let daysCounted = 0;
+  const skipped = [];
+  let isFirst = true;
+
+  while (daysCounted < days) {
+    if (!isFirst || !includeStart) {
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    isFirst = false;
+
+    const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+    const dayOfWeek = currentDate.getDay(); // 0=Sun, 6=Sat
+
+    const isHoliday = holidays[dateStr];
+    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+
+    if (isBusinessOnly && (isWeekend || isHoliday)) {
+      const type = dayOfWeek === 0 ? "日曜日" : dayOfWeek === 6 ? "土曜日" : isHoliday;
+      skipped.push(`${dateStr} (${type})`);
+    } else {
+      daysCounted++;
+    }
+  }
+
+  const resultStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+  return {
+    resultDateStr: resultStr,
+    skipped
+  };
+}
+
+// -------------------------------------------------------------------------
+//  1. 日付・デマレージ計算ツールの描画 & イベント処理
+// -------------------------------------------------------------------------
+function renderDateCalculator() {
+  contentArea.innerHTML = `
+    <div class="page-hero" style="padding: 24px; margin-bottom: 24px;">
+      <h1 class="page-title">🗓️ 営業日・デマレージ日数計算機</h1>
+      <p class="page-subtitle">日本の祝日（振替休日含む）に対応し、実務におけるデマレージ（超過保管料）等の日数計算を正確に行います。</p>
+    </div>
+
+    <div class="tool-grid">
+      <div class="tool-card">
+        <h3>⚡ 計算条件の指定</h3>
+        <div class="tool-form">
+          <div class="tool-group">
+            <label for="calcStartDate">起算日（開始日）</label>
+            <input type="date" id="calcStartDate" value="${new Date().toISOString().split('T')[0]}">
+          </div>
+          <div class="tool-group">
+            <label for="calcDays">加算日数（デマレージ期間等）</label>
+            <input type="number" id="calcDays" value="10" min="1" max="999">
+          </div>
+          <div class="tool-group">
+            <label for="calcMode">カウント方法</label>
+            <select id="calcMode">
+              <option value="business" selected>営業日のみカウント（土日・日本の祝日を除外）</option>
+              <option value="calendar">カレンダー日カウント（暦通り全てカウント）</option>
+            </select>
+          </div>
+          <label class="tool-checkbox-group">
+            <input type="checkbox" id="calcIncludeStart" checked>
+            <span>起算日（開始日）を1日目としてカウントに含める</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <h3>🎯 計算結果</h3>
+        <div class="result-box">
+          <div class="result-lbl" id="resultLabelText">計算された期日（荷渡し・デマレージ限界日）</div>
+          <div class="result-date" id="resultDateText">YYYY年MM月DD日(曜)</div>
+          <div class="result-lbl" id="resultSummaryText">営業日10日間を加算</div>
+        </div>
+
+        <div class="result-details">
+          <h4>🚫 スキップ（除外）された週末・祝日一覧</h4>
+          <ul class="skipped-list" id="skippedList">
+            <li>除外日はありません。</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="tool-card" style="margin-top: 24px;">
+      <h3>📅 計算月のカレンダープレビュー</h3>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
+        <span style="display:inline-block; width:12px; height:12px; background:rgba(37,99,235,0.12); border-radius:3px; vertical-align:middle;"></span> カウント対象
+        &nbsp;&nbsp;
+        <span style="display:inline-block; width:12px; height:12px; background:#ef4444; opacity:0.3; border-radius:3px; vertical-align:middle;"></span> 土日・祝日（スキップ）
+        &nbsp;&nbsp;
+        <span style="display:inline-block; width:12px; height:12px; background:var(--accent-blue); border-radius:3px; vertical-align:middle;"></span> 計算結果日
+      </p>
+      <div class="calendar-visualizer" id="calendarContainer"></div>
+    </div>
+  `;
+
+  const startDateInput = document.getElementById('calcStartDate');
+  const daysInput = document.getElementById('calcDays');
+  const modeSelect = document.getElementById('calcMode');
+  const includeStartCheck = document.getElementById('calcIncludeStart');
+
+  function updateCalculation() {
+    const startVal = startDateInput.value;
+    const daysVal = parseInt(daysInput.value) || 0;
+    const isBusiness = modeSelect.value === 'business';
+    const includeStart = includeStartCheck.checked;
+
+    if (!startVal || daysVal <= 0) return;
+
+    // 計算を実行
+    const calcResult = calculateBusinessDays(startVal, daysVal, isBusiness, includeStart);
+    
+    // 日本語曜日表示
+    const targetDate = new Date(calcResult.resultDateStr);
+    const dayNames = ["日", "月", "火", "水", "木", "金", "土"];
+    const dayName = dayNames[targetDate.getDay()];
+    
+    document.getElementById('resultDateText').textContent = 
+      `${targetDate.getFullYear()}年${targetDate.getMonth() + 1}月${targetDate.getDate()}日 (${dayName})`;
+    
+    document.getElementById('resultSummaryText').textContent = 
+      `${isBusiness ? '営業日' : 'カレンダー日'} ${daysVal}日間を${includeStart ? '起算日を含めて' : '翌日から'}加算`;
+
+    // 除外リストの描画
+    const list = document.getElementById('skippedList');
+    list.innerHTML = '';
+    if (calcResult.skipped.length === 0) {
+      list.innerHTML = '<li>スキップされた曜日はありません。</li>';
+    } else {
+      calcResult.skipped.forEach(skip => {
+        const li = document.createElement('li');
+        li.textContent = skip.replace(/-/g, '/');
+        list.appendChild(li);
+      });
+    }
+
+    // カレンダーの描画
+    const calContainer = document.getElementById('calendarContainer');
+    const startYear = new Date(startVal).getFullYear();
+    const holidays = {
+      ...getJapanHolidays(startYear - 1),
+      ...getJapanHolidays(startYear),
+      ...getJapanHolidays(startYear + 1)
+    };
+    drawCalendarVisualizer(calContainer, startVal, calcResult.resultDateStr, isBusiness, includeStart, holidays);
+  }
+
+  // イベントリスナーの登録
+  startDateInput.addEventListener('input', updateCalculation);
+  daysInput.addEventListener('input', updateCalculation);
+  modeSelect.addEventListener('change', updateCalculation);
+  includeStartCheck.addEventListener('change', updateCalculation);
+
+  // 初期計算
+  updateCalculation();
+}
+
+function drawCalendarVisualizer(container, startDateStr, targetDateStr, isBusinessOnly, includeStart, holidays) {
+  container.innerHTML = '';
+  
+  const targetDate = new Date(targetDateStr);
+  const year = targetDate.getFullYear();
+  const month = targetDate.getMonth();
+  
+  const headers = ['日', '月', '火', '水', '木', '金', '土'];
+  headers.forEach(h => {
+    const el = document.createElement('div');
+    el.className = 'cal-day-name';
+    el.textContent = h;
+    container.appendChild(el);
+  });
+  
+  const firstDayIndex = new Date(year, month, 1).getDay();
+  const totalDays = new Date(year, month + 1, 0).getDate();
+  
+  for (let i = 0; i < firstDayIndex; i++) {
+    const el = document.createElement('div');
+    el.className = 'cal-day-cell other-month';
+    container.appendChild(el);
+  }
+  
+  const startMs = new Date(startDateStr).getTime();
+  const targetMs = new Date(targetDateStr).getTime();
+  
+  for (let day = 1; day <= totalDays; day++) {
+    const cellDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const cellDate = new Date(year, month, day);
+    const cellMs = cellDate.getTime();
+    const dayOfWeek = cellDate.getDay();
+    const isHoliday = holidays[cellDateStr];
+    
+    const cell = document.createElement('div');
+    cell.className = 'cal-day-cell';
+    cell.textContent = day;
+    
+    if (dayOfWeek === 6) cell.classList.add('weekend-sat');
+    if (dayOfWeek === 0) cell.classList.add('weekend-sun');
+    if (isHoliday) cell.classList.add('holiday');
+    if (isHoliday) cell.title = isHoliday;
+    
+    if (cellDateStr === targetDateStr) {
+      cell.classList.add('target');
+      cell.title = "計算結果日";
+    } else if (cellMs >= startMs && cellMs <= targetMs) {
+      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+      if (isBusinessOnly && (isWeekend || isHoliday)) {
+        cell.classList.add('skipped');
+      } else {
+        cell.classList.add('counted');
+      }
+    }
+    
+    container.appendChild(cell);
+  }
+}
+
+// -------------------------------------------------------------------------
+//  2. 得意先スケジュール表 更新支援ツールの描画 & Excelコピペ操作ロジック
+// -------------------------------------------------------------------------
+let scheduleDataRows = [];
+
+function renderScheduleAssistant() {
+  contentArea.innerHTML = `
+    <div class="page-hero" style="padding: 24px; margin-bottom: 24px;">
+      <h1 class="page-title">📊 得意先船積スケジュール表 更新アシスタント</h1>
+      <p class="page-subtitle">Excelのスケジュール表をコピー＆ペーストして、ETA（入港日）に基づく植検日・荷渡し日の自動推定、日付誤入力のダブルチェックを自動化します。</p>
+    </div>
+
+    <div class="tool-card" style="margin-bottom: 20px;">
+      <h3>📥 スケジュールデータの貼り付け</h3>
+      <p style="font-size:12px; color:var(--text-muted); margin-top:0; margin-bottom:12px;">
+        Excelの「契約番号」から「サーチャージ」までの行（ヘッダー行を含むと自動列判定します）をコピーし、下の枠に貼り付け（Ctrl+V / Cmd+V）て「読み込む」をクリックしてください。
+      </p>
+      <textarea class="input-paste-area" id="pasteArea" placeholder="ここにExcelからコピーしたデータを貼り付けてください..."></textarea>
+      
+      <div class="btn-row" style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+        <div>
+          <button class="btn btn-secondary" id="btnLoadSample" style="border-color:var(--accent-blue); color:var(--accent-blue);">岩崎清七商店様の見本データを読込</button>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn btn-primary" id="btnLoadPaste">📋 データを読み込んで編集</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tool-card" id="assistantGridCard" style="display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+        <h3 style="margin:0;">📝 スケジュール表データ編集グリッド</h3>
+        <div style="display:flex; gap:10px;">
+          <button class="btn btn-secondary" id="btnApplyAllProposed" style="border-color:var(--accent-green); color:var(--accent-green); padding:6px 14px; font-size:12px;">⚡ 全ての推奨日付を自動適用</button>
+          <button class="btn btn-primary" id="btnExportTsv" style="background:linear-gradient(135deg,var(--accent-green),#107c41); border-color:#107c41; color:#fff; padding:6px 16px; font-size:12px;">🖨️ 編集結果をExcel用形式でコピー</button>
+        </div>
+      </div>
+
+      <div class="alert alert-note" style="margin-bottom:16px; font-size:12px; padding:10px 16px;">
+        💡 <b>日付自動計算機能:</b> ETAを変更すると、翌営業日の「推奨植検日/荷渡し日」を自動計算します。Excelデータの値と食い違う場合は黄色で警告表示されます。<br>
+        🚫 <b>日付エラーチェック:</b> ETAがETD（出港予定日）より過去になっている箇所は、年の入力ミス等の危険性があるため赤くハイライトされます。
+      </div>
+
+      <div class="assistant-grid-wrapper">
+        <table class="assistant-table" id="assistantTable">
+          <!-- JSで動的にテーブル描画 -->
+        </table>
+      </div>
+    </div>
+  `;
+
+  // イベント登録
+  document.getElementById('btnLoadSample').addEventListener('click', loadSampleScheduleData);
+  document.getElementById('btnLoadPaste').addEventListener('click', parsePastedScheduleData);
+  
+  // 編集結果TSVエクスポート
+  document.getElementById('btnExportTsv').addEventListener('click', exportGridToClipboard);
+  document.getElementById('btnApplyAllProposed').addEventListener('click', applyAllProposedDates);
+}
+
+// サンプルデータのロード
+function loadSampleScheduleData() {
+  const sampleData = `契約番号	シッパー	商品	本数	コンテナ	荷姿	グレード/スタック＃	揚港	船名	ETD	ETA	植検日	荷渡し日	単価	サーチャージ
+VIT0013	Viterra/Valley Hay	3	40FT	500KG	DRO MC 	東京	(WW) WESTWOOD VICTORIA	2023-09-09	2023-09-30	2023-10-02	2023-10-02	82000	
+VIT0014	Viterra/Valley Hay	2	20FT	Bulk	DRO	東京	(WW) WESTWOOD VICTORIA	2023-09-09	2023-09-30	2023-10-02	2023-10-02	69600	
+VIT0015	Viterra/Valley Hay	4	40FT	500KG	DRO MC 	東京	(WW) RAINIER	2023-10-03	2023-10-25	2023-10-26	2023-10-26	84400	
+VIT0016	Viterra/Valley Hay	1	20FT	Bulk	DRO	東京	(HYD) YM TRIUMPH	2023-11-06	2023-11-19	2023-11-20	2023-11-20	69200	
+VIT0021	Viterra/Valley Hay	2	40FT	500KG	DRO MC	東京	(ONE) ONE MANEUVER 	2023-12-30	2024-01-14	2024-01-16	2024-01-16	83900	
+VIT0022	Viterra/Valley Hay	3	40FT	500KG	DRO MC 	東京	(WST) TONGA CHIEF	2023-12-19	2024-01-15	2024-01-15	2024-01-15	84300	
+VIT0028	Viterra/Valley Hay	2	40FT	500KG	DRO MC 	東京	(HND) SEASPAN BENEFACTOR	2023-12-30	2023-01-17	2024-01-18	2024-01-18	85600	
+VIT0023	Viterra/Valley Hay	1	20FT	バラ	DRO 	東京	(WST) PORT VILA CHIEF	2024-01-24	2024-02-28	2024-02-29	2024-02-29	70900	
+VIT0024	Viterra/Valley Hay	3	40FT	500KG	DRO MC 	東京	(WST) WW RAINIER	2024-01-25	2024-02-17	2024-02-19	2024-02-19	86600	
+VIT0024A	Viterra/Valley Hay	1	20FT	バラ	DRO 	東京	(WST) TONGA CHIEF	2024-01-31	2024-02-28	2024-02-29	2024-02-29	73000	
+VIT0025	Viterra/Valley Hay	2	40FT	500KG	DRO MC 	東京	(WST) GSL MAREN	2024-02-13	2024-03-13	2024-03-14	2024-03-14	84700	
+VIT0026	Viterra/Valley Hay	3	40FT	500KG	DRO MC 	東京	(WST) VANUATU CHIEF	2024-02-27	2024-03-26	2024-03-27	2024-03-27	87000	
+VIT0027	Viterra/Valley Hay	4	40FT	500KG	DRO MC 	東京	(WST) TONGA CHIEF	2024-03-19	2024-04-14	2024-04-15	2024-04-15	89500	
+VIT0029	Viterra/Valley Hay	4	40FT	500KG	DRO MC 	東京	(WST) VANUATU CHIEF	2024-04-14	2024-05-06	2024-05-07	2024-05-07	88900	
+VIT0030	Viterra/Valley Hay	4	40FT	500KG	DRO MC 	東京	(WST) TONGA CHIEF	2024-04-30	2024-05-25	2024-05-27	2024-05-27	88800	
+VIT0031	Viterra/Valley Hay	4	40FT	500KG	DRO MC 	東京	(WST) WW RAINER	2024-05-13	2024-06-03	2024-06-05	2024-06-05	91200	
+VIT0032	Viterra/Valley Hay	4	40FT	500KG	DRO MC 	東京	(SWS) WESTWOOD VICTORIA	2024-06-12	2024-07-02	2024-07-03	2024-07-03	87400	
+VIT0040	Viterra/Valley Hay	1	40FT	25KG	TRO SC	東京	(HMM) SEASPAN YANGTZE 	2024-07-09	2024-07-20	2024-07-23	2024-07-23	79300	
+VIT0033	Viterra/Valley Hay	4	40FT	500KG	DRO MC 	東京	(SWS) MOTUKEA CHIEF	2024-07-02	2024-07-28	2024-07-29	2024-07-29	87400	`;
+
+  document.getElementById('pasteArea').value = sampleData.trim();
+  showGlobalToast('📥', '岩崎清七商店様の見本データを読み込み枠にセットしました');
+  parsePastedScheduleData();
+}
+
+// コピペテキストのパース
+function parsePastedScheduleData() {
+  const txt = document.getElementById('pasteArea').value.trim();
+  if (!txt) {
+    alert('貼り付けエリアにテキストを入力してください。');
+    return;
+  }
+
+  const lines = txt.split('\n');
+  if (lines.length < 2) {
+    alert('データが正しくありません。ヘッダー行とデータ行を含めてコピーしてください。');
+    return;
+  }
+
+  // 1行目をヘッダーとする
+  const headers = lines[0].split('\t').map(h => h.trim());
+  
+  // 各列のインデックスの自動マッピング
+  const colMap = {
+    contract: headers.findIndex(h => h.includes('契約番号')),
+    shipper: headers.findIndex(h => h.includes('シッパー')),
+    product: headers.findIndex(h => h.includes('商品')),
+    qty: headers.findIndex(h => h.includes('本数')),
+    container: headers.findIndex(h => h.includes('コンテナ')),
+    packing: headers.findIndex(h => h.includes('荷姿')),
+    grade: headers.findIndex(h => h.includes('グレード')),
+    port: headers.findIndex(h => h.includes('揚港')),
+    vessel: headers.findIndex(h => h.includes('船名')),
+    etd: headers.findIndex(h => h.includes('ETD')),
+    eta: headers.findIndex(h => h.includes('ETA')),
+    inspec: headers.findIndex(h => h.includes('植検')),
+    deliv: headers.findIndex(h => h.includes('荷渡し') || h.includes('荷渡')),
+    price: headers.findIndex(h => h.includes('単価')),
+    surcharge: headers.findIndex(h => h.includes('サーチャージ'))
+  };
+
+  // 最低限「契約番号」「ETA」が存在するかチェック
+  if (colMap.contract === -1 || colMap.eta === -1) {
+    alert('「契約番号」または「ETA」の列が見つかりません。Excelのヘッダー列がコピーされているか確認してください。');
+    return;
+  }
+
+  scheduleDataRows = [];
+
+  for (let i = 1; i < lines.length; i++) {
+    const cells = lines[i].split('\t').map(c => c.trim());
+    if (cells.length < 2 || !cells[colMap.contract]) continue;
+
+    function getVal(idx) {
+      return idx !== -1 ? cells[idx] || '' : '';
+    }
+
+    scheduleDataRows.push({
+      contract: getVal(colMap.contract),
+      shipper: getVal(colMap.shipper),
+      product: getVal(colMap.product),
+      qty: getVal(colMap.qty),
+      container: getVal(colMap.container),
+      packing: getVal(colMap.packing),
+      grade: getVal(colMap.grade),
+      port: getVal(colMap.port),
+      vessel: getVal(colMap.vessel),
+      etd: getVal(colMap.etd),
+      eta: getVal(colMap.eta),
+      inspec: getVal(colMap.inspec),
+      deliv: getVal(colMap.deliv),
+      price: getVal(colMap.price),
+      surcharge: getVal(colMap.surcharge)
+    });
+  }
+
+  // グリッド表示
+  renderGridTable();
+  document.getElementById('assistantGridCard').style.display = 'block';
+  
+  // グリッドへスクロール
+  document.getElementById('assistantGridCard').scrollIntoView({ behavior: 'smooth' });
+  showGlobalToast('⚙️', `${scheduleDataRows.length}件のデータを読み込みました`);
+}
+
+// スケジュールアシスタントテーブルのレンダリング
+function renderGridTable() {
+  const table = document.getElementById('assistantTable');
+  table.innerHTML = '';
+
+  // ヘッダー行作成
+  const thead = document.createElement('thead');
+  thead.innerHTML = `
+    <tr>
+      <th>契約番号</th>
+      <th>船名</th>
+      <th>ETD (出港日)</th>
+      <th>ETA (入港日)</th>
+      <th>現在の植検日</th>
+      <th>現在の荷渡し日</th>
+      <th>推奨 植検日/荷渡し</th>
+      <th>商品</th>
+      <th>単価</th>
+    </tr>
+  `;
+  table.appendChild(thead);
+
+  // データ行作成
+  const tbody = document.createElement('tbody');
+  
+  scheduleDataRows.forEach((row, idx) => {
+    const tr = document.createElement('tr');
+    tr.id = `row-${idx}`;
+
+    // ETA / ETDの整合性検証 (過去日付や typo の検証)
+    let isTypoError = false;
+    let typoMsg = '';
+    
+    if (row.eta && row.etd) {
+      const etdTime = new Date(row.etd).getTime();
+      const etaTime = new Date(row.eta).getTime();
+      if (!isNaN(etdTime) && !isNaN(etaTime)) {
+        if (etaTime < etdTime) {
+          // ETAが出港日より前になっている（年入力ミスなど）
+          isTypoError = true;
+          typoMsg = "ETAがETDより前です";
+        }
+      }
+    }
+
+    if (isTypoError) {
+      tr.classList.add('row-error-typo');
+    }
+
+    // 推奨日の計算 (ETAの翌営業日)
+    let proposedInspec = '';
+    if (row.eta && !isNaN(new Date(row.eta).getTime())) {
+      const calc = calculateBusinessDays(row.eta, 1, true, false); // ETAの翌営業日 (起算日含めず1営業日後)
+      proposedInspec = calc.resultDateStr;
+    }
+
+    // 値が推奨値と異なるか？ (手動入力のずれチェック)
+    const inspecMismatch = row.inspec && row.inspec !== proposedInspec;
+    const delivMismatch = row.deliv && row.deliv !== proposedInspec;
+
+    const typoAlertHtml = isTypoError ? `<span class="typo-tag-alert" title="${typoMsg}">⚠️ 年入力ミス懸念</span>` : '';
+    const inspecAlertHtml = inspecMismatch ? `<span class="date-badge-mismatch" title="Excel値と計算値が異なります">⚠️ 計算値(${proposedInspec})</span>` : `<span class="date-badge-calc">✓ 一致</span>`;
+
+    tr.innerHTML = `
+      <td><strong>${row.contract}</strong>${typoAlertHtml}</td>
+      <td>${row.vessel}</td>
+      <td>${row.etd}</td>
+      <td>
+        <input type="date" value="${row.eta}" onchange="updateRowEta(${idx}, this.value)" style="${isTypoError ? 'border-color:var(--accent-rose); background:rgba(224,36,36,0.05);' : ''}">
+      </td>
+      <td>
+        <input type="date" id="inspec-${idx}" value="${row.inspec}" onchange="updateRowInspec(${idx}, this.value)">
+      </td>
+      <td>
+        <input type="date" id="deliv-${idx}" value="${row.deliv}" onchange="updateRowDeliv(${idx}, this.value)">
+      </td>
+      <td style="vertical-align:middle; text-align:left;">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span style="font-weight:700; color:var(--accent-green);">${proposedInspec}</span>
+          <button class="aladdin-btn primary" onclick="applyProposedToRow(${idx}, '${proposedInspec}')" style="padding:2px 6px; font-size:10px;">適用</button>
+          ${inspecAlertHtml}
+        </div>
+      </td>
+      <td>${row.product} (${row.qty}本)</td>
+      <td>${row.price}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+  
+  table.appendChild(tbody);
+}
+
+// 個別行のETAが更新された時の処理
+window.updateRowEta = function(idx, val) {
+  scheduleDataRows[idx].eta = val;
+  // ETAの変更に伴って、植検日と荷渡し日を推奨日に初期更新（ユーザーの負担軽減）
+  if (val && !isNaN(new Date(val).getTime())) {
+    const calc = calculateBusinessDays(val, 1, true, false);
+    scheduleDataRows[idx].inspec = calc.resultDateStr;
+    scheduleDataRows[idx].deliv = calc.resultDateStr;
+  }
+  renderGridTable();
+};
+
+window.updateRowInspec = function(idx, val) {
+  scheduleDataRows[idx].inspec = val;
+};
+
+window.updateRowDeliv = function(idx, val) {
+  scheduleDataRows[idx].deliv = val;
+};
+
+// 行ごとに推奨日を適用する処理
+window.applyProposedToRow = function(idx, dateStr) {
+  scheduleDataRows[idx].inspec = dateStr;
+  scheduleDataRows[idx].deliv = dateStr;
+  renderGridTable();
+  showGlobalToast('⚡', `契約 ${scheduleDataRows[idx].contract} に対する推奨日を適用しました`);
+};
+
+// すべての行に推奨営業日を自動適用
+function applyAllProposedDates() {
+  if (confirm('すべてのレコードに対し、ETAから算出した推奨 植検日・荷渡し日（翌営業日換算）を自動適用します。よろしいですか？')) {
+    scheduleDataRows.forEach((row, idx) => {
+      if (row.eta && !isNaN(new Date(row.eta).getTime())) {
+        const calc = calculateBusinessDays(row.eta, 1, true, false);
+        row.inspec = calc.resultDateStr;
+        row.deliv = calc.resultDateStr;
+      }
+    });
+    renderGridTable();
+    showGlobalToast('⚡', 'すべてのレコードに推奨日程を自動適用しました');
+  }
+}
+
+// 編集済みデータをTSVでクリップボードに出力する
+function exportGridToClipboard() {
+  const pasteAreaVal = document.getElementById('pasteArea').value.trim();
+  const headers = pasteAreaVal.split('\n')[0].split('\t').map(h => h.trim());
+  
+  const colMap = {
+    contract: headers.findIndex(h => h.includes('契約番号')),
+    shipper: headers.findIndex(h => h.includes('シッパー')),
+    product: headers.findIndex(h => h.includes('商品')),
+    qty: headers.findIndex(h => h.includes('本数')),
+    container: headers.findIndex(h => h.includes('コンテナ')),
+    packing: headers.findIndex(h => h.includes('荷姿')),
+    grade: headers.findIndex(h => h.includes('グレード')),
+    port: headers.findIndex(h => h.includes('揚港')),
+    vessel: headers.findIndex(h => h.includes('船名')),
+    etd: headers.findIndex(h => h.includes('ETD')),
+    eta: headers.findIndex(h => h.includes('ETA')),
+    inspec: headers.findIndex(h => h.includes('植検')),
+    deliv: headers.findIndex(h => h.includes('荷渡し') || h.includes('荷渡')),
+    price: headers.findIndex(h => h.includes('単価')),
+    surcharge: headers.findIndex(h => h.includes('サーチャージ'))
+  };
+
+  // TSV文字列の組み立て
+  let tsv = headers.join('\t') + '\n';
+  
+  scheduleDataRows.forEach(row => {
+    const lineArr = new Array(headers.length).fill('');
+    
+    function setCell(idx, val) {
+      if (idx !== -1) lineArr[idx] = val;
+    }
+
+    setCell(colMap.contract, row.contract);
+    setCell(colMap.shipper, row.shipper);
+    setCell(colMap.product, row.product);
+    setCell(colMap.qty, row.qty);
+    setCell(colMap.container, row.container);
+    setCell(colMap.packing, row.packing);
+    setCell(colMap.grade, row.grade);
+    setCell(colMap.port, row.port);
+    setCell(colMap.vessel, row.vessel);
+    setCell(colMap.etd, row.etd);
+    setCell(colMap.eta, row.eta);
+    setCell(colMap.inspec, row.inspec);
+    setCell(colMap.deliv, row.deliv);
+    setCell(colMap.price, row.price);
+    setCell(colMap.surcharge, row.surcharge);
+    
+    tsv += lineArr.join('\t') + '\n';
+  });
+
+  navigator.clipboard.writeText(tsv.trim()).then(() => {
+    alert('編集後のスケジュール表データをExcel貼り付け用フォーマットでコピーしました！\nExcelを開いて、そのまま貼り付け（Ctrl+V / Cmd+V）してください。');
+    showGlobalToast('📋', 'クリップボードにコピーしました');
+  }).catch(err => {
+    console.error('Copy failed: ', err);
+    alert('クリップボードへのコピーに失敗しました。下のテキストエリアから手動でコピーしてください。\n\n' + tsv);
+  });
+}
+
+// -------------------------------------------------------------------------
+//  3. アラジン・Excel 画面見本プレビューモーダルの制御
+// -------------------------------------------------------------------------
+function openPreviewModal(type, detail) {
+  const modal = document.getElementById('previewModal');
+  const title = document.getElementById('previewModalTitle');
+  const content = document.getElementById('previewModalContent');
+  
+  if (!modal || !title || !content) return;
+  
+  title.textContent = type === 'aladdin' ? `🖥️ アラジンオフィス 操作見本: [${detail}]` : `📊 Excel 伝票・シート見本: [${detail}]`;
+  
+  let html = '';
+  
+  if (type === 'aladdin') {
+    html = `
+      <div class="mockup-aladdin">
+        <div class="aladdin-title-bar">
+          <span>アラジンオフィス - [${detail || '画面見本'}]</span>
+          <div class="aladdin-window-controls">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+        <div class="aladdin-menu-bar">
+          <span>ファイル(F)</span><span>編集(E)</span><span>表示(V)</span><span>設定(S)</span><span>ヘルプ(H)</span>
+        </div>
+        <div class="aladdin-toolbar">
+          <button class="aladdin-btn primary">💾 登録 (F12)</button>
+          <button class="aladdin-btn">🧹 クリア (F5)</button>
+          <button class="aladdin-btn">🗑️ 削除 (F9)</button>
+          <button class="aladdin-btn">🖨️ 印刷 (F8)</button>
+        </div>
+        <div class="aladdin-form-container">
+          <div class="aladdin-field highlight-field">
+            <label>処理区分</label>
+            <select disabled><option>新規登録</option></select>
+          </div>
+          <div class="aladdin-field">
+            <label>入力日付</label>
+            <input type="text" value="${new Date().toLocaleDateString('ja-JP')}" disabled>
+          </div>
+          <div class="aladdin-field highlight-field">
+            <label>伝票番号</label>
+            <input type="text" value="※登録時に自動採番" disabled style="font-style: italic; color:#64748b;">
+          </div>
+          <div class="aladdin-field highlight-field">
+            <label>得意先コード</label>
+            <input type="text" value="IWA001" disabled>
+          </div>
+          <div class="aladdin-field">
+            <label>得意先名</label>
+            <input type="text" value="株式会社岩崎清七商店" disabled>
+          </div>
+          <div class="aladdin-field">
+            <label>担当者コード</label>
+            <input type="text" value="M0438 (水谷)" disabled>
+          </div>
+        </div>
+        <div class="aladdin-grid-section">
+          <div class="aladdin-grid-title">📦 入力明細グリッド</div>
+          <table class="aladdin-table">
+            <thead>
+              <tr>
+                <th>行</th>
+                <th>商品コード</th>
+                <th>商品名</th>
+                <th>数量</th>
+                <th>単位</th>
+                <th>単価</th>
+                <th>倉庫コード</th>
+                <th>備考 / B/L No.</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="highlight-row">
+                <td>1</td>
+                <td>OAT-CAN-500K</td>
+                <td>カナダ産 燕麦（DRO MC）</td>
+                <td>3</td>
+                <td>本</td>
+                <td>82,000</td>
+                <td>WH-TKY-01 (東京)</td>
+                <td>B/L: VIT0013 紐付け</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>OAT-CAN-BLK</td>
+                <td>カナダ産 燕麦（Bulk）</td>
+                <td>2</td>
+                <td>本</td>
+                <td>69,600</td>
+                <td>WH-TKY-01 (東京)</td>
+                <td>B/L: VIT0014 紐付け</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 12px; line-height: 1.6;">
+        ※上記の画面は、アラジンオフィスにおける「${detail}」時の操作画面見本（シミュレーション）です。オレンジ色で強調された項目が実務上の重要な入力および確認箇所となります。
+      </div>
+    `;
+  } else if (type === 'excel') {
+    html = `
+      <div class="mockup-excel">
+        <div class="excel-header-ribbon">
+          <span>Excel - 岩崎清七商店様　スケジュール表.xlsx</span>
+        </div>
+        <div class="excel-tabs">
+          <span class="active">ホーム</span><span>挿入</span><span>数式</span><span>データ</span><span>校閲</span>
+        </div>
+        <div class="excel-formula-bar">
+          <span style="font-weight: 700; color:#107c41; margin-right: 8px;">fx</span>
+          <div class="excel-formula-box">=WORKDAY(J12, 1, 祝日リスト!A$1:A$20)</div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="excel-grid">
+            <thead>
+              <tr>
+                <th></th>
+                <th>A</th>
+                <th>B</th>
+                <th>C</th>
+                <th>D</th>
+                <th>E</th>
+                <th>F</th>
+                <th>G</th>
+                <th>H</th>
+                <th>I</th>
+                <th>J</th>
+                <th>K</th>
+                <th>L</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="excel-table-header">
+                <td class="excel-row-num">1</td>
+                <td colspan="12">株式会社岩崎清七商店　御中　成約・船積スケジュール一覧表</td>
+              </tr>
+              <tr class="excel-table-header-sub">
+                <td class="excel-row-num">9</td>
+                <td>契約番号</td>
+                <td>シッパー</td>
+                <td>商品</td>
+                <td>本数</td>
+                <td>コンテナ</td>
+                <td>荷姿</td>
+                <td>揚港</td>
+                <td>船名</td>
+                <td>ETD</td>
+                <td>ETA</td>
+                <td>植検日</td>
+                <td>荷渡し日</td>
+              </tr>
+              <tr>
+                <td class="excel-row-num">10</td>
+                <td>VIT0013</td>
+                <td>Viterra</td>
+                <td>燕麦（カナダ）</td>
+                <td>3</td>
+                <td>40FT</td>
+                <td>500KG</td>
+                <td>東京</td>
+                <td>WESTWOOD VICTORIA</td>
+                <td>2026-06-09</td>
+                <td>2026-06-20</td>
+                <td class="highlight-cell">2026-06-22</td>
+                <td class="highlight-cell">2026-06-22</td>
+              </tr>
+              <tr>
+                <td class="excel-row-num">11</td>
+                <td>VIT0014</td>
+                <td>Viterra</td>
+                <td>燕麦（カナダ）</td>
+                <td>2</td>
+                <td>20FT</td>
+                <td>Bulk</td>
+                <td>東京</td>
+                <td>WESTWOOD VICTORIA</td>
+                <td>2026-06-09</td>
+                <td>2026-06-20</td>
+                <td class="highlight-cell">2026-06-22</td>
+                <td class="highlight-cell">2026-06-22</td>
+              </tr>
+              <tr style="background:#fff2f2;">
+                <td class="excel-row-num">12</td>
+                <td>VIT0028</td>
+                <td>Viterra</td>
+                <td>燕麦（カナダ）</td>
+                <td>2</td>
+                <td>40FT</td>
+                <td>500KG</td>
+                <td>東京</td>
+                <td>SEASPAN BENEFACTOR</td>
+                <td>2026-06-09</td>
+                <td class="error-cell" style="color:#ef4444; font-weight:700;" title="年数の入力間違いの警告例">2025-06-20</td>
+                <td>2026-06-22</td>
+                <td>2026-06-22</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 12px; line-height: 1.6;">
+        ※上記のグリッドは、得意先スケジュールExcel（${detail}）のフォーマットおよびエラー警告の見本です。<br>
+        黄色いセルはETAから営業日計算で自動提案される日付、赤いセルはETAとETDの前後関係や年次誤りを検知した警告のシミュレーション例です。
+      </div>
+    `;
+  }
+  
+  content.innerHTML = html;
+  modal.classList.add('active');
+}
+
+function closePreviewModal() {
+  document.getElementById('previewModal').classList.remove('active');
+}
+

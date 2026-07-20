@@ -2467,6 +2467,16 @@
           <a class="nav-child" data-section="app-pack" onclick="navigateTo('app-pack')">荷姿ガイド</a>
         </div>
       </div>
+      <div class="nav-section">
+        <a class="nav-chapter" data-section="ch5" onclick="toggleChapter(this,'ch5-children')"><span
+            class="chapter-icon">💼</span>第5章 バックオフィス関連<span class="chapter-arrow">▶</span></a>
+        <div class="nav-children" id="ch5-children">
+          <a class="nav-child" data-section="ch5" onclick="navigateTo('ch5')">はじめに</a>
+          <a class="nav-child" data-section="ch5-car" onclick="navigateTo('ch5-car')">🚗 総務：社用車トラブル・事故対応</a>
+          <a class="nav-child" data-section="ch5-hr" onclick="navigateTo('ch5-hr')">📄 人事：貸与物品借用書の申請</a>
+          <a class="nav-child" data-section="ch5-acct" onclick="navigateTo('ch5-acct')">🪙 経理：準備中</a>
+        </div>
+      </div>
     </nav>
     <div class="sidebar-quiz-section">
       <a href="quiz.html" class="nav-quiz" target="_blank">
@@ -2530,6 +2540,10 @@
           <div class="card" onclick="navigateTo('appendix')"><span class="card-icon">📎</span>
             <div class="card-title">付録</div>
             <div class="card-desc">用語集・荷姿ガイドなどリファレンス集。</div><span class="card-arrow">→</span>
+          </div>
+          <div class="card" onclick="navigateTo('ch5')"><span class="card-icon">💼</span>
+            <div class="card-title">第5章 バックオフィス関連</div>
+            <div class="card-desc">総務・経理・人事関連の社内手続きガイドライン。</div><span class="card-arrow">→</span>
           </div>
         </div>
         <div class="callout tip">
@@ -6724,6 +6738,310 @@
     </div><!-- /content-area -->
   </main>
 
+      <div class="section" id="sec-ch5">
+<div class="section-hero">
+  <span class="hero-emoji">💼</span>
+  <h1>第5章 バックオフィス関連（総務・経理・人事）</h1>
+  <p class="hero-sub">営業活動を円滑に進めるための、社内手続き・申請・トラブル対応のガイドライン</p>
+</div>
+<h2><span class="h2-icon">📚</span> セクション一覧</h2>
+<div class="card-grid">
+  <div class="card" onclick="navigateTo('ch5-car')">
+    <span class="card-icon">🚗</span>
+    <div class="card-title">総務：社用車トラブル・事故対応</div>
+    <div class="card-desc">事故や故障時の緊急連絡先、対応フロー、車両事故報告書の提出方法。</div>
+    <span class="card-arrow">→</span>
+  </div>
+  <div class="card" onclick="navigateTo('ch5-hr')">
+    <span class="card-icon">📄</span>
+    <div class="card-title">人事：貸与物品借用書の申請</div>
+    <div class="card-desc">PCや携帯電話など、貸与備品の追加・変更・返却時のfreee申請手順。</div>
+    <span class="card-arrow">→</span>
+  </div>
+  <div class="card" onclick="navigateTo('ch5-acct')">
+    <span class="card-icon">🪙</span>
+    <div class="card-title">経理：準備中</div>
+    <div class="card-desc">経費精算、立替金申請、請求書発行などの手続き（順次公開）。</div>
+    <span class="card-arrow">→</span>
+  </div>
+</div>
+<div class="callout info">
+  <div class="callout-title">💡 バックオフィスとの連携</div>
+  <p style="margin:0;">
+    営業活動はバックオフィスの支えがあって成り立っています。トラブル発生時や備品が必要になった際は、放置せず速やかに所定の手続きを行いましょう。
+  </p>
+</div>
+      </div>
+
+      <div class="section" id="sec-ch5-car">
+<div class="section-hero">
+  <span class="hero-emoji">🚗</span>
+  <h1>総務：社用車トラブル・事故対応</h1>
+  <p class="hero-sub">万が一の事故や故障の際、冷静かつ迅速に対応するための手順と連絡先</p>
+</div>
+
+<h2><span class="h2-icon">⚠️</span> 交通事故が発生した場合の緊急手順</h2>
+<p>交通事故が発生した場合、物損事故や単独事故であっても、以下の手順で速やかに対応してください。</p>
+<div class="accordion">
+  <div class="accordion-item open">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>① 安全確保と救急要請</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p><strong>怪我人がいる場合は、最優先で救急車（119）を呼んでください。</strong></p>
+      <p>二次災害を防ぐため、他の交通への影響を避ける安全な場所へ車両を移動してください（可能な範囲で）。</p>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>② 警察（110）への連絡</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p><strong>事故の大小に関わらず、速やかに警察（110）へ通報してください。</strong>（物損事故・自損事故・単独事故の場合でも、後日の手続きや保険適用のために警察への連絡は必須です。）</p>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>③ リース会社・保険会社への連絡</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>ご自身の乗っている車両が「リース車」か「購入車」かを確認し、以下へ連絡してください。（リース車の場合、車内にトラブル対応資料が保管されています。）</p>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>対象・会社</th>
+              <th>窓口・連絡先</th>
+              <th>受付時間</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>トヨタレンタリース新埼玉</strong><br>（リース車両）</td>
+              <td>サポートダイヤル24：<br><strong>0800-7000729</strong>（無料）</td>
+              <td>24時間365日</td>
+            </tr>
+            <tr>
+              <td><strong>トヨタレンタリース福岡</strong><br>（リース車両）</td>
+              <td>ドライバーズガイドブック記載の指定工場、または<br>ニシデロードサービス24：<strong>0120-543-999</strong></td>
+              <td>24時間365日</td>
+            </tr>
+            <tr>
+              <td><strong>損害保険ジャパン(株)</strong><br>（保険会社）</td>
+              <td>事故サポートセンター：<br><strong>0120-256-110</strong></td>
+              <td>24時間365日</td>
+            </tr>
+            <tr>
+              <td><strong>損害保険ジャパン(株)</strong><br>（ロードサービス）</td>
+              <td>ロードアシスタンス専用デスク：<br><strong>0120-365-110</strong></td>
+              <td>24時間365日</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>④ 現場の記録と情報確保</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>現場や相手・自車の破損状況をスマートフォンなどで撮影してください。</p>
+      <p>相手方の情報（氏名、連絡先、住所、車両ナンバー、車種、保険会社等）を確実に記録し、会話内容のメモも残してください。</p>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>⑤ 社内報告と事故報告書の提出</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>所属部署の責任者（上長）へ、発生日時・場所・状況概要・現在の対応状況を速やかに報告してください。</p>
+      <p>事故処理後、速やかに<strong>「車両事故報告書」</strong>を作成し、メールにて提出してください。</p>
+      <p><strong>提出先：石井社長・希さん・上長（CC：小野）</strong></p>
+    </div>
+  </div>
+</div>
+
+<h2><span class="h2-icon">🔧</span> 車両が故障した場合の手順</h2>
+<p>社用車の走行中に異音が発生した、パンクした、警告灯が点灯した等の故障トラブル時の手順です。</p>
+<div class="accordion">
+  <div class="accordion-item">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>① 安全な場所への停車</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>車両を安全な場所へ移動し、ハザードランプを点灯するなど周囲の交通に支障が出ないよう配慮してください。</p>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>② リース会社・JAFへの連絡</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>リース車の場合は上記の各リース会社へ連絡。購入車またはJAF対応が必要な場合は以下へ連絡してください。</p>
+      <ul>
+        <li><strong>JAFロードサービス救援コール</strong>：<strong>0570-00-8139</strong></li>
+        <li>JAF短縮ダイヤル（固定・携帯から）：<strong>#8139</strong></li>
+      </ul>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>③ 社内報告と報告書の提出</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>上長へ発生日時・場所・故障内容（バッテリー上がり、エンジン停止など）を報告のうえ、<strong>「車両事故報告書」</strong>をメールにて提出してください（宛先は事故時と同様）。</p>
+    </div>
+  </div>
+</div>
+
+<h2><span class="h2-icon">📋</span> 社用車一覧と管理番号（2026年7月現在）</h2>
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>NO.</th>
+        <th>リース会社/購入車</th>
+        <th>車両ナンバー</th>
+        <th>車種</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>トヨタレンタリース新埼玉</td>
+        <td>大宮431な1005</td>
+        <td>プロボックス</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>トヨタレンタリース新埼玉</td>
+        <td>帯広400そ5345</td>
+        <td>プロボックス</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>トヨタレンタリース新埼玉</td>
+        <td>鹿児島400な6126</td>
+        <td>プロボックス</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>トヨタレンタリース新埼玉</td>
+        <td>熊本400ね1943</td>
+        <td>プロボックス</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>トヨタレンタリース福岡</td>
+        <td>熊本301や2304</td>
+        <td>サクシード</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td>トヨタレンタリース福岡</td>
+        <td>熊本400ね・・53</td>
+        <td>プリウス</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td>購入車</td>
+        <td>帯広500ほ2868</td>
+        <td>フィット</td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td>購入車</td>
+        <td>青森100せ2924</td>
+        <td>トラック</td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td>購入車</td>
+        <td>鹿児島400と6948</td>
+        <td>バネット</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="callout tip">
+  <div class="callout-title">📝 報告用ファイルのダウンロード・場所</div>
+  <p style="margin:0;">
+    報告書の提出が必要な場合は、総務・経理・人事関連フォルダ内の <a href="file:///Users/hiroto/Library/CloudStorage/GoogleDrive-hiroto.mizutani@gmail.com/マイドライブ/repository/cascadia/営業から質問がくる総務・経理・人事関連/★車両事故報告書.xls" target="_blank">★車両事故報告書.xls</a> を使用してください。
+  </p>
+</div>
+      </div>
+
+      <div class="section" id="sec-ch5-hr">
+<div class="section-hero">
+  <span class="hero-emoji">📄</span>
+  <h1>人事：貸与物品借用書の申請</h1>
+  <p class="hero-sub">PC、携帯電話、社用車などの備品貸与・追加・変更・返却時における「freee人事労務」での申請手続き</p>
+</div>
+
+<h2><span class="h2-icon">📝</span> 申請のタイミング</h2>
+<p>以下の場合に、必ず「freee人事労務」から貸与物品の申請を行ってください。</p>
+<ul>
+  <li><strong>入社時</strong>：PC、スマートフォン、社用車、名刺、鍵などの初期備品貸与</li>
+  <li><strong>追加・変更時</strong>：業務都合による備品の追加（例：追加のディスプレイ等）、または交換時</li>
+  <li><strong>返却時</strong>：退職または備品が不要になり返却する際</li>
+</ul>
+
+<h2><span class="h2-icon">💻</span> freee人事労務での申請ステップ</h2>
+<div class="accordion">
+  <div class="accordion-item open">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>① 申請の新規作成</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>freee人事労務にログインし、「マイ申請」または「各種申請」から<strong>「新規作成」</strong>をクリックします。</p>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>② 申請種別の選択</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>申請カテゴリの中から<strong>「身上変更」</strong>タブを選択し、申請書一覧から<strong>「貸与物品借用書」</strong>を選択します。</p>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>③ 項目入力と書類添付</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>表示された申請画面に従って、貸与される物品名、個数、シリアル番号などの各項目を入力します。</p>
+      <div class="callout important">
+        <div class="callout-title">⚠️ 添付書類（借用書）の準備</div>
+        <p style="margin:0;">
+          事前に総務からメール等で送付された「借用書」ファイル（記名・押印またはサイン済のもの）を、添付書類欄にアップロードしてください。<br>
+          マニュアルは総務・経理・人事関連フォルダ内の <a href="file:///Users/hiroto/Library/CloudStorage/GoogleDrive-hiroto.mizutani@gmail.com/マイドライブ/repository/cascadia/営業から質問がくる総務・経理・人事関連/freee人事労務‗貸与物品借用書申請.pdf" target="_blank">freee人事労務‗貸与物品借用書申請.pdf</a> からも確認できます。
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+      </div>
+
+      <div class="section" id="sec-ch5-acct">
+<div class="section-hero">
+  <span class="hero-emoji">🪙</span>
+  <h1>経理：各種手続き（準備中）</h1>
+  <p class="hero-sub">経費精算、立替金申請、請求書発行など経理関連の手続き（順次公開予定）</p>
+</div>
+
+<div class="callout info" style="margin-top: 30px;">
+  <div class="callout-title">🪙 経理セクションは現在準備中です</div>
+  <p style="margin:0;">
+    経費精算や請求書発行フローなど、営業担当者から頻出する経理関連の各種手続きについては、現在有識者確認中のため、追って本セクションに追記されます。
+  </p>
+  <p style="margin-top: 10px; margin-bottom: 0;">
+    お急ぎの場合は、<strong>業務部マニュアル</strong>を参照するか、または直接経理担当までお問い合わせください。
+  </p>
+</div>
+      </div>
+
   <nav class="bottom-nav" id="bottomNav">
     <a class="bottom-nav-item active" data-section="home" onclick="navigateTo('home')"><span
         class="bn-icon">🏠</span>ホーム</a>
@@ -6749,7 +7067,9 @@
     'ch4-fat': { b: '脂肪酸Caの基礎', p: 'ch4' },
     'ch2-lactation': { b: '泌乳サイクル', p: 'ch2' }, 'ch2-milk': { b: '乳成分と合成', p: 'ch2' },
     'ch2-analysis': { b: '飼料分析', p: 'ch2' }, 'ch2-vitmin': { b: 'ビタミン・ミネラル', p: 'ch2' },
-    'appendix': { b: '付録 用語集', p: null }, 'app-pack': { b: '荷姿ガイド', p: 'appendix' }
+    'appendix': { b: '付録 用語集', p: null }, 'app-pack': { b: '荷姿ガイド', p: 'appendix' },
+    'ch5': { b: '第5章 バックオフィス関連', p: null }, 'ch5-car': { b: '総務：社用車トラブル・事故対応', p: 'ch5' },
+    'ch5-hr': { b: '人事：貸与物品借用書の申請', p: 'ch5' }, 'ch5-acct': { b: '経理：準備中', p: 'ch5' }
   };
   let cur = 'home';
   function navigateTo(id) {
