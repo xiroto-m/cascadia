@@ -101,6 +101,10 @@ function generateNavTree() {
         <a class="nav-item" data-page="ch4-fat"><span class="nav-dot"></span>└ 脂肪酸の機能使い分け</a>
         <a class="nav-item" data-page="appendix"><span class="nav-dot"></span>業界用語・辞書</a>
         <a class="nav-item" data-page="app-pack"><span class="nav-dot"></span>荷姿・物流・単位</a>
+        <a class="nav-item" data-page="ch5"><span class="nav-dot"></span>第5章 バックオフィス関連</a>
+        <a class="nav-item" data-page="ch5-car"><span class="nav-dot"></span>├ 総務：社用車トラブル・事故対応</a>
+        <a class="nav-item" data-page="ch5-hr"><span class="nav-dot"></span>├ 人事：貸与物品借用書の申請</a>
+        <a class="nav-item" data-page="ch5-acct"><span class="nav-dot"></span>└ 経理：準備中</a>
       </div>
     </div>
 
@@ -326,7 +330,11 @@ function getSalesPageTitle(pageId) {
     'ch4-svc': 'サービス・コンサル',
     'ch4-fat': '脂肪酸の機能使い分け',
     'appendix': '業界用語・辞書',
-    'app-pack': '荷姿・物流・単位'
+    'app-pack': '荷姿・物流・単位',
+    'ch5': '第5章 バックオフィス関連',
+    'ch5-car': '総務：社用車トラブル・事故対応',
+    'ch5-hr': '人事：貸与物品借用書の申請',
+    'ch5-acct': '経理：準備中'
   };
   return titles[pageId] || pageId;
 }
