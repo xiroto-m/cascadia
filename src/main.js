@@ -137,6 +137,7 @@ function generateNavTree() {
       <div class="nav-section-items">
         <a class="nav-item" data-page="date-calculator"><span class="nav-dot"></span>営業日・デマレージ計算</a>
         <a class="nav-item" data-page="schedule-assistant"><span class="nav-dot"></span>得意先スケジュール支援</a>
+        <a class="nav-item" data-page="flexcon-inventory"><span class="nav-dot"></span>フレコンバッグ在庫・金額管理</a>
       </div>
     </div>
 
@@ -265,6 +266,14 @@ function navigateTo(pageId, highlightSearch = null) {
     statusBadge.textContent = 'ツール';
     statusBadge.className = 'status-badge status-sales-approved';
     renderScheduleAssistant();
+    return;
+  }
+
+  if (pageId === 'flexcon-inventory') {
+    currentPath.textContent = '便利ツール ＞ フレコンバッグ在庫・金額管理';
+    statusBadge.textContent = 'ツール';
+    statusBadge.className = 'status-badge status-sales-approved';
+    renderFlexconInventory();
     return;
   }
 
@@ -934,6 +943,12 @@ function renderPortalHome() {
         <div class="mini-card-title">得意先スケジュール支援</div>
         <div class="mini-card-desc">ExcelからコピペしてETA基準の植検日を自動推算。</div>
         <span class="mini-card-badge" style="background:var(--accent-green); color:#fff;">ツール</span>
+      </div>
+      <div class="mini-card" data-target="flexcon-inventory" style="background: linear-gradient(135deg, rgba(139,92,246,0.06), rgba(168,85,247,0.04)); border: 1px solid rgba(139,92,246,0.2);">
+        <div class="mini-card-icon">📦</div>
+        <div class="mini-card-title">フレコン資材 在庫・金額管理</div>
+        <div class="mini-card-desc">拠点別のフレコンバッグ在庫枚数と金額評価、安全在庫アラート。</div>
+        <span class="mini-card-badge" style="background:var(--accent-violet); color:#fff;">新ツール</span>
       </div>
     </div>
   `;
@@ -2296,7 +2311,8 @@ function getJapanHolidays(year) {
 }
 
 // 営業日・カレンダー日の加算計算関数
-function calculateBusinessDays(startDateStr, days, isBusinessOnly, includeStart) {
+function calculateBusinessDays(startDateStr, days, calcMode, includeStart) {
+  const mode = typeof calcMode === 'string' ? calcMode : (calcMode ? 'business' : 'calendar');
   const startD = new Date(startDateStr);
   const startYear = startD.getFullYear();
   
@@ -2322,10 +2338,22 @@ function calculateBusinessDays(startDateStr, days, isBusinessOnly, includeStart)
     const dayOfWeek = currentDate.getDay(); // 0=Sun, 6=Sat
 
     const isHoliday = holidays[dateStr];
-    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+    let shouldSkip = false;
+    let type = '';
 
-    if (isBusinessOnly && (isWeekend || isHoliday)) {
-      const type = dayOfWeek === 0 ? "日曜日" : dayOfWeek === 6 ? "土曜日" : isHoliday;
+    if (mode === 'business') {
+      if (dayOfWeek === 0 || dayOfWeek === 6 || isHoliday) {
+        shouldSkip = true;
+        type = dayOfWeek === 0 ? "日曜日" : dayOfWeek === 6 ? "土曜日" : isHoliday;
+      }
+    } else if (mode === 'sun_holidays') {
+      if (dayOfWeek === 0 || isHoliday) {
+        shouldSkip = true;
+        type = dayOfWeek === 0 ? "日曜日" : isHoliday;
+      }
+    }
+
+    if (shouldSkip) {
       skipped.push(`${dateStr} (${type})`);
     } else {
       daysCounted++;
@@ -2339,14 +2367,54 @@ function calculateBusinessDays(startDateStr, days, isBusinessOnly, includeStart)
   };
 }
 
+// デマレージ/ディテンション段階料金プリセット
+const CHARGE_PRESETS = {
+  demurrage_standard: {
+    name: "デマレージ汎用標準 (1-7日: ¥1,000 / 8-14日: ¥3,000 / 15日~: ¥6,000)",
+    type: "demurrage",
+    tiers: [
+      { startDay: 1, endDay: 7, rate: 1000 },
+      { startDay: 8, endDay: 14, rate: 3000 },
+      { startDay: 15, endDay: 999, rate: 6000 }
+    ]
+  },
+  detention_standard: {
+    name: "ディテンション汎用標準 (1-4日: ¥4,400 / 5-9日: ¥6,600 / 10日~: ¥10,900)",
+    type: "detention",
+    tiers: [
+      { startDay: 1, endDay: 4, rate: 4400 },
+      { startDay: 5, endDay: 9, rate: 6600 },
+      { startDay: 10, endDay: 999, rate: 10900 }
+    ]
+  },
+  whl_demurrage: {
+    name: "WHL (Wan Hai Lines) デマレージ参考 (1-3日: ¥5,000 / 4-7日: ¥10,000 / 8日~: ¥20,000)",
+    type: "demurrage",
+    tiers: [
+      { startDay: 1, endDay: 3, rate: 5000 },
+      { startDay: 4, endDay: 7, rate: 10000 },
+      { startDay: 8, endDay: 999, rate: 20000 }
+    ]
+  },
+  yangming_detention: {
+    name: "YANG MING ディテンション参考 (40HQ: ¥7,500/日)",
+    type: "detention",
+    tiers: [
+      { startDay: 1, endDay: 999, rate: 7500 }
+    ]
+  }
+};
+
+let currentTiers = [...CHARGE_PRESETS.demurrage_standard.tiers];
+
 // -------------------------------------------------------------------------
 //  1. 日付・デマレージ計算ツールの描画 & イベント処理
 // -------------------------------------------------------------------------
 function renderDateCalculator() {
   contentArea.innerHTML = `
     <div class="page-hero" style="padding: 24px; margin-bottom: 24px;">
-      <h1 class="page-title">🗓️ 営業日・デマレージ日数計算機</h1>
-      <p class="page-subtitle">日本の祝日（振替休日含む）に対応し、実務におけるデマレージ（超過保管料）等の日数計算を正確に行います。</p>
+      <h1 class="page-title">🗓️ 営業日・デマレージ日数＆費用計算機</h1>
+      <p class="page-subtitle">日本の祝日・日祝除外に対応し、フリータイム限界日およびフリータイム超過後のデマレージ・ディテンション料金（段階単価対応）を正確に計算します。</p>
     </div>
 
     <div class="tool-grid">
@@ -2358,13 +2426,14 @@ function renderDateCalculator() {
             <input type="date" id="calcStartDate" value="${new Date().toISOString().split('T')[0]}">
           </div>
           <div class="tool-group">
-            <label for="calcDays">加算日数（デマレージ期間等）</label>
+            <label for="calcDays">フリータイム（F/T）加算日数</label>
             <input type="number" id="calcDays" value="10" min="1" max="999">
           </div>
           <div class="tool-group">
             <label for="calcMode">カウント方法</label>
             <select id="calcMode">
               <option value="business" selected>営業日のみカウント（土日・日本の祝日を除外）</option>
+              <option value="sun_holidays">日祝のみ除外（土曜日はカウント、日曜・祝日を除外）</option>
               <option value="calendar">カレンダー日カウント（暦通り全てカウント）</option>
             </select>
           </div>
@@ -2372,18 +2441,32 @@ function renderDateCalculator() {
             <input type="checkbox" id="calcIncludeStart" checked>
             <span>起算日（開始日）を1日目としてカウントに含める</span>
           </label>
+
+          <hr style="border: none; border-top: 1px dashed var(--border-subtle); margin: 16px 0;">
+
+          <div class="tool-group">
+            <label for="calcPickupDate">搬出日 / 返却予定日（任意入力・超過料金計算用）</label>
+            <input type="date" id="calcPickupDate" value="">
+            <span style="font-size: 11px; color: var(--text-muted); margin-top: 4px; display: block;">
+              ※フリータイム終了後に搬出・返却する場合、超過日数およびデマレージ/ディテンション料金が試算されます。
+            </span>
+          </div>
         </div>
       </div>
 
       <div class="tool-card">
-        <h3>🎯 計算結果</h3>
+        <h3>🎯 フリータイム計算結果</h3>
         <div class="result-box">
-          <div class="result-lbl" id="resultLabelText">計算された期日（荷渡し・デマレージ限界日）</div>
+          <div class="result-lbl" id="resultLabelText">フリータイム終了日（荷渡し・デマレージ限界日）</div>
           <div class="result-date" id="resultDateText">YYYY年MM月DD日(曜)</div>
           <div class="result-lbl" id="resultSummaryText">営業日10日間を加算</div>
         </div>
 
-        <div class="result-details">
+        <div class="result-details" style="margin-top: 14px;">
+          <div id="overdueSummaryBadge" style="display: none; padding: 10px 14px; border-radius: 8px; font-weight: 600; font-size: 13px; margin-bottom: 12px; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2);">
+            ⚠️ フリータイム超過: <span id="overdueDaysCount">0</span> 日間
+          </div>
+
           <h4>🚫 スキップ（除外）された週末・祝日一覧</h4>
           <ul class="skipped-list" id="skippedList">
             <li>除外日はありません。</li>
@@ -2392,16 +2475,76 @@ function renderDateCalculator() {
       </div>
     </div>
 
+    <!-- 超過料金計算セクション -->
+    <div class="tool-card" style="margin-top: 24px;" id="feeCalcCard">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+        <h3 style="margin: 0;">💰 デマレージ・ディテンション超過料金シミュレーター</h3>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <label style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">料金プリセット:</label>
+          <select id="presetSelect" style="padding: 6px 12px; font-size: 12px; border-radius: 6px; border: 1px solid var(--border-medium); background: var(--bg-primary); color: var(--text-primary);">
+            <option value="demurrage_standard" selected>デマレージ汎用標準 (1-7日: ¥1,000 / 8-14日: ¥3,000 / 15日~: ¥6,000)</option>
+            <option value="detention_standard">ディテンション汎用標準 (1-4日: ¥4,400 / 5-9日: ¥6,600 / 10日~: ¥10,900)</option>
+            <option value="whl_demurrage">WHL (Wan Hai Lines) デマレージ参考</option>
+            <option value="yangming_detention">YANG MING ディテンション参考 (40HQ: ¥7,500/日)</option>
+            <option value="custom">カスタム設定</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;" class="fee-calc-grid">
+        <div>
+          <h4 style="font-size: 13px; margin: 0 0 10px; color: var(--text-secondary);">⚙️ 段階別料金設定（日額単価）</h4>
+          <table class="assistant-table" style="font-size: 12px; width: 100%; border-collapse: collapse; margin-bottom: 10px;" id="tierTable">
+            <thead>
+              <tr style="background: var(--bg-primary); text-align: left;">
+                <th style="padding: 8px;">超過日数範囲</th>
+                <th style="padding: 8px;">1日あたり単価（税抜）</th>
+                <th style="padding: 8px; width: 50px; text-align: center;">操作</th>
+              </tr>
+            </thead>
+            <tbody id="tierTableBody">
+              <!-- 動的描画 -->
+            </tbody>
+          </table>
+          <button class="btn btn-secondary" id="btnAddTierBtn" style="padding: 4px 12px; font-size: 12px;">+ 段階を追加</button>
+        </div>
+
+        <div>
+          <h4 style="font-size: 13px; margin: 0 0 10px; color: var(--text-secondary);">📊 超過料金計算サマリー</h4>
+          <div style="background: var(--bg-primary); border: 1px solid var(--border-medium); border-radius: 12px; padding: 16px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px;">
+              <span style="color: var(--text-secondary);">超過日数:</span>
+              <strong id="feeOverdueDaysText" style="color: #ef4444;">0 日間</strong>
+            </div>
+
+            <div style="border-top: 1px dashed var(--border-subtle); padding-top: 10px; margin-top: 10px;" id="tierBreakdownList">
+              <!-- 段階別の小計計算内訳 -->
+              <span style="font-size: 12px; color: var(--text-muted);">搬出日/返却予定日を入力すると内訳が表示されます。</span>
+            </div>
+
+            <div style="border-top: 2px solid var(--border-medium); padding-top: 12px; margin-top: 12px; display: flex; justify-content: space-between; align-items: baseline;">
+              <span style="font-size: 14px; font-weight: 700;">合計超過料金:</span>
+              <div style="text-align: right;">
+                <span id="feeTotalAmountText" style="font-size: 22px; font-weight: 800; color: var(--accent-blue);">¥0</span>
+                <div style="font-size: 11px; color: var(--text-muted);" id="feeTaxInclusiveText">（税込 10%: ¥0）</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- カレンダープレビュー -->
     <div class="tool-card" style="margin-top: 24px;">
-      <h3>📅 計算月のカレンダープレビュー</h3>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
-        <span style="display:inline-block; width:12px; height:12px; background:rgba(37,99,235,0.12); border-radius:3px; vertical-align:middle;"></span> カウント対象
-        &nbsp;&nbsp;
-        <span style="display:inline-block; width:12px; height:12px; background:#ef4444; opacity:0.3; border-radius:3px; vertical-align:middle;"></span> 土日・祝日（スキップ）
-        &nbsp;&nbsp;
-        <span style="display:inline-block; width:12px; height:12px; background:var(--accent-blue); border-radius:3px; vertical-align:middle;"></span> 計算結果日
+      <h3>📅 計算月のカレンダープレビュー（月跨ぎ対応）</h3>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px; display: flex; flex-wrap: wrap; gap: 14px; align-items: center;">
+        <span><span style="display:inline-block; width:12px; height:12px; background:rgba(37,99,235,0.12); border-radius:3px; vertical-align:middle;"></span> カウント対象</span>
+        <span><span style="display:inline-block; width:12px; height:12px; background:#ef4444; opacity:0.3; border-radius:3px; vertical-align:middle;"></span> 除外（週末・祝日スキップ）</span>
+        <span><span style="display:inline-block; width:12px; height:12px; background:var(--accent-blue); border-radius:3px; vertical-align:middle;"></span> F/T終了日</span>
+        <span><span style="display:inline-block; width:12px; height:12px; background:rgba(239,68,68,0.25); border: 1px solid #ef4444; border-radius:3px; vertical-align:middle;"></span> デマレージ/ディテンション超過期間</span>
+        <span><span style="display:inline-block; width:12px; height:12px; background:#8b5cf6; border-radius:3px; vertical-align:middle;"></span> 搬出・返却日</span>
       </p>
-      <div class="calendar-visualizer" id="calendarContainer"></div>
+      <div id="calendarContainer"></div>
     </div>
   `;
 
@@ -2409,17 +2552,105 @@ function renderDateCalculator() {
   const daysInput = document.getElementById('calcDays');
   const modeSelect = document.getElementById('calcMode');
   const includeStartCheck = document.getElementById('calcIncludeStart');
+  const pickupDateInput = document.getElementById('calcPickupDate');
+  const presetSelect = document.getElementById('presetSelect');
+  const addTierBtn = document.getElementById('btnAddTierBtn');
+
+  function renderTierRows() {
+    const tbody = document.getElementById('tierTableBody');
+    tbody.innerHTML = '';
+
+    currentTiers.forEach((tier, idx) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td style="padding: 6px 8px;">
+          <div style="display: flex; align-items: center; gap: 4px;">
+            <input type="number" min="1" max="999" value="${tier.startDay}" class="tier-input-start" data-idx="${idx}" style="width: 55px; padding: 4px; border: 1px solid var(--border-medium); border-radius: 4px; background: var(--bg-card); color: var(--text-primary);">
+            日目 〜 
+            <input type="number" min="1" max="999" value="${tier.endDay >= 999 ? '' : tier.endDay}" placeholder="以降" class="tier-input-end" data-idx="${idx}" style="width: 55px; padding: 4px; border: 1px solid var(--border-medium); border-radius: 4px; background: var(--bg-card); color: var(--text-primary);">
+            日目
+          </div>
+        </td>
+        <td style="padding: 6px 8px;">
+          <div style="display: flex; align-items: center; gap: 4px;">
+            ¥ <input type="number" step="100" min="0" value="${tier.rate}" class="tier-input-rate" data-idx="${idx}" style="width: 100px; padding: 4px; border: 1px solid var(--border-medium); border-radius: 4px; background: var(--bg-card); color: var(--text-primary);">
+          </div>
+        </td>
+        <td style="padding: 6px 8px; text-align: center;">
+          ${currentTiers.length > 1 ? `<button class="btn-delete-tier" data-idx="${idx}" style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 14px;">✕</button>` : ''}
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    // 行入力イベントのバインド
+    document.querySelectorAll('.tier-input-start').forEach(input => {
+      input.addEventListener('change', (e) => {
+        const idx = parseInt(e.target.dataset.idx);
+        currentTiers[idx].startDay = parseInt(e.target.value) || 1;
+        presetSelect.value = 'custom';
+        updateCalculation();
+      });
+    });
+
+    document.querySelectorAll('.tier-input-end').forEach(input => {
+      input.addEventListener('change', (e) => {
+        const idx = parseInt(e.target.dataset.idx);
+        currentTiers[idx].endDay = e.target.value === '' ? 999 : parseInt(e.target.value) || 999;
+        presetSelect.value = 'custom';
+        updateCalculation();
+      });
+    });
+
+    document.querySelectorAll('.tier-input-rate').forEach(input => {
+      input.addEventListener('change', (e) => {
+        const idx = parseInt(e.target.dataset.idx);
+        currentTiers[idx].rate = parseInt(e.target.value) || 0;
+        presetSelect.value = 'custom';
+        updateCalculation();
+      });
+    });
+
+    document.querySelectorAll('.btn-delete-tier').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const idx = parseInt(e.target.dataset.idx);
+        currentTiers.splice(idx, 1);
+        presetSelect.value = 'custom';
+        renderTierRows();
+        updateCalculation();
+      });
+    });
+  }
+
+  presetSelect.addEventListener('change', (e) => {
+    const val = e.target.value;
+    if (val !== 'custom' && CHARGE_PRESETS[val]) {
+      currentTiers = JSON.parse(JSON.stringify(CHARGE_PRESETS[val].tiers));
+      renderTierRows();
+      updateCalculation();
+    }
+  });
+
+  addTierBtn.addEventListener('click', () => {
+    const lastTier = currentTiers[currentTiers.length - 1];
+    const newStart = lastTier ? (lastTier.endDay < 999 ? lastTier.endDay + 1 : lastTier.startDay + 7) : 1;
+    currentTiers.push({ startDay: newStart, endDay: 999, rate: 5000 });
+    presetSelect.value = 'custom';
+    renderTierRows();
+    updateCalculation();
+  });
 
   function updateCalculation() {
     const startVal = startDateInput.value;
     const daysVal = parseInt(daysInput.value) || 0;
-    const isBusiness = modeSelect.value === 'business';
+    const calcMode = modeSelect.value;
     const includeStart = includeStartCheck.checked;
+    const pickupVal = pickupDateInput.value;
 
     if (!startVal || daysVal <= 0) return;
 
     // 計算を実行
-    const calcResult = calculateBusinessDays(startVal, daysVal, isBusiness, includeStart);
+    const calcResult = calculateBusinessDays(startVal, daysVal, calcMode, includeStart);
     
     // 日本語曜日表示
     const targetDate = new Date(calcResult.resultDateStr);
@@ -2429,8 +2660,12 @@ function renderDateCalculator() {
     document.getElementById('resultDateText').textContent = 
       `${targetDate.getFullYear()}年${targetDate.getMonth() + 1}月${targetDate.getDate()}日 (${dayName})`;
     
+    let modeText = '営業日';
+    if (calcMode === 'sun_holidays') modeText = '日祝除外';
+    if (calcMode === 'calendar') modeText = 'カレンダー日';
+
     document.getElementById('resultSummaryText').textContent = 
-      `${isBusiness ? '営業日' : 'カレンダー日'} ${daysVal}日間を${includeStart ? '起算日を含めて' : '翌日から'}加算`;
+      `${modeText} ${daysVal}日間を${includeStart ? '起算日を含めて' : '翌日から'}加算`;
 
     // 除外リストの描画
     const list = document.getElementById('skippedList');
@@ -2445,7 +2680,64 @@ function renderDateCalculator() {
       });
     }
 
-    // カレンダーの描画
+    // 超過日数と料金計算
+    let overdueDays = 0;
+    if (pickupVal) {
+      const pDate = new Date(pickupVal);
+      const tDate = new Date(calcResult.resultDateStr);
+      const diffMs = pDate.getTime() - tDate.getTime();
+      if (diffMs > 0) {
+        overdueDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      }
+    }
+
+    const badge = document.getElementById('overdueSummaryBadge');
+    if (overdueDays > 0) {
+      badge.style.display = 'block';
+      document.getElementById('overdueDaysCount').textContent = overdueDays;
+    } else {
+      badge.style.display = 'none';
+    }
+
+    // 料金の計算
+    document.getElementById('feeOverdueDaysText').textContent = `${overdueDays} 日間`;
+    const breakdownContainer = document.getElementById('tierBreakdownList');
+    breakdownContainer.innerHTML = '';
+
+    let totalFee = 0;
+
+    if (overdueDays > 0) {
+      currentTiers.sort((a, b) => a.startDay - b.startDay);
+
+      currentTiers.forEach((tier) => {
+        if (overdueDays < tier.startDay) return;
+
+        const effectiveEnd = Math.min(overdueDays, tier.endDay);
+        const daysInTier = effectiveEnd - tier.startDay + 1;
+
+        if (daysInTier > 0) {
+          const subtotal = daysInTier * tier.rate;
+          totalFee += subtotal;
+
+          const row = document.createElement('div');
+          row.style.cssText = 'display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; color: var(--text-secondary);';
+          const endLabel = tier.endDay >= 999 ? '〜' : `${tier.endDay}日目`;
+          row.innerHTML = `
+            <span>${tier.startDay}〜${endLabel} (${daysInTier}日間 × ¥${tier.rate.toLocaleString()}):</span>
+            <strong>¥${subtotal.toLocaleString()}</strong>
+          `;
+          breakdownContainer.appendChild(row);
+        }
+      });
+    } else {
+      breakdownContainer.innerHTML = '<span style="font-size: 12px; color: var(--text-muted);">超過なし（デマレージ/ディテンション費用 ￥0）</span>';
+    }
+
+    document.getElementById('feeTotalAmountText').textContent = `¥${totalFee.toLocaleString()}`;
+    const taxInc = Math.round(totalFee * 1.10);
+    document.getElementById('feeTaxInclusiveText').textContent = `（税込 10%: ¥${taxInc.toLocaleString()}）`;
+
+    // カレンダーの描画（マルチ月対応）
     const calContainer = document.getElementById('calendarContainer');
     const startYear = new Date(startVal).getFullYear();
     const holidays = {
@@ -2453,76 +2745,136 @@ function renderDateCalculator() {
       ...getJapanHolidays(startYear),
       ...getJapanHolidays(startYear + 1)
     };
-    drawCalendarVisualizer(calContainer, startVal, calcResult.resultDateStr, isBusiness, includeStart, holidays);
+    drawCalendarVisualizer(calContainer, startVal, calcResult.resultDateStr, calcMode, includeStart, holidays, pickupVal);
   }
 
-  // イベントリスナーの登録
+  // 初期化とイベントバインド
+  renderTierRows();
+
   startDateInput.addEventListener('input', updateCalculation);
   daysInput.addEventListener('input', updateCalculation);
   modeSelect.addEventListener('change', updateCalculation);
   includeStartCheck.addEventListener('change', updateCalculation);
+  pickupDateInput.addEventListener('input', updateCalculation);
 
   // 初期計算
   updateCalculation();
 }
 
-function drawCalendarVisualizer(container, startDateStr, targetDateStr, isBusinessOnly, includeStart, holidays) {
+function drawCalendarVisualizer(container, startDateStr, targetDateStr, calcMode, includeStart, holidays, pickupDateStr = null) {
   container.innerHTML = '';
   
-  const targetDate = new Date(targetDateStr);
-  const year = targetDate.getFullYear();
-  const month = targetDate.getMonth();
+  const startD = new Date(startDateStr);
+  const targetD = new Date(targetDateStr);
+  const pickupD = pickupDateStr ? new Date(pickupDateStr) : null;
   
-  const headers = ['日', '月', '火', '水', '木', '金', '土'];
-  headers.forEach(h => {
-    const el = document.createElement('div');
-    el.className = 'cal-day-name';
-    el.textContent = h;
-    container.appendChild(el);
-  });
-  
-  const firstDayIndex = new Date(year, month, 1).getDay();
-  const totalDays = new Date(year, month + 1, 0).getDate();
-  
-  for (let i = 0; i < firstDayIndex; i++) {
-    const el = document.createElement('div');
-    el.className = 'cal-day-cell other-month';
-    container.appendChild(el);
-  }
-  
-  const startMs = new Date(startDateStr).getTime();
-  const targetMs = new Date(targetDateStr).getTime();
-  
-  for (let day = 1; day <= totalDays; day++) {
-    const cellDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    const cellDate = new Date(year, month, day);
-    const cellMs = cellDate.getTime();
-    const dayOfWeek = cellDate.getDay();
-    const isHoliday = holidays[cellDateStr];
-    
-    const cell = document.createElement('div');
-    cell.className = 'cal-day-cell';
-    cell.textContent = day;
-    
-    if (dayOfWeek === 6) cell.classList.add('weekend-sat');
-    if (dayOfWeek === 0) cell.classList.add('weekend-sun');
-    if (isHoliday) cell.classList.add('holiday');
-    if (isHoliday) cell.title = isHoliday;
-    
-    if (cellDateStr === targetDateStr) {
-      cell.classList.add('target');
-      cell.title = "計算結果日";
-    } else if (cellMs >= startMs && cellMs <= targetMs) {
-      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-      if (isBusinessOnly && (isWeekend || isHoliday)) {
-        cell.classList.add('skipped');
-      } else {
-        cell.classList.add('counted');
-      }
+  const maxD = (pickupD && pickupD > targetD) ? pickupD : targetD;
+
+  let currentYear = startD.getFullYear();
+  let currentMonth = startD.getMonth();
+
+  const endYear = maxD.getFullYear();
+  const endMonth = maxD.getMonth();
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'multi-calendar-wrapper';
+
+  const startMs = startD.getTime();
+  const targetMs = targetD.getTime();
+  const pickupMs = pickupD ? pickupD.getTime() : null;
+
+  while (currentYear < endYear || (currentYear === endYear && currentMonth <= endMonth)) {
+    const monthCard = document.createElement('div');
+    monthCard.className = 'month-block';
+
+    const monthTitle = document.createElement('div');
+    monthTitle.className = 'month-title';
+    monthTitle.textContent = `🗓️ ${currentYear}年 ${currentMonth + 1}月`;
+    monthCard.appendChild(monthTitle);
+
+    const calGrid = document.createElement('div');
+    calGrid.className = 'calendar-visualizer-grid';
+
+    const headers = ['日', '月', '火', '水', '木', '金', '土'];
+    headers.forEach(h => {
+      const el = document.createElement('div');
+      el.className = 'cal-day-name';
+      el.textContent = h;
+      calGrid.appendChild(el);
+    });
+
+    const firstDayIndex = new Date(currentYear, currentMonth, 1).getDay();
+    const totalDays = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+    for (let i = 0; i < firstDayIndex; i++) {
+      const el = document.createElement('div');
+      el.className = 'cal-day-cell other-month';
+      calGrid.appendChild(el);
     }
-    
-    container.appendChild(cell);
+
+    for (let day = 1; day <= totalDays; day++) {
+      const cellDateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const cellDate = new Date(currentYear, currentMonth, day);
+      const cellMs = cellDate.getTime();
+      const dayOfWeek = cellDate.getDay();
+      const isHoliday = holidays[cellDateStr];
+
+      const cell = document.createElement('div');
+      cell.className = 'cal-day-cell';
+      cell.textContent = day;
+
+      if (dayOfWeek === 6) cell.classList.add('weekend-sat');
+      if (dayOfWeek === 0) cell.classList.add('weekend-sun');
+      if (isHoliday) {
+        cell.classList.add('holiday');
+        cell.title = isHoliday;
+      }
+
+      if (cellDateStr === startDateStr) {
+        cell.classList.add('start-date');
+        cell.title = "起算日 (開始日)";
+      }
+
+      if (cellDateStr === targetDateStr) {
+        cell.classList.add('target');
+        cell.title = "フリータイム終了日 / 計算結果日";
+      } else if (pickupDateStr && cellDateStr === pickupDateStr) {
+        cell.classList.add('pickup-target');
+        cell.title = "搬出日 / 返却日";
+      }
+
+      if (cellMs >= startMs && cellMs <= targetMs) {
+        let isWeekend = false;
+        if (calcMode === 'business') {
+          isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+        } else if (calcMode === 'sun_holidays') {
+          isWeekend = dayOfWeek === 0;
+        }
+
+        if ((calcMode === 'business' || calcMode === 'sun_holidays') && (isWeekend || isHoliday)) {
+          cell.classList.add('skipped');
+        } else {
+          cell.classList.add('counted');
+        }
+      } else if (pickupMs && cellMs > targetMs && cellMs <= pickupMs) {
+        cell.classList.add('overdue');
+        cell.title = "超過保管料（デマレージ/ディテンション）発生日";
+      }
+
+      calGrid.appendChild(cell);
+    }
+
+    monthCard.appendChild(calGrid);
+    wrapper.appendChild(monthCard);
+
+    currentMonth++;
+    if (currentMonth > 11) {
+      currentMonth = 0;
+      currentYear++;
+    }
   }
+
+  container.appendChild(wrapper);
 }
 
 // -------------------------------------------------------------------------
@@ -3105,6 +3457,559 @@ function openPreviewModal(type, detail) {
 
 function closePreviewModal() {
   document.getElementById('previewModal').classList.remove('active');
+}
+
+// -------------------------------------------------------------------------
+//  3. フレコンバッグ資材 在庫数・在庫金額確認ツール
+// -------------------------------------------------------------------------
+
+const FLEXCON_LOCATIONS = [
+  "上組 福岡支店",
+  "八代サイロ（上組福岡支店八代出張所）",
+  "熊本南関工場",
+  "志布志倉庫",
+  "門司倉庫",
+  "本社倉庫"
+];
+
+const FLEXCON_ITEMS = [
+  { id: "SNS-1", name: "フレコンワンウェイバッグ SNS-1 (上下全開型 φ1100×1200)", defaultPrice: 1150, safetyStock: 300 },
+  { id: "BTNR-1000C", name: "フレコンワンウェイバッグ BTNR-1000C (投入口全開型 φ1100×1100H)", defaultPrice: 1000, safetyStock: 200 },
+  { id: "PE-INNER", name: "国産PE内袋 (0.07×1850×3000 平シール)", defaultPrice: 550, safetyStock: 300 },
+  { id: "SOYPASS-BAG", name: "ソイパス用紙袋 新印刷 (813×419×76mm)", defaultPrice: 71.5, safetyStock: 1000 }
+];
+
+const FLEXCON_SUPPLIERS = [
+  "株式会社シオヤ",
+  "佐藤産業株式会社",
+  "その他仕入先"
+];
+
+const INITIAL_FLEXCON_DATA = {
+  transactions: [
+    { id: "TX-1001", date: "2026-06-22", type: "inbound", location: "上組 福岡支店", item: "SNS-1", qty: 150, price: 1000, supplier: "株式会社シオヤ", purpose: "", note: "発注書 2026.06.23" },
+    { id: "TX-1002", date: "2026-07-10", type: "inbound", location: "八代サイロ（上組福岡支店八代出張所）", item: "BTNR-1000C", qty: 50, price: 1000, supplier: "株式会社シオヤ", purpose: "", note: "吊り下げポケット50枚同梱" },
+    { id: "TX-1003", date: "2026-07-10", type: "inbound", location: "熊本南関工場", item: "SNS-1", qty: 500, price: 1150, supplier: "株式会社シオヤ", purpose: "", note: "発注書 2026.07.10" },
+    { id: "TX-1004", date: "2026-07-10", type: "inbound", location: "熊本南関工場", item: "PE-INNER", qty: 500, price: 550, supplier: "株式会社シオヤ", purpose: "", note: "発注書 2026.07.10 別添PE内袋" },
+    { id: "TX-1005", date: "2026-05-29", type: "inbound", location: "上組 福岡支店", item: "SOYPASS-BAG", qty: 3000, price: 71.5, supplier: "佐藤産業株式会社", purpose: "", note: "佐藤産業見積書単価 ￥71.5" },
+    { id: "TX-1006", date: "2026-07-12", type: "outbound", location: "熊本南関工場", item: "SNS-1", qty: 80, price: 1150, supplier: "", purpose: "牧草サイレージ製品充填", note: "工場作業使用" },
+    { id: "TX-1007", date: "2026-07-15", type: "outbound", location: "上組 福岡支店", item: "SOYPASS-BAG", qty: 1200, price: 71.5, supplier: "", purpose: "大豆粕パッキング出荷", note: "出荷使用" }
+  ]
+};
+
+function loadFlexconData() {
+  const saved = localStorage.getItem('cascadia_flexcon_inventory_v1');
+  if (saved) {
+    try { return JSON.parse(saved); } catch(e){}
+  }
+  localStorage.setItem('cascadia_flexcon_inventory_v1', JSON.stringify(INITIAL_FLEXCON_DATA));
+  return JSON.parse(JSON.stringify(INITIAL_FLEXCON_DATA));
+}
+
+function saveFlexconData(data) {
+  localStorage.setItem('cascadia_flexcon_inventory_v1', JSON.stringify(data));
+}
+
+let activeFlexconTab = 'dashboard';
+
+function renderFlexconInventory() {
+  const data = loadFlexconData();
+
+  contentArea.innerHTML = `
+    <div class="page-hero" style="padding: 24px; margin-bottom: 24px; background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(168,85,247,0.05)); border: 1px solid rgba(139,92,246,0.2);">
+      <h1 class="page-title">📦 フレコンバッグ資材 在庫数・在庫金額確認ツール</h1>
+      <p class="page-subtitle">消耗品として費用処理されるフレコンバッグ等のリアルタイム実在庫枚数・評価金額を一元管理し、安全在庫切れを防ぎます。</p>
+    </div>
+
+    <!-- サブタブナビゲーション -->
+    <div class="flexcon-tabs" style="display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid var(--border-subtle); padding-bottom: 8px;">
+      <button class="btn ${activeFlexconTab === 'dashboard' ? 'btn-primary' : 'btn-secondary'}" id="tabFlexconDash" style="padding: 8px 16px; font-size: 13px;">📊 在庫・金額ダッシュボード</button>
+      <button class="btn ${activeFlexconTab === 'inbound' ? 'btn-primary' : 'btn-secondary'}" id="tabFlexconInbound" style="padding: 8px 16px; font-size: 13px;">📥 入庫（仕入）登録</button>
+      <button class="btn ${activeFlexconTab === 'outbound' ? 'btn-primary' : 'btn-secondary'}" id="tabFlexconOutbound" style="padding: 8px 16px; font-size: 13px;">📤 出庫（使用）登録</button>
+      <button class="btn ${activeFlexconTab === 'ledger' ? 'btn-primary' : 'btn-secondary'}" id="tabFlexconLedger" style="padding: 8px 16px; font-size: 13px;">📋 入出庫全履歴帳簿</button>
+      <button class="btn ${activeFlexconTab === 'check' ? 'btn-primary' : 'btn-secondary'}" id="tabFlexconCheck" style="padding: 8px 16px; font-size: 13px;">📑 月末棚卸し・CSV出力</button>
+    </div>
+
+    <div id="flexconTabContent"></div>
+  `;
+
+  document.getElementById('tabFlexconDash').addEventListener('click', () => { activeFlexconTab = 'dashboard'; renderFlexconInventory(); });
+  document.getElementById('tabFlexconInbound').addEventListener('click', () => { activeFlexconTab = 'inbound'; renderFlexconInventory(); });
+  document.getElementById('tabFlexconOutbound').addEventListener('click', () => { activeFlexconTab = 'outbound'; renderFlexconInventory(); });
+  document.getElementById('tabFlexconLedger').addEventListener('click', () => { activeFlexconTab = 'ledger'; renderFlexconInventory(); });
+  document.getElementById('tabFlexconCheck').addEventListener('click', () => { activeFlexconTab = 'check'; renderFlexconInventory(); });
+
+  const container = document.getElementById('flexconTabContent');
+
+  if (activeFlexconTab === 'dashboard') renderFlexconDashboard(container, data);
+  if (activeFlexconTab === 'inbound') renderFlexconInboundForm(container, data);
+  if (activeFlexconTab === 'outbound') renderFlexconOutboundForm(container, data);
+  if (activeFlexconTab === 'ledger') renderFlexconLedger(container, data);
+  if (activeFlexconTab === 'check') renderFlexconCheck(container, data);
+}
+
+// 在庫計算ヘルパー
+function calculateStockMatrix(transactions) {
+  const matrix = {};
+  FLEXCON_LOCATIONS.forEach(loc => {
+    matrix[loc] = {};
+    FLEXCON_ITEMS.forEach(item => {
+      matrix[loc][item.id] = { qty: 0, totalValue: 0, lastPrice: item.defaultPrice };
+    });
+  });
+
+  transactions.slice().sort((a, b) => new Date(a.date) - new Date(b.date)).forEach(tx => {
+    if (!matrix[tx.location]) return;
+    if (!matrix[tx.location][tx.item]) {
+      matrix[tx.location][tx.item] = { qty: 0, totalValue: 0, lastPrice: tx.price || 1000 };
+    }
+
+    const cell = matrix[tx.location][tx.item];
+    if (tx.price > 0) cell.lastPrice = tx.price;
+
+    if (tx.type === 'inbound') {
+      cell.qty += tx.qty;
+      cell.totalValue += (tx.qty * (tx.price || cell.lastPrice));
+    } else if (tx.type === 'outbound') {
+      cell.qty -= tx.qty;
+      cell.totalValue -= (tx.qty * (tx.price || cell.lastPrice));
+      if (cell.qty < 0) cell.qty = 0;
+      if (cell.totalValue < 0) cell.totalValue = 0;
+    }
+  });
+
+  return matrix;
+}
+
+// 1. ダッシュボード描画
+function renderFlexconDashboard(container, data) {
+  const matrix = calculateStockMatrix(data.transactions);
+
+  let grandTotalQty = 0;
+  let grandTotalValue = 0;
+  const alertItems = [];
+
+  FLEXCON_LOCATIONS.forEach(loc => {
+    FLEXCON_ITEMS.forEach(item => {
+      const cell = matrix[loc][item.id];
+      grandTotalQty += cell.qty;
+      grandTotalValue += cell.totalValue;
+
+      if (cell.qty < item.safetyStock) {
+        alertItems.push({
+          location: loc,
+          item: item,
+          currentQty: cell.qty,
+          safetyStock: item.safetyStock
+        });
+      }
+    });
+  });
+
+  container.innerHTML = `
+    <!-- 集計カード -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 20px;">
+      <div class="tool-card" style="padding: 16px;">
+        <div style="font-size: 12px; color: var(--text-secondary); font-weight: 600;">全社合計 在庫枚数</div>
+        <div style="font-size: 26px; font-weight: 800; color: var(--accent-blue); margin-top: 4px;">${grandTotalQty.toLocaleString()} <span style="font-size: 14px; font-weight: 600;">枚</span></div>
+      </div>
+      <div class="tool-card" style="padding: 16px;">
+        <div style="font-size: 12px; color: var(--text-secondary); font-weight: 600;">全社総在庫金額（評価額）</div>
+        <div style="font-size: 26px; font-weight: 800; color: var(--accent-violet); margin-top: 4px;">¥${Math.round(grandTotalValue).toLocaleString()}</div>
+      </div>
+      <div class="tool-card" style="padding: 16px; ${alertItems.length > 0 ? 'border: 1px solid rgba(239,68,68,0.3); background: rgba(239,68,68,0.03);' : ''}">
+        <div style="font-size: 12px; color: var(--text-secondary); font-weight: 600;">安全在庫アラート発生数</div>
+        <div style="font-size: 26px; font-weight: 800; color: ${alertItems.length > 0 ? '#ef4444' : 'var(--accent-green)'}; margin-top: 4px;">${alertItems.length} <span style="font-size: 14px; font-weight: 600;">件</span></div>
+      </div>
+      <div class="tool-card" style="padding: 16px;">
+        <div style="font-size: 12px; color: var(--text-secondary); font-weight: 600;">アクティブ保管拠点数</div>
+        <div style="font-size: 26px; font-weight: 800; color: var(--text-primary); margin-top: 4px;">${FLEXCON_LOCATIONS.length} <span style="font-size: 14px; font-weight: 600;">箇所</span></div>
+      </div>
+    </div>
+
+    ${alertItems.length > 0 ? `
+      <div class="alert alert-warning" style="margin-bottom: 20px; font-size: 12.5px; border-left: 4px solid #ef4444;">
+        <strong>⚠️ 安全在庫アラート通知 (${alertItems.length}件):</strong><br>
+        <ul style="margin: 6px 0 0; padding-left: 20px;">
+          ${alertItems.map(a => `<li><strong>${a.location}</strong> - ${a.item.name}: 現在 <strong>${a.currentQty} 枚</strong> (安全基準: ${a.safetyStock}枚) ── 資材発注をご検討ください。</li>`).join('')}
+        </ul>
+      </div>
+    ` : ''}
+
+    <!-- 拠点別×型番別 在庫マトリックス -->
+    <div class="tool-card">
+      <h3 style="margin-top: 0; margin-bottom: 14px;">📊 拠点別・品名型番別 在庫数および在庫金額一覧</h3>
+      <div style="overflow-x: auto;">
+        <table class="assistant-table" style="font-size: 12px; width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr style="background: var(--bg-primary); text-align: center;">
+              <th style="padding: 10px; text-align: left; min-width: 180px;">保管場所（拠点）</th>
+              ${FLEXCON_ITEMS.map(item => `
+                <th style="padding: 10px; min-width: 150px;">
+                  <div>${item.id}</div>
+                  <div style="font-size: 10px; font-weight: normal; color: var(--text-muted);">${item.name.split(' ')[0]}</div>
+                </th>
+              `).join('')}
+              <th style="padding: 10px; min-width: 140px; background: rgba(37,99,235,0.06);">拠点小計金額</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${FLEXCON_LOCATIONS.map(loc => {
+              let locTotalVal = 0;
+              return `
+                <tr>
+                  <td style="padding: 10px; font-weight: 600;">${loc}</td>
+                  ${FLEXCON_ITEMS.map(item => {
+                    const cell = matrix[loc][item.id];
+                    locTotalVal += cell.totalValue;
+                    const isAlert = cell.qty < item.safetyStock;
+                    return `
+                      <td style="padding: 10px; text-align: right; ${isAlert ? 'background: rgba(239,68,68,0.08);' : ''}">
+                        <div style="font-size: 14px; font-weight: 700; color: ${isAlert ? '#ef4444' : 'var(--text-primary)'};">${cell.qty.toLocaleString()} <span style="font-size: 11px;">枚</span></div>
+                        <div style="font-size: 11px; color: var(--text-muted);">¥${Math.round(cell.totalValue).toLocaleString()}</div>
+                      </td>
+                    `;
+                  }).join('')}
+                  <td style="padding: 10px; text-align: right; font-weight: 800; color: var(--accent-violet); background: rgba(37,99,235,0.03);">
+                    ¥${Math.round(locTotalVal).toLocaleString()}
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+// 2. 入庫（仕入）登録フォーム
+function renderFlexconInboundForm(container, data) {
+  const today = new Date().toISOString().split('T')[0];
+
+  container.innerHTML = `
+    <div class="tool-card" style="max-width: 700px; margin: 0 auto;">
+      <h3 style="margin-top: 0; margin-bottom: 16px;">📥 フレコン資材 入庫（仕入れ）登録</h3>
+      <form id="flexconInboundForm" class="tool-form">
+        <div class="tool-group">
+          <label for="inDate">入庫日（仕入れ日） <span style="color:#ef4444;">*</span></label>
+          <input type="date" id="inDate" value="${today}" required>
+        </div>
+
+        <div class="tool-group">
+          <label for="inLocation">納品先（保管場所） <span style="color:#ef4444;">*</span></label>
+          <select id="inLocation" required>
+            ${FLEXCON_LOCATIONS.map(l => `<option value="${l}">${l}</option>`).join('')}
+          </select>
+        </div>
+
+        <div class="tool-group">
+          <label for="inItem">品名（型番） <span style="color:#ef4444;">*</span></label>
+          <select id="inItem" required>
+            ${FLEXCON_ITEMS.map(i => `<option value="${i.id}">${i.name} (基準単価: ¥${i.defaultPrice})</option>`).join('')}
+          </select>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div class="tool-group">
+            <label for="inQty">入庫枚数 <span style="color:#ef4444;">*</span></label>
+            <input type="number" id="inQty" min="1" max="99999" value="100" required>
+          </div>
+          <div class="tool-group">
+            <label for="inPrice">仕入単価（税抜円） <span style="color:#ef4444;">*</span></label>
+            <input type="number" id="inPrice" min="0" step="0.1" value="1000" required>
+          </div>
+        </div>
+
+        <div class="tool-group">
+          <label for="inSupplier">仕入れ先メーカー・商社</label>
+          <select id="inSupplier">
+            ${FLEXCON_SUPPLIERS.map(s => `<option value="${s}">${s}</option>`).join('')}
+          </select>
+        </div>
+
+        <div class="tool-group">
+          <label for="inNote">備考・発注書Noなど</label>
+          <input type="text" id="inNote" placeholder="例: 発注書 2026.07.10">
+        </div>
+
+        <div style="background: var(--bg-primary); border: 1px solid var(--border-subtle); padding: 12px; border-radius: 8px; margin-top: 12px; font-size: 13px; display: flex; justify-content: space-between; align-items: center;">
+          <span>入庫小計金額:</span>
+          <strong id="inSubtotalText" style="font-size: 18px; color: var(--accent-blue);">¥100,000</strong>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="margin-top: 16px; width: 100%; padding: 10px; font-size: 14px;">📥 入庫データを登録する</button>
+      </form>
+    </div>
+  `;
+
+  const qtyIn = document.getElementById('inQty');
+  const priceIn = document.getElementById('inPrice');
+  const itemIn = document.getElementById('inItem');
+
+  function updateInSubtotal() {
+    const qty = parseInt(qtyIn.value) || 0;
+    const price = parseFloat(priceIn.value) || 0;
+    document.getElementById('inSubtotalText').textContent = `¥${Math.round(qty * price).toLocaleString()}`;
+  }
+
+  itemIn.addEventListener('change', () => {
+    const selectedItem = FLEXCON_ITEMS.find(i => i.id === itemIn.value);
+    if (selectedItem) priceIn.value = selectedItem.defaultPrice;
+    updateInSubtotal();
+  });
+
+  qtyIn.addEventListener('input', updateInSubtotal);
+  priceIn.addEventListener('input', updateInSubtotal);
+
+  document.getElementById('flexconInboundForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const newTx = {
+      id: "TX-" + Date.now().toString().slice(-6),
+      date: document.getElementById('inDate').value,
+      type: "inbound",
+      location: document.getElementById('inLocation').value,
+      item: document.getElementById('inItem').value,
+      qty: parseInt(document.getElementById('inQty').value),
+      price: parseFloat(document.getElementById('inPrice').value),
+      supplier: document.getElementById('inSupplier').value,
+      purpose: "",
+      note: document.getElementById('inNote').value
+    };
+
+    data.transactions.push(newTx);
+    saveFlexconData(data);
+    showToast("✨ 入庫データを正常に登録しました");
+    activeFlexconTab = 'dashboard';
+    renderFlexconInventory();
+  });
+}
+
+// 3. 出庫（使用）登録フォーム
+function renderFlexconOutboundForm(container, data) {
+  const today = new Date().toISOString().split('T')[0];
+
+  container.innerHTML = `
+    <div class="tool-card" style="max-width: 700px; margin: 0 auto;">
+      <h3 style="margin-top: 0; margin-bottom: 16px;">📤 フレコン資材 出荷（使用）登録</h3>
+      <form id="flexconOutboundForm" class="tool-form">
+        <div class="tool-group">
+          <label for="outDate">出荷日 / 使用日 <span style="color:#ef4444;">*</span></label>
+          <input type="date" id="outDate" value="${today}" required>
+        </div>
+
+        <div class="tool-group">
+          <label for="outLocation">使用拠点（保管場所） <span style="color:#ef4444;">*</span></label>
+          <select id="outLocation" required>
+            ${FLEXCON_LOCATIONS.map(l => `<option value="${l}">${l}</option>`).join('')}
+          </select>
+        </div>
+
+        <div class="tool-group">
+          <label for="outItem">品名（型番） <span style="color:#ef4444;">*</span></label>
+          <select id="outItem" required>
+            ${FLEXCON_ITEMS.map(i => `<option value="${i.id}">${i.name}</option>`).join('')}
+          </select>
+        </div>
+
+        <div class="tool-group">
+          <label for="outQty">使用枚数 <span style="color:#ef4444;">*</span></label>
+          <input type="number" id="outQty" min="1" max="99999" value="50" required>
+        </div>
+
+        <div class="tool-group">
+          <label for="outPurpose">使用用途・充填製品 <span style="color:#ef4444;">*</span></label>
+          <input type="text" id="outPurpose" placeholder="例: 牧草サイレージ製品充填、大豆粕パッキング出荷など" required>
+        </div>
+
+        <div class="tool-group">
+          <label for="outNote">備考</label>
+          <input type="text" id="outNote" placeholder="例: 担当〇〇作業">
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="margin-top: 16px; width: 100%; padding: 10px; font-size: 14px; background: linear-gradient(135deg, var(--accent-violet), #9333ea);">📤 出庫データを登録する</button>
+      </form>
+    </div>
+  `;
+
+  document.getElementById('flexconOutboundForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const loc = document.getElementById('outLocation').value;
+    const itemId = document.getElementById('outItem').value;
+    const qty = parseInt(document.getElementById('outQty').value);
+
+    // 在庫チェック
+    const matrix = calculateStockMatrix(data.transactions);
+    const available = matrix[loc][itemId] ? matrix[loc][itemId].qty : 0;
+    const itemObj = FLEXCON_ITEMS.find(i => i.id === itemId);
+
+    if (qty > available) {
+      alert(`⚠️ 出庫警告: ${loc} にある ${itemObj ? itemObj.name : itemId} の現在の在庫枚数は ${available} 枚です。要求枚数 (${qty} 枚) が現在庫を超過しています。`);
+    }
+
+    const newTx = {
+      id: "TX-" + Date.now().toString().slice(-6),
+      date: document.getElementById('outDate').value,
+      type: "outbound",
+      location: loc,
+      item: itemId,
+      qty: qty,
+      price: matrix[loc][itemId] ? matrix[loc][itemId].lastPrice : 1000,
+      supplier: "",
+      purpose: document.getElementById('outPurpose').value,
+      note: document.getElementById('outNote').value
+    };
+
+    data.transactions.push(newTx);
+    saveFlexconData(data);
+    showToast("📤 出庫データを正常に登録しました");
+    activeFlexconTab = 'dashboard';
+    renderFlexconInventory();
+  });
+}
+
+// 4. 入出庫全履歴帳簿
+function renderFlexconLedger(container, data) {
+  container.innerHTML = `
+    <div class="tool-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+        <h3 style="margin: 0;">📋 入出庫全履歴トランザクション帳簿</h3>
+        <button class="btn btn-secondary" id="btnResetFlexconData" style="font-size: 11px; color: #ef4444; border-color: rgba(239,68,68,0.3);">🔄 初期サンプルデータにリセット</button>
+      </div>
+
+      <div style="overflow-x: auto;">
+        <table class="assistant-table" style="font-size: 12px; width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr style="background: var(--bg-primary); text-align: left;">
+              <th style="padding: 8px;">日付</th>
+              <th style="padding: 8px;">区分</th>
+              <th style="padding: 8px;">保管場所（拠点）</th>
+              <th style="padding: 8px;">品名（型番）</th>
+              <th style="padding: 8px; text-align: right;">枚数</th>
+              <th style="padding: 8px; text-align: right;">単価</th>
+              <th style="padding: 8px; text-align: right;">小計金額</th>
+              <th style="padding: 8px;">仕入先 / 使用用途</th>
+              <th style="padding: 8px;">備考</th>
+              <th style="padding: 8px; text-align: center;">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${data.transactions.slice().reverse().map(tx => {
+              const itemObj = FLEXCON_ITEMS.find(i => i.id === tx.item);
+              const isInfo = tx.type === 'inbound';
+              const amt = tx.qty * (tx.price || 0);
+              return `
+                <tr>
+                  <td style="padding: 8px;">${tx.date}</td>
+                  <td style="padding: 8px;">
+                    <span style="padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; ${isInfo ? 'background: rgba(37,99,235,0.1); color: var(--accent-blue);' : 'background: rgba(139,92,246,0.1); color: var(--accent-violet);'}">
+                      ${isInfo ? '📥 入庫' : '📤 出庫'}
+                    </span>
+                  </td>
+                  <td style="padding: 8px;">${tx.location}</td>
+                  <td style="padding: 8px; font-weight: 600;">${itemObj ? itemObj.name : tx.item}</td>
+                  <td style="padding: 8px; text-align: right; font-weight: 700; color: ${isInfo ? 'var(--accent-blue)' : '#ef4444'};">
+                    ${isInfo ? '+' : '-'}${tx.qty.toLocaleString()} 枚
+                  </td>
+                  <td style="padding: 8px; text-align: right;">¥${(tx.price || 0).toLocaleString()}</td>
+                  <td style="padding: 8px; text-align: right; font-weight: 700;">¥${Math.round(amt).toLocaleString()}</td>
+                  <td style="padding: 8px;">${tx.supplier || tx.purpose || '-'}</td>
+                  <td style="padding: 8px; color: var(--text-muted);">${tx.note || '-'}</td>
+                  <td style="padding: 8px; text-align: center;">
+                    <button class="btn-delete-tx" data-id="${tx.id}" style="background: none; border: none; color: #ef4444; cursor: pointer;">✕</button>
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+
+  document.querySelectorAll('.btn-delete-tx').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const id = e.target.dataset.id;
+      if (confirm("このトランザクションレコードを削除してもよろしいですか？")) {
+        data.transactions = data.transactions.filter(t => t.id !== id);
+        saveFlexconData(data);
+        showToast("🗑️ レコードを削除しました");
+        renderFlexconInventory();
+      }
+    });
+  });
+
+  document.getElementById('btnResetFlexconData').addEventListener('click', () => {
+    if (confirm("初期サンプルデータにリセットしますか？入力されたデータは消去されます。")) {
+      localStorage.removeItem('cascadia_flexcon_inventory_v1');
+      renderFlexconInventory();
+    }
+  });
+}
+
+// 5. 月末棚卸し＆CSVエクスポート
+function renderFlexconCheck(container, data) {
+  const matrix = calculateStockMatrix(data.transactions);
+
+  container.innerHTML = `
+    <div class="tool-card" style="margin-bottom: 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 14px;">
+        <h3 style="margin: 0;">📑 月末実在庫 棚卸し照合・差額調整</h3>
+        <button class="btn btn-primary" id="btnExportFlexconCSV" style="background: linear-gradient(135deg, var(--accent-green), #107c41); color: #fff; padding: 8px 16px; font-size: 13px;">
+          📥 全在庫・入出庫データをCSVエクスポート
+        </button>
+      </div>
+      <p style="font-size: 12px; color: var(--text-muted); margin-top: 0; margin-bottom: 16px;">
+        各拠点の月末棚卸カウント数を入力し、システム帳簿理論在庫との差額を照合します。
+      </p>
+
+      <div style="overflow-x: auto;">
+        <table class="assistant-table" style="font-size: 12px; width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr style="background: var(--bg-primary); text-align: left;">
+              <th style="padding: 8px;">保管場所（拠点）</th>
+              <th style="padding: 8px;">品名（型番）</th>
+              <th style="padding: 8px; text-align: right;">システム理論在庫</th>
+              <th style="padding: 8px; text-align: right;">評価単価</th>
+              <th style="padding: 8px; text-align: right;">システム在庫金額</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${FLEXCON_LOCATIONS.map(loc => {
+              return FLEXCON_ITEMS.map(item => {
+                const cell = matrix[loc][item.id];
+                return `
+                  <tr>
+                    <td style="padding: 8px;">${loc}</td>
+                    <td style="padding: 8px; font-weight: 600;">${item.name}</td>
+                    <td style="padding: 8px; text-align: right; font-weight: 700;">${cell.qty.toLocaleString()} 枚</td>
+                    <td style="padding: 8px; text-align: right;">¥${cell.lastPrice.toLocaleString()}</td>
+                    <td style="padding: 8px; text-align: right; font-weight: 700; color: var(--accent-violet);">¥${Math.round(cell.totalValue).toLocaleString()}</td>
+                  </tr>
+                `;
+              }).join('');
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('btnExportFlexconCSV').addEventListener('click', () => {
+    let csv = "\uFEFF日付,区分,保管場所,品名ID,枚数,単価,金額,仕入先/用途,備考\n";
+    data.transactions.forEach(tx => {
+      csv += `"${tx.date}","${tx.type === 'inbound' ? '入庫' : '出庫'}","${tx.location}","${tx.item}",${tx.qty},${tx.price || 0},${tx.qty * (tx.price || 0)},"${tx.supplier || tx.purpose || ''}","${tx.note || ''}"\n`;
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `flexcon_inventory_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast("📄 CSVファイルをダウンロードしました");
+  });
 }
 
 

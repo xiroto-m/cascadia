@@ -3922,6 +3922,36 @@ tbody tr:last-child td {
 }
 
 /* 6. カレンダービジュアライザ */
+.multi-calendar-wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.month-block {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.month-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px dashed var(--border-subtle);
+  text-align: center;
+}
+
+.calendar-visualizer-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
 .calendar-visualizer {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -3978,6 +4008,11 @@ tbody tr:last-child td {
   opacity: 0.5;
 }
 
+.cal-day-cell.start-date {
+  border: 2px solid var(--accent-blue);
+  font-weight: 700;
+}
+
 .cal-day-cell.counted {
   background: rgba(37, 99, 235, 0.12);
   color: var(--accent-blue);
@@ -3989,6 +4024,26 @@ tbody tr:last-child td {
   color: #ffffff !important;
   font-weight: 800;
   box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+}
+
+.cal-day-cell.overdue {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #ef4444 !important;
+  font-weight: 600;
+  border: 1px dashed rgba(239, 68, 68, 0.4);
+}
+
+.cal-day-cell.pickup-target {
+  background: #8b5cf6 !important;
+  color: #ffffff !important;
+  font-weight: 800;
+  box-shadow: 0 4px 10px rgba(139, 92, 246, 0.3);
+}
+
+@media (max-width: 768px) {
+  .fee-calc-grid {
+    grid-template-columns: 1fr !important;
+  }
 }
 
 /* 7. 得意先スケジュール表更新支援ツールのスタイル */
