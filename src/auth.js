@@ -124,11 +124,11 @@ function showLogin(onSuccess) {
       .auth-logo { font-size: 64px; margin-bottom: 16px; filter: drop-shadow(0 0 15px rgba(52, 211, 153, 0.3)); }
       .auth-logo-img-wrapper {
         background: #ffffff; border-radius: 14px; padding: 10px 16px;
-        margin-bottom: 20px; display: flex; align-items: center; justify-content: center;
-        overflow: hidden; width: 100%; box-sizing: border-box;
+        margin: 0 auto 20px auto; display: flex; align-items: center; justify-content: center;
+        overflow: hidden; width: 100%; max-width: 100%; box-sizing: border-box;
       }
       .auth-logo-img {
-        max-width: 100%; width: auto; height: auto; max-height: 48px; object-fit: contain; display: block;
+        max-width: 100%; width: auto; height: auto; max-height: 48px; object-fit: contain; display: block; margin: 0 auto;
       }
       .auth-card h1 { font-size: 26px; font-weight: 800; margin: 0 0 6px; color: #34d399; letter-spacing: -0.5px; }
       .auth-card p { color: #9ca3af; font-size: 13px; margin-bottom: 28px; font-weight: 500; }

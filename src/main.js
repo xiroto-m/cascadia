@@ -96,6 +96,7 @@ function generateNavTree() {
         <a class="nav-item" data-page="ch4-px"><span class="nav-dot"></span>├ プレミックス・添加剤</a>
         <a class="nav-item" data-page="ch4-eqp"><span class="nav-dot"></span>├ 酪農機器・資材</a>
         <a class="nav-item" data-page="ch4-mowment"><span class="nav-dot"></span>├ 繁殖管理 @mowment</a>
+        <a class="nav-item" data-page="ch4-makiba"><span class="nav-dot"></span>├ 牛群管理 まきばノート</a>
         <a class="nav-item" data-page="ch4-food"><span class="nav-dot"></span>├ 飼料（その他）</a>
         <a class="nav-item" data-page="ch4-svc"><span class="nav-dot"></span>├ サービス・コンサル</a>
         <a class="nav-item" data-page="ch4-fat"><span class="nav-dot"></span>└ 脂肪酸の機能使い分け</a>
@@ -335,6 +336,7 @@ function getSalesPageTitle(pageId) {
     'ch4-px': 'プレミックス・添加剤',
     'ch4-eqp': '酪農機器・資材',
     'ch4-mowment': '繁殖管理 @mowment',
+    'ch4-makiba': '牛群管理 まきばノート',
     'ch4-food': '飼料（その他）',
     'ch4-svc': 'サービス・コンサル',
     'ch4-fat': '脂肪酸の機能使い分け',
