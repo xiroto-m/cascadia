@@ -96,6 +96,7 @@ function generateNavTree() {
         <a class="nav-item" data-page="ch4-px"><span class="nav-dot"></span>├ プレミックス・添加剤</a>
         <a class="nav-item" data-page="ch4-eqp"><span class="nav-dot"></span>├ 酪農機器・資材</a>
         <a class="nav-item" data-page="ch4-mowment"><span class="nav-dot"></span>├ 繁殖管理 @mowment</a>
+        <a class="nav-item" data-page="ch4-mowment-inv"><span class="nav-dot"></span>├ @mowment 機材・在庫管理</a>
         <a class="nav-item" data-page="ch4-makiba"><span class="nav-dot"></span>├ 牛群管理 まきばノート</a>
         <a class="nav-item" data-page="ch4-food"><span class="nav-dot"></span>├ 飼料（その他）</a>
         <a class="nav-item" data-page="ch4-svc"><span class="nav-dot"></span>├ サービス・コンサル</a>
@@ -105,6 +106,7 @@ function generateNavTree() {
         <a class="nav-item" data-page="ch5"><span class="nav-dot"></span>第5章 バックオフィス関連</a>
         <a class="nav-item" data-page="ch5-car"><span class="nav-dot"></span>├ 総務：社用車トラブル・事故対応</a>
         <a class="nav-item" data-page="ch5-hr"><span class="nav-dot"></span>├ 人事：貸与物品借用書の申請</a>
+        <a class="nav-item" data-page="ch4-mowment-inv"><span class="nav-dot"></span>├ LAT事業：@mowment 機材・在庫管理</a>
         <a class="nav-item" data-page="ch5-acct"><span class="nav-dot"></span>└ 経理：準備中</a>
       </div>
     </div>
@@ -270,6 +272,14 @@ function navigateTo(pageId, highlightSearch = null) {
     return;
   }
 
+  if (pageId === 'lat-inventory-tool') {
+    currentPath.textContent = '実務便利ツール ＞ LAT機材・在庫金額計算ツール';
+    statusBadge.textContent = '実務ツール';
+    statusBadge.className = 'status-badge status-sales-approved';
+    renderLatInventoryTool();
+    return;
+  }
+
   if (pageId === 'flexcon-inventory') {
     currentPath.textContent = '便利ツール ＞ フレコンバッグ在庫・金額管理';
     statusBadge.textContent = 'ツール';
@@ -336,6 +346,7 @@ function getSalesPageTitle(pageId) {
     'ch4-px': 'プレミックス・添加剤',
     'ch4-eqp': '酪農機器・資材',
     'ch4-mowment': '繁殖管理 @mowment',
+    'ch4-mowment-inv': '@mowment 機材・在庫管理',
     'ch4-makiba': '牛群管理 まきばノート',
     'ch4-food': '飼料（その他）',
     'ch4-svc': 'サービス・コンサル',
@@ -4016,3 +4027,235 @@ function renderFlexconCheck(container, data) {
 
 
 // Trigger build
+
+
+// --- LAT Equipment Inventory Management Interactive Tool ---
+const LAT_MASTER_ITEMS = [{"cat": "部材", "orig_cat": "部材　金額", "name": "タグケース　第4ロット　穴有", "price": 27.5, "qty": 50, "note": "消耗品費除く"}, {"cat": "部材", "orig_cat": "部材　金額", "name": "タグケース　第4ロット　穴無", "price": 27.5, "qty": 13, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "タグケース　ピンク　穴有", "price": 38.0, "qty": 590, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "タグケース　ピンク　穴無", "price": 38.0, "qty": 590, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "タグケース　透明　穴有", "price": 500.0, "qty": 17, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "タグケース　透明　穴無", "price": 500.0, "qty": 21, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "タグケース　第5ロット　穴有", "price": 42.5, "qty": 3990, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "タグケース　第5ロット　穴無", "price": 42.5, "qty": 3990, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "防水パッキン", "price": 50.0, "qty": 1780, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "防水パッキン　TRピンクタグ用", "price": 70.0, "qty": 2000, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "防水パッキン　第5ロットタグ用", "price": 98.0, "qty": 3990, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "丸リンク", "price": 159.0, "qty": 1485, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "タッピングネジ(12mm)", "price": 3.3, "qty": 16000, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "タッピングネジ(12mm)", "price": 4.2, "qty": 2000, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "タッピングネジ(16mm)", "price": 3.7, "qty": 26000, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "タッピングネジ(16mm)", "price": 4.6, "qty": 10000, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "クッション材", "price": 5.0, "qty": 10000, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "ビーコンEB10-B", "price": 4050.0, "qty": 851, "note": "LAT(R5.3)"}, {"cat": "部材", "orig_cat": "部材　金額", "name": "ビーコンEB10-B01", "price": 4800.0, "qty": 809, "note": "LAT(R5.4)"}, {"cat": "部材", "orig_cat": "部材　金額", "name": "ビーコンEB10-B01", "price": 5800.0, "qty": 4020, "note": "LAT(R5.5~R5.8)"}, {"cat": "部材", "orig_cat": "部材　金額", "name": "ビーコンEB10-B", "price": 4406.55737704918, "qty": 3050, "note": "CTI直接購入分(R7.2)"}, {"cat": "部材", "orig_cat": "部材　金額", "name": "ビーコンEB10-B", "price": 4800.0, "qty": 1000, "note": "CTI追加LAT経由(R5.9)"}, {"cat": "部材", "orig_cat": "部材　金額", "name": "ビーコンEB10-B", "price": 4800.0, "qty": 3000, "note": "CTI追加LAT経由(R5.10)"}, {"cat": "部材", "orig_cat": "部材　金額", "name": "ビーコンEB10-B", "price": 5091.0, "qty": 4794, "note": "CTI追加LAT経由(R4.12~R5.4)"}, {"cat": "部材", "orig_cat": "部材　金額", "name": "ビーコンEB10-B", "price": 4800.0, "qty": 3000, "note": "CTI直接購入分(R6.8)"}, {"cat": "部材", "orig_cat": "部材　金額", "name": "ネオジム磁石", "price": 523.5, "qty": 12, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "フリーポイント金具", "price": 150.0, "qty": 10, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "荷締めベルト", "price": 420.0, "qty": 8, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "グロメット", "price": 99.0, "qty": 36, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "タッピングトラスネジ", "price": 6.0, "qty": 92, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "ビス(抑え上手)", "price": 4.0, "qty": 600, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "プラボックス：受信機用(旧バージョン)", "price": 2890.0, "qty": 5, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "プラボックス：受信機用(新バージョン)", "price": 2890.0, "qty": 3, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "ケーブルクランプMネジ", "price": 95.0, "qty": 41, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "サージタップ(雷ガード)", "price": 600.0, "qty": 12, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "コネクタボディ(メス)", "price": 200.0, "qty": 11, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "ビニル平型コード(3m/5m)", "price": 800.0, "qty": 9, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "丸型端子", "price": 10.0, "qty": 185, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "配線ダクト", "price": 999.0, "qty": 2, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "配線ダクト（切り出し）", "price": 76.84615384615384, "qty": 2, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "L字型電源コード", "price": 499.0, "qty": 12, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "OBSVX2(菱洋)", "price": 73500.0, "qty": 37, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "OBSEX1G(菱洋)", "price": 64000.0, "qty": 1, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "プラボックス：アンテナ用", "price": 4790.0, "qty": 0, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "小ねじ(3×15)", "price": 3.5, "qty": 92, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "X1000(マクニカ)", "price": 36000.0, "qty": 19, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "X2000(マクニカ)", "price": 84000.0, "qty": 2, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "PoEインジェクタ(2口)無印", "price": 2300.0, "qty": 4, "note": "1450"}, {"cat": "部材", "orig_cat": "部材　金額", "name": "PoEインジェクタ(2口)サンワ", "price": 7600.0, "qty": 8, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "PoEインジェクタ(2口)サンワ(大)", "price": 7600.0, "qty": 2, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "LANケーブル(30cm)", "price": 1000.0, "qty": 16, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "90ｃｍ首輪(新品)", "price": 452.0, "qty": 2, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "90ｃｍ首輪(中古）", "price": 452.0, "qty": 527, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "90ｃｍ首輪(130㎝をカット)", "price": 514.0, "qty": 0, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "130cm首輪(新品)", "price": 514.0, "qty": 3490, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "130cm首輪(中古)", "price": 648.0, "qty": 0, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "リングキャッチ（新品）※2025.11 購入", "price": 333.2, "qty": 33, "note": "333.2"}, {"cat": "部材", "orig_cat": "部材　金額", "name": "リングキャッチ（中古）", "price": 260.0, "qty": 255, "note": ""}, {"cat": "部材", "orig_cat": "部材　金額", "name": "PPベルト専用金具（新品）※2025.11 購入", "price": 209.0, "qty": 133, "note": "209"}, {"cat": "部材", "orig_cat": "部材　金額", "name": "PPベルト専用金具（中古）", "price": 170.0, "qty": 130, "note": ""}, {"cat": "トライアル", "orig_cat": "トライアル　金額", "name": "第1ロットタグ", "price": 3260.0, "qty": 0, "note": ""}, {"cat": "トライアル", "orig_cat": "トライアル　金額", "name": "第2ロットタグ", "price": 5150.0, "qty": 55, "note": ""}, {"cat": "トライアル", "orig_cat": "トライアル　金額", "name": "第3ロットタグ", "price": 3260.0, "qty": 50, "note": ""}, {"cat": "トライアル", "orig_cat": "トライアル　金額", "name": "第4ロットタグ", "price": 4856.0, "qty": 84, "note": ""}, {"cat": "トライアル", "orig_cat": "トライアル　金額", "name": "トライアルタグ", "price": 4903.0, "qty": 521, "note": ""}, {"cat": "トライアル", "orig_cat": "トライアル　金額", "name": "受信機", "price": 83288.0, "qty": 19, "note": ""}, {"cat": "トライアル", "orig_cat": "トライアル　金額", "name": "高感度アンテナ", "price": 46727.0, "qty": 0, "note": ""}, {"cat": "トライアル", "orig_cat": "トライアル　金額", "name": "首輪（90㎝)", "price": 882.0, "qty": 698, "note": ""}, {"cat": "トライアル", "orig_cat": "トライアル　金額", "name": "首輪（130㎝）", "price": 1051.0, "qty": 0, "note": ""}, {"cat": "新品製品", "orig_cat": "新品製品　金額", "name": "第1ロットタグ", "price": 3260.0, "qty": 0, "note": ""}, {"cat": "新品製品", "orig_cat": "新品製品　金額", "name": "第2ロットタグ", "price": 5150.0, "qty": 3, "note": ""}, {"cat": "新品製品", "orig_cat": "新品製品　金額", "name": "第3ロットタグ", "price": 3260.0, "qty": 35, "note": ""}, {"cat": "新品製品", "orig_cat": "新品製品　金額", "name": "第4ロットタグ", "price": 4856.0, "qty": 308, "note": ""}, {"cat": "新品製品", "orig_cat": "新品製品　金額", "name": "第5ロットタグA", "price": 4233.0, "qty": 660, "note": ""}, {"cat": "新品製品", "orig_cat": "新品製品　金額", "name": "トライアルタグ", "price": 4903.0, "qty": 823, "note": ""}, {"cat": "新品製品", "orig_cat": "新品製品　金額", "name": "受信機", "price": 83288.0, "qty": 0, "note": ""}, {"cat": "新品製品", "orig_cat": "新品製品　金額", "name": "アンテナ", "price": 46727.0, "qty": 2, "note": ""}, {"cat": "新品製品", "orig_cat": "新品製品　金額", "name": "首輪（90㎝）", "price": 882.0, "qty": 0, "note": ""}, {"cat": "新品製品", "orig_cat": "新品製品　金額", "name": "首輪（90㎝）※130cmをカット", "price": 1051.0, "qty": 3, "note": ""}, {"cat": "新品製品", "orig_cat": "新品製品　金額", "name": "首輪（130㎝）", "price": 1051.0, "qty": 0, "note": ""}, {"cat": "中古製品", "orig_cat": "中古製品　金額", "name": "第1ロットタグ　中古", "price": 3260.0, "qty": 28, "note": ""}, {"cat": "中古製品", "orig_cat": "中古製品　金額", "name": "第2ロットタグ　中古", "price": 5150.0, "qty": 7, "note": ""}, {"cat": "中古製品", "orig_cat": "中古製品　金額", "name": "第3ロットタグ　中古", "price": 3260.0, "qty": 192, "note": ""}, {"cat": "中古製品", "orig_cat": "中古製品　金額", "name": "第4ロットタグ　中古", "price": 4856.0, "qty": 180, "note": ""}, {"cat": "中古製品", "orig_cat": "中古製品　金額", "name": "第5ロットタグ　中古", "price": 4233.0, "qty": 0, "note": ""}, {"cat": "中古製品", "orig_cat": "中古製品　金額", "name": "受信機　中古", "price": 83288.0, "qty": 13, "note": ""}, {"cat": "中古製品", "orig_cat": "中古製品　金額", "name": "高感度アンテナ　中古", "price": 46727.0, "qty": 7, "note": ""}, {"cat": "中古製品", "orig_cat": "中古製品　金額", "name": "首輪（90㎝）", "price": 882.0, "qty": 13, "note": ""}, {"cat": "中古製品", "orig_cat": "中古製品　金額", "name": "首輪（90㎝）※130cmをカット", "price": 1051.0, "qty": 19, "note": ""}, {"cat": "中古製品", "orig_cat": "中古製品　金額", "name": "首輪（130㎝）", "price": 1051.0, "qty": 0, "note": ""}, {"cat": "雑損・除却", "orig_cat": "故障除却タグ製品　金額　※振替伝票", "name": "第1ロット", "price": 3260.0, "qty": 0, "note": ""}, {"cat": "雑損・除却", "orig_cat": "故障除却タグ製品　金額　※振替伝票", "name": "第2ロット", "price": 5150.0, "qty": 0, "note": ""}, {"cat": "雑損・除却", "orig_cat": "故障除却タグ製品　金額　※振替伝票", "name": "第3ロット", "price": 3260.0, "qty": 0, "note": ""}, {"cat": "雑損・除却", "orig_cat": "故障除却タグ製品　金額　※振替伝票", "name": "第4ロット", "price": 4856.0, "qty": 0, "note": ""}, {"cat": "雑損・除却", "orig_cat": "故障除却タグ製品　金額　※振替伝票", "name": "第5ロット", "price": 4233.0, "qty": 0, "note": ""}, {"cat": "雑損・除却", "orig_cat": "故障除却タグ製品　金額　※振替伝票", "name": "トライアルタグ", "price": 4903.0, "qty": 0, "note": ""}, {"cat": "雑損・除却", "orig_cat": "トライアルタグ組み換え（除却）", "name": "タグケース　第4ロット　穴有", "price": 27.5, "qty": 0, "note": ""}, {"cat": "雑損・除却", "orig_cat": "トライアルタグ組み換え（除却）", "name": "タグケース　第4ロット　穴無", "price": 27.5, "qty": 0, "note": ""}, {"cat": "雑損・除却", "orig_cat": "トライアルタグ組み換え（除却）", "name": "防水パッキン", "price": 50.0, "qty": 0, "note": ""}, {"cat": "雑損・除却", "orig_cat": "トライアルタグ組み換え（除却）", "name": "タッピングネジ(12mm)", "price": 3.3, "qty": 0, "note": ""}, {"cat": "雑損・除却", "orig_cat": "トライアルタグ組み換え（除却）", "name": "タッピングネジ(16mm)", "price": 3.7, "qty": 0, "note": ""}, {"cat": "雑損・除却", "orig_cat": "第5ロットタグ組み換え（除却）", "name": "タグケース　第5ロット　穴有", "price": 27.5, "qty": 100, "note": ""}, {"cat": "雑損・除却", "orig_cat": "第5ロットタグ組み換え（除却）", "name": "タグケース　第5ロット　穴無", "price": 27.5, "qty": 100, "note": ""}, {"cat": "雑損・除却", "orig_cat": "第5ロットタグ組み換え（除却）", "name": "防水パッキン", "price": 50.0, "qty": 100, "note": ""}, {"cat": "雑損・除却", "orig_cat": "第5ロットタグ組み換え（除却）", "name": "タッピングネジ(12mm)", "price": 3.3, "qty": 0, "note": ""}, {"cat": "雑損・除却", "orig_cat": "第5ロットタグ組み換え（除却）", "name": "タッピングネジ(16mm)", "price": 3.7, "qty": 0, "note": ""}, {"cat": "雑損・除却", "orig_cat": "顧客への故障補償提供分（除却）", "name": "第1ロット", "price": 3260.0, "qty": 0, "note": ""}, {"cat": "雑損・除却", "orig_cat": "顧客への故障補償提供分（除却）", "name": "第2ロット", "price": 5150.0, "qty": 0, "note": ""}, {"cat": "雑損・除却", "orig_cat": "顧客への故障補償提供分（除却）", "name": "第3ロット", "price": 3260.0, "qty": 0, "note": ""}, {"cat": "雑損・除却", "orig_cat": "顧客への故障補償提供分（除却）", "name": "第4ロット", "price": 4856.0, "qty": 19, "note": ""}, {"cat": "雑損・除却", "orig_cat": "顧客への故障補償提供分（除却）", "name": "第5ロット", "price": 4233.0, "qty": 0, "note": ""}];
+
+function renderLatInventoryTool() {
+  const content = contentArea;
+  
+  // Load saved state or default
+  const savedData = JSON.parse(localStorage.getItem('cascadia_lat_inventory') || 'null');
+  const items = LAT_MASTER_ITEMS.map((item, idx) => {
+    const savedQty = savedData && savedData[idx] !== undefined ? savedData[idx] : item.qty;
+    return { ...item, qty: savedQty };
+  });
+
+  content.innerHTML = `
+    <div class="tool-container" style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+      <div class="section-hero" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius: 16px; padding: 28px; color: #ffffff; margin-bottom: 24px; box-shadow: 0 10px 25px -5px rgba(15,23,42,0.3);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+          <div>
+            <span class="hero-emoji">⚡</span>
+            <h1 style="margin: 8px 0; font-size: 1.8em;">LAT機材・在庫金額 集計＆推移データ作成ツール</h1>
+            <p class="hero-sub" style="margin: 0; color: #94a3b8;">棚卸数の入力、リアルタイム資産評価、推移表（☆CTI10期）転記用データのワンクリック生成</p>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button id="btnLatCopySummary" class="btn" style="background: #2563eb; color: #fff; border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: all 0.2s;">📋 転記データをコピー</button>
+            <button id="btnLatSave" class="btn" style="background: #059669; color: #fff; border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: all 0.2s;">💾 入力値を保存</button>
+            <button id="btnLatExportCsv" class="btn" style="background: #475569; color: #fff; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer;">📥 CSV出力</button>
+            <button id="btnLatReset" class="btn" style="background: #ef4444; color: #fff; border: none; padding: 10px 14px; border-radius: 8px; cursor: pointer;">🔄 リセット</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI Summary Header -->
+      <div class="kpi-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-bottom: 24px;">
+        <div class="kpi-card" style="background: #ffffff; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.04);">
+          <div style="font-size: 0.85em; color: #64748b; font-weight: bold;">📦 部材 在庫小計</div>
+          <div id="kpiCatParts" style="font-size: 1.3em; font-weight: bold; color: #0f172a; margin-top: 4px;">¥0</div>
+        </div>
+        <div class="kpi-card" style="background: #ffffff; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.04);">
+          <div style="font-size: 0.85em; color: #64748b; font-weight: bold;">🧪 トライアル 小計</div>
+          <div id="kpiCatTrial" style="font-size: 1.3em; font-weight: bold; color: #0f172a; margin-top: 4px;">¥0</div>
+        </div>
+        <div class="kpi-card" style="background: #ffffff; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.04);">
+          <div style="font-size: 0.85em; color: #64748b; font-weight: bold;">✨ 新品製品 小計</div>
+          <div id="kpiCatNew" style="font-size: 1.3em; font-weight: bold; color: #0f172a; margin-top: 4px;">¥0</div>
+        </div>
+        <div class="kpi-card" style="background: #ffffff; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.04);">
+          <div style="font-size: 0.85em; color: #64748b; font-weight: bold;">♻️ 中古製品 小計 (正規評価)</div>
+          <div id="kpiCatUsed" style="font-size: 1.3em; font-weight: bold; color: #2563eb; margin-top: 4px;">¥0</div>
+        </div>
+        <div class="kpi-card" style="background: #ffffff; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.04);">
+          <div style="font-size: 0.85em; color: #64748b; font-weight: bold;">⚠️ 雑損・除却 小計</div>
+          <div id="kpiCatLoss" style="font-size: 1.3em; font-weight: bold; color: #dc2626; margin-top: 4px;">¥0</div>
+        </div>
+        <div class="kpi-card" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 16px; border-radius: 12px; color: #ffffff; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+          <div style="font-size: 0.85em; color: #cbd5e1; font-weight: bold;">💰 在庫金額 総合計</div>
+          <div id="kpiTotalAmount" style="font-size: 1.4em; font-weight: bold; color: #38bdf8; margin-top: 4px;">¥0</div>
+        </div>
+      </div>
+
+      <!-- Filter & Search Controls -->
+      <div style="background: #ffffff; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px;">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="catFilterGroup">
+          <button class="filter-btn active" data-cat="all" style="padding: 6px 14px; border-radius: 20px; border: 1px solid #cbd5e1; background: #1e293b; color: #fff; cursor: pointer;">すべて (111)</button>
+          <button class="filter-btn" data-cat="部材" style="padding: 6px 14px; border-radius: 20px; border: 1px solid #cbd5e1; background: #f8fafc; color: #334155; cursor: pointer;">部材</button>
+          <button class="filter-btn" data-cat="トライアル" style="padding: 6px 14px; border-radius: 20px; border: 1px solid #cbd5e1; background: #f8fafc; color: #334155; cursor: pointer;">トライアル</button>
+          <button class="filter-btn" data-cat="新品製品" style="padding: 6px 14px; border-radius: 20px; border: 1px solid #cbd5e1; background: #f8fafc; color: #334155; cursor: pointer;">新品製品</button>
+          <button class="filter-btn" data-cat="中古製品" style="padding: 6px 14px; border-radius: 20px; border: 1px solid #cbd5e1; background: #f8fafc; color: #334155; cursor: pointer;">中古製品</button>
+          <button class="filter-btn" data-cat="雑損・除却" style="padding: 6px 14px; border-radius: 20px; border: 1px solid #cbd5e1; background: #f8fafc; color: #334155; cursor: pointer;">雑損・除却</button>
+        </div>
+        <input type="text" id="latSearchInput" placeholder="🔍 品名・キーワード検索..." style="padding: 8px 14px; border-radius: 8px; border: 1px solid #cbd5e1; width: 220px; font-size: 0.9em;">
+      </div>
+
+      <!-- Inventory Table -->
+      <div style="background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; overflow-x: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9em;">
+          <thead>
+            <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; color: #475569;">
+              <th style="padding: 12px 16px; width: 120px;">分類</th>
+              <th style="padding: 12px 16px;">品目名</th>
+              <th style="padding: 12px 16px; width: 110px; text-align: right;">単価（円）</th>
+              <th style="padding: 12px 16px; width: 130px; text-align: center;">当月棚卸数</th>
+              <th style="padding: 12px 16px; width: 140px; text-align: right;">小計金額</th>
+              <th style="padding: 12px 16px; width: 150px;">備考</th>
+            </tr>
+          </thead>
+          <tbody id="latTableBody">
+            <!-- Dynamic rows -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+
+  function updateTable() {
+    const filterCat = document.querySelector('#catFilterGroup .filter-btn.active')?.dataset.cat || 'all';
+    const keyword = (document.getElementById('latSearchInput')?.value || '').trim().toLowerCase();
+
+    const tbody = document.getElementById('latTableBody');
+    if (!tbody) return;
+
+    let html = '';
+    let sumParts = 0, sumTrial = 0, sumNew = 0, sumUsed = 0, sumLoss = 0;
+
+    items.forEach((item, idx) => {
+      const subtotal = item.price * item.qty;
+
+      if (item.cat === '部材') sumParts += subtotal;
+      else if (item.cat === 'トライアル') sumTrial += subtotal;
+      else if (item.cat === '新品製品') sumNew += subtotal;
+      else if (item.cat === '中古製品') sumUsed += subtotal;
+      else if (item.cat === '雑損・除却') sumLoss += subtotal;
+
+      if (filterCat !== 'all' && item.cat !== filterCat) return;
+      if (keyword && !item.name.toLowerCase().includes(keyword) && !item.cat.toLowerCase().includes(keyword)) return;
+
+      const catBadgeColor = item.cat === '中古製品' ? '#dbeafe' : (item.cat === '雑損・除却' ? '#fee2e2' : '#f1f5f9');
+      const catTextColor = item.cat === '中古製品' ? '#1e40af' : (item.cat === '雑損・除却' ? '#991b1b' : '#334155');
+
+      html += `
+        <tr style="border-bottom: 1px solid #f1f5f9;">
+          <td style="padding: 10px 16px;">
+            <span style="background: ${catBadgeColor}; color: ${catTextColor}; padding: 3px 8px; border-radius: 6px; font-weight: bold; font-size: 0.85em;">${item.cat}</span>
+          </td>
+          <td style="padding: 10px 16px; font-weight: 500; color: #0f172a;">${item.name}</td>
+          <td style="padding: 10px 16px; text-align: right; color: #475569;">¥${item.price.toLocaleString()}</td>
+          <td style="padding: 10px 16px; text-align: center;">
+            <input type="number" class="lat-qty-input" data-idx="${idx}" value="${item.qty}" min="0" style="width: 90px; padding: 6px; border: 1px solid #cbd5e1; border-radius: 6px; text-align: right; font-weight: bold; background: #fff;">
+          </td>
+          <td style="padding: 10px 16px; text-align: right; font-weight: bold; color: #0f172a;">¥${subtotal.toLocaleString()}</td>
+          <td style="padding: 10px 16px; color: #64748b; font-size: 0.85em;">${item.note || '-'}</td>
+        </tr>
+      `;
+    });
+
+    tbody.innerHTML = html;
+
+    // Update KPI Display
+    document.getElementById('kpiCatParts').textContent = '¥' + Math.round(sumParts).toLocaleString();
+    document.getElementById('kpiCatTrial').textContent = '¥' + Math.round(sumTrial).toLocaleString();
+    document.getElementById('kpiCatNew').textContent = '¥' + Math.round(sumNew).toLocaleString();
+    document.getElementById('kpiCatUsed').textContent = '¥' + Math.round(sumUsed).toLocaleString();
+    document.getElementById('kpiCatLoss').textContent = '¥' + Math.round(sumLoss).toLocaleString();
+    const grandTotal = sumParts + sumTrial + sumNew + sumUsed;
+    document.getElementById('kpiTotalAmount').textContent = '¥' + Math.round(grandTotal).toLocaleString();
+
+    // Re-bind input events
+    tbody.querySelectorAll('.lat-qty-input').forEach(input => {
+      input.addEventListener('input', (e) => {
+        const idx = parseInt(e.target.dataset.idx, 10);
+        items[idx].qty = Math.max(0, parseInt(e.target.value, 10) || 0);
+        updateTable();
+      });
+    });
+  }
+
+  updateTable();
+
+  // Filter Buttons Event
+  document.querySelectorAll('#catFilterGroup .filter-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      document.querySelectorAll('#catFilterGroup .filter-btn').forEach(b => {
+        b.classList.remove('active');
+        b.style.background = '#f8fafc';
+        b.style.color = '#334155';
+      });
+      e.target.classList.add('active');
+      e.target.style.background = '#1e293b';
+      e.target.style.color = '#ffffff';
+      updateTable();
+    });
+  });
+
+  // Search Event
+  document.getElementById('latSearchInput').addEventListener('input', updateTable);
+
+  // Save Event
+  document.getElementById('btnLatSave').addEventListener('click', () => {
+    const qtyArray = items.map(i => i.qty);
+    localStorage.setItem('cascadia_lat_inventory', JSON.stringify(qtyArray));
+    alert('✅ 棚卸入力値をブラウザに保存しました！');
+  });
+
+  // Copy Summary Event
+  document.getElementById('btnLatCopySummary').addEventListener('click', () => {
+    let sumParts = 0, sumTrial = 0, sumNew = 0, sumUsed = 0, sumLoss = 0;
+    items.forEach(i => {
+      const sub = i.price * i.qty;
+      if (i.cat === '部材') sumParts += sub;
+      else if (i.cat === 'トライアル') sumTrial += sub;
+      else if (i.cat === '新品製品') sumNew += sub;
+      else if (i.cat === '中古製品') sumUsed += sub;
+      else if (i.cat === '雑損・除却') sumLoss += sub;
+    });
+    const total = sumParts + sumTrial + sumNew + sumUsed;
+
+    const tsvText = `区分	金額（円）
+部材在庫金額	${Math.round(sumParts)}
+トライアル在庫金額	${Math.round(sumTrial)}
+新品製品在庫金額	${Math.round(sumNew)}
+中古在庫金額	${Math.round(sumUsed)}
+故障・雑損金額	${Math.round(sumLoss)}
+在庫金額合計	${Math.round(total)}`;
+    
+    navigator.clipboard.writeText(tsvText).then(() => {
+      alert('📋 【☆CTI10期在庫推移】転記用データをクリップボードにコピーしました！\nExcelの該当セルへそのまま貼り付け（Ctrl+V）できます。');
+    });
+  });
+
+  // CSV Export Event
+  document.getElementById('btnLatExportCsv').addEventListener('click', () => {
+    let csv = '\uFEFF分類,品目名,単価,棚卸数,小計金額,備考\n';
+    items.forEach(i => {
+      csv += `"${i.cat}","${i.name}",${i.price},${i.qty},${Math.round(i.price * i.qty)},"${i.note || ''}"\n`;
+    });
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `LAT機材在庫金額表_${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+  });
+
+  // Reset Event
+  document.getElementById('btnLatReset').addEventListener('click', () => {
+    if (confirm('すべての入力値を初期データにリセットしますか？')) {
+      localStorage.removeItem('cascadia_lat_inventory');
+      renderLatInventoryTool();
+    }
+  });
+}

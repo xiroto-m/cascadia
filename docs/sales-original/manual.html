@@ -2475,6 +2475,8 @@
           <a class="nav-child" data-section="ch5" onclick="navigateTo('ch5')">はじめに</a>
           <a class="nav-child" data-section="ch5-car" onclick="navigateTo('ch5-car')">🚗 総務：社用車トラブル・事故対応</a>
           <a class="nav-child" data-section="ch5-hr" onclick="navigateTo('ch5-hr')">📄 人事：貸与物品借用書の申請</a>
+          
+          <a class="nav-child" data-section="ch4-mowment-inv" onclick="navigateTo('ch4-mowment-inv')">📦 LAT事業：@mowment 機材・在庫管理</a>
           <a class="nav-child" data-section="ch5-acct" onclick="navigateTo('ch5-acct')">🪙 経理：準備中</a>
         </div>
       </div>
@@ -6270,6 +6272,148 @@
           <p style="margin:0;">「タグ1個○円」ではなく<strong>「死亡率5%→1%で年間○頭の損失を防止=年間○○万円のコスト削減」</strong>のROIで語りましょう。素牛の価格（30〜60万円）に育成コストを加えた1頭あたりの損失額から、@mowment導入による年間コスト削減額を算出するのが最も効果的です。<strong>補助金の活用</strong>で初期負担を軽減し、飼料と組合せたトータル提案が差別化のカギです。</p>
         </div>
       </div>
+      
+      <div class="section" id="sec-ch4-mowment-inv">
+        <div class="section-hero" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-radius: 16px; padding: 32px; color: #ffffff;">
+          <span class="hero-emoji">📦</span>
+          <h1>@mowment 機材・在庫管理手順（LAT事業部）</h1>
+          <p class="hero-sub">仔牛用タグ・受信機・周辺部材の月次実地棚卸、評価計算、および推移管理の標準運用手順（SOP）</p>
+        </div>
+
+        <div class="callout info" style="margin: 20px 0;">
+          <div class="callout-title">📌 LAT事業部 在庫管理の概要と目的</div>
+          <p style="margin:0;">
+            LAT事業部（ライブストックアグリテクノ）では、@mowment用のタグ（仔牛首吊り式）および関連資材の組み立て・出荷・回収を行っています。<br>
+            部材1点（ネジや丸リンク等）から実在庫をカウントし、毎月月末に確定金額を算出することで、健全な機材管理と財務推移の把握を実現しています。
+          </p>
+        </div>
+
+        
+        <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-radius: 12px; padding: 20px; color: #fff; margin: 20px 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
+          <div>
+            <div style="font-weight: bold; font-size: 1.15em; color: #38bdf8;">⚡ 実務便利ツール：LAT機材・在庫金額計算ツール</div>
+            <div style="font-size: 0.9em; color: #cbd5e1; margin-top: 4px;">111品目の棚卸数を直接入力・編集し、部材・中古品等の集計金額と推移表（☆CTI10期）転記データを一瞬で自動作成できます。</div>
+          </div>
+          <button onclick="navigateTo('lat-inventory-tool')" style="background: #2563eb; color: #ffffff; border: none; padding: 12px 24px; border-radius: 8px; font-size: 1em; font-weight: bold; cursor: pointer; transition: all 0.2s; white-space: nowrap;">⚡ 計算ツールを起動する →</button>
+        </div>
+
+        <h2><span class="h2-icon">⚙️</span> 基本管理方針と資産評価ルール</h2>
+        <div class="so-what-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 20px 0;">
+          <div class="so-what-card type-1">
+            <div class="so-what-title-container">
+              <span class="so-what-number">原則①</span>
+              <span class="so-what-title">月次実地棚卸の全件実施</span>
+            </div>
+            <div class="so-what-body">
+              毎月最終営業日に、最小部材（ネジ・丸リンク・パッキン等）から半製品・完成品タグ、受信機、貸出機材に至るまで物理的な個数カウントを実施します。
+            </div>
+          </div>
+
+          <div class="so-what-card type-2">
+            <div class="so-what-title-container">
+              <span class="so-what-number">原則②</span>
+              <span class="so-what-title">中古品（回収品）の評価規定</span>
+            </div>
+            <div class="so-what-body">
+              農家等から回収された中古品（タグ・首輪・リングキャッチ・受信機）は、清掃・検品・再組み換えにより新品同等の再利用品（リユース品）として管理されるため、<strong>社内規定により「正規単価（新品と同額）」にて在庫計上</strong>します。
+            </div>
+          </div>
+
+          <div class="so-what-card type-3">
+            <div class="so-what-title-container">
+              <span class="so-what-number">原則③</span>
+              <span class="so-what-title">故障・除却・雑損の透明化</span>
+            </div>
+            <div class="so-what-body">
+              破損品やタグ組み換え時に発生した部品損失、および顧客への故障補償提供分は、「雑損処理」または「赤伝処理」として正常在庫と区別して除却計上します。
+            </div>
+          </div>
+        </div>
+
+        <h2><span class="h2-icon">📋</span> 実務手順：月次在庫確定の3ステップ</h2>
+        <div class="table-wrapper">
+          <table style="font-size: 0.92em; text-align: left; width: 100%;">
+            <thead>
+              <tr style="background:#1e293b; color:#fff;">
+                <th style="width: 15%;">ステップ</th>
+                <th style="width: 30%;">使用ツール / 対象ファイル</th>
+                <th>実施内容・作業のポイント</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Step 1</strong><br>実棚卸と金額算出</td>
+                <td><code>★LAT在庫金額表_YYYY.MM月末時点(最新版).xlsx</code></td>
+                <td>当月末の各部材・製品・中古品・貸出機の個数を入力。「単価 × 在庫数」から部材計・製品計・中古計・集計金額を算出・確定します。</td>
+              </tr>
+              <tr>
+                <td><strong>Step 2</strong><br>推移表への転記</td>
+                <td><code>☆CTI〇期在庫11-10月金額推移(最新版)_MMDD.xlsx</code></td>
+                <td>Step 1で確定したカテゴリ別合計額（部材、製品、トライアル、中古、貸出、雑損等）を該当月の列へ転記し、年度内での金額推移を可視化します。</td>
+              </tr>
+              <tr>
+                <td><strong>Step 3</strong><br>差額確認と共有</td>
+                <td>月次報告・バックオフィス共有</td>
+                <td>前月比での大きな変動理由（大口購入、貸出回収、除却計上など）を確認・コメントし、確定データを経理・管理部門へ提出・共有します。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2><span class="h2-icon">📊</span> 在庫管理対象区分の一覧</h2>
+        <div class="table-wrapper">
+          <table style="font-size: 0.9em; text-align: left; width: 100%;">
+            <thead>
+              <tr style="background:#2e7d32; color:#fff;">
+                <th>区分</th>
+                <th>主な該当品目・内容</th>
+                <th>評価単価・基準</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>A) 部材</strong></td>
+                <td>タグケース（各種ロット）、防水パッキン、丸リンク、ネジ、ビーコン（EB10-B/B01）、プラボックス等</td>
+                <td>購入原価（仕入単価）</td>
+              </tr>
+              <tr>
+                <td><strong>B) トライアル</strong></td>
+                <td>評価・検証用として農家に貸出・設置されているタグ・受信機</td>
+                <td>正規計算単価</td>
+              </tr>
+              <tr>
+                <td><strong>D) 新品製品</strong></td>
+                <td>出荷可能な完成品状態のタグおよび周辺機器</td>
+                <td>正規完成品単価</td>
+              </tr>
+              <tr>
+                <td><strong>E) 中古製品</strong></td>
+                <td>回収後に点検・再セットアップされたタグ（第1〜5ロット）、首輪（90cm/130cm）、リングキャッチ、中古受信機</td>
+                <td><strong>正規単価（新品と同額評価）</strong></td>
+              </tr>
+              <tr>
+                <td><strong>C) 貸出機材</strong></td>
+                <td>通常貸出、北海道オリオン向けSP、IT補助金パッケージ等での運用機材</td>
+                <td>貸出パッケージ評価額</td>
+              </tr>
+              <tr>
+                <td><strong>F〜H) 除却・雑損</strong></td>
+                <td>故障品、タグ組み換え時の端数除却、顧客への補償提供分</td>
+                <td>雑損 / 赤伝処理（当期損失計上）</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout tip" style="margin-top: 25px;">
+          <div class="callout-title">💡 運用改善とワンポイントアドバイス</div>
+          <p style="margin:0;">
+            ・数式セルが誤って変更されないよう、マスターテンプレートの数式保護・入力可能セルの明示を推奨します。<br>
+            ・「中古品を正規価格で評価する」運用は社内規定として明記されており、監査・引継ぎ時もこの基準に基づいて説明を行います。
+          </p>
+        </div>
+      </div>
+
       <div class="section" id="sec-ch4-makiba">
         <div class="section-hero" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-radius: 16px; padding: 32px; color: #ffffff;">
           <div style="display: flex; align-items: center; gap: 18px; margin-bottom: 14px; flex-wrap: wrap;">
@@ -7007,6 +7151,12 @@
     <div class="card-desc">PCや携帯電話など、貸与備品の追加・変更・返却時のfreee申請手順。</div>
     <span class="card-arrow">→</span>
   </div>
+  <div class="card" onclick="navigateTo('ch4-mowment-inv')">
+    <span class="card-icon">📦</span>
+    <div class="card-title">LAT事業：@mowment 機材・在庫管理</div>
+    <div class="card-desc">部材棚卸、中古品・回収品評価ルール、月次計算・推移確定手順（SOP）。</div>
+    <span class="card-arrow">→</span>
+  </div>
   <div class="card" onclick="navigateTo('ch5-acct')">
     <span class="card-icon">🪙</span>
     <div class="card-title">経理：準備中</div>
@@ -7276,17 +7426,24 @@
       <div class="section" id="sec-ch5-acct">
 <div class="section-hero">
   <span class="hero-emoji">🪙</span>
-  <h1>経理：各種手続き（準備中）</h1>
-  <p class="hero-sub">経費精算、立替金申請、請求書発行など経理関連の手続き（順次公開予定）</p>
+  <h1>経理：各種手続き</h1>
+  <p class="hero-sub">経費精算、機材在庫評価・管理規程、立替金申請、請求書発行の手続き</p>
+</div>
+
+<h2 style="margin-top: 25px;"><span class="h2-icon">📦</span> LAT事業 機材・在庫管理規程</h2>
+<div class="card-grid" style="margin-top: 15px;">
+  <div class="card" onclick="navigateTo('ch4-mowment-inv')">
+    <span class="card-icon">📦</span>
+    <div class="card-title">LAT事業：@mowment 機材・在庫管理手順</div>
+    <div class="card-desc">月次実地棚卸、中古品（回収品）の評価単価ルール、月次財務推移の確定手順（SOP）。</div>
+    <span class="card-arrow">→</span>
+  </div>
 </div>
 
 <div class="callout info" style="margin-top: 30px;">
-  <div class="callout-title">🪙 経理セクションは現在準備中です</div>
+  <div class="callout-title">💡 その他の経理手続きについて</div>
   <p style="margin:0;">
-    経費精算や請求書発行フローなど、営業担当者から頻出する経理関連の各種手続きについては、現在有識者確認中のため、追って本セクションに追記されます。
-  </p>
-  <p style="margin-top: 10px; margin-bottom: 0;">
-    お急ぎの場合は、<strong>業務部マニュアル</strong>を参照するか、または直接経理担当までお問い合わせください。
+    一般経費精算や請求書発行フロー等については順次拡張予定です。お急ぎの場合は業務部マニュアルを参照するか、直接経理担当までお問い合わせください。
   </p>
 </div>
       </div>
@@ -7319,7 +7476,7 @@
     'ch2-analysis': { b: '飼料分析', p: 'ch2' }, 'ch2-vitmin': { b: 'ビタミン・ミネラル', p: 'ch2' },
     'appendix': { b: '付録 用語集', p: null }, 'app-pack': { b: '荷姿ガイド', p: 'appendix' },
     'ch5': { b: '第5章 バックオフィス関連', p: null }, 'ch5-car': { b: '総務：社用車トラブル・事故対応', p: 'ch5' },
-    'ch5-hr': { b: '人事：貸与物品借用書の申請', p: 'ch5' }, 'ch5-acct': { b: '経理：準備中', p: 'ch5' }
+    'ch5-hr': { b: '人事：貸与物品借用書の申請', p: 'ch5' }, 'ch5-acct': { b: '経理：準備中', p: 'ch5' }, 'ch4-mowment-inv': { b: '@mowment 機材・在庫管理', p: 'ch4' }
   };
   let cur = 'home';
   function navigateTo(id) {
