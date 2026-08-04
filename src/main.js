@@ -140,6 +140,7 @@ function generateNavTree() {
       <div class="nav-section-items">
         <a class="nav-item" data-page="date-calculator"><span class="nav-dot"></span>営業日・デマレージ計算</a>
         <a class="nav-item" data-page="schedule-assistant"><span class="nav-dot"></span>得意先スケジュール支援</a>
+        <a class="nav-item" data-page="lat-inventory-tool"><span class="nav-dot"></span>LAT機材・在庫金額計算</a>
         <a class="nav-item" data-page="flexcon-inventory"><span class="nav-dot"></span>フレコンバッグ在庫・金額管理</a>
       </div>
     </div>
