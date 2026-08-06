@@ -839,24 +839,63 @@ window.SALES_PAGES = {
     "html": `<div class="section-hero">
   <span class="hero-emoji">🚗</span>
   <h1>経理：交通費・社有車・出張費の特別精算ルール</h1>
-  <p class="hero-sub">給油カード、私有車利用、電車通勤費、ガソリン代立替、海外出張の精算手順</p>
+  <p class="hero-sub">給油カード（ENEOSビジネスカード）、私有車利用、電車通勤費、ガソリン代立替、海外出張の精算手順</p>
 </div>
 
-<h2><span class="h2-icon">💳</span> 給油カード（社有車専用カード）使用時のルール【注意】</h2>
+<h2><span class="h2-icon">💳</span> 給油カード（ENEOSビジネスカード）運用・使用ルール【重要】</h2>
+<p>業務における社有車使用に伴う給油費用精算を円滑に行うため、「給油カード（ENEOSビジネスカード）」を貸与しています。</p>
+
 <div class="callout tip">
-  <div class="callout-title">💡 給油カード利用時は「経費精算不要」</div>
+  <div class="callout-title">💡 給油カード利用時の基本ルール（精算不要）</div>
   <p style="margin:0 0 8px 0;">
-    会社から貸与されている専用給油カードを使用してガソリンを給油した場合：
+    専用給油カードを使用して給油した場合：
   </p>
   <ul style="margin:0;padding-left:18px;line-height:1.8;">
-    <li><strong style="color:var(--accent-blue);">freeeでの経費精算は一切不要です。</strong></li>
+    <li><strong style="color:var(--accent-blue);">freeeでの経費精算は一切不要です（法人直接請求）。</strong></li>
     <li>ガソリンスタンドから発行される<strong>納品書（領収書）は破棄してください</strong>。</li>
-    <li>毎月「給油カード使用報告書.xlsx」に走行距離・給油量を入力し、<strong>毎月末に「希さん」および「小野さん」宛てにメール送付</strong>してください（請求照合用）。</li>
+    <li>毎月「給油カード使用報告書.xlsx」に走行距離・給油量を入力し、<strong>毎月末日に「希さん」および「小野さん」宛てにメール送付</strong>してください（請求照合用）。</li>
   </ul>
 </div>
 
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>項目</th>
+        <th>運用ルール・注意事項</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>購入可能商品</strong></td>
+        <td><strong style="color:var(--accent-red);">ガソリン、軽油のみ</strong>（洗車・オイル交換・その他物品の購入は不可）。</td>
+      </tr>
+      <tr>
+        <td><strong>利用可能店舗</strong></td>
+        <td>全国の <strong>ENEOS サービスステーション</strong>。</td>
+      </tr>
+      <tr>
+        <td><strong>高速道路給油の注意</strong></td>
+        <td><strong style="color:var(--accent-amber);">高速道路内のENEOS SSは店頭価格が割高になるため、高速乗車前に事前給油するなどの対策を行ってください。</strong></td>
+      </tr>
+      <tr>
+        <td><strong>車両管理・転貸禁止</strong></td>
+        <td>給油カードは<strong>各車両ナンバーと個別に紐づいています</strong>。無断での転貸・他車での使用は厳禁です。</td>
+      </tr>
+      <tr>
+        <td><strong>私用利用の禁止</strong></td>
+        <td>業務上の移動目的のみ使用可能です。私用目的での使用は固く禁止（不正使用時は貸与停止および処分の対象）。</td>
+      </tr>
+      <tr>
+        <td><strong>初回受取時の手続き</strong></td>
+        <td>カード到着後、同封の「給油カード借用書」に記入の上、総務・経理（小野さん宛）へご返送ください。</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 <h2><span class="h2-icon">⛽</span> ガソリン代を現金・個人カードで立替精算する場合</h2>
-<p>給油カードが使用できず、現金や個人のクレジットカードでガソリン代を立替えた場合の手順です。</p>
+<p>給油カードが使用できないSSや緊急時に、現金・個人クレジットカードでガソリン代を立替えた場合の手順です。</p>
 <ul>
   <li>freeeにて「経費精算」申請を行ってください。</li>
   <li><strong style="color:var(--accent-red);">必ず給油した時点の「走行距離（オドメーター値）」をレシートの余白に手書きで記入して撮影・添付してください。</strong></li>
@@ -916,12 +955,20 @@ window.SALES_PAGES = {
       <span>Q1. 他の社用車やレンタカーに専用給油カードを使ってしまいました。</span><span class="accordion-arrow">▼</span>
     </div>
     <div class="accordion-body">
-      <p>原則は車両固定ですが、緊急時や代車利用時に他車で給油カードを使用した場合は、「給油カード使用報告書.xlsx」の備考欄に「〇〇（車種・ナンバー）の代車にて使用」と明記してください。</p>
+      <p>原則は車両固定ですが、緊急時や代車利用時に他車で給油カードを使用した場合は、「給油カード使用報告書.xlsx」の備考欄に「〇〇（車種・ナンバー）の代車にて使用」と明示の上、事前に小野さんへ連絡してください。</p>
     </div>
   </div>
   <div class="accordion-item">
     <div class="accordion-header" onclick="toggleAccordion(this)">
-      <span>Q2. 海外出張の帰国日翌営業日が土日祝日の場合、TTBレートはどうする？</span><span class="accordion-arrow">▼</span>
+      <span>Q2. 高速道路のサービスエリアで給油してもいいですか？</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>高速道路内のENEOS SSは店頭価格が一般道より割高になるため、原則として高速道路に乗る前に一般道のENEOSで満タン給油を行ってください。ガス欠の危険がある場合のみ緊急利用が認められます。</p>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>Q3. 海外出張の帰国日翌営業日が土日祝日の場合、TTBレートはどうする？</span><span class="accordion-arrow">▼</span>
     </div>
     <div class="accordion-body">
       <p>帰国日の翌「営業日」（銀行の営業日＝平日）のレートを適用してください。土日祝日は銀行レートが公示されないため、休み明けの最初の平日のTTBレートを採用します。</p>
