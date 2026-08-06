@@ -314,35 +314,817 @@ window.SALES_PAGES = {
     "html": "<div class=\"section-hero\"><span class=\"hero-emoji\">📦</span>\r\n          <h1>付録 ── 荷姿ガイド</h1>\r\n          <p class=\"hero-sub\">牧草・飼料の荷姿（パッケージ）の違いと選び方</p>\r\n        </div>\r\n        <h2><span class=\"h2-icon\">🌾</span> 牧草の荷姿</h2>\r\n        <p><span style=\"color:var(--accent-blue);font-weight:600;font-size:0.8rem;\">🚚\r\n            カスケディアの経験値（大型車積載）：</span><br><span\r\n            style=\"font-size:0.8rem;\">ハーフカットラップの場合、10t車で約28本（14t）、トレーラーで約40本（20t）まで積載可能。ただし現場のデバンニング（フォークの有無等）によっては10t車しか入れない農道もあるため、初回訪問時に必ず「搬入経路の道幅」をGoogle\r\n            Earth等で確認、または現地で実測しましょう。</span></p>\r\n        <div class=\"table-wrapper\">\r\n          <table>\r\n            <thead>\r\n              <tr>\r\n                <th>荷姿</th>\r\n                <th>重量目安</th>\r\n                <th>サイズ感</th>\r\n                <th>特徴</th>\r\n                <th>向いている農場</th>\r\n              </tr>\r\n            </thead>\r\n            <tbody>\r\n              <tr>\r\n                <td>ハーフカットラップ</td>\r\n                <td>約500kg</td>\r\n                <td>高さ約120cm</td>\r\n                <td>最も一般的。フィルムラップで密封。フォークリフトで扱いやすい</td>\r\n                <td>中〜大規模。TMRミキサー使用農場</td>\r\n              </tr>\r\n              <tr>\r\n                <td>ビッグベール</td>\r\n                <td>約500-600kg</td>\r\n                <td>高さ約120cm</td>\r\n                <td>ラップなし。結束バンドのみ。乾燥地域向け</td>\r\n                <td>乾燥した倉庫保管が可能な農場</td>\r\n              </tr>\r\n              <tr>\r\n                <td>ハーフカットバラ</td>\r\n                <td>ベール崩し出荷</td>\r\n                <td>—</td>\r\n                <td>ベールを崩した状態で納品。すぐにTMRに混合可能</td>\r\n                <td>TMR工場・大規模農場</td>\r\n              </tr>\r\n              <tr>\r\n                <td>シングルベール</td>\r\n                <td>約25-30kg</td>\r\n                <td>約40×50×90cm</td>\r\n                <td>1人で持てるサイズ。小分け手作業向け</td>\r\n                <td>小規模農場・個人酪農家</td>\r\n              </tr>\r\n              <tr>\r\n                <td>キューブ</td>\r\n                <td>—</td>\r\n                <td>約3-4cm角</td>\r\n                <td>圧縮成形。保管効率◎。自動給餌対応</td>\r\n                <td>TMR原料・自動化農場</td>\r\n              </tr>\r\n              <tr>\r\n                <td>ペレット</td>\r\n                <td>—</td>\r\n                <td>約1cm径</td>\r\n                <td>粒状加工。計量・混合が容易</td>\r\n                <td>配合飼料工場・TMR</td>\r\n              </tr>\r\n            </tbody>\r\n          </table>\r\n        </div>\r\n        <h2><span class=\"h2-icon\">🧪</span> 濃厚飼料・添加剤の荷姿</h2>\r\n        <div class=\"table-wrapper\">\r\n          <table>\r\n            <thead>\r\n              <tr>\r\n                <th>荷姿</th>\r\n                <th>重量</th>\r\n                <th>主な対象商品</th>\r\n                <th>注意点</th>\r\n              </tr>\r\n            </thead>\r\n            <tbody>\r\n              <tr>\r\n                <td>紙袋</td>\r\n                <td>20-30kg</td>\r\n                <td>プレミックス / ビタミン剤 / 添加剤</td>\r\n                <td>湿気に注意。屋内保管必須</td>\r\n              </tr>\r\n              <tr>\r\n                <td>フレコン</td>\r\n                <td>500-1000kg</td>\r\n                <td>ビートパルプ / グルテンフィード / 酸化Mg</td>\r\n                <td>フォークリフト必要。場所確保</td>\r\n              </tr>\r\n              <tr>\r\n                <td>タンクローリー</td>\r\n                <td>バラ積み</td>\r\n                <td>糖蜜 / 液状飼料</td>\r\n                <td>受入タンクの容量を事前確認</td>\r\n              </tr>\r\n              <tr>\r\n                <td>ドラム缶</td>\r\n                <td>200L</td>\r\n                <td>液状プロピオン酸Ca 等</td>\r\n                <td>保管温度に注意</td>\r\n              </tr>\r\n              <tr>\r\n                <td>段ボール</td>\r\n                <td>10-20kg</td>\r\n                <td>代用乳 / 少量添加剤</td>\r\n                <td>積み重ね保管してOK</td>\r\n              </tr>\r\n            </tbody>\r\n          </table>\r\n        </div>\r\n        <div class=\"callout tip\">\r\n          <div class=\"callout-title\">💡 荷姿提案のコツ</div>\r\n          <p style=\"margin:0;\">荷姿の選択は「給餌方式」と「保管環境」で決まります。初回訪問時に<strong>①TMRミキサーの有無 ②倉庫の広さ\r\n              ③フォークリフトの有無</strong>を確認しておくと、最適な荷姿をスムーズに提案できます。</p>\r\n        </div>\r\n      </div>"
   },
   "ch5": {
-    "html": "<div class=\"section-hero\">\r\n  <span class=\"hero-emoji\">💼</span>\r\n  <h1>第5章 バックオフィス関連（総務・経理・人事）</h1>\r\n  <p class=\"hero-sub\">営業活動を円滑に進めるための、社内手続き・申請・トラブル対応のガイドライン</p>\r\n</div>\r\n<h2><span class=\"h2-icon\">📚</span> セクション一覧</h2>\r\n<div class=\"card-grid\">\r\n  <div class=\"card\" onclick=\"navigateTo('ch5-car')\">\r\n    <span class=\"card-icon\">🚗</span>\r\n    <div class=\"card-title\">総務：社用車トラブル・事故対応</div>\r\n    <div class=\"card-desc\">事故や故障時の緊急連絡先、対応フロー、車両事故報告書の提出方法。</div>\r\n    <span class=\"card-arrow\">→</span>\r\n  </div>\r\n  <div class=\"card\" onclick=\"navigateTo('ch5-hr')\">\r\n    <span class=\"card-icon\">📄</span>\r\n    <div class=\"card-title\">人事：貸与物品借用書の申請</div>\r\n    <div class=\"card-desc\">PCや携帯電話など、貸与備品の追加・変更・返却時のfreee申請手順。</div>\r\n    <span class=\"card-arrow\">→</span>\r\n  </div>\r\n  <div class=\"card\" onclick=\"navigateTo('ch4-mowment-inv')\">\r\n    <span class=\"card-icon\">📦</span>\r\n    <div class=\"card-title\">LAT事業：@mowment 機材・在庫管理</div>\r\n    <div class=\"card-desc\">部材棚卸、中古品・回収品評価ルール、月次計算・推移確定手順（SOP）。</div>\r\n    <span class=\"card-arrow\">→</span>\r\n  </div>\r\n  <div class=\"card\" onclick=\"navigateTo('ch5-acct')\">\r\n    <span class=\"card-icon\">🪙</span>\r\n    <div class=\"card-title\">経理：各種手続き</div>\r\n    <div class=\"card-desc\">経費精算、機材在庫評価・管理規程、立替金申請、請求書発行の手続き。</div>\r\n    <span class=\"card-arrow\">→</span>\r\n  </div>\r\n</div>\r\n<div class=\"callout info\">\r\n  <div class=\"callout-title\">💡 バックオフィスとの連携</div>\r\n  <p style=\"margin:0;\">\r\n    営業活動はバックオフィスの支えがあって成り立っています。トラブル発生時や備品が必要になった際は、放置せず速やかに所定の手続きを行いましょう。\r\n  </p>\r\n</div>"
-  },
-  "ch5-car": {
-    "html": "<div class=\"section-hero\">\r\n  <span class=\"hero-emoji\">🚗</span>\r\n  <h1>総務：社用車トラブル・事故対応</h1>\r\n  <p class=\"hero-sub\">万が一の事故や故障の際、冷静かつ迅速に対応するための手順と連絡先</p>\r\n</div>\r\n\r\n<h2><span class=\"h2-icon\">⚠️</span> 交通事故が発生した場合の緊急手順</h2>\r\n<p>交通事故が発生した場合、物損事故や単独事故であっても、以下の手順で速やかに対応してください。</p>\r\n<div class=\"accordion\">\r\n  <div class=\"accordion-item open\">\r\n    <div class=\"accordion-header\" onclick=\"toggleAccordion(this)\">\r\n      <span>① 安全確保と救急要請</span><span class=\"accordion-arrow\">▼</span>\r\n    </div>\r\n    <div class=\"accordion-body\">\r\n      <p><strong>怪我人がいる場合は、最優先で救急車（119）を呼んでください。</strong></p>\r\n      <p>二次災害を防ぐため、他の交通への影響を避ける安全な場所へ車両を移動してください（可能な範囲で）。</p>\r\n    </div>\r\n  </div>\r\n  <div class=\"accordion-item\">\r\n    <div class=\"accordion-header\" onclick=\"toggleAccordion(this)\">\r\n      <span>② 警察（110）への連絡</span><span class=\"accordion-arrow\">▼</span>\r\n    </div>\r\n    <div class=\"accordion-body\">\r\n      <p><strong>事故の大小に関わらず、速やかに警察（110）へ通報してください。</strong>（物損事故・自損事故・単独事故の場合でも、後日の手続きや保険適用のために警察への連絡は必須です。）</p>\r\n    </div>\r\n  </div>\r\n  <div class=\"accordion-item\">\r\n    <div class=\"accordion-header\" onclick=\"toggleAccordion(this)\">\r\n      <span>③ リース会社・保険会社への連絡</span><span class=\"accordion-arrow\">▼</span>\r\n    </div>\r\n    <div class=\"accordion-body\">\r\n      <p>ご自身の乗っている車両が「リース車」か「購入車」かを確認し、以下へ連絡してください。（リース車の場合、車内にトラブル対応資料が保管されています。）</p>\r\n      <div class=\"table-wrapper\">\r\n        <table>\r\n          <thead>\r\n            <tr>\r\n              <th>対象・会社</th>\r\n              <th>窓口・連絡先</th>\r\n              <th>受付時間</th>\r\n            </tr>\r\n          </thead>\r\n          <tbody>\r\n            <tr>\r\n              <td><strong>トヨタレンタリース新埼玉</strong><br>（リース車両）</td>\r\n              <td>サポートダイヤル24：<br><strong>0800-7000729</strong>（無料）</td>\r\n              <td>24時間365日</td>\r\n            </tr>\r\n            <tr>\r\n              <td><strong>トヨタレンタリース福岡</strong><br>（リース車両）</td>\r\n              <td>ドライバーズガイドブック記載の指定工場、または<br>ニシデロードサービス24：<strong>0120-543-999</strong></td>\r\n              <td>24時間365日</td>\r\n            </tr>\r\n            <tr>\r\n              <td><strong>損害保険ジャパン(株)</strong><br>（保険会社）</td>\r\n              <td>事故サポートセンター：<br><strong>0120-256-110</strong></td>\r\n              <td>24時間365日</td>\r\n            </tr>\r\n            <tr>\r\n              <td><strong>損害保険ジャパン(株)</strong><br>（ロードサービス）</td>\r\n              <td>ロードアシスタンス専用デスク：<br><strong>0120-365-110</strong></td>\r\n              <td>24時間365日</td>\r\n            </tr>\r\n          </tbody>\r\n        </table>\r\n      </div>\r\n    </div>\r\n  </div>\r\n  <div class=\"accordion-item\">\r\n    <div class=\"accordion-header\" onclick=\"toggleAccordion(this)\">\r\n      <span>④ 現場の記録と情報確保</span><span class=\"accordion-arrow\">▼</span>\r\n    </div>\r\n    <div class=\"accordion-body\">\r\n      <p>現場や相手・自車の破損状況をスマートフォンなどで撮影してください。</p>\r\n      <p>相手方の情報（氏名、連絡先、住所、車両ナンバー、車種、保険会社等）を確実に記録し、会話内容のメモも残してください。</p>\r\n    </div>\r\n  </div>\r\n  <div class=\"accordion-item\">\r\n    <div class=\"accordion-header\" onclick=\"toggleAccordion(this)\">\r\n      <span>⑤ 社内報告と事故報告書の提出</span><span class=\"accordion-arrow\">▼</span>\r\n    </div>\r\n    <div class=\"accordion-body\">\r\n      <p>所属部署の責任者（上長）へ、発生日時・場所・状況概要・現在の対応状況を速やかに報告してください。</p>\r\n      <p>事故処理後、速やかに<strong>「車両事故報告書」</strong>を作成し、メールにて提出してください。</p>\r\n      <p><strong>提出先：石井社長・希さん・上長（CC：小野）</strong></p>\r\n    </div>\r\n  </div>\r\n</div>\r\n\r\n<h2><span class=\"h2-icon\">🔧</span> 車両が故障した場合の手順</h2>\r\n<p>社用車の走行中に異音が発生した、パンクした、警告灯が点灯した等の故障トラブル時の手順です。</p>\r\n<div class=\"accordion\">\r\n  <div class=\"accordion-item\">\r\n    <div class=\"accordion-header\" onclick=\"toggleAccordion(this)\">\r\n      <span>① 安全な場所への停車</span><span class=\"accordion-arrow\">▼</span>\r\n    </div>\r\n    <div class=\"accordion-body\">\r\n      <p>車両を安全な場所へ移動し、ハザードランプを点灯するなど周囲の交通に支障が出ないよう配慮してください。</p>\r\n    </div>\r\n  </div>\r\n  <div class=\"accordion-item\">\r\n    <div class=\"accordion-header\" onclick=\"toggleAccordion(this)\">\r\n      <span>② リース会社・JAFへの連絡</span><span class=\"accordion-arrow\">▼</span>\r\n    </div>\r\n    <div class=\"accordion-body\">\r\n      <p>リース車の場合は上記の各リース会社へ連絡。購入車またはJAF対応が必要な場合は以下へ連絡してください。</p>\r\n      <ul>\r\n        <li><strong>JAFロードサービス救援コール</strong>：<strong>0570-00-8139</strong></li>\r\n        <li>JAF短縮ダイヤル（固定・携帯から）：<strong>#8139</strong></li>\r\n      </ul>\r\n    </div>\r\n  </div>\r\n  <div class=\"accordion-item\">\r\n    <div class=\"accordion-header\" onclick=\"toggleAccordion(this)\">\r\n      <span>③ 社内報告と報告書の提出</span><span class=\"accordion-arrow\">▼</span>\r\n    </div>\r\n    <div class=\"accordion-body\">\r\n      <p>上長へ発生日時・場所・故障内容（バッテリー上がり、エンジン停止など）を報告のうえ、<strong>「車両事故報告書」</strong>をメールにて提出してください（宛先は事故時と同様）。</p>\r\n    </div>\r\n  </div>\r\n</div>\r\n\r\n<h2><span class=\"h2-icon\">📋</span> 社用車一覧と管理番号（2026年7月現在）</h2>\r\n<div class=\"table-wrapper\">\r\n  <table>\r\n    <thead>\r\n      <tr>\r\n        <th>NO.</th>\r\n        <th>リース会社/購入車</th>\r\n        <th>車両ナンバー</th>\r\n        <th>車種</th>\r\n      </tr>\r\n    </thead>\r\n    <tbody>\r\n      <tr>\r\n        <td>1</td>\r\n        <td>トヨタレンタリース新埼玉</td>\r\n        <td>大宮431な1005</td>\r\n        <td>プロボックス</td>\r\n      </tr>\r\n      <tr>\r\n        <td>2</td>\r\n        <td>トヨタレンタリース新埼玉</td>\r\n        <td>帯広400そ5345</td>\r\n        <td>プロボックス</td>\r\n      </tr>\r\n      <tr>\r\n        <td>3</td>\r\n        <td>トヨタレンタリース新埼玉</td>\r\n        <td>鹿児島400な6126</td>\r\n        <td>プロボックス</td>\r\n      </tr>\r\n      <tr>\r\n        <td>4</td>\r\n        <td>トヨタレンタリース新埼玉</td>\r\n        <td>熊本400ね1943</td>\r\n        <td>プロボックス</td>\r\n      </tr>\r\n      <tr>\r\n        <td>5</td>\r\n        <td>トヨタレンタリース福岡</td>\r\n        <td>熊本301や2304</td>\r\n        <td>サクシード</td>\r\n      </tr>\r\n      <tr>\r\n        <td>6</td>\r\n        <td>トヨタレンタリース福岡</td>\r\n        <td>熊本400ね・・53</td>\r\n        <td>プリウス</td>\r\n      </tr>\r\n      <tr>\r\n        <td>7</td>\r\n        <td>購入車</td>\r\n        <td>帯広500ほ2868</td>\r\n        <td>フィット</td>\r\n      </tr>\r\n      <tr>\r\n        <td>8</td>\r\n        <td>購入車</td>\r\n        <td>青森100せ2924</td>\r\n        <td>トラック</td>\r\n      </tr>\r\n      <tr>\r\n        <td>9</td>\r\n        <td>購入車</td>\r\n        <td>鹿児島400と6948</td>\r\n        <td>バネット</td>\r\n      </tr>\r\n    </tbody>\r\n  </table>\r\n</div>\r\n\r\n<div class=\"callout tip\">\r\n  <div class=\"callout-title\">📝 報告用ファイルのダウンロード・場所</div>\r\n  <p style=\"margin:0;\">\r\n    報告書の提出が必要な場合は、総務・経理・人事関連フォルダ内の <a href=\"./backoffice-docs/car-accident-report.xls\" target=\"_blank\">★車両事故報告書.xls</a> を使用してください。\r\n  </p>\r\n</div>"
-  },
-  "ch5-hr": {
-    "html": "<div class=\"section-hero\">\r\n  <span class=\"hero-emoji\">📄</span>\r\n  <h1>人事：貸与物品借用書の申請</h1>\r\n  <p class=\"hero-sub\">PC、携帯電話、社用車などの備品貸与・追加・変更・返却時における「freee人事労務」での申請手続き</p>\r\n</div>\r\n\r\n<h2><span class=\"h2-icon\">📝</span> 申請のタイミング</h2>\r\n<p>以下の場合に、必ず「freee人事労務」から貸与物品の申請を行ってください。</p>\r\n<ul>\r\n  <li><strong>入社時</strong>：PC、スマートフォン、社用車、名刺、鍵などの初期備品貸与</li>\r\n  <li><strong>追加・変更時</strong>：業務都合による備品の追加（例：追加のディスプレイ等）、または交換時</li>\r\n  <li><strong>返却時</strong>：退職または備品が不要になり返却する際</li>\r\n</ul>\r\n\r\n<h2><span class=\"h2-icon\">💻</span> freee人事労務での申請ステップ</h2>\r\n<div class=\"accordion\">\r\n  <div class=\"accordion-item open\">\r\n    <div class=\"accordion-header\" onclick=\"toggleAccordion(this)\">\r\n      <span>① 申請の新規作成</span><span class=\"accordion-arrow\">▼</span>\r\n    </div>\r\n    <div class=\"accordion-body\">\r\n      <p>freee人事労務にログインし、「マイ申請」または「各種申請」から<strong>「新規作成」</strong>をクリックします。</p>\r\n    </div>\r\n  </div>\r\n  <div class=\"accordion-item\">\r\n    <div class=\"accordion-header\" onclick=\"toggleAccordion(this)\">\r\n      <span>② 申請種別の選択</span><span class=\"accordion-arrow\">▼</span>\r\n    </div>\r\n    <div class=\"accordion-body\">\r\n      <p>申請カテゴリの中から<strong>「身上変更」</strong>タブを選択し、申請書一覧から<strong>「貸与物品借用書」</strong>を選択します。</p>\r\n    </div>\r\n  </div>\r\n  <div class=\"accordion-item\">\r\n    <div class=\"accordion-header\" onclick=\"toggleAccordion(this)\">\r\n      <span>③ 項目入力と書類添付</span><span class=\"accordion-arrow\">▼</span>\r\n    </div>\r\n    <div class=\"accordion-body\">\r\n      <p>表示された申請画面に従って、貸与される物品名、個数、シリアル番号などの各項目を入力します。</p>\r\n      <div class=\"callout important\">\r\n        <div class=\"callout-title\">⚠️ 添付書類（借用書）の準備</div>\r\n        <p style=\"margin:0;\">\r\n          事前に総務からメール等で送付された「借用書」ファイル（記名・押印またはサイン済のもの）を、添付書類欄にアップロードしてください。<br>\r\n          マニュアルは総務・経理・人事関連フォルダ内の <a href=\"./backoffice-docs/freee-hr-loan-request.pdf\" target=\"_blank\">freee人事労務‗貸与物品借用書申請.pdf</a> からも確認できます。\r\n        </p>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>"
-  },
-  "ch5-acct": {
     "html": `<div class="section-hero">
-  <span class="hero-emoji">🪙</span>
-  <h1>経理：各種手続き</h1>
-  <p class="hero-sub">経費精算、機材在庫評価・管理規程、立替金申請、請求書発行の手続き</p>
+  <span class="hero-emoji">💼</span>
+  <h1>第5章 バックオフィス関連（人事・経理・総務）</h1>
+  <p class="hero-sub">社内手続き・freee各種申請・勤怠管理・精算ルールの総合ガイドライン</p>
 </div>
 
-<h2 style="margin-top: 25px;"><span class="h2-icon">📦</span> LAT事業 機材・在庫管理規程</h2>
-<div class="card-grid" style="margin-top: 15px;">
-  <div class="card" onclick="navigateTo('ch4-mowment-inv')">
-    <span class="card-icon">📦</span>
-    <div class="card-title">LAT事業：@mowment 機材・在庫管理手順</div>
-    <div class="card-desc">月次実地棚卸、中古品（回収品）の評価単価ルール、月次財務推移の確定手順（SOP）。</div>
-    <span class="card-arrow">→</span>
+<h2><span class="h2-icon">📅</span> 毎月のバックオフィス締め日・重要スケジュール</h2>
+<p>毎月のスムーズな給与計算・経理締めのため、以下のスケジュールと期日を必ず厳守してください。</p>
+
+<div class="mow-timeline">
+  <div class="mow-timeline-item">
+    <div class="tl-day" style="color:var(--accent-blue);">毎月 20日 頃</div>
+    <div class="tl-desc"><strong>前月分 給与・賞与明細の発行</strong><br>freee人事労務にて明細が公開されます。通知メールまたはアプリ/LINEよりご確認ください。</div>
+  </div>
+  <div class="mow-timeline-item alert-point" style="border-left-color:var(--accent-amber);">
+    <div class="tl-day" style="color:var(--accent-amber);">毎月 月末日（最終営業日）</div>
+    <div class="tl-desc"><strong>当月勤怠入力完了 ＆ 給油カード報告送付</strong><br>・当月の打刻漏れ・休憩・休暇申請をすべて入力。<br>・専用給油カード利用者は「給油カード使用報告書.xlsx」を希さん・小野さんへメール送付。</div>
+  </div>
+  <div class="mow-timeline-item alert-point" style="border-left-color:var(--accent-red);">
+    <div class="tl-day" style="color:var(--accent-red);">翌月 1営業日（最優先）</div>
+    <div class="tl-desc"><strong>「月次勤怠締め申請」提出 ＆ 請求書原本発送</strong><br>・freee人事労務にて「月次勤怠締め申請（申請経路：希さん）」を送信。<br>・工場・各オフィスはタイムカードや請求書原本を本社へ発送・手渡し。</div>
   </div>
 </div>
 
-<div class="callout info" style="margin-top: 30px;">
-  <div class="callout-title">💡 その他の経理手続きについて</div>
+<h2><span class="h2-icon">📁</span> 各種申請書フォーマット・テンプレートダウンロード集</h2>
+<p>精算・報告に必要な各種様式ファイルです。クリックして確認・入手してください。</p>
+
+<div class="card-grid">
+  <div class="card" onclick="window.open('./backoffice-docs/car-accident-report.xls', '_blank')">
+    <span class="card-icon">🚗</span>
+    <div class="card-title">★車両事故報告書.xls</div>
+    <div class="card-desc">社用車の事故・故障発生時に作成。石井社長・希さん・上長へメール提出（CC:小野）。</div>
+    <span class="card-arrow">↓</span>
+  </div>
+  <div class="card" onclick="window.open('./backoffice-docs/freee-hr-loan-request.pdf', '_blank')">
+    <span class="card-icon">📄</span>
+    <div class="card-title">freee人事労務_貸与物品借用書申請.pdf</div>
+    <div class="card-desc">PC・携帯・社用車等の備品受領・返却手続きマニュアル。</div>
+    <span class="card-arrow">↓</span>
+  </div>
+  <div class="card" onclick="window.open('./backoffice-docs/private-car-report.xlsx', '_blank')">
+    <span class="card-icon">🚘</span>
+    <div class="card-title">私有自動車実績報告書.xlsx</div>
+    <div class="card-desc">マイカー業務利用時の走行距離報告（15円/km）。freee精算に添付。</div>
+    <span class="card-arrow">↓</span>
+  </div>
+  <div class="card" onclick="window.open('./backoffice-docs/train-commute-report.xlsx', '_blank')">
+    <span class="card-icon">🚃</span>
+    <div class="card-title">電車通勤費報告書.xlsx</div>
+    <div class="card-desc">都度精算対象者の電車通勤費実績報告書。</div>
+    <span class="card-arrow">↓</span>
+  </div>
+  <div class="card" onclick="window.open('./backoffice-docs/gas-card-report.xlsx', '_blank')">
+    <span class="card-icon">💳</span>
+    <div class="card-title">給油カード使用報告書.xlsx</div>
+    <div class="card-desc">社用車専用給油カード利用時の月次報告書（月末希さん・小野さん宛メール送付）。</div>
+    <span class="card-arrow">↓</span>
+  </div>
+  <div class="card" onclick="window.open('./backoffice-docs/travel-expense-report.xlsx', '_blank')">
+    <span class="card-icon">✈️</span>
+    <div class="card-title">出張旅費申請書兼精算書（国内・海外）.xlsx</div>
+    <div class="card-desc">宿泊を伴う出張の日当・宿泊費計算書。freee出張申請に添付。</div>
+    <span class="card-arrow">↓</span>
+  </div>
+</div>
+
+<h2><span class="h2-icon">📚</span> 各セクション一覧</h2>
+<div class="card-grid">
+  <div class="card" onclick="navigateTo('ch5-hr')">
+    <span class="card-icon">👥</span>
+    <div class="card-title">人事：freee人事労務マニュアル</div>
+    <div class="card-desc">勤怠打刻・月次締め申請（希さん宛）・有休・振替休日/代休・身上変更・年末調整。</div>
+    <span class="card-arrow">→</span>
+  </div>
+  <div class="card" onclick="navigateTo('ch5-acct')">
+    <span class="card-icon">💴</span>
+    <div class="card-title">経理：freee申請・精算マニュアル</div>
+    <div class="card-desc">出張・交際費・稟議・購買・押印・契約等の事前申請とレシート紐付け経費精算。</div>
+    <span class="card-arrow">→</span>
+  </div>
+  <div class="card" onclick="navigateTo('ch5-pay')">
+    <span class="card-icon">📄</span>
+    <div class="card-title">経理：freee支払依頼・請求書提出</div>
+    <div class="card-desc">請求書受領時の支払依頼申請フローと拠点別原本提出ルール（本社・工場・オフィス）。</div>
+    <span class="card-arrow">→</span>
+  </div>
+  <div class="card" onclick="navigateTo('ch5-expense-rules')">
+    <span class="card-icon">🚗</span>
+    <div class="card-title">経理：交通費・社有車・出張費ルール</div>
+    <div class="card-desc">給油カード（精算不要・月末報告）、私有車（15円/km）、電車通勤、海外旅費（TTB換算）。</div>
+    <span class="card-arrow">→</span>
+  </div>
+  <div class="card" onclick="navigateTo('ch5-car')">
+    <span class="card-icon">🚘</span>
+    <div class="card-title">総務：社用車トラブル・事故対応</div>
+    <div class="card-desc">事故や故障時の緊急連絡先、対応フロー、車両事故報告書の提出方法。</div>
+    <span class="card-arrow">→</span>
+  </div>
+  <div class="card" onclick="navigateTo('ch4-mowment-inv')">
+    <span class="card-icon">📦</span>
+    <div class="card-title">LAT事業：@mowment 機材・在庫管理</div>
+    <div class="card-desc">部材棚卸、中古品・回収品評価ルール、月次計算・推移確定手順（SOP）。</div>
+    <span class="card-arrow">→</span>
+  </div>
+</div>`
+  },
+  "ch5-hr": {
+    "html": `<div class="section-hero">
+  <span class="hero-emoji">👥</span>
+  <h1>人事：freee人事労務マニュアル</h1>
+  <p class="hero-sub">勤怠打刻、月次締め申請、休暇・勤怠申請、身上変更、給料明細確認、年末調整の手続き</p>
+</div>
+
+<h2><span class="h2-icon">🌟</span> freee人事労務とは・従業員ができること</h2>
+<p>「freee人事労務」は、勤怠管理・給与計算・年末調整・社会保険手続きなど、人事労務の業務をクラウド上で一元管理するシステムです。スマホやPCから簡単に打刻や各種申請が行えます。</p>
+
+<div class="card-grid">
+  <div class="reverse-card">
+    <div class="rc-header"><span class="rc-icon">⏰</span><span class="rc-title">勤怠打刻・修正</span></div>
+    <p style="font-size:0.85rem;color:var(--text-secondary);">ワンタップで出退勤を記録。打刻忘れ時は理由を添えて修正申請。</p>
+  </div>
+  <div class="reverse-card">
+    <div class="rc-header"><span class="rc-icon">📅</span><span class="rc-title">休暇・勤怠申請</span></div>
+    <p style="font-size:0.85rem;color:var(--text-secondary);">有休、残業、遅刻・早退、振替休日、代休などをオンラインで申請。</p>
+  </div>
+  <div class="reverse-card">
+    <div class="rc-header"><span class="rc-icon">💰</span><span class="rc-title">給与・賞与明細</span></div>
+    <p style="font-size:0.85rem;color:var(--text-secondary);">毎月の給与明細・賞与明細をオンラインでいつでも閲覧・ダウンロード。</p>
+  </div>
+  <div class="reverse-card">
+    <div class="rc-header"><span class="rc-icon">📝</span><span class="rc-title">年末調整・身上変更</span></div>
+    <p style="font-size:0.85rem;color:var(--text-secondary);">スマホで質問に回答しアンケート形式で年末調整完了。住所・扶養・口座変更も対応。</p>
+  </div>
+</div>
+
+<h2><span class="h2-icon">🔑</span> ログイン・初期設定</h2>
+<div class="accordion">
+  <div class="accordion-item open">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>① アカウント登録（初回ログイン）</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>1. 会社から届く招待メール内の「アカウント登録」をクリックします。</p>
+      <p>2. メールアドレス（招待メール宛）と任意のパスワードを設定します。<br>
+      <strong style="color:var(--accent-blue);">※ freee会計ログイン時にも同じパスワードが必要となります。忘れないようご注意ください。</strong></p>
+      <p>3. ログイン後、入社フォームに従って基本情報・緊急連絡先（必須）を入力します。</p>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>② アプリ・LINE連携（おすすめ機能）</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>スマホアプリ「freee人事労務」をインストールすることで、PCを開かずに打刻・申請・明細確認が可能です。</p>
+      <p>また、個人のLINEと連携設定を行うと、LINE上で出退勤打刻や明細発行通知の受け取りが行えます。</p>
+    </div>
+  </div>
+</div>
+
+<h2><span class="h2-icon">⏰</span> 勤怠入力と「月次勤怠締め申請」【重要】</h2>
+<p>毎日の出退勤打刻（ホーム ＞ 勤怠 ＞ 出勤 / 退勤）を行い、打刻漏れがある場合は「修正」ボタンより理由を入力して保存します。</p>
+
+<div class="callout important">
+  <div class="callout-title">⚠️ 月次勤怠締め申請の手順とルール</div>
+  <p style="margin:0 0 8px 0;">
+    毎月人事にて給与計算を行うため、月末に自身の勤怠入力が完了したら必ず「月次勤怠締め申請」を行ってください。
+  </p>
+  <ul style="margin:0;padding-left:18px;line-height:1.8;">
+    <li><strong>申請タイミング</strong>：月末日終業後すぐに（遅くとも翌月1営業日までに申請）。</li>
+    <li><strong>申請前チェック</strong>：
+      ① 勤務時間に間違いがないか<br>
+      ② 毎日「休憩」が正しく入力されているか<br>
+      ③ エラーメッセージが表示されていないか
+    </li>
+    <li><strong>申請経路指定【重要】</strong>：申請経路は希さんに直接届くよう、必ず <strong>「【給与計算】【毎月の勤怠締め処理】＿申請を作成」</strong> を選択してください。</li>
+  </ul>
+</div>
+
+<h2><span class="h2-icon">🌴</span> 勤怠に関する各種申請（事前連絡必須）</h2>
+<p>残業・有休・欠勤・休日出勤等は、<strong>必ず事前に上司へ相談・連絡を行った上で</strong>申請を作成してください。</p>
+
+<h3>「振替休日」と「代休」の決定的な違い</h3>
+<p>土・日・祝日などの休日に出勤する場合、運用が異なります。違いを正しく理解して申請してください。</p>
+
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>項目</th>
+        <th>振替休日（事前の交換）</th>
+        <th>代休（事後の代償休）</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>定義</strong></td>
+        <td>あらかじめ休日と定められた日を労働日とし、代わりに他の労働日を休日にすること（事前の交換）。</td>
+        <td>休日労働を行った代償として、以後の特定の労働日を休みにすること（事後的な休み）。</td>
+      </tr>
+      <tr>
+        <td><strong>適用の条件</strong></td>
+        <td><strong>振替日が事前に確定している場合</strong>に申請。</td>
+        <td><strong>振替日が事前確定していない場合</strong>に、まず「休日出勤」申請を行い後日取得。</td>
+      </tr>
+      <tr>
+        <td><strong>割増賃金</strong></td>
+        <td>もとの休日は「労働日」となるため<strong>休日割増手当は発生しない</strong>（※週40時間を超える場合は時間外手当発生）。</td>
+        <td>休日労働の扱いとなるため、<strong>休日割増賃金（35%以上）が支給される</strong>。</td>
+      </tr>
+      <tr>
+        <td><strong>申請手順</strong></td>
+        <td>「申請」＞「+申請」＞「勤怠」＞「振替休日」を選択（休日＝振り替える日、出勤日＝出勤する土日祝）。</td>
+        <td>1. 出勤前に「休日出勤」を申請。<br>2. 後日「申請」＞「+申請」＞「勤怠」＞「休暇」＞「代休（全休）」を選択。</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<h2><span class="h2-icon">📋</span> 身上変更申請・貸与物品借用</h2>
+<div class="accordion">
+  <div class="accordion-item">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>住所・扶養・口座などの変更（身上変更）</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>1. 「申請」メニューから「+申請」をクリックします。</p>
+      <p>2. 「身上変更」タブを選択し、変更したい項目を入力します。</p>
+      <p>3. <strong style="color:var(--accent-blue);">承認者は必ず「希さん」を選択してください。</strong></p>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>PC・携帯・備品の貸与物品借用書申請</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>入社時、または追加・変更・返却時に「身上変更」タブ ＞ 「貸与物品借用書」を選択し、総務から受領した記名捺印済の借用書ファイルを添付して申請します。</p>
+      <p>マニュアル詳細：<a href="./backoffice-docs/freee-hr-loan-request.pdf" target="_blank">freee人事労務_貸与物品借用書申請.pdf</a></p>
+    </div>
+  </div>
+</div>
+
+<h2><span class="h2-icon">❓</span> freee人事労務 よくある質問（FAQ）</h2>
+<div class="accordion">
+  <div class="accordion-item">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>Q1. 打刻を忘れたり、間違えて退勤を押してしまった時は？</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>勤怠画面の該当日の「修正」ボタンを押し、正しく出退勤時刻を入力の上、理由欄に「打刻押し忘れ」等の理由を入力して保存・申請してください。</p>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>Q2. 身上変更や締め申請で、誤って承認者を別の人（上長等）にして送信してしまった！</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>申請一覧から一度「取り消し」を行い、承認経路を必ず<strong>「希さん」</strong>に再指定して再申請してください。取り消しができない場合は希さん宛てにSlack/メールで連絡してください。</p>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>Q3. LINE連携を行っているのに明細通知が来ません。</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>freee人事労務の設定画面で「LINE連携」がアクティブになっているか確認してください。通知設定がオフになっているか、個人のLINE側で公式アカウントをブロックしていないかご確認ください。</p>
+    </div>
+  </div>
+</div>`
+  },
+  "ch5-acct": {
+    "html": `<div class="section-hero">
+  <span class="hero-emoji">💴</span>
+  <h1>経理：freee申請・精算マニュアル</h1>
+  <p class="hero-sub">事前申請（出張・交際費・稟議・購買・押印・契約）と、レシート紐付け経費精算の手順</p>
+</div>
+
+<h2><span class="h2-icon">📌</span> 基本方針と事前準備</h2>
+<p>2024年9月より、旅費精算や経費申請はすべて「freee会計（経費精算）」で行います。<br>
+<strong style="color:var(--accent-red);">出張申請・交際費申請・稟議・購買申請については、原則として「事後申請不可」となります。必ず事前申請を行ってください。</strong></p>
+
+<div class="step-list">
+  <div class="step-item">
+    <div class="step-marker">1</div>
+    <div class="step-content">
+      <div class="step-header"><span class="step-assignee">ログイン情報確認</span></div>
+      <div class="step-action">freee人事労務と同じメールアドレス・パスワードでログインできることを確認します。</div>
+    </div>
+  </div>
+  <div class="step-item">
+    <div class="step-marker">2</div>
+    <div class="step-content">
+      <div class="step-header"><span class="step-assignee">スマホアプリ準備</span></div>
+      <div class="step-action">
+        スマホアプリ<strong>「freee経費精算」</strong>をダウンロードします。<br>
+        <span style="font-size:0.85rem;color:var(--accent-red);">※ 旧「freee会計」アプリでの経費精算は廃止されたため、アンインストールしてください。</span>
+      </div>
+    </div>
+  </div>
+  <div class="step-item">
+    <div class="step-marker">3</div>
+    <div class="step-content">
+      <div class="step-header"><span class="step-assignee">PCブラウザのブックマーク</span></div>
+      <div class="step-action">申請内容の詳細入力や事前申請はPCが推奨されます。PCブラウザで「freee会計」をお気に入り登録してください。</div>
+    </div>
+  </div>
+</div>
+
+<h2><span class="h2-icon">📱</span> 操作イメージビジュアルガイド（スマホ ＆ PC）</h2>
+<div class="card-grid">
+  <div class="card" style="background:var(--card-bg);border-top:4px solid #2980b9;">
+    <div class="card-title" style="color:#2980b9;">📲 スマホ操作：レシート撮影</div>
+    <p style="font-size:0.85rem;margin:8px 0;">アプリ「freee経費精算」起動 → 📷 [レシート撮影] → 自動認識後 [アップロード] → [あとで申請]</p>
+  </div>
+  <div class="card" style="background:var(--card-bg);border-top:4px solid #27ae60;">
+    <div class="card-title" style="color:#27ae60;">💻 PC操作：事前申請への紐付け</div>
+    <p style="font-size:0.85rem;margin:8px 0;">PC freee会計 ＞ 経費精算 ＞ [領収書から経費入力] ＞ <strong>[+事前申請を選択]</strong> をクリックして過去の出張・稟議と紐付け！</p>
+  </div>
+</div>
+
+<h2><span class="h2-icon">📝</span> 各種事前申請フロー一覧</h2>
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>申請種類</th>
+        <th>対象・利用基準</th>
+        <th>申請手順とポイント</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>出張申請</strong></td>
+        <td>出張が決定した際（移動費・宿泊費・日当・会食等の概算金額を入力）。</td>
+        <td>「各種申請」＞「出張申請」。支払方法は「立替経費精算」を選択。宿泊を伴う場合は「出張旅費申請書兼精算書.xlsx」を作成し補足資料へ添付。<br>※日帰り交通費のみ＝出張申請 / 手土産代のみ＝交際費申請。</td>
+      </tr>
+      <tr>
+        <td><strong>交際費申請</strong></td>
+        <td>取引先との会食・接待等の日程が決まり次第。</td>
+        <td>「各種申請」＞「交際費申請」。概算金額を入力し、会食後に領収書を撮影して経費精算時に紐付け。</td>
+      </tr>
+      <tr>
+        <td><strong>稟議書</strong></td>
+        <td><strong>10,000円以上</strong>の物品・資材・サービスを購入する場合。</td>
+        <td>「各種申請」＞「稟議書」。見積書ファイルを添付の上、概算金額を入力して申請。</td>
+      </tr>
+      <tr>
+        <td><strong>購買申請</strong></td>
+        <td><strong>10,000円以下</strong>の物品を購入する場合（事務所文具等）。</td>
+        <td>「各種申請」＞「購買申請」。見積もりや商品概要を入力して事前申請。</td>
+      </tr>
+      <tr>
+        <td><strong>押印申請</strong></td>
+        <td>業務上または私用で社内・上長への捺印が必要な場合。</td>
+        <td>「各種申請」＞「押印申請」。対象書類の概要を記載。</td>
+      </tr>
+      <tr>
+        <td><strong>契約申請</strong></td>
+        <td>取引先と契約を締結する場合。</td>
+        <td>「各種申請」＞「契約申請」。事前承認完了後、電子契約サービス「クラウドサイン」にて締結作業を行う。</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<h2><span class="h2-icon">📲</span> 経費精算の手順（事前申請への紐付け）</h2>
+<p>実際に費用が発生・立替を行った後、以下の手順で精算・紐付けを行います。</p>
+
+<div class="accordion">
+  <div class="accordion-item open">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>ステップ①：レシート・領収書の撮影＆アップロード</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>1. スマホの「freee経費精算」アプリを起動し、「レシート撮影」を選択します。</p>
+      <p>2. 領収書が青く認識されたら撮影し、「アップロード」＞「あとで申請」を押します。</p>
+    </div>
+  </div>
+  <div class="accordion-item open">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>ステップ②：PCで経費精算の作成と事前申請の紐付け</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>1. PCでfreee会計にログインし、「申請」＞「経費精算」＞「申請を作成」をクリックします。</p>
+      <p>2. 「領収書から経費入力」を選択すると、アップロードした画像から金額・支払先がAIで自動読み取りされます。</p>
+      <p>3. <strong>「+事前申請を選択」</strong> をクリックし、あらかじめ承認されている「出張申請」「交際費申請」「稟議書」等の事前申請を選択して紐付けます。</p>
+      <p>4. 「手動で経費入力」＞「+補足資料を追加」から、出張精算書（Excel）や報告書ファイルを添付し、申請を行います。</p>
+    </div>
+  </div>
+</div>
+
+<div class="callout caution">
+  <div class="callout-title">🔴 会社手配・直払い費用（リロケーション・レンタカー等）の超重要注意点</div>
+  <p style="margin:0 0 8px 0;">
+    会社が直接決済している費用（リロケーション予約分、トヨタレンタカー直接決済分など）について：
+  </p>
+  <ul style="margin:0;padding-left:18px;line-height:1.8;">
+    <li>会社としての費用把握のため、<strong>申請経路の上の「備考欄」に明細を入力</strong>してください。</li>
+    <li><strong style="color:var(--accent-red);">必ずレシートや領収書は添付しないでください。</strong>（領収書を添付すると、個人で立替えていない費用まで給与で過払い振り込みされてしまいます。）</li>
+    <li>また、0円での明細登録はシステムエラーとなるため、金額欄には入れず備考欄のみに記載してください。</li>
+  </ul>
+</div>
+
+<h2><span class="h2-icon">❓</span> freee申請・精算 よくある質問（FAQ）</h2>
+<div class="accordion">
+  <div class="accordion-item">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>Q1. レシートや領収書を紛失してしまいました！</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>原則として領収書がない経費は精算できませんが、カード利用明細や購入証明メール、または「支払証明書」を提出することで認められる場合があります。至急経理（小野さん）へご相談ください。</p>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>Q2. 事前申請をし忘れて、先に購入・出張してしまいました。</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>原則は事前申請義務化ですが、緊急事態でやむを得なかった場合は、速やかに上長に理由を説明の上で「事後申請理由」を稟議書・出張申請の備考欄に明記して申請してください。</p>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>Q3. 「0円エラー」で画面が進みません。</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>会社手配分などで金額に「0円」と入力するとシステムエラーが発生します。0円の明細行は作成せず、申請経路上の「備考欄」にのみテキストで内容を記載してください。</p>
+    </div>
+  </div>
+</div>`
+  },
+  "ch5-pay": {
+    "html": `<div class="section-hero">
+  <span class="hero-emoji">📄</span>
+  <h1>経理：freee支払依頼・請求書提出</h1>
+  <p class="hero-sub">届いた請求書の支払依頼申請フローと、拠点別の請求書原本提出ルール</p>
+</div>
+
+<h2><span class="h2-icon">💡</span> 支払依頼申請とは</h2>
+<p>あらかじめ「稟議申請」や「購買申請」を行っていた案件について、取引先から「請求書」が届いた際に経理へ支払処理を依頼するための申請手続きです。</p>
+
+<h2><span class="h2-icon">🔄</span> 支払依頼申請の操作手順</h2>
+<div class="step-list">
+  <div class="step-item">
+    <div class="step-marker">1</div>
+    <div class="step-content">
+      <div class="step-header"><span class="step-assignee">事前申請の表示</span></div>
+      <div class="step-action">PCのfreee会計にて、承認済みの「稟議申請」または「購買申請」画面を開きます。</div>
+    </div>
+  </div>
+  <div class="step-item">
+    <div class="step-marker">2</div>
+    <div class="step-content">
+      <div class="step-header"><span class="step-assignee">関連付けとフォーム選択</span></div>
+      <div class="step-action">画面内の<strong>「関連付けを行う」</strong>をクリックし、申請フォーム選択画面で<strong>「支払依頼」</strong>を選択します。</div>
+    </div>
+  </div>
+  <div class="step-item">
+    <div class="step-marker">3</div>
+    <div class="step-content">
+      <div class="step-header"><span class="step-assignee">請求書内容の入力</span></div>
+      <div class="step-action">手元に届いた請求書を確認しながら、支払先・金額・振込期日・請求書画像添付などの各項目を入力します。</div>
+    </div>
+  </div>
+  <div class="step-item">
+    <div class="step-marker">4</div>
+    <div class="step-content">
+      <div class="step-header"><span class="step-assignee">申請経路選択・送信</span></div>
+      <div class="step-action">所定の承認経路を選択し、「申請」ボタンを押して完了します。</div>
+    </div>
+  </div>
+</div>
+
+<h2><span class="h2-icon">🏢</span> 請求書原本の提出ルール（拠点別）</h2>
+<p>freee上での支払依頼申請完了後、手元の請求書原本は拠点ごとのルールに従って経理（本社：小野）へ提出してください。</p>
+
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>拠点・拠点区分</th>
+        <th>請求書原本の提出方法・送付ルール</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>本社</strong></td>
+        <td>社内の<strong>「経理BOX」に投入</strong>、または<strong>小野さんへ直接手渡し</strong>。</td>
+      </tr>
+      <tr>
+        <td><strong>青森黒石工場 / 熊本南関工場</strong></td>
+        <td>毎月月末に本社へ郵送する<strong>「タイムカード」と同封して発送</strong>。</td>
+      </tr>
+      <tr>
+        <td><strong>帯広オフィス / 鹿屋オフィス</strong></td>
+        <td><strong>他郵送物と同封</strong>、または<strong>本社へ出張する社員へ手渡し</strong>。<br>
+        ※ 都度単独で郵送する必要はありません。他の送付物があるタイミングでまとめて送付してください。</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<h2><span class="h2-icon">❓</span> 支払依頼 よくある質問（FAQ）</h2>
+<div class="accordion">
+  <div class="accordion-item">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>Q1. 請求書原本を紛失してしまいました。PDFのみでも大丈夫？</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>電子データで受領した請求書（PDF）はそのままfreeeへ添付すればOKですが、紙で届いた請求書原本は原則提出が必要です。紛失した場合は取引先へ再発行を依頼してください。</p>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>Q2. 支払期日が迫っている緊急の請求書はどうすればいい？</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>freeeで支払依頼申請を大至急送信した上で、小野さん宛てにSlack/電話で「緊急の支払依頼がある」旨を直接連絡してください。</p>
+    </div>
+  </div>
+</div>`
+  },
+  "ch5-expense-rules": {
+    "html": `<div class="section-hero">
+  <span class="hero-emoji">🚗</span>
+  <h1>経理：交通費・社有車・出張費の特別精算ルール</h1>
+  <p class="hero-sub">給油カード、私有車利用、電車通勤費、ガソリン代立替、海外出張の精算手順</p>
+</div>
+
+<h2><span class="h2-icon">💳</span> 給油カード（社有車専用カード）使用時のルール【注意】</h2>
+<div class="callout tip">
+  <div class="callout-title">💡 給油カード利用時は「経費精算不要」</div>
+  <p style="margin:0 0 8px 0;">
+    会社から貸与されている専用給油カードを使用してガソリンを給油した場合：
+  </p>
+  <ul style="margin:0;padding-left:18px;line-height:1.8;">
+    <li><strong style="color:var(--accent-blue);">freeeでの経費精算は一切不要です。</strong></li>
+    <li>ガソリンスタンドから発行される<strong>納品書（領収書）は破棄してください</strong>。</li>
+    <li>毎月「給油カード使用報告書.xlsx」に走行距離・給油量を入力し、<strong>毎月末に「希さん」および「小野さん」宛てにメール送付</strong>してください（請求照合用）。</li>
+  </ul>
+</div>
+
+<h2><span class="h2-icon">⛽</span> ガソリン代を現金・個人カードで立替精算する場合</h2>
+<p>給油カードが使用できず、現金や個人のクレジットカードでガソリン代を立替えた場合の手順です。</p>
+<ul>
+  <li>freeeにて「経費精算」申請を行ってください。</li>
+  <li><strong style="color:var(--accent-red);">必ず給油した時点の「走行距離（オドメーター値）」をレシートの余白に手書きで記入して撮影・添付してください。</strong></li>
+  <li>経理側で過去の距離単価・燃費と照合し、確認を行います。</li>
+</ul>
+
+<h2><span class="h2-icon">🚘</span> 私有自動車の業務利用精算（15円 / km）</h2>
+<p>業務のためにマイカー（私有自動車）を使用した場合の精算方法です。</p>
+<div class="step-list">
+  <div class="step-item">
+    <div class="step-marker">1</div>
+    <div class="step-content">
+      <div class="step-header"><span class="step-assignee">実績報告書の作成</span></div>
+      <div class="step-action">フォーマット「私有自動車実績報告書.xlsx」に月間の走行日・目的地・走行距離（km）を入力します。（距離単価：15円/km）</div>
+    </div>
+  </div>
+  <div class="step-item">
+    <div class="step-marker">2</div>
+    <div class="step-content">
+      <div class="step-header"><span class="step-assignee">freee経費精算＆ファイル添付</span></div>
+      <div class="step-action">freee会計で「経費精算」を作成し、「+補足資料を追加」から作成した「私有自動車実績報告書.xlsx」を添付して申請します。確認後、給与にて精算額が振り込まれます。</div>
+    </div>
+  </div>
+</div>
+
+<h2><span class="h2-icon">🚃</span> 電車通勤費の精算（都度精算者）</h2>
+<p>定期券ではなく、都度精算方式で電車通勤を行っている対象者の精算手順です。</p>
+<ul>
+  <li>「電車通勤費報告書.xlsx」を作成し、利用日・区間・金額を入力します。</li>
+  <li>freee会計の「経費精算」にて上記報告書ファイルを添付し、申請を行います。</li>
+</ul>
+
+<h2><span class="h2-icon">✈️</span> 国内・海外出張旅費と日当の計算</h2>
+<div class="accordion">
+  <div class="accordion-item open">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>出張旅費精算書（Excel）の作成と添付</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>宿泊を伴う出張の際は、「国内出張旅費申請書兼精算書.xlsx」または「海外出張旅費申請書兼精算書.xlsx」に日程・区間・宿泊費・日当を入力し、freee経費精算の補足資料に添付します。</p>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>海外出張の日当と為替（TTB）レート換算</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>海外出張における日当（例：1日あたり50米ドル等）の日本円換算レートは、<strong>「帰国日の翌営業日のTTBレート」</strong>を使用します。精算書内にレートと計算式を明記の上、申請を行ってください。</p>
+    </div>
+  </div>
+</div>
+
+<h2><span class="h2-icon">❓</span> 交通費・精算ルール よくある質問（FAQ）</h2>
+<div class="accordion">
+  <div class="accordion-item">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>Q1. 他の社用車やレンタカーに専用給油カードを使ってしまいました。</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>原則は車両固定ですが、緊急時や代車利用時に他車で給油カードを使用した場合は、「給油カード使用報告書.xlsx」の備考欄に「〇〇（車種・ナンバー）の代車にて使用」と明記してください。</p>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>Q2. 海外出張の帰国日翌営業日が土日祝日の場合、TTBレートはどうする？</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>帰国日の翌「営業日」（銀行の営業日＝平日）のレートを適用してください。土日祝日は銀行レートが公示されないため、休み明けの最初の平日のTTBレートを採用します。</p>
+    </div>
+  </div>
+</div>`
+  },
+  "ch5-car": {
+    "html": `<div class="section-hero">
+  <span class="hero-emoji">🚗</span>
+  <h1>総務：社用車トラブル・事故対応</h1>
+  <p class="hero-sub">万が一の事故や故障の際、冷静かつ迅速に対応するための手順と連絡先</p>
+</div>
+
+<h2><span class="h2-icon">⚠️</span> 交通事故が発生した場合の緊急手順</h2>
+<p>交通事故が発生した場合、物損事故や単独事故であっても、以下の手順で速やかに対応してください。</p>
+<div class="accordion">
+  <div class="accordion-item open">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>① 安全確保と救急要請</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p><strong>怪我人がいる場合は、最優先で救急車（119）を呼んでください。</strong></p>
+      <p>二次災害を防ぐため、他の交通への影響を避ける安全な場所へ車両を移動してください（可能な範囲で）。</p>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>② 警察（110）への連絡</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p><strong>事故の大小に関わらず、速やかに警察（110）へ通報してください。</strong>（物損事故・自損事故・単独事故の場合でも、後日の手続きや保険適用のために警察への連絡は必須です。）</p>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>③ リース会社・保険会社への連絡</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>ご自身の乗っている車両が「リース車」か「購入車」かを確認し、以下へ連絡してください。（リース車の場合、車内にトラブル対応資料が保管されています。）</p>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>対象・会社</th>
+              <th>窓口・連絡先</th>
+              <th>受付時間</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>トヨタレンタリース新埼玉</strong><br>（リース車両）</td>
+              <td>サポートダイヤル24：<br><strong>0800-7000729</strong>（無料）</td>
+              <td>24時間365日</td>
+            </tr>
+            <tr>
+              <td><strong>トヨタレンタリース福岡</strong><br>（リース車両）</td>
+              <td>ドライバーズガイドブック記載の指定工場、または<br>ニシデロードサービス24：<strong>0120-543-999</strong></td>
+              <td>24時間365日</td>
+            </tr>
+            <tr>
+              <td><strong>損害保険ジャパン(株)</strong><br>（保険会社）</td>
+              <td>事故サポートセンター：<br><strong>0120-256-110</strong></td>
+              <td>24時間365日</td>
+            </tr>
+            <tr>
+              <td><strong>損害保険ジャパン(株)</strong><br>（ロードサービス）</td>
+              <td>ロードアシスタンス専用デスク：<br><strong>0120-365-110</strong></td>
+              <td>24時間365日</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>④ 現場の記録と情報確保</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>現場や相手・自車の破損状況をスマートフォンなどで撮影してください。</p>
+      <p>相手方の情報（氏名、連絡先、住所、車両ナンバー、車種、保険会社等）を確実に記録し、会話内容のメモも残してください。</p>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>⑤ 社内報告と事故報告書の提出</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>所属部署の責任者（上長）へ、発生日時・場所・状況概要・現在の対応状況を速やかに報告してください。</p>
+      <p>事故処理後、速やかに<strong>「車両事故報告書」</strong>を作成し、メールにて提出してください。</p>
+      <p><strong>提出先：石井社長・希さん・上長（CC：小野）</strong></p>
+    </div>
+  </div>
+</div>
+
+<h2><span class="h2-icon">🔧</span> 車両が故障した場合の手順</h2>
+<p>社用車の走行中に異音が発生した、パンクした、警告灯が点灯した等の故障トラブル時の手順です。</p>
+<div class="accordion">
+  <div class="accordion-item">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>① 安全な場所への停車</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>車両を安全な場所へ移動し、ハザードランプを点灯するなど周囲の交通に支障が出ないよう配慮してください。</p>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>② リース会社・JAFへの連絡</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>リース車の場合は上記の各リース会社へ連絡。購入車またはJAF対応が必要な場合は以下へ連絡してください。</p>
+      <ul>
+        <li><strong>JAFロードサービス救援コール</strong>：<strong>0570-00-8139</strong></li>
+        <li>JAF短縮ダイヤル（固定・携帯から）：<strong>#8139</strong></li>
+      </ul>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <span>③ 社内報告と報告書の提出</span><span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-body">
+      <p>上長へ発生日時・場所・故障内容（バッテリー上がり、エンジン停止など）を報告のうえ、<strong>「車両事故報告書」</strong>をメールにて提出してください（宛先は事故時と同様）。</p>
+    </div>
+  </div>
+</div>
+
+<h2><span class="h2-icon">📋</span> 社用車一覧と管理番号（2026年7月現在）</h2>
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>NO.</th>
+        <th>リース会社/購入車</th>
+        <th>車両ナンバー</th>
+        <th>車種</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>トヨタレンタリース新埼玉</td>
+        <td>大宮431な1005</td>
+        <td>プロボックス</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>トヨタレンタリース新埼玉</td>
+        <td>帯広400そ5345</td>
+        <td>プロボックス</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>トヨタレンタリース新埼玉</td>
+        <td>鹿児島400な6126</td>
+        <td>プロボックス</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>トヨタレンタリース新埼玉</td>
+        <td>熊本400ね1943</td>
+        <td>プロボックス</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>トヨタレンタリース福岡</td>
+        <td>熊本301や2304</td>
+        <td>サクシード</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td>トヨタレンタリース福岡</td>
+        <td>熊本400ね・・53</td>
+        <td>プリウス</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td>購入車</td>
+        <td>帯広500ほ2868</td>
+        <td>フィット</td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td>購入車</td>
+        <td>青森100せ2924</td>
+        <td>トラック</td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td>購入車</td>
+        <td>鹿児島400と6948</td>
+        <td>バネット</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="callout tip">
+  <div class="callout-title">📝 報告用ファイルのダウンロード・場所</div>
   <p style="margin:0;">
-    一般経費精算や請求書発行フロー等については順次拡張予定です。お急ぎの場合は業務部マニュアルを参照するか、直接経理担当までお問い合わせください。
+    報告書の提出が必要な場合は、総務・経理・人事関連フォルダ内の <a href="./backoffice-docs/car-accident-report.xls" target="_blank">★車両事故報告書.xls</a> を使用してください。
   </p>
 </div>`
   }

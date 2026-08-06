@@ -104,10 +104,12 @@ function generateNavTree() {
         <a class="nav-item" data-page="appendix"><span class="nav-dot"></span>業界用語・辞書</a>
         <a class="nav-item" data-page="app-pack"><span class="nav-dot"></span>荷姿・物流・単位</a>
         <a class="nav-item" data-page="ch5"><span class="nav-dot"></span>第5章 バックオフィス関連</a>
+        <a class="nav-item" data-page="ch5-hr"><span class="nav-dot"></span>├ 人事：freee人事労務マニュアル</a>
+        <a class="nav-item" data-page="ch5-acct"><span class="nav-dot"></span>├ 経理：freee申請・精算マニュアル</a>
+        <a class="nav-item" data-page="ch5-pay"><span class="nav-dot"></span>├ 経理：freee支払依頼・請求書提出</a>
+        <a class="nav-item" data-page="ch5-expense-rules"><span class="nav-dot"></span>├ 経理：交通費・社有車・出張費の特別精算ルール</a>
         <a class="nav-item" data-page="ch5-car"><span class="nav-dot"></span>├ 総務：社用車トラブル・事故対応</a>
-        <a class="nav-item" data-page="ch5-hr"><span class="nav-dot"></span>├ 人事：貸与物品借用書の申請</a>
-        <a class="nav-item" data-page="ch4-mowment-inv"><span class="nav-dot"></span>├ LAT事業：@mowment 機材・在庫管理</a>
-        <a class="nav-item" data-page="ch5-acct"><span class="nav-dot"></span>└ 経理：準備中</a>
+        <a class="nav-item" data-page="ch4-mowment-inv"><span class="nav-dot"></span>└ LAT事業：@mowment 機材・在庫管理</a>
       </div>
     </div>
 
@@ -355,9 +357,11 @@ function getSalesPageTitle(pageId) {
     'appendix': '業界用語・辞書',
     'app-pack': '荷姿・物流・単位',
     'ch5': '第5章 バックオフィス関連',
-    'ch5-car': '総務：社用車トラブル・事故対応',
-    'ch5-hr': '人事：貸与物品借用書の申請',
-    'ch5-acct': '経理：準備中'
+    'ch5-hr': '人事：freee人事労務マニュアル',
+    'ch5-acct': '経理：freee申請・精算マニュアル',
+    'ch5-pay': '経理：freee支払依頼・請求書提出',
+    'ch5-expense-rules': '経理：交通費・社有車・出張費の特別精算ルール',
+    'ch5-car': '総務：社用車トラブル・事故対応'
   };
   return titles[pageId] || pageId;
 }
