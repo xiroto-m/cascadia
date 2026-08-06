@@ -103,13 +103,13 @@ function generateNavTree() {
         <a class="nav-item" data-page="ch4-fat"><span class="nav-dot"></span>└ 脂肪酸の機能使い分け</a>
         <a class="nav-item" data-page="appendix"><span class="nav-dot"></span>業界用語・辞書</a>
         <a class="nav-item" data-page="app-pack"><span class="nav-dot"></span>荷姿・物流・単位</a>
-        <a class="nav-item" data-page="ch5"><span class="nav-dot"></span>第5章 バックオフィス関連</a>
-        <a class="nav-item" data-page="ch5-hr"><span class="nav-dot"></span>├ 人事：freee人事労務マニュアル</a>
-        <a class="nav-item" data-page="ch5-acct"><span class="nav-dot"></span>├ 経理：freee申請・精算マニュアル</a>
-        <a class="nav-item" data-page="ch5-pay"><span class="nav-dot"></span>├ 経理：freee支払依頼・請求書提出</a>
-        <a class="nav-item" data-page="ch5-expense-rules"><span class="nav-dot"></span>├ 経理：交通費・社有車・出張費の特別精算ルール</a>
-        <a class="nav-item" data-page="ch5-car"><span class="nav-dot"></span>├ 総務：社用車トラブル・事故対応</a>
-        <a class="nav-item" data-page="ch4-mowment-inv"><span class="nav-dot"></span>└ LAT事業：@mowment 機材・在庫管理</a>
+        <a class="nav-item" data-page="ch5"><span class="nav-dot"></span>第5章 バックオフィス手続き一覧</a>
+        <a class="nav-item" data-page="ch5-hr"><span class="nav-dot"></span>├ 勤怠・有休・振休・身上変更（freee人事労務）</a>
+        <a class="nav-item" data-page="ch5-acct"><span class="nav-dot"></span>├ 出張・交際費・稟議の事前申請＆精算</a>
+        <a class="nav-item" data-page="ch5-pay"><span class="nav-dot"></span>├ 請求書が届いた時の支払依頼・原本提出</a>
+        <a class="nav-item" data-page="ch5-expense-rules"><span class="nav-dot"></span>├ 給油カード・私有車・通勤費・海外出張</a>
+        <a class="nav-item" data-page="ch5-car"><span class="nav-dot"></span>├ 社用車事故・故障トラブル対応</a>
+        <a class="nav-item" data-page="ch4-mowment-inv"><span class="nav-dot"></span>└ LAT機材・在庫管理規程（SOP）</a>
       </div>
     </div>
 

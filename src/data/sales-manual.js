@@ -316,109 +316,108 @@ window.SALES_PAGES = {
   "ch5": {
     "html": `<div class="section-hero">
   <span class="hero-emoji">💼</span>
-  <h1>第5章 バックオフィス関連（人事・経理・総務）</h1>
-  <p class="hero-sub">社内手続き・freee各種申請・勤怠管理・精算ルールの総合ガイドライン</p>
+  <h1>第5章 バックオフィス手続き・各種申請ナビ</h1>
+  <p class="hero-sub">社内手続き・freee各種申請・勤怠管理・精算ルール・様式ダウンロードの総合案内</p>
 </div>
 
-<h2><span class="h2-icon">📅</span> 毎月のバックオフィス締め日・重要スケジュール</h2>
-<p>毎月のスムーズな給与計算・経理締めのため、以下のスケジュールと期日を必ず厳守してください。</p>
+<h2><span class="h2-icon">🎯</span> 目的から探す（やりたいことから一発アクセス）</h2>
+<p>行いたい手続きのカードをタップすると、該当マニュアル・申請手順へ直接移動できます。</p>
 
-<div class="mow-timeline">
-  <div class="mow-timeline-item">
-    <div class="tl-day" style="color:var(--accent-blue);">毎月 20日 頃</div>
-    <div class="tl-desc"><strong>前月分 給与・賞与明細の発行</strong><br>freee人事労務にて明細が公開されます。通知メールまたはアプリ/LINEよりご確認ください。</div>
+<div class="card-grid" style="margin-bottom: 30px;">
+  <div class="card" onclick="navigateTo('ch5-hr')" style="border-left: 4px solid #27ae60;">
+    <span class="card-icon">⏰</span>
+    <div class="card-title">勤怠・有休・代休を取りたい</div>
+    <div class="card-desc">毎日の打刻・修正、月末締め申請（承認者：希さん指定）、有休・残業・振休/代休の違い。</div>
+    <span class="card-arrow">→ 手続きへ</span>
   </div>
-  <div class="mow-timeline-item alert-point" style="border-left-color:var(--accent-amber);">
-    <div class="tl-day" style="color:var(--accent-amber);">毎月 月末日（最終営業日）</div>
-    <div class="tl-desc"><strong>当月勤怠入力完了 ＆ 給油カード報告送付</strong><br>・当月の打刻漏れ・休憩・休暇申請をすべて入力。<br>・専用給油カード利用者は「給油カード使用報告書.xlsx」を希さん・小野さんへメール送付。</div>
+  <div class="card" onclick="navigateTo('ch5-acct')" style="border-left: 4px solid #2980b9;">
+    <span class="card-icon">✈️</span>
+    <div class="card-title">出張・交際費・稟議を事前申請＆精算したい</div>
+    <div class="card-desc">出張・交際費・1万円以上の稟議事前申請、スマホアプリでのレシート撮影とPC紐付け精算。</div>
+    <span class="card-arrow">→ 手続きへ</span>
   </div>
-  <div class="mow-timeline-item alert-point" style="border-left-color:var(--accent-red);">
-    <div class="tl-day" style="color:var(--accent-red);">翌月 1営業日（最優先）</div>
-    <div class="tl-desc"><strong>「月次勤怠締め申請」提出 ＆ 請求書原本発送</strong><br>・freee人事労務にて「月次勤怠締め申請（申請経路：希さん）」を送信。<br>・工場・各オフィスはタイムカードや請求書原本を本社へ発送・手渡し。</div>
+  <div class="card" onclick="navigateTo('ch5-pay')" style="border-left: 4px solid #8e44ad;">
+    <span class="card-icon">📄</span>
+    <div class="card-title">取引先から届いた請求書の支払依頼をしたい</div>
+    <div class="card-desc">請求書が届いた際のfreee支払依頼申請と、拠点別（本社・工場・オフィス）の原本提出ルール。</div>
+    <span class="card-arrow">→ 手続きへ</span>
+  </div>
+  <div class="card" onclick="navigateTo('ch5-expense-rules')" style="border-left: 4px solid #e67e22;">
+    <span class="card-icon">💳</span>
+    <div class="card-title">給油カード・マイカー・通勤費を報告＆精算したい</div>
+    <div class="card-desc">専用給油カード報告メール（月末送付）、マイカー15円/km精算、電車通勤費、海外出張日当。</div>
+    <span class="card-arrow">→ 手続きへ</span>
+  </div>
+  <div class="card" onclick="navigateTo('ch5-car')" style="border-left: 4px solid #c0392b;">
+    <span class="card-icon">🚨</span>
+    <div class="card-title">社用車で事故・故障が発生した</div>
+    <div class="card-desc">万が一の事故・故障時の緊急連絡先（警察・保険・JAF）、対応手順、事故報告書提出先。</div>
+    <span class="card-arrow">→ 手続きへ</span>
+  </div>
+  <div class="card" onclick="navigateTo('ch5-hr')" style="border-left: 4px solid #16a085;">
+    <span class="card-icon">🏠</span>
+    <div class="card-title">住所・口座・扶養や貸与備品を変更したい</div>
+    <div class="card-desc">身上変更申請（承認者：希さん指定）、PC・スマホ・社用車等の貸与物品借用書手続き。</div>
+    <span class="card-arrow">→ 手続きへ</span>
   </div>
 </div>
 
-<h2><span class="h2-icon">📁</span> 各種申請書フォーマット・テンプレートダウンロード集</h2>
-<p>精算・報告に必要な各種様式ファイルです。クリックして確認・入手してください。</p>
-
-<div class="card-grid">
+<h2><span class="h2-icon">📁</span> 申請書様式・テンプレート一覧（直接入手）</h2>
+<div class="card-grid" style="margin-bottom: 30px;">
   <div class="card" onclick="window.open('./backoffice-docs/car-accident-report.xls', '_blank')">
     <span class="card-icon">🚗</span>
     <div class="card-title">★車両事故報告書.xls</div>
-    <div class="card-desc">社用車の事故・故障発生時に作成。石井社長・希さん・上長へメール提出（CC:小野）。</div>
-    <span class="card-arrow">↓</span>
+    <div class="card-desc">事故・故障時の報告書様式</div>
+    <span class="card-arrow">↓ DL</span>
   </div>
   <div class="card" onclick="window.open('./backoffice-docs/freee-hr-loan-request.pdf', '_blank')">
     <span class="card-icon">📄</span>
-    <div class="card-title">freee人事労務_貸与物品借用書申請.pdf</div>
-    <div class="card-desc">PC・携帯・社用車等の備品受領・返却手続きマニュアル。</div>
-    <span class="card-arrow">↓</span>
+    <div class="card-title">貸与物品借用書マニュアル.pdf</div>
+    <div class="card-desc">備品貸与申請手順書</div>
+    <span class="card-arrow">↓ DL</span>
   </div>
   <div class="card" onclick="window.open('./backoffice-docs/private-car-report.xlsx', '_blank')">
     <span class="card-icon">🚘</span>
     <div class="card-title">私有自動車実績報告書.xlsx</div>
-    <div class="card-desc">マイカー業務利用時の走行距離報告（15円/km）。freee精算に添付。</div>
-    <span class="card-arrow">↓</span>
+    <div class="card-desc">マイカー走行距離報告用</div>
+    <span class="card-arrow">↓ DL</span>
   </div>
   <div class="card" onclick="window.open('./backoffice-docs/train-commute-report.xlsx', '_blank')">
     <span class="card-icon">🚃</span>
     <div class="card-title">電車通勤費報告書.xlsx</div>
-    <div class="card-desc">都度精算対象者の電車通勤費実績報告書。</div>
-    <span class="card-arrow">↓</span>
+    <div class="card-desc">都度通勤費精算用</div>
+    <span class="card-arrow">↓ DL</span>
   </div>
   <div class="card" onclick="window.open('./backoffice-docs/gas-card-report.xlsx', '_blank')">
     <span class="card-icon">💳</span>
     <div class="card-title">給油カード使用報告書.xlsx</div>
-    <div class="card-desc">社用車専用給油カード利用時の月次報告書（月末希さん・小野さん宛メール送付）。</div>
-    <span class="card-arrow">↓</span>
+    <div class="card-desc">月末メール送付用報告書</div>
+    <span class="card-arrow">↓ DL</span>
   </div>
   <div class="card" onclick="window.open('./backoffice-docs/travel-expense-report.xlsx', '_blank')">
     <span class="card-icon">✈️</span>
-    <div class="card-title">出張旅費申請書兼精算書（国内・海外）.xlsx</div>
-    <div class="card-desc">宿泊を伴う出張の日当・宿泊費計算書。freee出張申請に添付。</div>
-    <span class="card-arrow">↓</span>
+    <div class="card-title">出張旅費申請書兼精算書.xlsx</div>
+    <div class="card-desc">出張日当・宿泊費計算用</div>
+    <span class="card-arrow">↓ DL</span>
   </div>
 </div>
 
-<h2><span class="h2-icon">📚</span> 各セクション一覧</h2>
-<div class="card-grid">
-  <div class="card" onclick="navigateTo('ch5-hr')">
-    <span class="card-icon">👥</span>
-    <div class="card-title">人事：freee人事労務マニュアル</div>
-    <div class="card-desc">勤怠打刻・月次締め申請（希さん宛）・有休・振替休日/代休・身上変更・年末調整。</div>
-    <span class="card-arrow">→</span>
+<h2><span class="h2-icon">📅</span> 毎月のバックオフィス締め日カレンダー</h2>
+<div class="mow-timeline">
+  <div class="mow-timeline-item">
+    <div class="tl-day" style="color:var(--accent-blue);">毎月 20日 頃</div>
+    <div class="tl-desc"><strong>前月分 給与・賞与明細の発行</strong>（freee人事労務アプリ/LINE確認）</div>
   </div>
-  <div class="card" onclick="navigateTo('ch5-acct')">
-    <span class="card-icon">💴</span>
-    <div class="card-title">経理：freee申請・精算マニュアル</div>
-    <div class="card-desc">出張・交際費・稟議・購買・押印・契約等の事前申請とレシート紐付け経費精算。</div>
-    <span class="card-arrow">→</span>
+  <div class="mow-timeline-item alert-point" style="border-left-color:var(--accent-amber);">
+    <div class="tl-day" style="color:var(--accent-amber);">毎月 月末日（最終営業日）</div>
+    <div class="tl-desc"><strong>当月勤怠入力完了 ＆ 給油カード報告書送付</strong>（希さん・小野さん宛メール）</div>
   </div>
-  <div class="card" onclick="navigateTo('ch5-pay')">
-    <span class="card-icon">📄</span>
-    <div class="card-title">経理：freee支払依頼・請求書提出</div>
-    <div class="card-desc">請求書受領時の支払依頼申請フローと拠点別原本提出ルール（本社・工場・オフィス）。</div>
-    <span class="card-arrow">→</span>
+  <div class="mow-timeline-item alert-point" style="border-left-color:var(--accent-red);">
+    <div class="tl-day" style="color:var(--accent-red);">翌月 1営業日（最優先）</div>
+    <div class="tl-desc"><strong>「月次勤怠締め申請」提出（承認者：希さん） ＆ 請求書原本の提出・郵送</strong></div>
   </div>
-  <div class="card" onclick="navigateTo('ch5-expense-rules')">
-    <span class="card-icon">🚗</span>
-    <div class="card-title">経理：交通費・社有車・出張費ルール</div>
-    <div class="card-desc">給油カード（精算不要・月末報告）、私有車（15円/km）、電車通勤、海外旅費（TTB換算）。</div>
-    <span class="card-arrow">→</span>
-  </div>
-  <div class="card" onclick="navigateTo('ch5-car')">
-    <span class="card-icon">🚘</span>
-    <div class="card-title">総務：社用車トラブル・事故対応</div>
-    <div class="card-desc">事故や故障時の緊急連絡先、対応フロー、車両事故報告書の提出方法。</div>
-    <span class="card-arrow">→</span>
-  </div>
-  <div class="card" onclick="navigateTo('ch4-mowment-inv')">
-    <span class="card-icon">📦</span>
-    <div class="card-title">LAT事業：@mowment 機材・在庫管理</div>
-    <div class="card-desc">部材棚卸、中古品・回収品評価ルール、月次計算・推移確定手順（SOP）。</div>
-    <span class="card-arrow">→</span>
-  </div>
-</div>`
+</div>
+`
   },
   "ch5-hr": {
     "html": `<div class="section-hero">
