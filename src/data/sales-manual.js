@@ -405,7 +405,7 @@ window.SALES_PAGES = {
 <h2><span class="h2-icon">📅</span> 毎月のバックオフィス締め日カレンダー</h2>
 <div class="mow-timeline">
   <div class="mow-timeline-item">
-    <div class="tl-day" style="color:var(--accent-blue);">毎月 20日 頃</div>
+    <div class="tl-day" style="color:var(--accent-blue);">毎月 10日（給与支給日）</div>
     <div class="tl-desc"><strong>前月分 給与・賞与明細の発行</strong>（freee人事労務アプリ/LINE確認）</div>
   </div>
   <div class="mow-timeline-item alert-point" style="border-left-color:var(--accent-amber);">
@@ -887,7 +887,7 @@ window.SALES_PAGES = {
       </tr>
       <tr>
         <td><strong>初回受取時の手続き</strong></td>
-        <td>カード到着後、同封の「給油カード借用書」に記入の上、総務・経理（小野さん宛）へご返送ください。</td>
+        <td>カード到着後、freee人事労務の貸与物品借用書申請をしてください。</td>
       </tr>
     </tbody>
   </table>
