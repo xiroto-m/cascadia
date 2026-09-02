@@ -111,6 +111,43 @@
     </div>
   </div>
 
+  <!-- Modal for Product Document Preview (成分表・表示票・チラシ) -->
+  <div class="modal-overlay" id="productDocModal">
+    <div class="modal-box product-doc-modal-box">
+      <div class="doc-modal-header">
+        <div class="doc-modal-title-group">
+          <div class="doc-modal-icon">📄</div>
+          <div>
+            <h3 id="docModalProductName" class="doc-modal-product-name">商品名</h3>
+            <span class="doc-modal-subtitle" id="docModalSubtitle">成分表・表示票・販促資料プレビュー</span>
+          </div>
+        </div>
+        <div class="doc-modal-header-actions">
+          <a id="btnDocOpenNewTab" href="#" target="_blank" class="btn-doc-action" title="新しいタブで開く">
+            <span>↗</span> 別タブで開く
+          </a>
+          <a id="btnDocDownload" href="#" download class="btn-doc-action btn-doc-download" title="ダウンロード">
+            <span>⬇</span> 保存
+          </a>
+          <button class="btn-doc-close" id="btnCloseProductDocModal" aria-label="閉じる">✕</button>
+        </div>
+      </div>
+      
+      <!-- Document Type Tabs -->
+      <div class="doc-tabs-nav" id="docModalTabs">
+        <!-- Dynamically rendered tabs -->
+      </div>
+      
+      <!-- Document Content Viewer -->
+      <div class="doc-modal-body" id="docModalBody">
+        <iframe id="docPdfIframe" class="doc-pdf-iframe" src="about:blank"></iframe>
+        <div id="docFallbackNotice" class="doc-fallback-notice" style="display:none;">
+          <p>⚠️ プレビューが表示されない場合は、右上の「別タブで開く」または「保存」ボタンをご利用ください。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="src/data/sales-manual.js"></script>
   <script src="src/data/sales-quiz.js"></script>
   <script src="src/data/ops-manual.js"></script>

@@ -4283,3 +4283,244 @@ tbody tr:last-child td {
   gap: 12px;
 }
 
+/* =========================================================================
+   Product Document Viewer & Badges (成分表・表示票・チラシ)
+   ========================================================================= */
+
+.doc-btn-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.doc-badge-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  line-height: 1.3;
+  user-select: none;
+}
+
+.doc-badge-spec {
+  background: rgba(37, 99, 235, 0.12);
+  color: #3b82f6;
+  border-color: rgba(37, 99, 235, 0.3);
+}
+
+.doc-badge-spec:hover {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+  transform: translateY(-1px);
+}
+
+.doc-badge-label {
+  background: rgba(13, 148, 136, 0.12);
+  color: #14b8a6;
+  border-color: rgba(13, 148, 136, 0.3);
+}
+
+.doc-badge-label:hover {
+  background: #0d9488;
+  color: #ffffff;
+  border-color: #0d9488;
+  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.35);
+  transform: translateY(-1px);
+}
+
+.doc-badge-pamphlet {
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.doc-badge-pamphlet:hover {
+  background: #d97706;
+  color: #ffffff;
+  border-color: #d97706;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);
+  transform: translateY(-1px);
+}
+
+/* Modal Box for Product Docs */
+.product-doc-modal-box {
+  max-width: 1020px !important;
+  width: 94% !important;
+  height: 88vh !important;
+  max-height: 900px !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  border-radius: 16px !important;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5) !important;
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-medium) !important;
+}
+
+.doc-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-secondary);
+}
+
+.doc-modal-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.doc-modal-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(37, 99, 235, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.doc-modal-product-name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.doc-modal-subtitle {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  display: block;
+}
+
+.doc-modal-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-doc-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid var(--border-medium);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-doc-action:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+}
+
+.btn-doc-download {
+  background: rgba(37, 99, 235, 0.12);
+  color: var(--accent-blue);
+  border-color: rgba(37, 99, 235, 0.3);
+}
+
+.btn-doc-download:hover {
+  background: var(--accent-blue);
+  color: #ffffff;
+}
+
+.btn-doc-close {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 8px;
+  transition: all 0.15s;
+}
+
+.btn-doc-close:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.doc-tabs-nav {
+  display: flex;
+  gap: 6px;
+  padding: 10px 20px 0 20px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-subtle);
+  overflow-x: auto;
+}
+
+.doc-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border: none;
+  background: transparent;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 8px 8px 0 0;
+}
+
+.doc-tab-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.doc-tab-btn.active {
+  color: var(--accent-blue);
+  border-bottom-color: var(--accent-blue);
+  background: var(--bg-card);
+}
+
+.doc-modal-body {
+  flex: 1;
+  position: relative;
+  background: #323639;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.doc-pdf-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  flex: 1;
+}
+
+.doc-fallback-notice {
+  padding: 10px 20px;
+  background: rgba(245, 158, 11, 0.15);
+  border-top: 1px solid rgba(245, 158, 11, 0.3);
+  color: #f59e0b;
+  font-size: 12px;
+  text-align: center;
+}
+

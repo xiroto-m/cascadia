@@ -210,6 +210,27 @@ function setupEventListeners() {
     if (e.target.id === 'previewModal') closePreviewModal();
   });
 
+  // Product document preview modal event bindings
+  const btnCloseDocModal = document.getElementById('btnCloseProductDocModal');
+  if (btnCloseDocModal) {
+    btnCloseDocModal.addEventListener('click', window.closeProductDocModal);
+  }
+  const productDocModal = document.getElementById('productDocModal');
+  if (productDocModal) {
+    productDocModal.addEventListener('click', (e) => {
+      if (e.target.id === 'productDocModal') window.closeProductDocModal();
+    });
+  }
+
+  // Global Escape key support to close open modals
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (window.closeProductDocModal) window.closeProductDocModal();
+      closePreviewModal();
+      closeModal();
+    }
+  });
+
   // 有識者確認モードは常にONに固定されるため、トグルのバインドは不要
 }
 
@@ -3476,6 +3497,134 @@ function openPreviewModal(type, detail) {
 function closePreviewModal() {
   document.getElementById('previewModal').classList.remove('active');
 }
+
+// -------------------------------------------------------------------------
+//  3-B. 商品資料（成分表・表示票・チラシ・パンフレット）ビュアーモーダル制御
+// -------------------------------------------------------------------------
+
+const PRODUCT_DOCUMENTS = {
+  'health-lever-plus-a': {
+    productName: 'ヘルスレバープラスA',
+    code: 'A023040101',
+    docs: [
+      {
+        id: 'spec',
+        label: '成分表',
+        icon: '📄',
+        fileName: '【成分表】ヘルスレバープラス-A（新処方）R8.8.17.pdf',
+        url: './product-docs/health-lever-plus-a/health-lever-plus-a-composition.pdf'
+      },
+      {
+        id: 'label',
+        label: '表示票',
+        icon: '🏷️',
+        fileName: '【表示票】ヘルスレバープラス-A（2022.10.25変更）.pdf',
+        url: './product-docs/health-lever-plus-a/health-lever-plus-a-label.pdf'
+      }
+    ]
+  },
+  'soypass': {
+    productName: 'ソイパス（SoyPass）',
+    code: 'A02201-01',
+    docs: [
+      {
+        id: 'pamphlet',
+        label: '製品パンフレット・解説資料',
+        icon: '📑',
+        fileName: 'ソイパス製品概要・営業提案資料.pdf',
+        url: './product-docs/soypass/soypass-guide.pdf'
+      }
+    ]
+  }
+};
+
+let currentProductDocState = {
+  productKey: null,
+  activeDocId: null
+};
+
+window.openProductDocModal = function(productKey, defaultDocId = null) {
+  const modal = document.getElementById('productDocModal');
+  const titleEl = document.getElementById('docModalProductName');
+  const subtitleEl = document.getElementById('docModalSubtitle');
+  const tabsContainer = document.getElementById('docModalTabs');
+  
+  if (!modal) return;
+
+  if (!PRODUCT_DOCUMENTS[productKey]) {
+    alert(`「${productKey}」の資料は準備中です。順次追加されます。`);
+    return;
+  }
+  
+  const product = PRODUCT_DOCUMENTS[productKey];
+  if (titleEl) titleEl.textContent = `${product.productName} (${product.code})`;
+  if (subtitleEl) subtitleEl.textContent = '成分表・表示票・パンフレット閲覧';
+  
+  currentProductDocState.productKey = productKey;
+  
+  // Render tabs
+  if (tabsContainer) {
+    let tabsHtml = '';
+    product.docs.forEach((doc) => {
+      tabsHtml += `
+        <button type="button" class="doc-tab-btn" data-doc-id="${doc.id}" onclick="window.switchProductDocTab('${productKey}', '${doc.id}')">
+          <span>${doc.icon}</span> ${doc.label}
+        </button>
+      `;
+    });
+    tabsContainer.innerHTML = tabsHtml;
+  }
+  
+  const targetDocId = defaultDocId || (product.docs[0] ? product.docs[0].id : null);
+  if (targetDocId) {
+    window.switchProductDocTab(productKey, targetDocId);
+  }
+  
+  modal.classList.add('active');
+};
+
+window.switchProductDocTab = function(productKey, docId) {
+  const product = PRODUCT_DOCUMENTS[productKey];
+  if (!product) return;
+  
+  const doc = product.docs.find(d => d.id === docId) || product.docs[0];
+  if (!doc) return;
+  
+  currentProductDocState.activeDocId = doc.id;
+  
+  // Update active tab UI
+  document.querySelectorAll('#docModalTabs .doc-tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.docId === doc.id);
+  });
+  
+  // Update iframe & action links
+  const iframe = document.getElementById('docPdfIframe');
+  const openNewTabBtn = document.getElementById('btnDocOpenNewTab');
+  const downloadBtn = document.getElementById('btnDocDownload');
+  
+  if (iframe) {
+    iframe.src = doc.url;
+  }
+  if (openNewTabBtn) {
+    openNewTabBtn.href = doc.url;
+  }
+  if (downloadBtn) {
+    downloadBtn.href = doc.url;
+    downloadBtn.download = doc.fileName || `${product.productName}_${doc.label}.pdf`;
+  }
+};
+
+window.closeProductDocModal = function() {
+  const modal = document.getElementById('productDocModal');
+  if (modal) {
+    modal.classList.remove('active');
+  }
+  const iframe = document.getElementById('docPdfIframe');
+  if (iframe) {
+    iframe.src = 'about:blank';
+  }
+  currentProductDocState = { productKey: null, activeDocId: null };
+};
 
 // -------------------------------------------------------------------------
 //  3. フレコンバッグ資材 在庫数・在庫金額確認ツール
