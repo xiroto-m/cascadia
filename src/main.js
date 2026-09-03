@@ -3898,13 +3898,72 @@ const PRODUCT_DOCUMENTS = {
       }
     ]
   },
+  'freshpac': {
+    productName: 'フレッシュパック',
+    code: 'A01141-02',
+    docs: [
+      {
+        id: 'pamphlet',
+        label: '最新製品チラシ',
+        icon: '📑',
+        fileName: '【最新】freshpac_A4チラシ_260129.pdf',
+        url: './product-docs/freshpac/freshpac-guide.pdf'
+      }
+    ]
+  },
+  'triumph': {
+    productName: 'トライアンフホース（アメリカ）',
+    code: 'A01142-02',
+    docs: [
+      {
+        id: 'pamphlet',
+        label: '最新製品チラシ',
+        icon: '📑',
+        fileName: 'TRIUMPH_A4チラシ_250401.pdf',
+        url: './product-docs/triumph/triumph-guide.pdf'
+      }
+    ]
+  },
+  'richfat-ca': {
+    productName: 'Richfat CA',
+    code: 'A02211-07/19',
+    docs: [
+      {
+        id: 'spec',
+        label: '規格・成分票',
+        icon: '📄',
+        fileName: 'リッチファットCa_2026.5.21.png',
+        url: './product-docs/richfat-ca/richfat-ca-spec.png'
+      }
+    ]
+  },
+  'richfat-expa': {
+    productName: 'Richfat EXPA（EX PA）',
+    code: 'A02212-01/19',
+    docs: [
+      {
+        id: 'spec',
+        label: '規格・成分票',
+        icon: '📄',
+        fileName: 'リッチファットEXPA_2026.5.21.png',
+        url: './product-docs/richfat-expa/richfat-expa-spec.png'
+      }
+    ]
+  },
   'poe-sheet': {
     productName: '仔牛のベッド（POEシートシリーズ）',
     code: 'B33000-13〜16',
     docs: [
       {
-        id: 'pamphlet',
-        label: '製品カタログ・チラシ',
+        id: 'pamphlet-2026',
+        label: '最新チラシ（2026版）',
+        icon: '🌟',
+        fileName: '【最新】仔牛のベッド20260210.pdf',
+        url: './product-docs/poe-sheet/koushinobed-2026.pdf'
+      },
+      {
+        id: 'pamphlet-classic',
+        label: '製品カタログ・チラシ（A4）',
         icon: '📑',
         fileName: 'koushinobed_a4.pdf',
         url: './product-docs/poe-sheet/poe-sheet-guide.pdf'
@@ -3916,8 +3975,22 @@ const PRODUCT_DOCUMENTS = {
     code: 'A02201-01/02',
     docs: [
       {
-        id: 'pamphlet',
-        label: '製品パンフレット（乳牛用）',
+        id: 'pamphlet-dairy-latest',
+        label: 'ソイパス（乳牛用）',
+        icon: '🥛',
+        fileName: 'ソイパス（乳牛用）.pdf',
+        url: './product-docs/soypass/soypass-dairy-latest.pdf'
+      },
+      {
+        id: 'pamphlet-beef-latest',
+        label: 'ソイパス（肉牛用）',
+        icon: '🥩',
+        fileName: 'ソイパス（肉牛用）.pdf',
+        url: './product-docs/soypass/soypass-beef-latest.pdf'
+      },
+      {
+        id: 'pamphlet-classic',
+        label: '総合パンフレット',
         icon: '📑',
         fileName: 'ソイパス パンフレット（乳牛用）.pdf',
         url: './product-docs/soypass/soypass-guide.pdf'
@@ -3925,14 +3998,14 @@ const PRODUCT_DOCUMENTS = {
       {
         id: 'beef',
         label: '提案プレゼン（肉牛用）',
-        icon: '🥩',
+        icon: '📊',
         fileName: 'ソイパスプレゼン（肉牛）.pptx',
         url: './product-docs/soypass/ソイパスプレゼン（肉牛）.pptx'
       },
       {
         id: 'trial',
         label: '給与試験データ（育成＋肥育前期）',
-        icon: '📊',
+        icon: '📈',
         fileName: 'ソイパス育成＋肥育前期給与試験.pdf',
         url: './product-docs/soypass/ソイパス育成＋肥育前期給与試験.pdf'
       },
@@ -3957,11 +4030,11 @@ const PRODUCT_DOCUMENTS = {
     code: 'B12010-12xx',
     docs: [
       {
-        id: 'pamphlet',
-        label: '活動量測定の意義と活用資料',
-        icon: '📑',
-        fileName: '仔牛の活動量の測定の意義と活用.pdf',
-        url: './product-docs/mowment/mowment-guide.pdf'
+        id: 'cti-latest',
+        label: '最新提案資料（CTI）',
+        icon: '🌟',
+        fileName: '【最新】アットモーメント_CTI_250828.pdf',
+        url: './product-docs/mowment/mowment-cti-latest.pdf'
       },
       {
         id: 'proposal',
@@ -3969,6 +4042,13 @@ const PRODUCT_DOCUMENTS = {
         icon: '📊',
         fileName: 'モーメント提案資料.pdf',
         url: './product-docs/mowment/モーメント提案資料.pdf'
+      },
+      {
+        id: 'pamphlet',
+        label: '活動量測定の意義と活用資料',
+        icon: '📑',
+        fileName: '仔牛の活動量の測定の意義と活用.pdf',
+        url: './product-docs/mowment/mowment-guide.pdf'
       },
       {
         id: 'voice',
@@ -4065,16 +4145,40 @@ window.switchProductDocTab = function(productKey, docId) {
   const iframe = document.getElementById('docPdfIframe');
   const openNewTabBtn = document.getElementById('btnDocOpenNewTab');
   const downloadBtn = document.getElementById('btnDocDownload');
+  const docModalBody = document.getElementById('docModalBody');
   
-  if (iframe) {
+  const isImage = /\.(png|jpe?g|webp|gif)$/i.test(doc.url);
+  if (docModalBody) {
+    let imgEl = document.getElementById('docImgViewer');
+    if (isImage) {
+      if (iframe) iframe.style.display = 'none';
+      if (!imgEl) {
+        imgEl = document.createElement('div');
+        imgEl.id = 'docImgViewer';
+        imgEl.style.cssText = 'width:100%; height:100%; overflow:auto; display:flex; align-items:center; justify-content:center; background:#1e293b; padding:16px; box-sizing:border-box;';
+        imgEl.innerHTML = `<img src="${doc.url}" alt="${doc.label}" style="max-width:100%; max-height:100%; object-fit:contain; border-radius:6px; box-shadow:0 4px 20px rgba(0,0,0,0.5);">`;
+        docModalBody.appendChild(imgEl);
+      } else {
+        imgEl.style.display = 'flex';
+        imgEl.innerHTML = `<img src="${doc.url}" alt="${doc.label}" style="max-width:100%; max-height:100%; object-fit:contain; border-radius:6px; box-shadow:0 4px 20px rgba(0,0,0,0.5);">`;
+      }
+    } else {
+      if (imgEl) imgEl.style.display = 'none';
+      if (iframe) {
+        iframe.style.display = 'block';
+        iframe.src = doc.url;
+      }
+    }
+  } else if (iframe) {
     iframe.src = doc.url;
   }
+  
   if (openNewTabBtn) {
     openNewTabBtn.href = doc.url;
   }
   if (downloadBtn) {
     downloadBtn.href = doc.url;
-    downloadBtn.download = doc.fileName || `${product.productName}_${doc.label}.pdf`;
+    downloadBtn.download = doc.fileName || `${product.productName}_${doc.label}`;
   }
 };
 
