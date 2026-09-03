@@ -3535,6 +3535,470 @@ const PRODUCT_DOCUMENTS = {
         url: './product-docs/soypass/soypass-guide.pdf'
       }
     ]
+  },
+  'salvaster-adult': {
+    productName: 'サルバスター成牛用VIT',
+    code: 'A023110101',
+    docs: [
+      {
+        id: 'standard',
+        label: '規格書',
+        icon: '📑',
+        fileName: '【規格書】サルバスター成牛用、育成用.pdf',
+        url: './product-docs/salvaster-adult/salvaster-adult-standard.pdf'
+      },
+      {
+        id: 'label',
+        label: '表示票',
+        icon: '🏷️',
+        fileName: '【表示票】サルバスター 成牛用 2024.2.8現在.pdf',
+        url: './product-docs/salvaster-adult/salvaster-adult-label.pdf'
+      }
+    ]
+  },
+  'salvaster-p-adult': {
+    productName: 'サルバスターP成牛用VIT',
+    code: 'A023110102',
+    docs: [
+      {
+        id: 'standard',
+        label: '規格書',
+        icon: '📑',
+        fileName: '【規格書】サルバスターP成牛用、育成用2025R7.6.24更新.pdf',
+        url: './product-docs/salvaster-p-adult/salvaster-p-adult-standard.pdf'
+      },
+      {
+        id: 'label',
+        label: '表示票',
+        icon: '🏷️',
+        fileName: '【表示票】サルバスター P 成牛用2025.6.24➁更新.pdf',
+        url: './product-docs/salvaster-p-adult/salvaster-p-adult-label.pdf'
+      }
+    ]
+  },
+  'salvaster-p-ikusei': {
+    productName: 'サルバスターP育成用VIT',
+    code: 'A023110103',
+    docs: [
+      {
+        id: 'standard',
+        label: '規格書',
+        icon: '📑',
+        fileName: '【規格書】サルバスターP成牛用、育成用2025R7.6.24更新.pdf',
+        url: './product-docs/salvaster-p-ikusei/salvaster-p-ikusei-standard.pdf'
+      },
+      {
+        id: 'label',
+        label: '表示票',
+        icon: '🏷️',
+        fileName: '【表示票】サルバスター P 育成用2025.6.24更新.pdf',
+        url: './product-docs/salvaster-p-ikusei/salvaster-p-ikusei-label.pdf'
+      }
+    ]
+  },
+  'bf-premium': {
+    productName: 'BFプレミアム搾乳用VIT',
+    code: 'A024010101',
+    docs: [
+      {
+        id: 'spec',
+        label: '成分表',
+        icon: '📄',
+        fileName: '【成分表】ＢＦプレミアム搾乳用ビタミン（変更処方）.pdf',
+        url: './product-docs/bf-premium/bf-premium-composition.pdf'
+      }
+    ]
+  },
+  'ms-p-5': {
+    productName: 'MS P-5',
+    code: 'A024050101',
+    docs: [
+      {
+        id: 'spec',
+        label: '成分表',
+        icon: '📄',
+        fileName: '【成分表】MS P-5 .pdf',
+        url: './product-docs/ms-p-5/ms-p-5-composition.pdf'
+      },
+      {
+        id: 'label',
+        label: '表示票',
+        icon: '🏷️',
+        fileName: '【表示票】MSP-5.pdf',
+        url: './product-docs/ms-p-5/ms-p-5-label.pdf'
+      }
+    ]
+  },
+  'new-ajisaino': {
+    productName: 'NEWあじさい野牧場',
+    code: 'A024020101',
+    docs: [
+      {
+        id: 'spec',
+        label: '成分表',
+        icon: '📄',
+        fileName: '【成分表】NEWあじさい野牧場搾乳用ビタミン 現行.pdf',
+        url: './product-docs/new-ajisaino/new-ajisaino-composition.pdf'
+      }
+    ]
+  },
+  'njf-mash': {
+    productName: 'NJFマッシュ',
+    code: 'A024060101',
+    docs: [
+      {
+        id: 'spec',
+        label: '成分表',
+        icon: '📄',
+        fileName: '【成分表】NJFマッシュ（変更）2024.2.21.pdf',
+        url: './product-docs/njf-mash/njf-mash-composition.pdf'
+      },
+      {
+        id: 'label',
+        label: '表示票',
+        icon: '🏷️',
+        fileName: '【表示票】NJFマッシュ（変更）2024.2.21.pdf',
+        url: './product-docs/njf-mash/njf-mash-label.pdf'
+      }
+    ]
+  },
+  'nv-mix': {
+    productName: 'NVミックス',
+    code: 'A024070101',
+    docs: [
+      {
+        id: 'spec',
+        label: '成分表',
+        icon: '📄',
+        fileName: '【成分表】NVミックス.pdf',
+        url: './product-docs/nv-mix/nv-mix-composition.pdf'
+      },
+      {
+        id: 'label',
+        label: '表示票',
+        icon: '🏷️',
+        fileName: '【表示票】NVミックス 2025.9.22 .pdf',
+        url: './product-docs/nv-mix/nv-mix-label.pdf'
+      }
+    ]
+  },
+  'glutris': {
+    productName: 'グルトリス',
+    code: 'A320000001',
+    docs: [
+      {
+        id: 'spec',
+        label: '成分表',
+        icon: '📄',
+        fileName: '【成分表】グルトリス R7.11.19　.pdf',
+        url: './product-docs/glutris/glutris-composition.pdf'
+      },
+      {
+        id: 'label',
+        label: '表示票',
+        icon: '🏷️',
+        fileName: '【表示票】グルトリス R8.3.12.pdf',
+        url: './product-docs/glutris/glutris-label.pdf'
+      }
+    ]
+  },
+  'vitamine-e-100': {
+    productName: 'ビタミンE100',
+    code: 'A320000007',
+    docs: [
+      {
+        id: 'spec',
+        label: '成分表',
+        icon: '📄',
+        fileName: '【成分表】ビタミンＥ100ＳＥ.pdf',
+        url: './product-docs/vitamine-e-100/vitamine-e-100-composition.pdf'
+      }
+    ]
+  },
+  'big-f-kannyu': {
+    productName: 'ビッグF乾乳用VIT',
+    code: 'A024080101',
+    docs: [
+      {
+        id: 'spec',
+        label: '成分表',
+        icon: '📄',
+        fileName: '【成分表】ビッグＦ乾乳用ＶＩＴ2025.3.21.pdf',
+        url: './product-docs/big-f-kannyu/big-f-kannyu-composition.pdf'
+      }
+    ]
+  },
+  'aso-farm-px': {
+    productName: '阿蘇ファームPX',
+    code: 'A024130101',
+    docs: [
+      {
+        id: 'spec',
+        label: '成分表',
+        icon: '📄',
+        fileName: '【成分表】阿蘇ファームＰＸ_決定.pdf',
+        url: './product-docs/aso-farm-px/aso-farm-px-composition.pdf'
+      }
+    ]
+  },
+  'koshikawa-kannyu': {
+    productName: '越川牧場-乾乳用VIT',
+    code: 'A024250101',
+    docs: [
+      {
+        id: 'spec',
+        label: '成分表',
+        icon: '📄',
+        fileName: '【成分表】越川牧場－乾乳用VIT2025.3.21.pdf',
+        url: './product-docs/koshikawa-kannyu/koshikawa-kannyu-composition.pdf'
+      },
+      {
+        id: 'label',
+        label: '表示票',
+        icon: '🏷️',
+        fileName: '【表示票】越川牧場-乾乳用VIT.pdf',
+        url: './product-docs/koshikawa-kannyu/koshikawa-kannyu-label.pdf'
+      }
+    ]
+  },
+  'narita-yume-mash': {
+    productName: '成田ゆめ牧場搾乳用ミックス（マッシュ）',
+    code: 'A024210101',
+    docs: [
+      {
+        id: 'spec',
+        label: '成分表',
+        icon: '📄',
+        fileName: '【成分表】成田ゆめ牧場搾乳用ミックス（変更処方）成分表.pdf',
+        url: './product-docs/narita-yume-mash/narita-yume-mash-composition.pdf'
+      },
+      {
+        id: 'label',
+        label: '表示票',
+        icon: '🏷️',
+        fileName: '【表示票】成田 ゆめ牧場 搾乳用ミックス.pdf',
+        url: './product-docs/narita-yume-mash/narita-yume-mash-label.pdf'
+      }
+    ]
+  },
+  'nagashima-kannyu': {
+    productName: '長嶋F乾乳用VIT',
+    code: 'A024180101',
+    docs: [
+      {
+        id: 'spec',
+        label: '成分表',
+        icon: '📄',
+        fileName: '【成分表】長嶋Ｆ乾乳用VIT2025.3.21　.pdf',
+        url: './product-docs/nagashima-kannyu/nagashima-kannyu-composition.pdf'
+      }
+    ]
+  },
+  'nagashima-sakunyu': {
+    productName: '長嶋F搾乳用VIT',
+    code: 'A024100101',
+    docs: [
+      {
+        id: 'spec',
+        label: '成分表',
+        icon: '📄',
+        fileName: '【成分表】長嶋ファーム搾乳用プレミアムビタミン（処方変更）.pdf',
+        url: './product-docs/nagashima-sakunyu/nagashima-sakunyu-composition.pdf'
+      }
+    ]
+  },
+  'hirayama-sakunyu': {
+    productName: '平山牧場搾乳用ミックスNew',
+    code: 'A024230101',
+    docs: [
+      {
+        id: 'spec',
+        label: '成分表',
+        icon: '📄',
+        fileName: '【成分表】平山牧場搾乳用ミックスＮｅｗ2025.2.14　.pdf',
+        url: './product-docs/hirayama-sakunyu/hirayama-sakunyu-composition.pdf'
+      }
+    ]
+  },
+  'stress-manager-ast': {
+    productName: 'ストレスマネージャーAST',
+    code: 'A024200101',
+    docs: [
+      {
+        id: 'label',
+        label: '表示票',
+        icon: '🏷️',
+        fileName: '【表示票】ストレスマネージャーAST.pdf',
+        url: './product-docs/stress-manager-ast/stress-manager-ast-label.pdf'
+      }
+    ]
+  },
+  'horse-flora-n': {
+    productName: 'ホースフローラN',
+    code: 'A023070101',
+    docs: [
+      {
+        id: 'label',
+        label: '表示票',
+        icon: '🏷️',
+        fileName: '【表示票】ホースフローラＮ.pdf',
+        url: './product-docs/horse-flora-n/horse-flora-n-label.pdf'
+      }
+    ]
+  },
+  'lever-charge': {
+    productName: 'レバチャージ',
+    code: 'A024090101',
+    docs: [
+      {
+        id: 'label',
+        label: '表示票',
+        icon: '🏷️',
+        fileName: '【表示票】レバチャージ５kg ×2 .pdf',
+        url: './product-docs/lever-charge/lever-charge-label.pdf'
+      }
+    ]
+  },
+  'genkina-calcium-m': {
+    productName: '元気なカルシウムM',
+    code: 'A023050101',
+    docs: [
+      {
+        id: 'label',
+        label: '表示票',
+        icon: '🏷️',
+        fileName: '【表示票】元気なカルシウムＭ.pdf',
+        url: './product-docs/genkina-calcium-m/genkina-calcium-m-label.pdf'
+      }
+    ]
+  },
+  'imamura-fureai-px': {
+    productName: '今村ふれあい牧場PX',
+    code: 'A024120101',
+    docs: [
+      {
+        id: 'label',
+        label: '表示票',
+        icon: '🏷️',
+        fileName: '【表示票】今村ふれあい牧場ＰＸ2025.10.1 .pdf',
+        url: './product-docs/imamura-fureai-px/imamura-fureai-px-label.pdf'
+      }
+    ]
+  },
+  'mandakouso-calf': {
+    productName: '万田酵素（カーフバランス / マンダFキューブ）',
+    code: 'A024110101 / A320000003',
+    docs: [
+      {
+        id: 'pamphlet',
+        label: '製品チラシ・解説資料',
+        icon: '📑',
+        fileName: 'mandakousoA4_c_241121.pdf',
+        url: './product-docs/mandakouso/mandakouso-guide.pdf'
+      }
+    ]
+  },
+  'poe-sheet': {
+    productName: '仔牛のベッド（POEシートシリーズ）',
+    code: 'B33000-13〜16',
+    docs: [
+      {
+        id: 'pamphlet',
+        label: '製品カタログ・チラシ',
+        icon: '📑',
+        fileName: 'koushinobed_a4.pdf',
+        url: './product-docs/poe-sheet/poe-sheet-guide.pdf'
+      }
+    ]
+  },
+  'soypass': {
+    productName: 'ソイパス（バイパス大豆たん白）',
+    code: 'A02201-01/02',
+    docs: [
+      {
+        id: 'pamphlet',
+        label: '製品パンフレット（乳牛用）',
+        icon: '📑',
+        fileName: 'ソイパス パンフレット（乳牛用）.pdf',
+        url: './product-docs/soypass/soypass-guide.pdf'
+      },
+      {
+        id: 'beef',
+        label: '提案プレゼン（肉牛用）',
+        icon: '🥩',
+        fileName: 'ソイパスプレゼン（肉牛）.pptx',
+        url: './product-docs/soypass/ソイパスプレゼン（肉牛）.pptx'
+      },
+      {
+        id: 'trial',
+        label: '給与試験データ（育成＋肥育前期）',
+        icon: '📊',
+        fileName: 'ソイパス育成＋肥育前期給与試験.pdf',
+        url: './product-docs/soypass/ソイパス育成＋肥育前期給与試験.pdf'
+      },
+      {
+        id: 'shimane',
+        label: '島根県畜産技術センター研究報告',
+        icon: '🏛️',
+        fileName: '島根県畜産技術センターバイパス蛋白肥育前期.pdf',
+        url: './product-docs/soypass/島根県畜産技術センターバイパス蛋白肥育前期.pdf'
+      },
+      {
+        id: 'info',
+        label: '資料ご案内',
+        icon: '✉️',
+        fileName: 'ソイパス資料ご案内.pdf',
+        url: './product-docs/soypass/ソイパス資料ご案内.pdf'
+      }
+    ]
+  },
+  'mowment': {
+    productName: '@mowment（アットモーメント）',
+    code: 'B12010-12xx',
+    docs: [
+      {
+        id: 'pamphlet',
+        label: '活動量測定の意義と活用資料',
+        icon: '📑',
+        fileName: '仔牛の活動量の測定の意義と活用.pdf',
+        url: './product-docs/mowment/mowment-guide.pdf'
+      },
+      {
+        id: 'proposal',
+        label: 'モーメント提案資料',
+        icon: '📊',
+        fileName: 'モーメント提案資料.pdf',
+        url: './product-docs/mowment/モーメント提案資料.pdf'
+      },
+      {
+        id: 'voice',
+        label: 'ご利用者の声',
+        icon: '👥',
+        fileName: 'アットモーメントご利用者の声.pdf',
+        url: './product-docs/mowment/アットモーメントご利用者の声.pdf'
+      },
+      {
+        id: 'manual',
+        label: '操作説明マニュアル',
+        icon: '📱',
+        fileName: 'アットモーメント操作説明.pdf',
+        url: './product-docs/mowment/アットモーメント操作説明.pdf'
+      },
+      {
+        id: 'price-standard',
+        label: '標準価格表',
+        icon: '💰',
+        fileName: '価格_標準価格.pdf',
+        url: './product-docs/mowment/価格_標準価格.pdf'
+      },
+      {
+        id: 'price-sub',
+        label: 'サブスク導入費用',
+        icon: '💳',
+        fileName: '価格_サブスク導入費用.pdf',
+        url: './product-docs/mowment/価格_サブスク導入費用.pdf'
+      }
+    ]
   }
 };
 
@@ -3558,7 +4022,7 @@ window.openProductDocModal = function(productKey, defaultDocId = null) {
   
   const product = PRODUCT_DOCUMENTS[productKey];
   if (titleEl) titleEl.textContent = `${product.productName} (${product.code})`;
-  if (subtitleEl) subtitleEl.textContent = '成分表・表示票・パンフレット閲覧';
+  if (subtitleEl) subtitleEl.textContent = '成分表・表示票・規格書・パンフレット閲覧';
   
   currentProductDocState.productKey = productKey;
   

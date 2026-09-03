@@ -4353,6 +4353,20 @@ tbody tr:last-child td {
   transform: translateY(-1px);
 }
 
+.doc-badge-standard {
+  background: rgba(139, 92, 246, 0.12);
+  color: #8b5cf6;
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+.doc-badge-standard:hover {
+  background: #8b5cf6;
+  color: #ffffff;
+  border-color: #8b5cf6;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.35);
+  transform: translateY(-1px);
+}
+
 /* Modal Box for Product Docs */
 .product-doc-modal-box {
   max-width: 1020px !important;

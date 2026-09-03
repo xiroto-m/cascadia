@@ -31,7 +31,10 @@ jobs:
         run: npm ci
 
       - name: Build
-        run: npm run build
+        run: |
+          npm run build
+          [ -d product-docs ] && cp -r product-docs dist/ || true
+          [ -d backoffice-docs ] && cp -r backoffice-docs dist/ || true
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
