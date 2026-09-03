@@ -3523,19 +3523,6 @@ const PRODUCT_DOCUMENTS = {
       }
     ]
   },
-  'soypass': {
-    productName: 'ソイパス（SoyPass）',
-    code: 'A02201-01',
-    docs: [
-      {
-        id: 'pamphlet',
-        label: '製品パンフレット・解説資料',
-        icon: '📑',
-        fileName: 'ソイパス製品概要・営業提案資料.pdf',
-        url: './product-docs/soypass/soypass-guide.pdf'
-      }
-    ]
-  },
   'salvaster-adult': {
     productName: 'サルバスター成牛用VIT',
     code: 'A023110101',
@@ -3886,8 +3873,8 @@ const PRODUCT_DOCUMENTS = {
     ]
   },
   'mandakouso-calf': {
-    productName: '万田酵素（カーフバランス / マンダFキューブ）',
-    code: 'A024110101 / A320000003',
+    productName: '万田酵素カーフバランス',
+    code: 'A024110101',
     docs: [
       {
         id: 'pamphlet',
@@ -3929,11 +3916,11 @@ const PRODUCT_DOCUMENTS = {
     code: 'A02211-07/19',
     docs: [
       {
-        id: 'spec',
-        label: '規格・成分票',
-        icon: '📄',
-        fileName: 'リッチファットCa_2026.5.21.png',
-        url: './product-docs/richfat-ca/richfat-ca-spec.png'
+        id: 'pamphlet',
+        label: '製品チラシ',
+        icon: '📑',
+        fileName: 'リッチファットCa_2026.5.21.pdf',
+        url: './product-docs/richfat-ca/richfat-ca-flyer.pdf'
       }
     ]
   },
@@ -3942,11 +3929,11 @@ const PRODUCT_DOCUMENTS = {
     code: 'A02212-01/19',
     docs: [
       {
-        id: 'spec',
-        label: '規格・成分票',
-        icon: '📄',
-        fileName: 'リッチファットEXPA_2026.5.21.png',
-        url: './product-docs/richfat-expa/richfat-expa-spec.png'
+        id: 'pamphlet',
+        label: '製品チラシ',
+        icon: '📑',
+        fileName: 'リッチファットEXPA_2026.5.21.pdf',
+        url: './product-docs/richfat-expa/richfat-expa-flyer.pdf'
       }
     ]
   },
@@ -3955,18 +3942,11 @@ const PRODUCT_DOCUMENTS = {
     code: 'B33000-13〜16',
     docs: [
       {
-        id: 'pamphlet-2026',
-        label: '最新チラシ（2026版）',
-        icon: '🌟',
+        id: 'pamphlet',
+        label: '製品チラシ（Calf Comfort Bed）',
+        icon: '📑',
         fileName: '【最新】仔牛のベッド20260210.pdf',
         url: './product-docs/poe-sheet/koushinobed-2026.pdf'
-      },
-      {
-        id: 'pamphlet-classic',
-        label: '製品カタログ・チラシ（A4）',
-        icon: '📑',
-        fileName: 'koushinobed_a4.pdf',
-        url: './product-docs/poe-sheet/poe-sheet-guide.pdf'
       }
     ]
   },
@@ -3975,28 +3955,21 @@ const PRODUCT_DOCUMENTS = {
     code: 'A02201-01/02',
     docs: [
       {
-        id: 'pamphlet-dairy-latest',
-        label: 'ソイパス（乳牛用）',
+        id: 'pamphlet',
+        label: 'ソイパス（乳牛用）チラシ【ランゲン】',
         icon: '🥛',
         fileName: 'ソイパス（乳牛用）.pdf',
         url: './product-docs/soypass/soypass-dairy-latest.pdf'
       },
       {
-        id: 'pamphlet-beef-latest',
-        label: 'ソイパス（肉牛用）',
+        id: 'pamphlet-beef',
+        label: 'ソイパス（肉牛用）チラシ【ランゲン】',
         icon: '🥩',
         fileName: 'ソイパス（肉牛用）.pdf',
         url: './product-docs/soypass/soypass-beef-latest.pdf'
       },
       {
-        id: 'pamphlet-classic',
-        label: '総合パンフレット',
-        icon: '📑',
-        fileName: 'ソイパス パンフレット（乳牛用）.pdf',
-        url: './product-docs/soypass/soypass-guide.pdf'
-      },
-      {
-        id: 'beef',
+        id: 'beef-presentation',
         label: '提案プレゼン（肉牛用）',
         icon: '📊',
         fileName: 'ソイパスプレゼン（肉牛）.pptx',
@@ -4030,11 +4003,18 @@ const PRODUCT_DOCUMENTS = {
     code: 'B12010-12xx',
     docs: [
       {
-        id: 'cti-latest',
-        label: '最新提案資料（CTI）',
-        icon: '🌟',
+        id: 'pamphlet',
+        label: '製品チラシ（最新A4）',
+        icon: '📑',
         fileName: '【最新】アットモーメント_CTI_250828.pdf',
-        url: './product-docs/mowment/mowment-cti-latest.pdf'
+        url: './product-docs/mowment/mowment-flyer.pdf'
+      },
+      {
+        id: 'guide',
+        label: '活動量測定の意義と活用資料',
+        icon: '📖',
+        fileName: '仔牛の活動量の測定の意義と活用.pdf',
+        url: './product-docs/mowment/mowment-guide.pdf'
       },
       {
         id: 'proposal',
@@ -4042,13 +4022,6 @@ const PRODUCT_DOCUMENTS = {
         icon: '📊',
         fileName: 'モーメント提案資料.pdf',
         url: './product-docs/mowment/モーメント提案資料.pdf'
-      },
-      {
-        id: 'pamphlet',
-        label: '活動量測定の意義と活用資料',
-        icon: '📑',
-        fileName: '仔牛の活動量の測定の意義と活用.pdf',
-        url: './product-docs/mowment/mowment-guide.pdf'
       },
       {
         id: 'voice',
