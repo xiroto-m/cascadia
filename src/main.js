@@ -2390,6 +2390,12 @@ function calculateBusinessDays(startDateStr, days, calcMode, includeStart) {
         shouldSkip = true;
         type = dayOfWeek === 0 ? "日曜日" : isHoliday;
       }
+    } else if (mode === 'holidays_only') {
+      // 日本の祝日だけを除外（土曜・日曜はカウント。平日(月〜金)の日本の祝日・振替休日のみ除外）
+      if (dayOfWeek !== 0 && dayOfWeek !== 6 && isHoliday) {
+        shouldSkip = true;
+        type = isHoliday;
+      }
     }
 
     if (shouldSkip) {
@@ -2473,6 +2479,7 @@ function renderDateCalculator() {
             <select id="calcMode">
               <option value="business" selected>営業日のみカウント（土日・日本の祝日を除外）</option>
               <option value="sun_holidays">日祝のみ除外（土曜日はカウント、日曜・祝日を除外）</option>
+              <option value="holidays_only">祝日のみ除外（土日はカウント、日本の祝日を除外）</option>
               <option value="calendar">カレンダー日カウント（暦通り全てカウント）</option>
             </select>
           </div>
@@ -2487,7 +2494,7 @@ function renderDateCalculator() {
             <label for="calcPickupDate">搬出日 / 返却予定日（任意入力・超過料金計算用）</label>
             <input type="date" id="calcPickupDate" value="">
             <span style="font-size: 11px; color: var(--text-muted); margin-top: 4px; display: block;">
-              ※フリータイム終了後に搬出・返却する場合、超過日数およびデマレージ/ディテンション料金が試算されます。
+              ※フリータイム終了後に搬出・返却する場合、超過日数およびデマレージ/ディテンション料金が試算されます。下のサマリーで直接「超過日数」を入力しても即時計算されます。
             </span>
           </div>
         </div>
@@ -2551,14 +2558,28 @@ function renderDateCalculator() {
         <div>
           <h4 style="font-size: 13px; margin: 0 0 10px; color: var(--text-secondary);">📊 超過料金計算サマリー</h4>
           <div style="background: var(--bg-primary); border: 1px solid var(--border-medium); border-radius: 12px; padding: 16px;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px;">
-              <span style="color: var(--text-secondary);">超過日数:</span>
-              <strong id="feeOverdueDaysText" style="color: #ef4444;">0 日間</strong>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 13px;">
+              <span style="color: var(--text-secondary); font-weight: 600;">超過日数（試算日数）:</span>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <input type="number" id="feeOverdueDaysInput" min="0" max="999" value="0" style="width: 75px; padding: 4px 8px; font-weight: 700; font-size: 15px; color: #ef4444; border: 1px solid var(--border-medium); border-radius: 6px; text-align: right; background: var(--bg-card);">
+                <span style="font-weight: 600; color: var(--text-secondary);">日間</span>
+              </div>
+            </div>
+
+            <!-- クイック試算ボタン群 -->
+            <div style="display: flex; gap: 6px; margin-bottom: 12px; align-items: center; flex-wrap: wrap;">
+              <span style="font-size: 11px; color: var(--text-muted);">クイック試算:</span>
+              <button type="button" class="btn-quick-overdue" data-days="3" style="padding: 2px 8px; font-size: 11px; border: 1px solid var(--border-medium); border-radius: 4px; background: var(--bg-card); cursor: pointer; color: var(--text-secondary);">3日</button>
+              <button type="button" class="btn-quick-overdue" data-days="5" style="padding: 2px 8px; font-size: 11px; border: 1px solid var(--border-medium); border-radius: 4px; background: var(--bg-card); cursor: pointer; color: var(--text-secondary);">5日</button>
+              <button type="button" class="btn-quick-overdue" data-days="7" style="padding: 2px 8px; font-size: 11px; border: 1px solid var(--border-medium); border-radius: 4px; background: var(--bg-card); cursor: pointer; color: var(--text-secondary);">7日</button>
+              <button type="button" class="btn-quick-overdue" data-days="10" style="padding: 2px 8px; font-size: 11px; border: 1px solid var(--border-medium); border-radius: 4px; background: var(--bg-card); cursor: pointer; color: var(--text-secondary);">10日</button>
+              <button type="button" class="btn-quick-overdue" data-days="14" style="padding: 2px 8px; font-size: 11px; border: 1px solid var(--border-medium); border-radius: 4px; background: var(--bg-card); cursor: pointer; color: var(--text-secondary);">14日</button>
+              <button type="button" class="btn-quick-overdue" data-days="0" style="padding: 2px 8px; font-size: 11px; border: 1px solid var(--border-medium); border-radius: 4px; background: var(--bg-card); cursor: pointer; color: var(--text-muted);">0日</button>
             </div>
 
             <div style="border-top: 1px dashed var(--border-subtle); padding-top: 10px; margin-top: 10px;" id="tierBreakdownList">
               <!-- 段階別の小計計算内訳 -->
-              <span style="font-size: 12px; color: var(--text-muted);">搬出日/返却予定日を入力すると内訳が表示されます。</span>
+              <span style="font-size: 12px; color: var(--text-muted);">超過日数を入力するか、上の搬出日を指定すると内訳・合計が自動計算されます。</span>
             </div>
 
             <div style="border-top: 2px solid var(--border-medium); padding-top: 12px; margin-top: 12px; display: flex; justify-content: space-between; align-items: baseline;">
@@ -2622,31 +2643,33 @@ function renderDateCalculator() {
       tbody.appendChild(tr);
     });
 
-    // 行入力イベントのバインド
-    document.querySelectorAll('.tier-input-start').forEach(input => {
-      input.addEventListener('change', (e) => {
-        const idx = parseInt(e.target.dataset.idx);
-        currentTiers[idx].startDay = parseInt(e.target.value) || 1;
-        presetSelect.value = 'custom';
-        updateCalculation();
+    // 行入力イベントのバインド（input と change の両方で即時リアルタイム反映）
+    ['input', 'change'].forEach(evtType => {
+      document.querySelectorAll('.tier-input-start').forEach(input => {
+        input.addEventListener(evtType, (e) => {
+          const idx = parseInt(e.target.dataset.idx);
+          currentTiers[idx].startDay = Math.max(1, parseInt(e.target.value) || 1);
+          presetSelect.value = 'custom';
+          updateCalculation();
+        });
       });
-    });
 
-    document.querySelectorAll('.tier-input-end').forEach(input => {
-      input.addEventListener('change', (e) => {
-        const idx = parseInt(e.target.dataset.idx);
-        currentTiers[idx].endDay = e.target.value === '' ? 999 : parseInt(e.target.value) || 999;
-        presetSelect.value = 'custom';
-        updateCalculation();
+      document.querySelectorAll('.tier-input-end').forEach(input => {
+        input.addEventListener(evtType, (e) => {
+          const idx = parseInt(e.target.dataset.idx);
+          currentTiers[idx].endDay = e.target.value === '' ? 999 : (parseInt(e.target.value) || 999);
+          presetSelect.value = 'custom';
+          updateCalculation();
+        });
       });
-    });
 
-    document.querySelectorAll('.tier-input-rate').forEach(input => {
-      input.addEventListener('change', (e) => {
-        const idx = parseInt(e.target.dataset.idx);
-        currentTiers[idx].rate = parseInt(e.target.value) || 0;
-        presetSelect.value = 'custom';
-        updateCalculation();
+      document.querySelectorAll('.tier-input-rate').forEach(input => {
+        input.addEventListener(evtType, (e) => {
+          const idx = parseInt(e.target.dataset.idx);
+          currentTiers[idx].rate = Math.max(0, parseInt(e.target.value) || 0);
+          presetSelect.value = 'custom';
+          updateCalculation();
+        });
       });
     });
 
@@ -2679,17 +2702,22 @@ function renderDateCalculator() {
     updateCalculation();
   });
 
+  const overdueDaysInput = document.getElementById('feeOverdueDaysInput');
+  let isUpdatingOverdue = false;
+  let lastCalcResultStr = '';
+
   function updateCalculation() {
     const startVal = startDateInput.value;
     const daysVal = parseInt(daysInput.value) || 0;
     const calcMode = modeSelect.value;
     const includeStart = includeStartCheck.checked;
-    const pickupVal = pickupDateInput.value;
+    let pickupVal = pickupDateInput.value;
 
     if (!startVal || daysVal <= 0) return;
 
     // 計算を実行
     const calcResult = calculateBusinessDays(startVal, daysVal, calcMode, includeStart);
+    lastCalcResultStr = calcResult.resultDateStr;
     
     // 日本語曜日表示
     const targetDate = new Date(calcResult.resultDateStr);
@@ -2701,6 +2729,7 @@ function renderDateCalculator() {
     
     let modeText = '営業日';
     if (calcMode === 'sun_holidays') modeText = '日祝除外';
+    if (calcMode === 'holidays_only') modeText = '祝日のみ除外（土日カウント）';
     if (calcMode === 'calendar') modeText = 'カレンダー日';
 
     document.getElementById('resultSummaryText').textContent = 
@@ -2719,15 +2748,28 @@ function renderDateCalculator() {
       });
     }
 
-    // 超過日数と料金計算
+    // 超過日数と料金計算（双方向同期対応）
     let overdueDays = 0;
-    if (pickupVal) {
-      const pDate = new Date(pickupVal);
-      const tDate = new Date(calcResult.resultDateStr);
-      const diffMs = pDate.getTime() - tDate.getTime();
-      if (diffMs > 0) {
-        overdueDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    if (!isUpdatingOverdue) {
+      if (pickupVal) {
+        const pDate = new Date(pickupVal);
+        const tDate = new Date(calcResult.resultDateStr);
+        const diffMs = pDate.getTime() - tDate.getTime();
+        overdueDays = diffMs > 0 ? Math.floor(diffMs / (1000 * 60 * 60 * 24)) : 0;
+        overdueDaysInput.value = overdueDays;
+      } else {
+        // 搬出日未入力の場合、超過日数入力欄の数値を尊重
+        overdueDays = Math.max(0, parseInt(overdueDaysInput.value) || 0);
+        if (overdueDays > 0) {
+          const [y, m, d] = calcResult.resultDateStr.split('-').map(Number);
+          const tDate = new Date(y, m - 1, d);
+          tDate.setDate(tDate.getDate() + overdueDays);
+          pickupVal = `${tDate.getFullYear()}-${String(tDate.getMonth() + 1).padStart(2, '0')}-${String(tDate.getDate()).padStart(2, '0')}`;
+          pickupDateInput.value = pickupVal;
+        }
       }
+    } else {
+      overdueDays = Math.max(0, parseInt(overdueDaysInput.value) || 0);
     }
 
     const badge = document.getElementById('overdueSummaryBadge');
@@ -2739,19 +2781,23 @@ function renderDateCalculator() {
     }
 
     // 料金の計算
-    document.getElementById('feeOverdueDaysText').textContent = `${overdueDays} 日間`;
     const breakdownContainer = document.getElementById('tierBreakdownList');
     breakdownContainer.innerHTML = '';
 
     let totalFee = 0;
 
     if (overdueDays > 0) {
-      currentTiers.sort((a, b) => a.startDay - b.startDay);
+      // 段階設定を安全にソート
+      const sortedTiers = [...currentTiers].map(t => ({
+        startDay: Math.max(1, parseInt(t.startDay) || 1),
+        endDay: (t.endDay === '' || t.endDay === null || t.endDay === undefined) ? 999 : Math.max(1, parseInt(t.endDay) || 999),
+        rate: Math.max(0, parseInt(t.rate) || 0)
+      })).sort((a, b) => a.startDay - b.startDay);
 
-      currentTiers.forEach((tier) => {
+      sortedTiers.forEach((tier) => {
         if (overdueDays < tier.startDay) return;
 
-        const effectiveEnd = Math.min(overdueDays, tier.endDay);
+        const effectiveEnd = Math.min(overdueDays, Math.max(tier.startDay, tier.endDay));
         const daysInTier = effectiveEnd - tier.startDay + 1;
 
         if (daysInTier > 0) {
@@ -2759,17 +2805,17 @@ function renderDateCalculator() {
           totalFee += subtotal;
 
           const row = document.createElement('div');
-          row.style.cssText = 'display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; color: var(--text-secondary);';
+          row.style.cssText = 'display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; color: var(--text-secondary);';
           const endLabel = tier.endDay >= 999 ? '〜' : `${tier.endDay}日目`;
           row.innerHTML = `
             <span>${tier.startDay}〜${endLabel} (${daysInTier}日間 × ¥${tier.rate.toLocaleString()}):</span>
-            <strong>¥${subtotal.toLocaleString()}</strong>
+            <strong style="color: var(--text-primary);">¥${subtotal.toLocaleString()}</strong>
           `;
           breakdownContainer.appendChild(row);
         }
       });
     } else {
-      breakdownContainer.innerHTML = '<span style="font-size: 12px; color: var(--text-muted);">超過なし（デマレージ/ディテンション費用 ￥0）</span>';
+      breakdownContainer.innerHTML = '<span style="font-size: 12px; color: var(--text-muted);">超過日数を入力するか、上の搬出日を指定すると内訳・合計が自動計算されます。</span>';
     }
 
     document.getElementById('feeTotalAmountText').textContent = `¥${totalFee.toLocaleString()}`;
@@ -2786,6 +2832,30 @@ function renderDateCalculator() {
     };
     drawCalendarVisualizer(calContainer, startVal, calcResult.resultDateStr, calcMode, includeStart, holidays, pickupVal);
   }
+
+  // 超過日数直接入力・クイック試算のイベントリスナー
+  overdueDaysInput.addEventListener('input', (e) => {
+    isUpdatingOverdue = true;
+    const days = Math.max(0, parseInt(e.target.value) || 0);
+    if (days > 0 && lastCalcResultStr) {
+      const [y, m, d] = lastCalcResultStr.split('-').map(Number);
+      const tDate = new Date(y, m - 1, d);
+      tDate.setDate(tDate.getDate() + days);
+      pickupDateInput.value = `${tDate.getFullYear()}-${String(tDate.getMonth() + 1).padStart(2, '0')}-${String(tDate.getDate()).padStart(2, '0')}`;
+    } else {
+      pickupDateInput.value = '';
+    }
+    updateCalculation();
+    isUpdatingOverdue = false;
+  });
+
+  document.querySelectorAll('.btn-quick-overdue').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const days = parseInt(btn.dataset.days) || 0;
+      overdueDaysInput.value = days;
+      overdueDaysInput.dispatchEvent(new Event('input'));
+    });
+  });
 
   // 初期化とイベントバインド
   renderTierRows();
@@ -2883,14 +2953,16 @@ function drawCalendarVisualizer(container, startDateStr, targetDateStr, calcMode
       }
 
       if (cellMs >= startMs && cellMs <= targetMs) {
-        let isWeekend = false;
+        let shouldSkip = false;
         if (calcMode === 'business') {
-          isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+          shouldSkip = (dayOfWeek === 0 || dayOfWeek === 6 || isHoliday);
         } else if (calcMode === 'sun_holidays') {
-          isWeekend = dayOfWeek === 0;
+          shouldSkip = (dayOfWeek === 0 || isHoliday);
+        } else if (calcMode === 'holidays_only') {
+          shouldSkip = (dayOfWeek !== 0 && dayOfWeek !== 6 && isHoliday);
         }
 
-        if ((calcMode === 'business' || calcMode === 'sun_holidays') && (isWeekend || isHoliday)) {
+        if (shouldSkip) {
           cell.classList.add('skipped');
         } else {
           cell.classList.add('counted');
@@ -4180,104 +4252,231 @@ const FLEXCON_LOCATIONS = [
   "本社倉庫"
 ];
 
+// 品名マスター（社内通称名マッピング対応）
 const FLEXCON_ITEMS = [
-  { id: "SNS-1", name: "フレコンワンウェイバッグ SNS-1 (上下全開型 φ1100×1200)", defaultPrice: 1150, safetyStock: 300 },
-  { id: "BTNR-1000C", name: "フレコンワンウェイバッグ BTNR-1000C (投入口全開型 φ1100×1100H)", defaultPrice: 1000, safetyStock: 200 },
-  { id: "PE-INNER", name: "国産PE内袋 (0.07×1850×3000 平シール)", defaultPrice: 550, safetyStock: 300 },
-  { id: "SOYPASS-BAG", name: "ソイパス用紙袋 新印刷 (813×419×76mm)", defaultPrice: 71.5, safetyStock: 1000 }
+  { 
+    id: "SNS-1", 
+    commonName: "上下全開フレコン (標準)", 
+    name: "フレコンワンウェイバッグ SNS-1 (上下全開型 φ1100×1200)", 
+    spec: "上下全開型 φ1100×1200 / 耐荷重1t",
+    defaultPrice: 1150, 
+    safetyStock: 300 
+  },
+  { 
+    id: "BTNR-1000C", 
+    commonName: "投入口全開フレコン (1t用)", 
+    name: "フレコンワンウェイバッグ BTNR-1000C (投入口全開型 φ1100×1100H)", 
+    spec: "投入口全開型 φ1100×1100H / 排出口付",
+    defaultPrice: 1000, 
+    safetyStock: 200 
+  },
+  { 
+    id: "PE-INNER", 
+    commonName: "内袋PE (平シール)", 
+    name: "国産PE内袋 (0.07×1850×3000 平シール)", 
+    spec: "厚み0.07mm × 幅1850mm × 長さ3000mm 平シール",
+    defaultPrice: 550, 
+    safetyStock: 300 
+  },
+  { 
+    id: "SOYPASS-BAG", 
+    commonName: "ソイパス用紙袋 (25kg新印刷)", 
+    name: "ソイパス用紙袋 新印刷 (813×419×76mm)", 
+    spec: "3層クラフト紙 813×419×76mm (25kg充填用)",
+    defaultPrice: 71.5, 
+    safetyStock: 1000 
+  }
 ];
 
 const FLEXCON_SUPPLIERS = [
-  "株式会社シオヤ",
-  "佐藤産業株式会社",
-  "その他仕入先"
+  { name: "株式会社シオヤ", tel: "092-123-4567", email: "order@shioya-pack.co.jp", address: "福岡県福岡市博多区博多駅前2-10-5" },
+  { name: "佐藤産業株式会社", tel: "03-9876-5432", email: "info@sato-sangyo.co.jp", address: "東京都中央区日本橋本町3-4-1" },
+  { name: "その他仕入先", tel: "", email: "", address: "" }
 ];
 
 const INITIAL_FLEXCON_DATA = {
   transactions: [
-    { id: "TX-1001", date: "2026-06-22", type: "inbound", location: "上組 福岡支店", item: "SNS-1", qty: 150, price: 1000, supplier: "株式会社シオヤ", purpose: "", note: "発注書 2026.06.23" },
-    { id: "TX-1002", date: "2026-07-10", type: "inbound", location: "八代サイロ（上組福岡支店八代出張所）", item: "BTNR-1000C", qty: 50, price: 1000, supplier: "株式会社シオヤ", purpose: "", note: "吊り下げポケット50枚同梱" },
-    { id: "TX-1003", date: "2026-07-10", type: "inbound", location: "熊本南関工場", item: "SNS-1", qty: 500, price: 1150, supplier: "株式会社シオヤ", purpose: "", note: "発注書 2026.07.10" },
-    { id: "TX-1004", date: "2026-07-10", type: "inbound", location: "熊本南関工場", item: "PE-INNER", qty: 500, price: 550, supplier: "株式会社シオヤ", purpose: "", note: "発注書 2026.07.10 別添PE内袋" },
-    { id: "TX-1005", date: "2026-05-29", type: "inbound", location: "上組 福岡支店", item: "SOYPASS-BAG", qty: 3000, price: 71.5, supplier: "佐藤産業株式会社", purpose: "", note: "佐藤産業見積書単価 ￥71.5" },
-    { id: "TX-1006", date: "2026-07-12", type: "outbound", location: "熊本南関工場", item: "SNS-1", qty: 80, price: 1150, supplier: "", purpose: "牧草サイレージ製品充填", note: "工場作業使用" },
-    { id: "TX-1007", date: "2026-07-15", type: "outbound", location: "上組 福岡支店", item: "SOYPASS-BAG", qty: 1200, price: 71.5, supplier: "", purpose: "大豆粕パッキング出荷", note: "出荷使用" }
+    { id: "TX-1001", date: "2026-06-22", type: "inbound", status: "delivered", location: "上組 福岡支店", item: "SNS-1", qty: 150, price: 1000, supplier: "株式会社シオヤ", purpose: "", note: "発注書 2026.06.23" },
+    { id: "TX-1002", date: "2026-07-10", type: "inbound", status: "delivered", location: "八代サイロ（上組福岡支店八代出張所）", item: "BTNR-1000C", qty: 50, price: 1000, supplier: "株式会社シオヤ", purpose: "", note: "吊り下げポケット50枚同梱" },
+    { id: "TX-1003", date: "2026-07-10", type: "inbound", status: "delivered", location: "熊本南関工場", item: "SNS-1", qty: 500, price: 1150, supplier: "株式会社シオヤ", purpose: "", note: "発注書 2026.07.10" },
+    { id: "TX-1004", date: "2026-07-10", type: "inbound", status: "delivered", location: "熊本南関工場", item: "PE-INNER", qty: 500, price: 550, supplier: "株式会社シオヤ", purpose: "", note: "発注書 2026.07.10 別添PE内袋" },
+    { id: "TX-1005", date: "2026-05-29", type: "inbound", status: "delivered", location: "上組 福岡支店", item: "SOYPASS-BAG", qty: 3000, price: 71.5, supplier: "佐藤産業株式会社", purpose: "", note: "佐藤産業見積書単価 ￥71.5" },
+    { id: "TX-1006", date: "2026-07-12", type: "outbound", status: "delivered", location: "熊本南関工場", item: "SNS-1", qty: 80, price: 1150, supplier: "", purpose: "牧草サイレージ製品充填", note: "工場作業使用" },
+    { id: "TX-1007", date: "2026-07-15", type: "outbound", status: "delivered", location: "上組 福岡支店", item: "SOYPASS-BAG", qty: 1200, price: 71.5, supplier: "", purpose: "大豆粕パッキング出荷", note: "出荷使用" },
+    // 未納品（発注中・納期超過アラート検証用：納品希望日 2026-09-08）
+    { 
+      id: "TX-1008", 
+      date: "2026-09-01", 
+      orderDate: "2026-09-01", 
+      deliveryDueDate: "2026-09-08", 
+      type: "inbound", 
+      status: "ordered", 
+      location: "熊本南関工場", 
+      item: "SNS-1", 
+      qty: 200, 
+      price: 1150, 
+      supplier: "株式会社シオヤ", 
+      orderNo: "PO-20260901-01", 
+      purpose: "", 
+      note: "牧草サイレージ充填用・急ぎ手配" 
+    },
+    // 未納品（発注中・納期内：納品希望日 2026-09-28）
+    { 
+      id: "TX-1009", 
+      date: "2026-09-14", 
+      orderDate: "2026-09-14", 
+      deliveryDueDate: "2026-09-28", 
+      type: "inbound", 
+      status: "ordered", 
+      location: "八代サイロ（上組福岡支店八代出張所）", 
+      item: "BTNR-1000C", 
+      qty: 100, 
+      price: 1000, 
+      supplier: "株式会社シオヤ", 
+      orderNo: "PO-20260914-01", 
+      purpose: "", 
+      note: "定期補充用発注" 
+    }
   ]
 };
 
 function loadFlexconData() {
-  const saved = localStorage.getItem('cascadia_flexcon_inventory_v1');
+  const saved = localStorage.getItem('cascadia_flexcon_inventory_v2');
   if (saved) {
-    try { return JSON.parse(saved); } catch(e){}
+    try { 
+      const parsed = JSON.parse(saved);
+      if (parsed && Array.isArray(parsed.transactions)) {
+        // status 補完
+        parsed.transactions.forEach(tx => {
+          if (!tx.status) tx.status = 'delivered';
+        });
+        return parsed;
+      }
+    } catch(e){}
   }
-  localStorage.setItem('cascadia_flexcon_inventory_v1', JSON.stringify(INITIAL_FLEXCON_DATA));
+  localStorage.setItem('cascadia_flexcon_inventory_v2', JSON.stringify(INITIAL_FLEXCON_DATA));
   return JSON.parse(JSON.stringify(INITIAL_FLEXCON_DATA));
 }
 
 function saveFlexconData(data) {
-  localStorage.setItem('cascadia_flexcon_inventory_v1', JSON.stringify(data));
+  localStorage.setItem('cascadia_flexcon_inventory_v2', JSON.stringify(data));
 }
 
-let activeFlexconTab = 'dashboard';
+// 状態管理
+let activeFlexconTab = 'dashboard'; // 'dashboard' | 'ledger' | 'check'
+let currentFlexconAsOf = 'latest'; // 'latest' or 'YYYY-MM-DD'
+let ledgerFilterLoc = 'all';
+let ledgerFilterType = 'all';
+let ledgerSortAsc = false; // デフォルトは新しい順（降順）
 
 function renderFlexconInventory() {
   const data = loadFlexconData();
+  const today = new Date().toISOString().split('T')[0];
+
+  // 未納品・遅延件数の集計（タブバッジ用）
+  const pendingOrders = data.transactions.filter(t => t.status === 'ordered');
+  const overdueCount = pendingOrders.filter(t => t.deliveryDueDate && t.deliveryDueDate < today).length;
+  const pendingCount = pendingOrders.length;
 
   contentArea.innerHTML = `
-    <div class="page-hero" style="padding: 24px; margin-bottom: 24px; background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(168,85,247,0.05)); border: 1px solid rgba(139,92,246,0.2);">
-      <h1 class="page-title">📦 フレコンバッグ資材 在庫数・在庫金額確認ツール</h1>
-      <p class="page-subtitle">消耗品として費用処理されるフレコンバッグ等のリアルタイム実在庫枚数・評価金額を一元管理し、安全在庫切れを防ぎます。</p>
+    <div class="page-hero" style="padding: 24px; margin-bottom: 20px; background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(168,85,247,0.05)); border: 1px solid rgba(139,92,246,0.2); border-radius: 14px;">
+      <h1 class="page-title" style="margin-bottom: 6px;">📦 フレコンバッグ資材 在庫数・在庫金額確認ツール</h1>
+      <p class="page-subtitle" style="margin: 0;">消耗品として費用処理されるフレコンバッグ等のリアルタイム実在庫枚数・評価金額を一元管理し、発注書自動出力および納期遅延アラートに対応します。</p>
     </div>
 
-    <!-- サブタブナビゲーション -->
-    <div class="flexcon-tabs" style="display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid var(--border-subtle); padding-bottom: 8px;">
-      <button class="btn ${activeFlexconTab === 'dashboard' ? 'btn-primary' : 'btn-secondary'}" id="tabFlexconDash" style="padding: 8px 16px; font-size: 13px;">📊 在庫・金額ダッシュボード</button>
-      <button class="btn ${activeFlexconTab === 'inbound' ? 'btn-primary' : 'btn-secondary'}" id="tabFlexconInbound" style="padding: 8px 16px; font-size: 13px;">📥 入庫（仕入）登録</button>
-      <button class="btn ${activeFlexconTab === 'outbound' ? 'btn-primary' : 'btn-secondary'}" id="tabFlexconOutbound" style="padding: 8px 16px; font-size: 13px;">📤 出庫（使用）登録</button>
-      <button class="btn ${activeFlexconTab === 'ledger' ? 'btn-primary' : 'btn-secondary'}" id="tabFlexconLedger" style="padding: 8px 16px; font-size: 13px;">📋 入出庫全履歴帳簿</button>
-      <button class="btn ${activeFlexconTab === 'check' ? 'btn-primary' : 'btn-secondary'}" id="tabFlexconCheck" style="padding: 8px 16px; font-size: 13px;">📑 月末棚卸し・CSV出力</button>
+    <!-- UX改善：ビュー切替（左）とアクションボタングループ（右）の明確な分離 -->
+    <div class="flexcon-nav-bar">
+      <!-- 閲覧ビュー切替（3つのピルタブ） -->
+      <div class="flexcon-view-tabs">
+        <button class="flexcon-tab-pill ${activeFlexconTab === 'dashboard' ? 'active' : ''}" id="tabFlexconDash">
+          <span>📊</span> 在庫ダッシュボード
+        </button>
+        <button class="flexcon-tab-pill ${activeFlexconTab === 'ledger' ? 'active' : ''}" id="tabFlexconLedger">
+          <span>📋</span> 履歴・未納品
+          ${pendingCount > 0 ? `
+            <span class="tab-badge ${overdueCount > 0 ? 'badge-danger' : ''}" title="${overdueCount > 0 ? `${overdueCount}件の納期遅延あり` : `${pendingCount}件の発注中`}">
+              ${overdueCount > 0 ? `⚠️ ${pendingCount}` : pendingCount}
+            </span>
+          ` : ''}
+        </button>
+        <button class="flexcon-tab-pill ${activeFlexconTab === 'check' ? 'active' : ''}" id="tabFlexconCheck">
+          <span>📑</span> 月末棚卸し・CSV
+        </button>
+      </div>
+
+      <!-- クイック登録アクション（モーダル起動） -->
+      <div class="flexcon-action-group">
+        <button class="btn-action-order" id="btnOpenOrderModal" title="フレコン資材の新規発注を登録し、A4発注書を作成・印刷します">
+          <span>📝</span> 発注・発注書作成
+        </button>
+        <button class="btn-action-sub" id="btnOpenInboundModal" title="直接の納品受入を実在庫に即時加算します">
+          <span>📥</span> 入庫
+        </button>
+        <button class="btn-action-sub" id="btnOpenOutboundModal" title="現場での使用・出荷を実在庫から減算します">
+          <span>📤</span> 出庫
+        </button>
+      </div>
     </div>
 
     <div id="flexconTabContent"></div>
+    <div id="flexconActionModalContainer"></div>
+    <div id="purchaseOrderModalContainer"></div>
   `;
 
+  // タブ切り替え
   document.getElementById('tabFlexconDash').addEventListener('click', () => { activeFlexconTab = 'dashboard'; renderFlexconInventory(); });
-  document.getElementById('tabFlexconInbound').addEventListener('click', () => { activeFlexconTab = 'inbound'; renderFlexconInventory(); });
-  document.getElementById('tabFlexconOutbound').addEventListener('click', () => { activeFlexconTab = 'outbound'; renderFlexconInventory(); });
   document.getElementById('tabFlexconLedger').addEventListener('click', () => { activeFlexconTab = 'ledger'; renderFlexconInventory(); });
   document.getElementById('tabFlexconCheck').addEventListener('click', () => { activeFlexconTab = 'check'; renderFlexconInventory(); });
+
+  // アクションモーダル起動
+  document.getElementById('btnOpenOrderModal').addEventListener('click', () => { openFlexconOrderModal(data); });
+  document.getElementById('btnOpenInboundModal').addEventListener('click', () => { openFlexconInboundModal(data); });
+  document.getElementById('btnOpenOutboundModal').addEventListener('click', () => { openFlexconOutboundModal(data); });
 
   const container = document.getElementById('flexconTabContent');
 
   if (activeFlexconTab === 'dashboard') renderFlexconDashboard(container, data);
-  if (activeFlexconTab === 'inbound') renderFlexconInboundForm(container, data);
-  if (activeFlexconTab === 'outbound') renderFlexconOutboundForm(container, data);
-  if (activeFlexconTab === 'ledger') renderFlexconLedger(container, data);
-  if (activeFlexconTab === 'check') renderFlexconCheck(container, data);
+  else if (activeFlexconTab === 'ledger') renderFlexconLedger(container, data);
+  else if (activeFlexconTab === 'check') renderFlexconCheck(container, data);
+  else {
+    activeFlexconTab = 'dashboard';
+    renderFlexconDashboard(container, data);
+  }
 }
 
-// 在庫計算ヘルパー
-function calculateStockMatrix(transactions) {
+// 在庫計算ヘルパー（指定月末時点対応 ＆ 未納品発注残の分離）
+function calculateStockMatrix(transactions, asOfDate = null) {
   const matrix = {};
   FLEXCON_LOCATIONS.forEach(loc => {
     matrix[loc] = {};
     FLEXCON_ITEMS.forEach(item => {
-      matrix[loc][item.id] = { qty: 0, totalValue: 0, lastPrice: item.defaultPrice };
+      matrix[loc][item.id] = { qty: 0, totalValue: 0, lastPrice: item.defaultPrice, orderedQty: 0 };
     });
   });
 
-  transactions.slice().sort((a, b) => new Date(a.date) - new Date(b.date)).forEach(tx => {
+  const filtered = transactions.filter(tx => {
+    if (asOfDate && tx.date > asOfDate) return false;
+    return true;
+  });
+
+  filtered.slice().sort((a, b) => new Date(a.date) - new Date(b.date)).forEach(tx => {
     if (!matrix[tx.location]) return;
     if (!matrix[tx.location][tx.item]) {
-      matrix[tx.location][tx.item] = { qty: 0, totalValue: 0, lastPrice: tx.price || 1000 };
+      matrix[tx.location][tx.item] = { qty: 0, totalValue: 0, lastPrice: tx.price || 1000, orderedQty: 0 };
     }
 
     const cell = matrix[tx.location][tx.item];
     if (tx.price > 0) cell.lastPrice = tx.price;
 
     if (tx.type === 'inbound') {
-      cell.qty += tx.qty;
-      cell.totalValue += (tx.qty * (tx.price || cell.lastPrice));
+      if (tx.status === 'ordered') {
+        // 未納品（発注残）としてカウント（実在庫にはまだ加算しない）
+        cell.orderedQty = (cell.orderedQty || 0) + tx.qty;
+      } else {
+        // 納品完了（実在庫）に加算
+        cell.qty += tx.qty;
+        cell.totalValue += (tx.qty * (tx.price || cell.lastPrice));
+      }
     } else if (tx.type === 'outbound') {
       cell.qty -= tx.qty;
       cell.totalValue -= (tx.qty * (tx.price || cell.lastPrice));
@@ -4289,12 +4488,15 @@ function calculateStockMatrix(transactions) {
   return matrix;
 }
 
-// 1. ダッシュボード描画
+// 1. ダッシュボード描画（何月末時点対応 ＆ 納期遅延アラート表示）
 function renderFlexconDashboard(container, data) {
-  const matrix = calculateStockMatrix(data.transactions);
+  const today = new Date().toISOString().split('T')[0];
+  const asOf = currentFlexconAsOf === 'latest' ? null : currentFlexconAsOf;
+  const matrix = calculateStockMatrix(data.transactions, asOf);
 
   let grandTotalQty = 0;
   let grandTotalValue = 0;
+  let grandTotalOrdered = 0;
   const alertItems = [];
 
   FLEXCON_LOCATIONS.forEach(loc => {
@@ -4302,63 +4504,157 @@ function renderFlexconDashboard(container, data) {
       const cell = matrix[loc][item.id];
       grandTotalQty += cell.qty;
       grandTotalValue += cell.totalValue;
+      grandTotalOrdered += (cell.orderedQty || 0);
 
       if (cell.qty < item.safetyStock) {
         alertItems.push({
           location: loc,
           item: item,
           currentQty: cell.qty,
+          orderedQty: cell.orderedQty || 0,
           safetyStock: item.safetyStock
         });
       }
     });
   });
 
+  // 納品予定日超過アラート（status: 'ordered' かつ deliveryDueDate < today）
+  const overdueOrders = data.transactions.filter(t => 
+    t.status === 'ordered' && t.deliveryDueDate && t.deliveryDueDate < today
+  );
+
   container.innerHTML = `
+    <!-- 集計基準年月セレクター（何月末時点の残高確認） -->
+    <div style="background: var(--bg-card); border: 1px solid var(--border-medium); border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="font-size: 20px;">📅</span>
+        <div>
+          <div style="font-size: 13px; font-weight: 700; color: var(--text-primary);">在庫集計の基準時点（指定月末時点の枚数・金額確認）</div>
+          <div style="font-size: 11px; color: var(--text-muted);">
+            指定した月末日時点での各倉庫の在庫枚数と評価額（経理・経営向け／実務向け）を瞬時に再現・表示します。
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <select id="asOfSelect" style="padding: 6px 12px; font-size: 13px; font-weight: 600; border-radius: 8px; border: 1px solid var(--border-medium); background: var(--bg-primary); color: var(--text-primary);">
+          <option value="latest" ${currentFlexconAsOf === 'latest' ? 'selected' : ''}>⚡ 最新リアルタイム（全期間）</option>
+          <option value="2026-08-31" ${currentFlexconAsOf === '2026-08-31' ? 'selected' : ''}>2026年 8月末 時点 (2026/08/31)</option>
+          <option value="2026-07-31" ${currentFlexconAsOf === '2026-07-31' ? 'selected' : ''}>2026年 7月末 時点 (2026/07/31)</option>
+          <option value="2026-06-30" ${currentFlexconAsOf === '2026-06-30' ? 'selected' : ''}>2026年 6月末 時点 (2026/06/30)</option>
+          <option value="2026-05-31" ${currentFlexconAsOf === '2026-05-31' ? 'selected' : ''}>2026年 5月末 時点 (2026/05/31)</option>
+        </select>
+        <span style="font-size: 12px; font-weight: 700; color: var(--accent-blue); background: rgba(37,99,235,0.1); padding: 4px 10px; border-radius: 6px;">
+          ${currentFlexconAsOf === 'latest' ? '現在時点' : currentFlexconAsOf + ' 時点'}
+        </span>
+      </div>
+    </div>
+
     <!-- 集計カード -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 20px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px;">
       <div class="tool-card" style="padding: 16px;">
-        <div style="font-size: 12px; color: var(--text-secondary); font-weight: 600;">全社合計 在庫枚数</div>
+        <div style="font-size: 12px; color: var(--text-secondary); font-weight: 600;">全社合計 実在庫枚数</div>
         <div style="font-size: 26px; font-weight: 800; color: var(--accent-blue); margin-top: 4px;">${grandTotalQty.toLocaleString()} <span style="font-size: 14px; font-weight: 600;">枚</span></div>
+        ${grandTotalOrdered > 0 ? `<div style="font-size: 11px; color: var(--accent-green); margin-top: 4px;">+ 発注中（入荷待ち）: <strong>${grandTotalOrdered.toLocaleString()}</strong> 枚</div>` : ''}
       </div>
       <div class="tool-card" style="padding: 16px;">
         <div style="font-size: 12px; color: var(--text-secondary); font-weight: 600;">全社総在庫金額（評価額）</div>
         <div style="font-size: 26px; font-weight: 800; color: var(--accent-violet); margin-top: 4px;">¥${Math.round(grandTotalValue).toLocaleString()}</div>
+        <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">税抜・移動平均/最終仕入単価</div>
       </div>
-      <div class="tool-card" style="padding: 16px; ${alertItems.length > 0 ? 'border: 1px solid rgba(239,68,68,0.3); background: rgba(239,68,68,0.03);' : ''}">
+      <div class="tool-card" style="padding: 16px; ${overdueOrders.length > 0 ? 'border: 1px solid rgba(239,68,68,0.3); background: rgba(239,68,68,0.04);' : ''}">
+        <div style="font-size: 12px; color: var(--text-secondary); font-weight: 600;">納品予定日超過アラート</div>
+        <div style="font-size: 26px; font-weight: 800; color: ${overdueOrders.length > 0 ? '#ef4444' : 'var(--accent-green)'}; margin-top: 4px;">${overdueOrders.length} <span style="font-size: 14px; font-weight: 600;">件</span></div>
+        <div style="font-size: 11px; color: ${overdueOrders.length > 0 ? '#ef4444' : 'var(--text-muted)'}; margin-top: 4px;">${overdueOrders.length > 0 ? '未納品・要納期確認！' : '遅延なし'}</div>
+      </div>
+      <div class="tool-card" style="padding: 16px; ${alertItems.length > 0 ? 'border: 1px solid rgba(245,158,11,0.3); background: rgba(245,158,11,0.03);' : ''}">
         <div style="font-size: 12px; color: var(--text-secondary); font-weight: 600;">安全在庫アラート発生数</div>
-        <div style="font-size: 26px; font-weight: 800; color: ${alertItems.length > 0 ? '#ef4444' : 'var(--accent-green)'}; margin-top: 4px;">${alertItems.length} <span style="font-size: 14px; font-weight: 600;">件</span></div>
-      </div>
-      <div class="tool-card" style="padding: 16px;">
-        <div style="font-size: 12px; color: var(--text-secondary); font-weight: 600;">アクティブ保管拠点数</div>
-        <div style="font-size: 26px; font-weight: 800; color: var(--text-primary); margin-top: 4px;">${FLEXCON_LOCATIONS.length} <span style="font-size: 14px; font-weight: 600;">箇所</span></div>
+        <div style="font-size: 26px; font-weight: 800; color: ${alertItems.length > 0 ? '#f59e0b' : 'var(--accent-green)'}; margin-top: 4px;">${alertItems.length} <span style="font-size: 14px; font-weight: 600;">件</span></div>
+        <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">基準を下回る拠点・品目</div>
       </div>
     </div>
 
+    <!-- 🚨 納品予定日超過アラートボックス -->
+    ${overdueOrders.length > 0 ? `
+      <div class="alert" style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.3); border-left: 5px solid #ef4444; border-radius: 10px; padding: 16px; margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+          <div style="font-size: 14px; font-weight: 700; color: #ef4444; display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 18px;">🚨</span> 納品予定日超過（未納品）アラート通知 (${overdueOrders.length}件)
+          </div>
+          <span style="font-size: 11px; color: var(--text-secondary);">納品予定日を過ぎていますが「納品完了」が登録されていません。至急状況をご確認ください。</span>
+        </div>
+        <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;">
+          ${overdueOrders.map(o => {
+            const itemObj = FLEXCON_ITEMS.find(i => i.id === o.item);
+            const supObj = FLEXCON_SUPPLIERS.find(s => s.name === o.supplier) || {};
+            const diffDays = Math.floor((new Date(today) - new Date(o.deliveryDueDate)) / (1000 * 60 * 60 * 24));
+            const mailSubject = encodeURIComponent(`【納期確認】発注書(${o.orderNo || o.id})の納品状況について (株式会社カスケディア・トレーディング)`);
+            const mailBody = encodeURIComponent(`${o.supplier} 御中\n\nお世話になっております。株式会社カスケディア・トレーディングの業務部です。\n\n下記の発注につきまして、納品予定日(${o.deliveryDueDate})を過ぎておりますが、現在の到着・発送状況はいかがでしょうか。\nご確認のほどよろしくお願い申し上げます。\n\n■発注番号: ${o.orderNo || o.id}\n■納入場所: ${o.location}\n■品名: ${itemObj ? itemObj.name : o.item}\n■数量: ${o.qty} 枚\n■納品希望日: ${o.deliveryDueDate}\n`);
+            return `
+              <div style="background: var(--bg-primary); border: 1px solid rgba(239,68,68,0.2); border-radius: 8px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div>
+                  <div style="font-size: 13px; font-weight: 700;">
+                    <span style="color: #ef4444;">[納期超過 +${diffDays}日]</span> 
+                    <strong>${o.location}</strong> 宛 ── ${itemObj ? `<span style="color: var(--accent-blue);">【${itemObj.commonName}】</span> ${itemObj.id}` : o.item} × <strong>${o.qty}枚</strong>
+                  </div>
+                  <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">
+                    発注日: ${o.orderDate || o.date} ｜ 納品予定日: <strong style="color: #ef4444;">${o.deliveryDueDate}</strong> ｜ 仕入先: ${o.supplier} ${supObj.tel ? `(TEL: ${supObj.tel})` : ''} ｜ 発注No: ${o.orderNo || o.id}
+                  </div>
+                </div>
+                <div style="display: flex; gap: 6px;">
+                  ${supObj.email ? `
+                    <a href="mailto:${supObj.email}?subject=${mailSubject}&body=${mailBody}" class="btn btn-secondary" style="padding: 4px 10px; font-size: 11px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; border-color: var(--accent-blue); color: var(--accent-blue);">
+                      ✉️ 納期確認メール作成
+                    </a>
+                  ` : ''}
+                  <button class="btn btn-primary btn-quick-deliver" data-id="${o.id}" style="padding: 4px 12px; font-size: 11px; background: var(--accent-green); border-color: var(--accent-green);">
+                    ✅ 納品完了にする
+                  </button>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    ` : ''}
+
+    <!-- 安全在庫アラート通知 -->
     ${alertItems.length > 0 ? `
-      <div class="alert alert-warning" style="margin-bottom: 20px; font-size: 12.5px; border-left: 4px solid #ef4444;">
+      <div class="alert alert-warning" style="margin-bottom: 20px; font-size: 12.5px; border-left: 4px solid #f59e0b;">
         <strong>⚠️ 安全在庫アラート通知 (${alertItems.length}件):</strong><br>
         <ul style="margin: 6px 0 0; padding-left: 20px;">
-          ${alertItems.map(a => `<li><strong>${a.location}</strong> - ${a.item.name}: 現在 <strong>${a.currentQty} 枚</strong> (安全基準: ${a.safetyStock}枚) ── 資材発注をご検討ください。</li>`).join('')}
+          ${alertItems.map(a => `
+            <li>
+              <strong>${a.location}</strong> - <span style="color:var(--accent-blue); font-weight:700;">【${a.item.commonName}】</span> ${a.item.name}: 
+              現在庫 <strong>${a.currentQty} 枚</strong> (安全基準: ${a.safetyStock}枚)
+              ${a.orderedQty > 0 ? ` ── <span style="color:var(--accent-green);">※発注残(入荷待ち) ${a.orderedQty}枚 あり</span>` : ' ── <strong style="color:#ef4444;">資材発注をご検討ください</strong>'}
+            </li>
+          `).join('')}
         </ul>
       </div>
     ` : ''}
 
     <!-- 拠点別×型番別 在庫マトリックス -->
     <div class="tool-card">
-      <h3 style="margin-top: 0; margin-bottom: 14px;">📊 拠点別・品名型番別 在庫数および在庫金額一覧</h3>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+        <h3 style="margin: 0;">📊 拠点別・品名型番別 在庫数および在庫金額一覧 (${currentFlexconAsOf === 'latest' ? '現在時点' : currentFlexconAsOf + ' 時点'})</h3>
+        <button class="btn btn-secondary" id="btnGoToOrderTab" style="font-size: 12px; padding: 5px 12px; border-color: var(--accent-green); color: var(--accent-green);">
+          + 新規資材を発注する
+        </button>
+      </div>
+
       <div style="overflow-x: auto;">
         <table class="assistant-table" style="font-size: 12px; width: 100%; border-collapse: collapse;">
           <thead>
             <tr style="background: var(--bg-primary); text-align: center;">
-              <th style="padding: 10px; text-align: left; min-width: 180px;">保管場所（拠点）</th>
+              <th style="padding: 10px; text-align: left; min-width: 170px;">保管場所（拠点）</th>
               ${FLEXCON_ITEMS.map(item => `
-                <th style="padding: 10px; min-width: 150px;">
-                  <div>${item.id}</div>
+                <th style="padding: 8px 10px; min-width: 160px;">
+                  <div style="color: var(--accent-blue); font-weight: 700; font-size: 12px;">【${item.commonName}】</div>
+                  <div style="font-size: 11px; font-weight: 600; color: var(--text-primary);">${item.id}</div>
                   <div style="font-size: 10px; font-weight: normal; color: var(--text-muted);">${item.name.split(' ')[0]}</div>
                 </th>
               `).join('')}
-              <th style="padding: 10px; min-width: 140px; background: rgba(37,99,235,0.06);">拠点小計金額</th>
+              <th style="padding: 10px; min-width: 130px; background: rgba(37,99,235,0.06); text-align: right;">拠点小計金額</th>
             </tr>
           </thead>
           <tbody>
@@ -4372,9 +4668,16 @@ function renderFlexconDashboard(container, data) {
                     locTotalVal += cell.totalValue;
                     const isAlert = cell.qty < item.safetyStock;
                     return `
-                      <td style="padding: 10px; text-align: right; ${isAlert ? 'background: rgba(239,68,68,0.08);' : ''}">
-                        <div style="font-size: 14px; font-weight: 700; color: ${isAlert ? '#ef4444' : 'var(--text-primary)'};">${cell.qty.toLocaleString()} <span style="font-size: 11px;">枚</span></div>
+                      <td style="padding: 8px 10px; text-align: right; ${isAlert ? 'background: rgba(239,68,68,0.06);' : ''}">
+                        <div style="font-size: 14px; font-weight: 700; color: ${isAlert ? '#ef4444' : 'var(--text-primary)'};">
+                          ${cell.qty.toLocaleString()} <span style="font-size: 11px; font-weight: normal;">枚</span>
+                        </div>
                         <div style="font-size: 11px; color: var(--text-muted);">¥${Math.round(cell.totalValue).toLocaleString()}</div>
+                        ${cell.orderedQty > 0 ? `
+                          <div style="font-size: 10px; color: var(--accent-green); font-weight: 600; margin-top: 2px;">
+                            (入荷待 +${cell.orderedQty}枚)
+                          </div>
+                        ` : ''}
                       </td>
                     `;
                   }).join('')}
@@ -4385,80 +4688,454 @@ function renderFlexconDashboard(container, data) {
               `;
             }).join('')}
           </tbody>
+          <tfoot>
+            <tr style="background: var(--bg-primary); font-weight: 800; border-top: 2px solid var(--border-medium);">
+              <td style="padding: 10px; text-align: left;">全社品目別 合計</td>
+              ${FLEXCON_ITEMS.map(item => {
+                let itemTotalQty = 0;
+                let itemTotalVal = 0;
+                let itemTotalOrdered = 0;
+                FLEXCON_LOCATIONS.forEach(loc => {
+                  itemTotalQty += matrix[loc][item.id].qty;
+                  itemTotalVal += matrix[loc][item.id].totalValue;
+                  itemTotalOrdered += (matrix[loc][item.id].orderedQty || 0);
+                });
+                return `
+                  <td style="padding: 10px; text-align: right;">
+                    <div style="color: var(--accent-blue); font-size: 14px;">${itemTotalQty.toLocaleString()} 枚</div>
+                    <div style="font-size: 11px; color: var(--text-muted); font-weight: normal;">¥${Math.round(itemTotalVal).toLocaleString()}</div>
+                    ${itemTotalOrdered > 0 ? `<div style="font-size: 10px; color: var(--accent-green); font-weight: 600;">(待 +${itemTotalOrdered}枚)</div>` : ''}
+                  </td>
+                `;
+              }).join('')}
+              <td style="padding: 10px; text-align: right; font-size: 15px; color: var(--accent-violet);">
+                ¥${Math.round(grandTotalValue).toLocaleString()}
+              </td>
+            </tr>
+          </tfoot>
         </table>
       </div>
     </div>
   `;
+
+  // イベントバインド
+  document.getElementById('asOfSelect').addEventListener('change', (e) => {
+    currentFlexconAsOf = e.target.value;
+    renderFlexconDashboard(container, data);
+  });
+
+  const btnGoOrder = document.getElementById('btnGoToOrderTab');
+  if (btnGoOrder) {
+    btnGoOrder.addEventListener('click', () => {
+      openFlexconOrderModal(data);
+    });
+  }
+
+  // 納品完了クイックボタン
+  container.querySelectorAll('.btn-quick-deliver').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const id = e.target.dataset.id;
+      markOrderDelivered(id, data);
+    });
+  });
 }
 
-// 2. 入庫（仕入）登録フォーム
-function renderFlexconInboundForm(container, data) {
+// 納品完了処理
+function markOrderDelivered(txId, data) {
+  const tx = data.transactions.find(t => t.id === txId);
+  if (!tx) return;
   const today = new Date().toISOString().split('T')[0];
+  if (confirm(`発注番号 ${tx.orderNo || tx.id} (${tx.location}宛 ${tx.qty}枚) の納品受入を完了しますか？\n（本日 ${today} 付で実在庫に計上されます）`)) {
+    tx.status = 'delivered';
+    tx.date = today;
+    saveFlexconData(data);
+    showToast("✨ 納品受入を完了しました（実在庫に計上されました）");
+    renderFlexconInventory();
+  }
+}
 
-  container.innerHTML = `
-    <div class="tool-card" style="max-width: 700px; margin: 0 auto;">
-      <h3 style="margin-top: 0; margin-bottom: 16px;">📥 フレコン資材 入庫（仕入れ）登録</h3>
-      <form id="flexconInboundForm" class="tool-form">
-        <div class="tool-group">
-          <label for="inDate">入庫日（仕入れ日） <span style="color:#ef4444;">*</span></label>
-          <input type="date" id="inDate" value="${today}" required>
-        </div>
+// 2. 資材発注・発注書自動出力モーダル
+function openFlexconOrderModal(data) {
+  const modalContainer = document.getElementById('flexconActionModalContainer');
+  const today = new Date().toISOString().split('T')[0];
+  const targetDate = new Date();
+  targetDate.setDate(targetDate.getDate() + 10);
+  const defaultDueDate = targetDate.toISOString().split('T')[0];
+  const autoPoNo = "PO-" + today.replace(/-/g, '') + "-" + String(Math.floor(Math.random() * 90) + 10);
 
-        <div class="tool-group">
-          <label for="inLocation">納品先（保管場所） <span style="color:#ef4444;">*</span></label>
-          <select id="inLocation" required>
-            ${FLEXCON_LOCATIONS.map(l => `<option value="${l}">${l}</option>`).join('')}
-          </select>
-        </div>
-
-        <div class="tool-group">
-          <label for="inItem">品名（型番） <span style="color:#ef4444;">*</span></label>
-          <select id="inItem" required>
-            ${FLEXCON_ITEMS.map(i => `<option value="${i.id}">${i.name} (基準単価: ¥${i.defaultPrice})</option>`).join('')}
-          </select>
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-          <div class="tool-group">
-            <label for="inQty">入庫枚数 <span style="color:#ef4444;">*</span></label>
-            <input type="number" id="inQty" min="1" max="99999" value="100" required>
+  modalContainer.innerHTML = `
+    <div class="flexcon-modal-overlay" id="flexconOrderModalOverlay">
+      <div class="flexcon-modal-box">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 20px;">📝</span>
+            <h3 style="margin: 0; font-size: 17px; font-weight: 800;">フレコン資材 新規発注・発注書作成</h3>
           </div>
-          <div class="tool-group">
-            <label for="inPrice">仕入単価（税抜円） <span style="color:#ef4444;">*</span></label>
-            <input type="number" id="inPrice" min="0" step="0.1" value="1000" required>
+          <button type="button" id="btnCloseOrderModal" style="background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-muted); line-height: 1;">✕</button>
+        </div>
+
+        <form id="modalOrderForm" class="tool-form">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="tool-group">
+              <label for="mPoDate">発注日 <span style="color:#ef4444;">*</span></label>
+              <input type="date" id="mPoDate" value="${today}" required>
+            </div>
+            <div class="tool-group">
+              <label for="mPoDueDate">納品希望日 <span style="color:#ef4444;">*</span></label>
+              <input type="date" id="mPoDueDate" value="${defaultDueDate}" required>
+            </div>
           </div>
-        </div>
 
-        <div class="tool-group">
-          <label for="inSupplier">仕入れ先メーカー・商社</label>
-          <select id="inSupplier">
-            ${FLEXCON_SUPPLIERS.map(s => `<option value="${s}">${s}</option>`).join('')}
-          </select>
-        </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="tool-group">
+              <label for="mPoSupplier">発注先（仕入先） <span style="color:#ef4444;">*</span></label>
+              <select id="mPoSupplier" required>
+                ${FLEXCON_SUPPLIERS.map(s => `<option value="${s.name}">${s.name}</option>`).join('')}
+              </select>
+            </div>
+            <div class="tool-group">
+              <label for="mPoLocation">納品先（受入倉庫・拠点） <span style="color:#ef4444;">*</span></label>
+              <select id="mPoLocation" required>
+                ${FLEXCON_LOCATIONS.map(l => `<option value="${l}">${l}</option>`).join('')}
+              </select>
+            </div>
+          </div>
 
-        <div class="tool-group">
-          <label for="inNote">備考・発注書Noなど</label>
-          <input type="text" id="inNote" placeholder="例: 発注書 2026.07.10">
-        </div>
+          <div class="tool-group">
+            <label for="mPoItem">品名（社内通称・型番） <span style="color:#ef4444;">*</span></label>
+            <select id="mPoItem" required style="width: 100%; text-overflow: ellipsis;">
+              ${FLEXCON_ITEMS.map(i => `
+                <option value="${i.id}">【${i.commonName}】 ${i.name} (基準単価: ¥${i.defaultPrice})</option>
+              `).join('')}
+            </select>
+          </div>
 
-        <div style="background: var(--bg-primary); border: 1px solid var(--border-subtle); padding: 12px; border-radius: 8px; margin-top: 12px; font-size: 13px; display: flex; justify-content: space-between; align-items: center;">
-          <span>入庫小計金額:</span>
-          <strong id="inSubtotalText" style="font-size: 18px; color: var(--accent-blue);">¥100,000</strong>
-        </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="tool-group">
+              <label for="mPoQty">発注枚数 <span style="color:#ef4444;">*</span></label>
+              <input type="number" id="mPoQty" min="1" max="99999" value="200" required>
+            </div>
+            <div class="tool-group">
+              <label for="mPoPrice">発注単価（税抜円） <span style="color:#ef4444;">*</span></label>
+              <input type="number" id="mPoPrice" min="0" step="0.1" value="1150" required>
+            </div>
+          </div>
 
-        <button type="submit" class="btn btn-primary" style="margin-top: 16px; width: 100%; padding: 10px; font-size: 14px;">📥 入庫データを登録する</button>
-      </form>
+          <div class="tool-group">
+            <label for="mPoNo">発注書番号（管理No）</label>
+            <input type="text" id="mPoNo" value="${autoPoNo}" required>
+          </div>
+
+          <div class="tool-group">
+            <label for="mPoNote">備考・指示事項（発注書に印字）</label>
+            <input type="text" id="mPoNote" placeholder="例: 納品時フォークリフトでの荷降ろし対応願います">
+          </div>
+
+          <div style="background: var(--bg-primary); border: 1px solid var(--border-subtle); padding: 14px 18px; border-radius: 10px; margin-top: 8px; font-size: 13px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+              <span>発注小計（税抜）:</span>
+              <strong id="mPoSubtotal">¥230,000</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; color: var(--text-secondary); font-size: 12px; margin-bottom: 4px;">
+              <span>消費税（10%）:</span>
+              <span id="mPoTax">¥23,000</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 16px; border-top: 1px dashed var(--border-medium); padding-top: 8px; margin-top: 8px;">
+              <span style="font-weight: 700;">発注合計（税込）:</span>
+              <strong id="mPoTotal" style="color: var(--accent-blue); font-size: 18px;">¥253,000</strong>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button type="button" id="btnCancelOrderModal" class="btn btn-secondary" style="flex: 1; padding: 11px;">キャンセル</button>
+            <button type="submit" class="btn btn-primary" style="flex: 2; padding: 11px; font-size: 14px; background: linear-gradient(135deg, #10b981, #059669); border-color: #059669;">
+              📄 発注登録 ＆ 発注書プレビュー・印刷
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   `;
 
-  const qtyIn = document.getElementById('inQty');
-  const priceIn = document.getElementById('inPrice');
-  const itemIn = document.getElementById('inItem');
+  const closeModal = () => { modalContainer.innerHTML = ''; };
+  document.getElementById('btnCloseOrderModal').addEventListener('click', closeModal);
+  document.getElementById('btnCancelOrderModal').addEventListener('click', closeModal);
+  document.getElementById('flexconOrderModalOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'flexconOrderModalOverlay') closeModal();
+  });
+
+  const qtyInput = document.getElementById('mPoQty');
+  const priceInput = document.getElementById('mPoPrice');
+  const itemSelect = document.getElementById('mPoItem');
+
+  function updateOrderTotals() {
+    const qty = parseInt(qtyInput.value) || 0;
+    const price = parseFloat(priceInput.value) || 0;
+    const subtotal = Math.round(qty * price);
+    const tax = Math.round(subtotal * 0.10);
+    const total = subtotal + tax;
+    document.getElementById('mPoSubtotal').textContent = `¥${subtotal.toLocaleString()}`;
+    document.getElementById('mPoTax').textContent = `¥${tax.toLocaleString()}`;
+    document.getElementById('mPoTotal').textContent = `¥${total.toLocaleString()}`;
+  }
+
+  itemSelect.addEventListener('change', () => {
+    const selectedItem = FLEXCON_ITEMS.find(i => i.id === itemSelect.value);
+    if (selectedItem) priceInput.value = selectedItem.defaultPrice;
+    updateOrderTotals();
+  });
+
+  qtyInput.addEventListener('input', updateOrderTotals);
+  priceInput.addEventListener('input', updateOrderTotals);
+
+  document.getElementById('modalOrderForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const newTx = {
+      id: "TX-" + Date.now().toString().slice(-6),
+      date: document.getElementById('mPoDate').value,
+      orderDate: document.getElementById('mPoDate').value,
+      deliveryDueDate: document.getElementById('mPoDueDate').value,
+      type: "inbound",
+      status: "ordered", // 未納品フラグ
+      location: document.getElementById('mPoLocation').value,
+      item: document.getElementById('mPoItem').value,
+      qty: parseInt(qtyInput.value),
+      price: parseFloat(priceInput.value),
+      supplier: document.getElementById('mPoSupplier').value,
+      orderNo: document.getElementById('mPoNo').value,
+      purpose: "",
+      note: document.getElementById('mPoNote').value
+    };
+
+    data.transactions.push(newTx);
+    saveFlexconData(data);
+    closeModal();
+    showToast("✨ 発注データを登録しました（A4発注書を作成します）");
+    renderFlexconInventory();
+    // 発注書モーダルを即座に表示
+    openPurchaseOrderModal(newTx);
+  });
+}
+
+// 3. 発注書モーダル表示関数（カスケディア正式様式・A4印刷対応）
+function openPurchaseOrderModal(tx) {
+  const itemObj = FLEXCON_ITEMS.find(i => i.id === tx.item);
+  const supplierObj = FLEXCON_SUPPLIERS.find(s => s.name === tx.supplier) || { name: tx.supplier, address: "", tel: "" };
+  const subtotal = Math.round(tx.qty * (tx.price || 0));
+  const tax = Math.round(subtotal * 0.10);
+  const total = subtotal + tax;
+
+  const modalHtml = `
+    <div class="modal-overlay" id="purchaseOrderModal" style="display: flex; align-items: center; justify-content: center; z-index: 9999; background: rgba(0,0,0,0.65);">
+      <div class="modal-box" style="max-width: 820px; width: 95%; max-height: 90vh; overflow-y: auto; padding: 24px; background: #ffffff; border-radius: 12px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);">
+        
+        <!-- 操作ボタンバー（印刷時は非表示） -->
+        <div class="no-print" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 18px;">📄</span>
+            <strong style="font-size: 15px; color: #0f172a;">発注書プレビュー（印刷・PDF出力）</strong>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn btn-primary" id="btnPrintPoBtn" style="background: #2563eb; color: #fff; padding: 6px 16px; font-size: 13px; font-weight: 700;">
+              🖨️ 発注書を印刷 / PDF保存
+            </button>
+            <button class="btn btn-secondary" id="btnClosePoModalBtn" style="padding: 6px 14px; font-size: 13px;">
+              ✕ 閉じる
+            </button>
+          </div>
+        </div>
+
+        <!-- 発注書本体（印刷対象エリア） -->
+        <div id="purchaseOrderPrintArea" class="po-sheet">
+          <div class="po-header">
+            <div class="po-title-box">
+              <h2 class="po-title">発　注　書</h2>
+              <div class="po-meta">発注番号: <strong>${tx.orderNo || tx.id}</strong></div>
+              <div class="po-meta">発注日: <strong>${tx.orderDate || tx.date}</strong></div>
+            </div>
+            <div class="po-company-info">
+              <div class="po-company-name">株式会社カスケディア・トレーディング</div>
+              <div>〒104-0032 東京都中央区八丁堀3-1-3 宝町アネックスビル</div>
+              <div>TEL: 03-6280-3371 / FAX: 03-6280-3372</div>
+              <div>担当: 業務部 資材管理課</div>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;">
+            <div style="border-bottom: 2px solid #0f172a; padding-bottom: 4px; min-width: 320px;">
+              <span style="font-size: 18px; font-weight: 800; color: #0f172a;">${tx.supplier}</span>
+              <span style="font-size: 14px; margin-left: 6px;">御中</span>
+            </div>
+            <div style="text-align: right; font-size: 12px;">
+              下記の通り発注いたしますので、ご手配のほどよろしくお願い申し上げます。
+            </div>
+          </div>
+
+          <!-- 納品条件 -->
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px 16px; margin-bottom: 20px; font-size: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div>
+              <span style="color: #64748b; font-weight: 600;">納入場所（倉庫）:</span>
+              <div style="font-size: 14px; font-weight: 700; color: #0f172a; margin-top: 2px;">${tx.location}</div>
+            </div>
+            <div>
+              <span style="color: #64748b; font-weight: 600;">納品希望期日:</span>
+              <div style="font-size: 14px; font-weight: 700; color: #2563eb; margin-top: 2px;">${tx.deliveryDueDate || '指定なし'}</div>
+            </div>
+          </div>
+
+          <!-- 明細表 -->
+          <table class="po-table">
+            <thead>
+              <tr>
+                <th style="width: 40px; text-align: center;">No.</th>
+                <th>品名（社内通称）</th>
+                <th>規格・型番</th>
+                <th style="width: 80px; text-align: right;">数量</th>
+                <th style="width: 100px; text-align: right;">単価（税抜）</th>
+                <th style="width: 110px; text-align: right;">金額（税抜）</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="text-align: center;">1</td>
+                <td style="font-weight: 700; color: #0f172a;">${itemObj ? itemObj.commonName : tx.item}</td>
+                <td style="font-size: 11px; color: #475569;">${itemObj ? itemObj.name : tx.item}</td>
+                <td style="text-align: right; font-weight: 700;">${tx.qty.toLocaleString()} 枚</td>
+                <td style="text-align: right;">¥${(tx.price || 0).toLocaleString()}</td>
+                <td style="text-align: right; font-weight: 700;">¥${subtotal.toLocaleString()}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- 合計欄 -->
+          <div class="po-total-box">
+            <table class="po-total-table">
+              <tr>
+                <td style="color: #64748b;">税抜小計:</td>
+                <td style="text-align: right; font-weight: 600;">¥${subtotal.toLocaleString()}</td>
+              </tr>
+              <tr>
+                <td style="color: #64748b;">消費税（10%）:</td>
+                <td style="text-align: right; font-weight: 600;">¥${tax.toLocaleString()}</td>
+              </tr>
+              <tr class="grand-total">
+                <td>発注合計金額（税込）:</td>
+                <td style="text-align: right;">¥${total.toLocaleString()}</td>
+              </tr>
+            </table>
+          </div>
+
+          <!-- 備考 -->
+          <div style="margin-top: 20px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 14px; font-size: 11.5px; background: #fff;">
+            <div style="font-weight: 700; color: #475569; margin-bottom: 4px;">【備考・特記事項】</div>
+            <div style="color: #334155;">${tx.note ? tx.note : '※納品書及び受領書を現品に添付のうえ納入してください。'}</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  const container = document.getElementById('purchaseOrderModalContainer');
+  container.innerHTML = modalHtml;
+
+  document.getElementById('btnClosePoModalBtn').addEventListener('click', () => {
+    container.innerHTML = '';
+  });
+
+  document.getElementById('btnPrintPoBtn').addEventListener('click', () => {
+    window.print();
+  });
+}
+
+// 4. 入庫（受入）登録モーダル
+function openFlexconInboundModal(data) {
+  const modalContainer = document.getElementById('flexconActionModalContainer');
+  const today = new Date().toISOString().split('T')[0];
+
+  modalContainer.innerHTML = `
+    <div class="flexcon-modal-overlay" id="flexconInboundModalOverlay">
+      <div class="flexcon-modal-box" style="max-width: 580px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 20px;">📥</span>
+            <h3 style="margin: 0; font-size: 17px; font-weight: 800;">フレコン資材 直接入庫・受入登録</h3>
+          </div>
+          <button type="button" id="btnCloseInboundModal" style="background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-muted); line-height: 1;">✕</button>
+        </div>
+
+        <form id="modalInboundForm" class="tool-form">
+          <div class="tool-group">
+            <label for="mInDate">入庫受入日 <span style="color:#ef4444;">*</span></label>
+            <input type="date" id="mInDate" value="${today}" required>
+          </div>
+
+          <div class="tool-group">
+            <label for="mInLocation">納品先（保管場所） <span style="color:#ef4444;">*</span></label>
+            <select id="mInLocation" required>
+              ${FLEXCON_LOCATIONS.map(l => `<option value="${l}">${l}</option>`).join('')}
+            </select>
+          </div>
+
+          <div class="tool-group">
+            <label for="mInItem">品名（社内通称・型番） <span style="color:#ef4444;">*</span></label>
+            <select id="mInItem" required style="width: 100%; text-overflow: ellipsis;">
+              ${FLEXCON_ITEMS.map(i => `<option value="${i.id}">【${i.commonName}】 ${i.name} (基準単価: ¥${i.defaultPrice})</option>`).join('')}
+            </select>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="tool-group">
+              <label for="mInQty">入庫枚数 <span style="color:#ef4444;">*</span></label>
+              <input type="number" id="mInQty" min="1" max="99999" value="100" required>
+            </div>
+            <div class="tool-group">
+              <label for="mInPrice">仕入単価（税抜円） <span style="color:#ef4444;">*</span></label>
+              <input type="number" id="mInPrice" min="0" step="0.1" value="1150" required>
+            </div>
+          </div>
+
+          <div class="tool-group">
+            <label for="mInSupplier">仕入れ先メーカー・商社</label>
+            <select id="mInSupplier">
+              ${FLEXCON_SUPPLIERS.map(s => `<option value="${s.name}">${s.name}</option>`).join('')}
+            </select>
+          </div>
+
+          <div class="tool-group">
+            <label for="mInNote">備考・伝票Noなど</label>
+            <input type="text" id="mInNote" placeholder="例: 納品伝票受領済">
+          </div>
+
+          <div style="background: var(--bg-primary); border: 1px solid var(--border-subtle); padding: 12px 16px; border-radius: 8px; margin-top: 12px; font-size: 13px; display: flex; justify-content: space-between; align-items: center;">
+            <span>入庫小計金額:</span>
+            <strong id="mInSubtotal" style="font-size: 18px; color: var(--accent-blue);">¥115,000</strong>
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button type="button" id="btnCancelInboundModal" class="btn btn-secondary" style="flex: 1; padding: 11px;">キャンセル</button>
+            <button type="submit" class="btn btn-primary" style="flex: 2; padding: 11px; font-size: 14px;">📥 納品受入を登録（実在庫加算）</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+
+  const closeModal = () => { modalContainer.innerHTML = ''; };
+  document.getElementById('btnCloseInboundModal').addEventListener('click', closeModal);
+  document.getElementById('btnCancelInboundModal').addEventListener('click', closeModal);
+  document.getElementById('flexconInboundModalOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'flexconInboundModalOverlay') closeModal();
+  });
+
+  const qtyIn = document.getElementById('mInQty');
+  const priceIn = document.getElementById('mInPrice');
+  const itemIn = document.getElementById('mInItem');
 
   function updateInSubtotal() {
     const qty = parseInt(qtyIn.value) || 0;
     const price = parseFloat(priceIn.value) || 0;
-    document.getElementById('inSubtotalText').textContent = `¥${Math.round(qty * price).toLocaleString()}`;
+    document.getElementById('mInSubtotal').textContent = `¥${Math.round(qty * price).toLocaleString()}`;
   }
 
   itemIn.addEventListener('change', () => {
@@ -4470,81 +5147,102 @@ function renderFlexconInboundForm(container, data) {
   qtyIn.addEventListener('input', updateInSubtotal);
   priceIn.addEventListener('input', updateInSubtotal);
 
-  document.getElementById('flexconInboundForm').addEventListener('submit', (e) => {
+  document.getElementById('modalInboundForm').addEventListener('submit', (e) => {
     e.preventDefault();
     const newTx = {
       id: "TX-" + Date.now().toString().slice(-6),
-      date: document.getElementById('inDate').value,
+      date: document.getElementById('mInDate').value,
       type: "inbound",
-      location: document.getElementById('inLocation').value,
-      item: document.getElementById('inItem').value,
-      qty: parseInt(document.getElementById('inQty').value),
-      price: parseFloat(document.getElementById('inPrice').value),
-      supplier: document.getElementById('inSupplier').value,
+      status: "delivered", // 即時実在庫
+      location: document.getElementById('mInLocation').value,
+      item: document.getElementById('mInItem').value,
+      qty: parseInt(qtyIn.value),
+      price: parseFloat(priceIn.value),
+      supplier: document.getElementById('mInSupplier').value,
       purpose: "",
-      note: document.getElementById('inNote').value
+      note: document.getElementById('mInNote').value
     };
 
     data.transactions.push(newTx);
     saveFlexconData(data);
-    showToast("✨ 入庫データを正常に登録しました");
-    activeFlexconTab = 'dashboard';
+    closeModal();
+    showToast("✨ 入庫データを正常に登録しました（実在庫加算）");
     renderFlexconInventory();
   });
 }
 
-// 3. 出庫（使用）登録フォーム
-function renderFlexconOutboundForm(container, data) {
+// 5. 出庫（使用）登録モーダル
+function openFlexconOutboundModal(data) {
+  const modalContainer = document.getElementById('flexconActionModalContainer');
   const today = new Date().toISOString().split('T')[0];
 
-  container.innerHTML = `
-    <div class="tool-card" style="max-width: 700px; margin: 0 auto;">
-      <h3 style="margin-top: 0; margin-bottom: 16px;">📤 フレコン資材 出荷（使用）登録</h3>
-      <form id="flexconOutboundForm" class="tool-form">
-        <div class="tool-group">
-          <label for="outDate">出荷日 / 使用日 <span style="color:#ef4444;">*</span></label>
-          <input type="date" id="outDate" value="${today}" required>
+  modalContainer.innerHTML = `
+    <div class="flexcon-modal-overlay" id="flexconOutboundModalOverlay">
+      <div class="flexcon-modal-box" style="max-width: 580px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 20px;">📤</span>
+            <h3 style="margin: 0; font-size: 17px; font-weight: 800;">フレコン資材 出荷・使用登録</h3>
+          </div>
+          <button type="button" id="btnCloseOutboundModal" style="background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-muted); line-height: 1;">✕</button>
         </div>
 
-        <div class="tool-group">
-          <label for="outLocation">使用拠点（保管場所） <span style="color:#ef4444;">*</span></label>
-          <select id="outLocation" required>
-            ${FLEXCON_LOCATIONS.map(l => `<option value="${l}">${l}</option>`).join('')}
-          </select>
-        </div>
+        <form id="modalOutboundForm" class="tool-form">
+          <div class="tool-group">
+            <label for="mOutDate">出荷日 / 使用日 <span style="color:#ef4444;">*</span></label>
+            <input type="date" id="mOutDate" value="${today}" required>
+          </div>
 
-        <div class="tool-group">
-          <label for="outItem">品名（型番） <span style="color:#ef4444;">*</span></label>
-          <select id="outItem" required>
-            ${FLEXCON_ITEMS.map(i => `<option value="${i.id}">${i.name}</option>`).join('')}
-          </select>
-        </div>
+          <div class="tool-group">
+            <label for="mOutLocation">使用拠点（保管場所） <span style="color:#ef4444;">*</span></label>
+            <select id="mOutLocation" required>
+              ${FLEXCON_LOCATIONS.map(l => `<option value="${l}">${l}</option>`).join('')}
+            </select>
+          </div>
 
-        <div class="tool-group">
-          <label for="outQty">使用枚数 <span style="color:#ef4444;">*</span></label>
-          <input type="number" id="outQty" min="1" max="99999" value="50" required>
-        </div>
+          <div class="tool-group">
+            <label for="mOutItem">品名（社内通称・型番） <span style="color:#ef4444;">*</span></label>
+            <select id="mOutItem" required style="width: 100%; text-overflow: ellipsis;">
+              ${FLEXCON_ITEMS.map(i => `<option value="${i.id}">【${i.commonName}】 ${i.name}</option>`).join('')}
+            </select>
+          </div>
 
-        <div class="tool-group">
-          <label for="outPurpose">使用用途・充填製品 <span style="color:#ef4444;">*</span></label>
-          <input type="text" id="outPurpose" placeholder="例: 牧草サイレージ製品充填、大豆粕パッキング出荷など" required>
-        </div>
+          <div class="tool-group">
+            <label for="mOutQty">使用枚数 <span style="color:#ef4444;">*</span></label>
+            <input type="number" id="mOutQty" min="1" max="99999" value="50" required>
+          </div>
 
-        <div class="tool-group">
-          <label for="outNote">備考</label>
-          <input type="text" id="outNote" placeholder="例: 担当〇〇作業">
-        </div>
+          <div class="tool-group">
+            <label for="mOutPurpose">使用用途・充填製品 <span style="color:#ef4444;">*</span></label>
+            <input type="text" id="mOutPurpose" placeholder="例: 牧草サイレージ製品充填、大豆粕パッキング出荷など" required>
+          </div>
 
-        <button type="submit" class="btn btn-primary" style="margin-top: 16px; width: 100%; padding: 10px; font-size: 14px; background: linear-gradient(135deg, var(--accent-violet), #9333ea);">📤 出庫データを登録する</button>
-      </form>
+          <div class="tool-group">
+            <label for="mOutNote">備考</label>
+            <input type="text" id="mOutNote" placeholder="例: 担当〇〇作業">
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button type="button" id="btnCancelOutboundModal" class="btn btn-secondary" style="flex: 1; padding: 11px;">キャンセル</button>
+            <button type="submit" class="btn btn-primary" style="flex: 2; padding: 11px; font-size: 14px; background: linear-gradient(135deg, var(--accent-violet), #9333ea);">📤 出庫データを登録する</button>
+          </div>
+        </form>
+      </div>
     </div>
   `;
 
-  document.getElementById('flexconOutboundForm').addEventListener('submit', (e) => {
+  const closeModal = () => { modalContainer.innerHTML = ''; };
+  document.getElementById('btnCloseOutboundModal').addEventListener('click', closeModal);
+  document.getElementById('btnCancelOutboundModal').addEventListener('click', closeModal);
+  document.getElementById('flexconOutboundModalOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'flexconOutboundModalOverlay') closeModal();
+  });
+
+  document.getElementById('modalOutboundForm').addEventListener('submit', (e) => {
     e.preventDefault();
-    const loc = document.getElementById('outLocation').value;
-    const itemId = document.getElementById('outItem').value;
-    const qty = parseInt(document.getElementById('outQty').value);
+    const loc = document.getElementById('mOutLocation').value;
+    const itemId = document.getElementById('mOutItem').value;
+    const qty = parseInt(document.getElementById('mOutQty').value);
 
     // 在庫チェック
     const matrix = calculateStockMatrix(data.transactions);
@@ -4552,32 +5250,53 @@ function renderFlexconOutboundForm(container, data) {
     const itemObj = FLEXCON_ITEMS.find(i => i.id === itemId);
 
     if (qty > available) {
-      alert(`⚠️ 出庫警告: ${loc} にある ${itemObj ? itemObj.name : itemId} の現在の在庫枚数は ${available} 枚です。要求枚数 (${qty} 枚) が現在庫を超過しています。`);
+      if (!confirm(`⚠️ 出庫警告: ${loc} にある ${itemObj ? itemObj.commonName : itemId} の現在の実在庫枚数は ${available} 枚です。\n要求枚数 (${qty} 枚) が現在庫を超過していますが、登録を続行しますか？`)) {
+        return;
+      }
     }
 
     const newTx = {
       id: "TX-" + Date.now().toString().slice(-6),
-      date: document.getElementById('outDate').value,
+      date: document.getElementById('mOutDate').value,
       type: "outbound",
+      status: "delivered",
       location: loc,
       item: itemId,
       qty: qty,
       price: matrix[loc][itemId] ? matrix[loc][itemId].lastPrice : 1000,
       supplier: "",
-      purpose: document.getElementById('outPurpose').value,
-      note: document.getElementById('outNote').value
+      purpose: document.getElementById('mOutPurpose').value,
+      note: document.getElementById('mOutNote').value
     };
 
     data.transactions.push(newTx);
     saveFlexconData(data);
+    closeModal();
     showToast("📤 出庫データを正常に登録しました");
-    activeFlexconTab = 'dashboard';
     renderFlexconInventory();
   });
 }
 
-// 4. 入出庫全履歴帳簿
+// 6. 入出庫全履歴帳簿（ソート＆保管場所フィルター対応）
 function renderFlexconLedger(container, data) {
+  const today = new Date().toISOString().split('T')[0];
+
+  // フィルタリング処理
+  let filteredList = data.transactions.filter(tx => {
+    if (ledgerFilterLoc !== 'all' && tx.location !== ledgerFilterLoc) return false;
+    if (ledgerFilterType === 'ordered' && tx.status !== 'ordered') return false;
+    if (ledgerFilterType === 'inbound' && (tx.type !== 'inbound' || tx.status === 'ordered')) return false;
+    if (ledgerFilterType === 'outbound' && tx.type !== 'outbound') return false;
+    return true;
+  });
+
+  // ソート処理（日付昇順 / 降順）
+  filteredList.sort((a, b) => {
+    const da = new Date(a.date);
+    const db = new Date(b.date);
+    return ledgerSortAsc ? (da - db) : (db - da);
+  });
+
   container.innerHTML = `
     <div class="tool-card">
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
@@ -4585,46 +5304,113 @@ function renderFlexconLedger(container, data) {
         <button class="btn btn-secondary" id="btnResetFlexconData" style="font-size: 11px; color: #ef4444; border-color: rgba(239,68,68,0.3);">🔄 初期サンプルデータにリセット</button>
       </div>
 
+      <!-- フィルター＆ソート コントロールバー -->
+      <div style="background: var(--bg-primary); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px 16px; margin-bottom: 16px; display: flex; gap: 16px; flex-wrap: wrap; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <label for="ledgerFilterLocSelect" style="font-size: 12px; font-weight: 700; color: var(--text-secondary);">🏢 保管場所フィルター:</label>
+          <select id="ledgerFilterLocSelect" style="padding: 4px 10px; font-size: 12px; border-radius: 6px; border: 1px solid var(--border-medium); background: var(--bg-card); color: var(--text-primary);">
+            <option value="all" ${ledgerFilterLoc === 'all' ? 'selected' : ''}>すべての保管場所（全拠点）</option>
+            ${FLEXCON_LOCATIONS.map(l => `<option value="${l}" ${ledgerFilterLoc === l ? 'selected' : ''}>${l}</option>`).join('')}
+          </select>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <label for="ledgerFilterTypeSelect" style="font-size: 12px; font-weight: 700; color: var(--text-secondary);">🏷️ 区分フィルター:</label>
+          <select id="ledgerFilterTypeSelect" style="padding: 4px 10px; font-size: 12px; border-radius: 6px; border: 1px solid var(--border-medium); background: var(--bg-card); color: var(--text-primary);">
+            <option value="all" ${ledgerFilterType === 'all' ? 'selected' : ''}>すべての区分</option>
+            <option value="ordered" ${ledgerFilterType === 'ordered' ? 'selected' : ''}>📝 未納品（発注中）のみ</option>
+            <option value="inbound" ${ledgerFilterType === 'inbound' ? 'selected' : ''}>📥 入庫（納品済）のみ</option>
+            <option value="outbound" ${ledgerFilterType === 'outbound' ? 'selected' : ''}>📤 出庫（使用）のみ</option>
+          </select>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 6px; margin-left: auto;">
+          <button class="btn btn-secondary" id="btnToggleSort" style="padding: 5px 12px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+            <span>${ledgerSortAsc ? '⬆️ 日付: 古い順 (昇順)' : '⬇️ 日付: 新しい順 (降順)'}</span>
+          </button>
+        </div>
+      </div>
+
       <div style="overflow-x: auto;">
         <table class="assistant-table" style="font-size: 12px; width: 100%; border-collapse: collapse;">
           <thead>
             <tr style="background: var(--bg-primary); text-align: left;">
-              <th style="padding: 8px;">日付</th>
-              <th style="padding: 8px;">区分</th>
+              <th style="padding: 8px; cursor: pointer; user-select: none;" id="thDateSort" title="クリックで昇順・降順切替">
+                日付 ${ledgerSortAsc ? '▲' : '▼'}
+              </th>
+              <th style="padding: 8px;">区分・状態</th>
               <th style="padding: 8px;">保管場所（拠点）</th>
-              <th style="padding: 8px;">品名（型番）</th>
+              <th style="padding: 8px;">品名（社内通称 / 型番）</th>
               <th style="padding: 8px; text-align: right;">枚数</th>
               <th style="padding: 8px; text-align: right;">単価</th>
               <th style="padding: 8px; text-align: right;">小計金額</th>
-              <th style="padding: 8px;">仕入先 / 使用用途</th>
-              <th style="padding: 8px;">備考</th>
-              <th style="padding: 8px; text-align: center;">操作</th>
+              <th style="padding: 8px;">仕入先 / 納品期日 / 用途</th>
+              <th style="padding: 8px;">備考 / 発注No</th>
+              <th style="padding: 8px; text-align: center; min-width: 110px;">操作</th>
             </tr>
           </thead>
           <tbody>
-            ${data.transactions.slice().reverse().map(tx => {
+            ${filteredList.length === 0 ? `
+              <tr>
+                <td colspan="10" style="text-align: center; padding: 24px; color: var(--text-muted);">
+                  条件に一致するトランザクションレコードはありません。
+                </td>
+              </tr>
+            ` : filteredList.map(tx => {
               const itemObj = FLEXCON_ITEMS.find(i => i.id === tx.item);
-              const isInfo = tx.type === 'inbound';
+              const isOrdered = tx.status === 'ordered';
+              const isInbound = tx.type === 'inbound';
               const amt = tx.qty * (tx.price || 0);
+              const isOverdue = isOrdered && tx.deliveryDueDate && tx.deliveryDueDate < today;
+
               return `
-                <tr>
-                  <td style="padding: 8px;">${tx.date}</td>
+                <tr style="${isOverdue ? 'background: rgba(239,68,68,0.04);' : (isOrdered ? 'background: rgba(245,158,11,0.03);' : '')}">
+                  <td style="padding: 8px; font-weight: 600;">${tx.date}</td>
                   <td style="padding: 8px;">
-                    <span style="padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; ${isInfo ? 'background: rgba(37,99,235,0.1); color: var(--accent-blue);' : 'background: rgba(139,92,246,0.1); color: var(--accent-violet);'}">
-                      ${isInfo ? '📥 入庫' : '📤 出庫'}
-                    </span>
+                    ${isOrdered ? `
+                      <span style="padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 700; ${isOverdue ? 'background: rgba(239,68,68,0.15); color: #ef4444;' : 'background: rgba(245,158,11,0.15); color: #f59e0b;'}">
+                        ${isOverdue ? '⚠️ 納期超過' : '📝 未納品'}
+                      </span>
+                    ` : `
+                      <span style="padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 700; ${isInbound ? 'background: rgba(37,99,235,0.1); color: var(--accent-blue);' : 'background: rgba(139,92,246,0.1); color: var(--accent-violet);'}">
+                        ${isInbound ? '📥 入庫' : '📤 出庫'}
+                      </span>
+                    `}
                   </td>
                   <td style="padding: 8px;">${tx.location}</td>
-                  <td style="padding: 8px; font-weight: 600;">${itemObj ? itemObj.name : tx.item}</td>
-                  <td style="padding: 8px; text-align: right; font-weight: 700; color: ${isInfo ? 'var(--accent-blue)' : '#ef4444'};">
-                    ${isInfo ? '+' : '-'}${tx.qty.toLocaleString()} 枚
+                  <td style="padding: 8px;">
+                    <div style="font-weight: 700; color: var(--accent-blue);">【${itemObj ? itemObj.commonName : tx.item}】</div>
+                    <div style="font-size: 10.5px; color: var(--text-muted);">${itemObj ? itemObj.id : ''}</div>
+                  </td>
+                  <td style="padding: 8px; text-align: right; font-weight: 700; color: ${isOrdered ? '#f59e0b' : (isInbound ? 'var(--accent-blue)' : '#ef4444')};">
+                    ${isInbound ? '+' : '-'}${tx.qty.toLocaleString()} 枚
                   </td>
                   <td style="padding: 8px; text-align: right;">¥${(tx.price || 0).toLocaleString()}</td>
                   <td style="padding: 8px; text-align: right; font-weight: 700;">¥${Math.round(amt).toLocaleString()}</td>
-                  <td style="padding: 8px;">${tx.supplier || tx.purpose || '-'}</td>
-                  <td style="padding: 8px; color: var(--text-muted);">${tx.note || '-'}</td>
+                  <td style="padding: 8px;">
+                    ${isOrdered ? `
+                      <div style="font-weight: 600;">${tx.supplier || '-'}</div>
+                      <div style="font-size: 11px; color: ${isOverdue ? '#ef4444; font-weight:700;' : 'var(--text-muted);'}">
+                        納品予定: ${tx.deliveryDueDate || '未定'}
+                      </div>
+                    ` : (tx.supplier || tx.purpose || '-')}
+                  </td>
+                  <td style="padding: 8px; color: var(--text-muted);">
+                    <div>${tx.note || '-'}</div>
+                    ${tx.orderNo ? `<div style="font-size: 10.5px; color: var(--text-secondary);">No: ${tx.orderNo}</div>` : ''}
+                  </td>
                   <td style="padding: 8px; text-align: center;">
-                    <button class="btn-delete-tx" data-id="${tx.id}" style="background: none; border: none; color: #ef4444; cursor: pointer;">✕</button>
+                    <div style="display: flex; gap: 4px; justify-content: center; align-items: center;">
+                      ${isOrdered ? `
+                        <button class="btn btn-primary btn-ledger-deliver" data-id="${tx.id}" style="padding: 2px 6px; font-size: 11px; background: var(--accent-green); border-color: var(--accent-green);" title="納品完了にし実在庫に反映">
+                          ✅ 受入
+                        </button>
+                        <button class="btn btn-secondary btn-ledger-po" data-id="${tx.id}" style="padding: 2px 6px; font-size: 11px;" title="発注書を印刷">
+                          🖨️
+                        </button>
+                      ` : ''}
+                      <button class="btn-delete-tx" data-id="${tx.id}" style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 14px; padding: 2px 4px;" title="削除">✕</button>
+                    </div>
                   </td>
                 </tr>
               `;
@@ -4635,10 +5421,47 @@ function renderFlexconLedger(container, data) {
     </div>
   `;
 
-  document.querySelectorAll('.btn-delete-tx').forEach(btn => {
+  // フィルター・ソートイベント
+  document.getElementById('ledgerFilterLocSelect').addEventListener('change', (e) => {
+    ledgerFilterLoc = e.target.value;
+    renderFlexconLedger(container, data);
+  });
+
+  document.getElementById('ledgerFilterTypeSelect').addEventListener('change', (e) => {
+    ledgerFilterType = e.target.value;
+    renderFlexconLedger(container, data);
+  });
+
+  const toggleSort = () => {
+    ledgerSortAsc = !ledgerSortAsc;
+    renderFlexconLedger(container, data);
+  };
+
+  document.getElementById('btnToggleSort').addEventListener('click', toggleSort);
+  document.getElementById('thDateSort').addEventListener('click', toggleSort);
+
+  // 納品受入ボタン
+  container.querySelectorAll('.btn-ledger-deliver').forEach(btn => {
     btn.addEventListener('click', (e) => {
       const id = e.target.dataset.id;
-      if (confirm("このトランザクションレコードを削除してもよろしいですか？")) {
+      markOrderDelivered(id, data);
+    });
+  });
+
+  // 発注書ボタン
+  container.querySelectorAll('.btn-ledger-po').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const id = e.target.dataset.id;
+      const targetTx = data.transactions.find(t => t.id === id);
+      if (targetTx) openPurchaseOrderModal(targetTx);
+    });
+  });
+
+  // レコード削除
+  container.querySelectorAll('.btn-delete-tx').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const id = e.target.dataset.id;
+      if (confirm("このレコードを削除してもよろしいですか？")) {
         data.transactions = data.transactions.filter(t => t.id !== id);
         saveFlexconData(data);
         showToast("🗑️ レコードを削除しました");
@@ -4647,15 +5470,16 @@ function renderFlexconLedger(container, data) {
     });
   });
 
+  // リセットボタン
   document.getElementById('btnResetFlexconData').addEventListener('click', () => {
     if (confirm("初期サンプルデータにリセットしますか？入力されたデータは消去されます。")) {
-      localStorage.removeItem('cascadia_flexcon_inventory_v1');
+      localStorage.removeItem('cascadia_flexcon_inventory_v2');
       renderFlexconInventory();
     }
   });
 }
 
-// 5. 月末棚卸し＆CSVエクスポート
+// 7. 月末棚卸し＆CSVエクスポート
 function renderFlexconCheck(container, data) {
   const matrix = calculateStockMatrix(data.transactions);
 
@@ -4676,8 +5500,8 @@ function renderFlexconCheck(container, data) {
           <thead>
             <tr style="background: var(--bg-primary); text-align: left;">
               <th style="padding: 8px;">保管場所（拠点）</th>
-              <th style="padding: 8px;">品名（型番）</th>
-              <th style="padding: 8px; text-align: right;">システム理論在庫</th>
+              <th style="padding: 8px;">品名（社内通称 / 型番）</th>
+              <th style="padding: 8px; text-align: right;">システム理論実在庫</th>
               <th style="padding: 8px; text-align: right;">評価単価</th>
               <th style="padding: 8px; text-align: right;">システム在庫金額</th>
             </tr>
@@ -4689,7 +5513,9 @@ function renderFlexconCheck(container, data) {
                 return `
                   <tr>
                     <td style="padding: 8px;">${loc}</td>
-                    <td style="padding: 8px; font-weight: 600;">${item.name}</td>
+                    <td style="padding: 8px; font-weight: 600;">
+                      <span style="color: var(--accent-blue);">【${item.commonName}】</span> ${item.name}
+                    </td>
                     <td style="padding: 8px; text-align: right; font-weight: 700;">${cell.qty.toLocaleString()} 枚</td>
                     <td style="padding: 8px; text-align: right;">¥${cell.lastPrice.toLocaleString()}</td>
                     <td style="padding: 8px; text-align: right; font-weight: 700; color: var(--accent-violet);">¥${Math.round(cell.totalValue).toLocaleString()}</td>
@@ -4704,9 +5530,14 @@ function renderFlexconCheck(container, data) {
   `;
 
   document.getElementById('btnExportFlexconCSV').addEventListener('click', () => {
-    let csv = "\uFEFF日付,区分,保管場所,品名ID,枚数,単価,金額,仕入先/用途,備考\n";
+    let csv = "\uFEFF日付,区分,ステータス,保管場所,品名ID,品名通称,枚数,単価,金額,仕入先/用途,納品期日,発注No,備考\n";
     data.transactions.forEach(tx => {
-      csv += `"${tx.date}","${tx.type === 'inbound' ? '入庫' : '出庫'}","${tx.location}","${tx.item}",${tx.qty},${tx.price || 0},${tx.qty * (tx.price || 0)},"${tx.supplier || tx.purpose || ''}","${tx.note || ''}"\n`;
+      const itemObj = FLEXCON_ITEMS.find(i => i.id === tx.item);
+      const isOrdered = tx.status === 'ordered';
+      const statusText = isOrdered ? '発注中(未納品)' : '納品完了';
+      const typeText = tx.type === 'inbound' ? '入庫' : '出庫';
+      const common = itemObj ? itemObj.commonName : '';
+      csv += `"${tx.date}","${typeText}","${statusText}","${tx.location}","${tx.item}","${common}",${tx.qty},${tx.price || 0},${tx.qty * (tx.price || 0)},"${tx.supplier || tx.purpose || ''}","${tx.deliveryDueDate || ''}","${tx.orderNo || ''}","${tx.note || ''}"\n`;
     });
 
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
