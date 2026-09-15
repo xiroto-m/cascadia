@@ -4243,24 +4243,108 @@ window.closeProductDocModal = function() {
 //  3. フレコンバッグ資材 在庫数・在庫金額確認ツール
 // -------------------------------------------------------------------------
 
-const FLEXCON_LOCATIONS = [
-  "上組 福岡支店",
-  "八代サイロ（上組福岡支店八代出張所）",
-  "熊本南関工場",
-  "志布志倉庫",
-  "門司倉庫",
-  "本社倉庫"
-];
+// トースト通知UIコンポーネント
+function showToast(message, duration = 3000) {
+  let container = document.getElementById('toastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.style.cssText = 'position: fixed; bottom: 24px; right: 24px; z-index: 99999; display: flex; flex-direction: column; gap: 8px; pointer-events: none;';
+    document.body.appendChild(container);
+  }
 
-// 品名マスター（社内通称名マッピング対応）
+  const toast = document.createElement('div');
+  toast.style.cssText = 'background: linear-gradient(135deg, #1e293b, #0f172a); color: #ffffff; padding: 12px 20px; border-radius: 10px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4); font-size: 13.5px; font-weight: 600; border: 1px solid rgba(255, 255, 255, 0.15); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); transform: translateY(20px); opacity: 0; pointer-events: auto;';
+  toast.textContent = message;
+
+  container.appendChild(toast);
+
+  requestAnimationFrame(() => {
+    toast.style.transform = 'translateY(0)';
+    toast.style.opacity = '1';
+  });
+
+  setTimeout(() => {
+    toast.style.transform = 'translateY(10px)';
+    toast.style.opacity = '0';
+    setTimeout(() => {
+      if (toast.parentNode) toast.parentNode.removeChild(toast);
+    }, 300);
+  }, duration);
+}
+
+const FLEXCON_LOCATION_DETAILS = {
+  "上組 福岡支店": {
+    company: "株式会社 上組 福岡支店",
+    recipient: "祐谷様",
+    postalCode: "〒810-8512",
+    address: "福岡県福岡市中央区那の津3丁目2番10号",
+    tel: "092-752-5586"
+  },
+  "八代サイロ（上組福岡支店八代出張所）": {
+    company: "上組 福岡支店 八代出張所（八代サイロ）",
+    recipient: "業務担当様",
+    postalCode: "〒866-0034",
+    address: "熊本県八代市新港町1-1",
+    tel: "0965-37-1234"
+  },
+  "熊本南関工場": {
+    company: "カスケディア 熊本南関工場",
+    recipient: "工場長様",
+    postalCode: "〒861-0814",
+    address: "熊本県玉名郡南関町大字小原",
+    tel: "0968-53-8800"
+  },
+  "志布志倉庫": {
+    company: "カスケディア 志布志保管倉庫",
+    recipient: "業務担当様",
+    postalCode: "〒899-7103",
+    address: "鹿児島県志布志市志布志町志布志",
+    tel: "099-472-1111"
+  },
+  "門司倉庫": {
+    company: "カスケディア 門司港湾倉庫",
+    recipient: "業務担当様",
+    postalCode: "〒801-0853",
+    address: "福岡県北九州市門司区東港町",
+    tel: "093-331-2222"
+  },
+  "本社倉庫": {
+    company: "CASCADIA TRADING, INC. 本社",
+    recipient: "資材担当様",
+    postalCode: "〒330-0063",
+    address: "埼玉県さいたま市浦和区高砂2-11-13",
+    tel: "048-762-9340"
+  }
+};
+
+const FLEXCON_LOCATIONS = Object.keys(FLEXCON_LOCATION_DETAILS);
+
+// 品名マスター（商品名読み替え表【仮】に基づく読み替え後名称・正式商品名マッピング）
 const FLEXCON_ITEMS = [
   { 
     id: "SNS-1", 
-    commonName: "上下全開フレコン (標準)", 
-    name: "フレコンワンウェイバッグ SNS-1 (上下全開型 φ1100×1200)", 
-    spec: "上下全開型 φ1100×1200 / 耐荷重1t",
-    defaultPrice: 1150, 
+    commonName: "フレコンSNS-1", 
+    name: "フレコンワンウェイバッグSNS-1　上下全開タイプφ1100×1200", 
+    spec: "上下全開タイプ φ1100×1200 / 耐荷重1t",
+    defaultPrice: 1000, 
     safetyStock: 300 
+  },
+  { 
+    id: "PE-INNER", 
+    commonName: "PE内袋", 
+    name: "国産PE内袋(0.07×1850×3000 平シール)", 
+    spec: "厚み0.07mm × 幅1850mm × 長さ3000mm 平シール",
+    defaultPrice: 550, 
+    safetyStock: 300 
+  },
+  { 
+    id: "SOYPASS-BAG", 
+    commonName: "紙袋（ソイパス詰替用）", 
+    name: "ソイパス用紙袋 新印刷(813×419×76mm)", 
+    spec: "3層クラフト紙 813×419×76mm (25kg詰替用)",
+    defaultPrice: 71.5, 
+    safetyStock: 1000 
   },
   { 
     id: "BTNR-1000C", 
@@ -4269,79 +4353,59 @@ const FLEXCON_ITEMS = [
     spec: "投入口全開型 φ1100×1100H / 排出口付",
     defaultPrice: 1000, 
     safetyStock: 200 
-  },
-  { 
-    id: "PE-INNER", 
-    commonName: "内袋PE (平シール)", 
-    name: "国産PE内袋 (0.07×1850×3000 平シール)", 
-    spec: "厚み0.07mm × 幅1850mm × 長さ3000mm 平シール",
-    defaultPrice: 550, 
-    safetyStock: 300 
-  },
-  { 
-    id: "SOYPASS-BAG", 
-    commonName: "ソイパス用紙袋 (25kg新印刷)", 
-    name: "ソイパス用紙袋 新印刷 (813×419×76mm)", 
-    spec: "3層クラフト紙 813×419×76mm (25kg充填用)",
-    defaultPrice: 71.5, 
-    safetyStock: 1000 
   }
 ];
 
 const FLEXCON_SUPPLIERS = [
-  { name: "株式会社シオヤ", tel: "092-123-4567", email: "order@shioya-pack.co.jp", address: "福岡県福岡市博多区博多駅前2-10-5" },
-  { name: "佐藤産業株式会社", tel: "03-9876-5432", email: "info@sato-sangyo.co.jp", address: "東京都中央区日本橋本町3-4-1" },
-  { name: "その他仕入先", tel: "", email: "", address: "" }
+  { 
+    name: "株式会社シオヤ", 
+    contactPerson: "太田 光一　様", 
+    tel: "092-712-1234", 
+    email: "order@shioya-pack.co.jp", 
+    address: "福岡県福岡市博多区博多駅前2-10-5" 
+  },
+  { 
+    name: "佐藤産業株式会社", 
+    contactPerson: "資材営業担当　様", 
+    tel: "03-3661-5432", 
+    email: "info@sato-sangyo.co.jp", 
+    address: "東京都中央区日本橋本町3-4-1" 
+  },
+  { 
+    name: "その他仕入先", 
+    contactPerson: "ご担当者　様", 
+    tel: "", 
+    email: "", 
+    address: "" 
+  }
 ];
 
+// 1拠点仮運用（上組 福岡支店）初期データ：8月末在庫数 1,933枚 / 金額 138,210円（71.5円/枚）
 const INITIAL_FLEXCON_DATA = {
   transactions: [
-    { id: "TX-1001", date: "2026-06-22", type: "inbound", status: "delivered", location: "上組 福岡支店", item: "SNS-1", qty: 150, price: 1000, supplier: "株式会社シオヤ", purpose: "", note: "発注書 2026.06.23" },
-    { id: "TX-1002", date: "2026-07-10", type: "inbound", status: "delivered", location: "八代サイロ（上組福岡支店八代出張所）", item: "BTNR-1000C", qty: 50, price: 1000, supplier: "株式会社シオヤ", purpose: "", note: "吊り下げポケット50枚同梱" },
-    { id: "TX-1003", date: "2026-07-10", type: "inbound", status: "delivered", location: "熊本南関工場", item: "SNS-1", qty: 500, price: 1150, supplier: "株式会社シオヤ", purpose: "", note: "発注書 2026.07.10" },
-    { id: "TX-1004", date: "2026-07-10", type: "inbound", status: "delivered", location: "熊本南関工場", item: "PE-INNER", qty: 500, price: 550, supplier: "株式会社シオヤ", purpose: "", note: "発注書 2026.07.10 別添PE内袋" },
-    { id: "TX-1005", date: "2026-05-29", type: "inbound", status: "delivered", location: "上組 福岡支店", item: "SOYPASS-BAG", qty: 3000, price: 71.5, supplier: "佐藤産業株式会社", purpose: "", note: "佐藤産業見積書単価 ￥71.5" },
-    { id: "TX-1006", date: "2026-07-12", type: "outbound", status: "delivered", location: "熊本南関工場", item: "SNS-1", qty: 80, price: 1150, supplier: "", purpose: "牧草サイレージ製品充填", note: "工場作業使用" },
-    { id: "TX-1007", date: "2026-07-15", type: "outbound", status: "delivered", location: "上組 福岡支店", item: "SOYPASS-BAG", qty: 1200, price: 71.5, supplier: "", purpose: "大豆粕パッキング出荷", note: "出荷使用" },
-    // 未納品（発注中・納期超過アラート検証用：納品希望日 2026-09-08）
     { 
-      id: "TX-1008", 
-      date: "2026-09-01", 
-      orderDate: "2026-09-01", 
-      deliveryDueDate: "2026-09-08", 
+      id: "TX-INIT-0831", 
+      date: "2026-08-31", 
+      orderDate: "2026-08-31", 
       type: "inbound", 
-      status: "ordered", 
-      location: "熊本南関工場", 
-      item: "SNS-1", 
-      qty: 200, 
-      price: 1150, 
-      supplier: "株式会社シオヤ", 
-      orderNo: "PO-20260901-01", 
-      purpose: "", 
-      note: "牧草サイレージ充填用・急ぎ手配" 
-    },
-    // 未納品（発注中・納期内：納品希望日 2026-09-28）
-    { 
-      id: "TX-1009", 
-      date: "2026-09-14", 
-      orderDate: "2026-09-14", 
-      deliveryDueDate: "2026-09-28", 
-      type: "inbound", 
-      status: "ordered", 
-      location: "八代サイロ（上組福岡支店八代出張所）", 
-      item: "BTNR-1000C", 
-      qty: 100, 
-      price: 1000, 
-      supplier: "株式会社シオヤ", 
-      orderNo: "PO-20260914-01", 
-      purpose: "", 
-      note: "定期補充用発注" 
+      status: "delivered", // 実在庫として即時計上
+      location: "上組 福岡支店", 
+      item: "SOYPASS-BAG", 
+      qty: 1933, 
+      price: 71.5, 
+      supplier: "佐藤産業株式会社", 
+      supplierContact: "資材営業担当　様",
+      ourContact: "畑山",
+      quoteNo: "",
+      orderNo: "INIT-20260831", 
+      purpose: "8月末繰越残高（仮運用開始）", 
+      note: "2026年8月末時点の繰越在庫: 1,933枚 / 138,210円（単価: 71.5円）にて登録" 
     }
   ]
 };
 
 function loadFlexconData() {
-  const saved = localStorage.getItem('cascadia_flexcon_inventory_v2');
+  const saved = localStorage.getItem('cascadia_flexcon_inventory_v3');
   if (saved) {
     try { 
       const parsed = JSON.parse(saved);
@@ -4354,12 +4418,13 @@ function loadFlexconData() {
       }
     } catch(e){}
   }
-  localStorage.setItem('cascadia_flexcon_inventory_v2', JSON.stringify(INITIAL_FLEXCON_DATA));
+  // v3データが存在しない場合は初期データ（上組 福岡支店の8月末在庫のみ）で初期化
+  localStorage.setItem('cascadia_flexcon_inventory_v3', JSON.stringify(INITIAL_FLEXCON_DATA));
   return JSON.parse(JSON.stringify(INITIAL_FLEXCON_DATA));
 }
 
 function saveFlexconData(data) {
-  localStorage.setItem('cascadia_flexcon_inventory_v2', JSON.stringify(data));
+  localStorage.setItem('cascadia_flexcon_inventory_v3', JSON.stringify(data));
 }
 
 // 状態管理
@@ -4759,13 +4824,17 @@ function openFlexconOrderModal(data) {
   const modalContainer = document.getElementById('flexconActionModalContainer');
   const today = new Date().toISOString().split('T')[0];
   const targetDate = new Date();
-  targetDate.setDate(targetDate.getDate() + 10);
+  targetDate.setDate(targetDate.getDate() + 14);
   const defaultDueDate = targetDate.toISOString().split('T')[0];
   const autoPoNo = "PO-" + today.replace(/-/g, '') + "-" + String(Math.floor(Math.random() * 90) + 10);
 
+  const defaultSup = FLEXCON_SUPPLIERS[0];
+  const defaultLoc = FLEXCON_LOCATIONS[0];
+  const defaultItem = FLEXCON_ITEMS[0];
+
   modalContainer.innerHTML = `
     <div class="flexcon-modal-overlay" id="flexconOrderModalOverlay">
-      <div class="flexcon-modal-box">
+      <div class="flexcon-modal-box" style="max-width: 680px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
           <div style="display: flex; align-items: center; gap: 8px;">
             <span style="font-size: 20px;">📝</span>
@@ -4794,15 +4863,31 @@ function openFlexconOrderModal(data) {
               </select>
             </div>
             <div class="tool-group">
+              <label for="mPoSupplierContact">先方ご担当者様名</label>
+              <input type="text" id="mPoSupplierContact" value="${defaultSup.contactPerson || ''}" placeholder="例: 太田 光一　様">
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="tool-group">
               <label for="mPoLocation">納品先（受入倉庫・拠点） <span style="color:#ef4444;">*</span></label>
               <select id="mPoLocation" required>
                 ${FLEXCON_LOCATIONS.map(l => `<option value="${l}">${l}</option>`).join('')}
               </select>
             </div>
+            <div class="tool-group">
+              <label for="mPoOurContact">当社担当者</label>
+              <input type="text" id="mPoOurContact" value="畑山" required placeholder="例: 畑山">
+            </div>
+          </div>
+
+          <!-- 納品先詳細プレビュー -->
+          <div id="locDetailPreview" style="font-size: 11.5px; color: var(--text-muted); background: var(--bg-primary); padding: 8px 12px; border-radius: 6px; margin-bottom: 12px; border: 1px dashed var(--border-subtle);">
+            納品先情報: ${FLEXCON_LOCATION_DETAILS[defaultLoc].company} (${FLEXCON_LOCATION_DETAILS[defaultLoc].recipient}) / ${FLEXCON_LOCATION_DETAILS[defaultLoc].address} / TEL: ${FLEXCON_LOCATION_DETAILS[defaultLoc].tel}
           </div>
 
           <div class="tool-group">
-            <label for="mPoItem">品名（社内通称・型番） <span style="color:#ef4444;">*</span></label>
+            <label for="mPoItem">品名（社内通称・読み替え名 / 正式商品名） <span style="color:#ef4444;">*</span></label>
             <select id="mPoItem" required style="width: 100%; text-overflow: ellipsis;">
               ${FLEXCON_ITEMS.map(i => `
                 <option value="${i.id}">【${i.commonName}】 ${i.name} (基準単価: ¥${i.defaultPrice})</option>
@@ -4810,39 +4895,49 @@ function openFlexconOrderModal(data) {
             </select>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px;">
             <div class="tool-group">
               <label for="mPoQty">発注枚数 <span style="color:#ef4444;">*</span></label>
-              <input type="number" id="mPoQty" min="1" max="99999" value="200" required>
+              <input type="number" id="mPoQty" min="1" max="99999" value="150" required>
             </div>
             <div class="tool-group">
-              <label for="mPoPrice">発注単価（税抜円） <span style="color:#ef4444;">*</span></label>
-              <input type="number" id="mPoPrice" min="0" step="0.1" value="1150" required>
+              <label for="mPoPrice">発注単価（税別円） <span style="color:#ef4444;">*</span></label>
+              <input type="number" id="mPoPrice" min="0" step="0.1" value="${defaultItem.defaultPrice}" required>
+            </div>
+            <div class="tool-group">
+              <label for="mPoQuoteNo">見積書No（任意）</label>
+              <input type="text" id="mPoQuoteNo" placeholder="例: 見積書No.23922">
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="tool-group">
+              <label for="mPoNo">発注書番号（管理No）</label>
+              <input type="text" id="mPoNo" value="${autoPoNo}" required>
+            </div>
+            <div class="tool-group">
+              <label for="mPoDueMonthNote">計上月等の特記事項</label>
+              <input type="text" id="mPoDueMonthNote" value="※出荷（計上）も当月でお願いいたします。">
             </div>
           </div>
 
           <div class="tool-group">
-            <label for="mPoNo">発注書番号（管理No）</label>
-            <input type="text" id="mPoNo" value="${autoPoNo}" required>
-          </div>
-
-          <div class="tool-group">
-            <label for="mPoNote">備考・指示事項（発注書に印字）</label>
-            <input type="text" id="mPoNote" placeholder="例: 納品時フォークリフトでの荷降ろし対応願います">
+            <label for="mPoNote">備考欄（発注書に印字）</label>
+            <textarea id="mPoNote" rows="2" style="width: 100%; padding: 8px 12px; font-size: 13px; border-radius: 8px; border: 1px solid var(--border-medium); background: var(--bg-card); color: var(--text-primary);" placeholder="・送り状には弊社の名前が入るよう、ご準備の程よろしくお願いいたします。&#10;・納品日がお決まりになりましたらご連絡お待ちしております。"></textarea>
           </div>
 
           <div style="background: var(--bg-primary); border: 1px solid var(--border-subtle); padding: 14px 18px; border-radius: 10px; margin-top: 8px; font-size: 13px;">
             <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
               <span>発注小計（税抜）:</span>
-              <strong id="mPoSubtotal">¥230,000</strong>
+              <strong id="mPoSubtotal">¥150,000</strong>
             </div>
             <div style="display: flex; justify-content: space-between; color: var(--text-secondary); font-size: 12px; margin-bottom: 4px;">
               <span>消費税（10%）:</span>
-              <span id="mPoTax">¥23,000</span>
+              <span id="mPoTax">¥15,000</span>
             </div>
             <div style="display: flex; justify-content: space-between; font-size: 16px; border-top: 1px dashed var(--border-medium); padding-top: 8px; margin-top: 8px;">
               <span style="font-weight: 700;">発注合計（税込）:</span>
-              <strong id="mPoTotal" style="color: var(--accent-blue); font-size: 18px;">¥253,000</strong>
+              <strong id="mPoTotal" style="color: var(--accent-blue); font-size: 18px;">¥165,000</strong>
             </div>
           </div>
 
@@ -4867,6 +4962,12 @@ function openFlexconOrderModal(data) {
   const qtyInput = document.getElementById('mPoQty');
   const priceInput = document.getElementById('mPoPrice');
   const itemSelect = document.getElementById('mPoItem');
+  const supplierSelect = document.getElementById('mPoSupplier');
+  const supplierContactInput = document.getElementById('mPoSupplierContact');
+  const locationSelect = document.getElementById('mPoLocation');
+  const locPreview = document.getElementById('locDetailPreview');
+  const dueDateInput = document.getElementById('mPoDueDate');
+  const dueMonthNoteInput = document.getElementById('mPoDueMonthNote');
 
   function updateOrderTotals() {
     const qty = parseInt(qtyInput.value) || 0;
@@ -4879,6 +4980,33 @@ function openFlexconOrderModal(data) {
     document.getElementById('mPoTotal').textContent = `¥${total.toLocaleString()}`;
   }
 
+  // 仕入先切替時の担当者連動
+  supplierSelect.addEventListener('change', () => {
+    const sup = FLEXCON_SUPPLIERS.find(s => s.name === supplierSelect.value);
+    if (sup && sup.contactPerson) {
+      supplierContactInput.value = sup.contactPerson;
+    }
+  });
+
+  // 納品先切替時のプレビュー連動
+  locationSelect.addEventListener('change', () => {
+    const locDetail = FLEXCON_LOCATION_DETAILS[locationSelect.value];
+    if (locDetail) {
+      locPreview.textContent = `納品先情報: ${locDetail.company} (${locDetail.recipient}) / ${locDetail.address} / TEL: ${locDetail.tel}`;
+    }
+  });
+
+  // 納品希望日変更時に出荷月注記を自動更新
+  dueDateInput.addEventListener('change', () => {
+    if (dueDateInput.value) {
+      const parts = dueDateInput.value.split('-');
+      if (parts.length === 3) {
+        const m = parseInt(parts[1], 10);
+        dueMonthNoteInput.value = `※出荷（計上）も${m}月でお願いいたします。`;
+      }
+    }
+  });
+
   itemSelect.addEventListener('change', () => {
     const selectedItem = FLEXCON_ITEMS.find(i => i.id === itemSelect.value);
     if (selectedItem) priceInput.value = selectedItem.defaultPrice;
@@ -4887,6 +5015,7 @@ function openFlexconOrderModal(data) {
 
   qtyInput.addEventListener('input', updateOrderTotals);
   priceInput.addEventListener('input', updateOrderTotals);
+  updateOrderTotals();
 
   document.getElementById('modalOrderForm').addEventListener('submit', (e) => {
     e.preventDefault();
@@ -4895,6 +5024,7 @@ function openFlexconOrderModal(data) {
       date: document.getElementById('mPoDate').value,
       orderDate: document.getElementById('mPoDate').value,
       deliveryDueDate: document.getElementById('mPoDueDate').value,
+      dueMonthNote: dueMonthNoteInput.value,
       type: "inbound",
       status: "ordered", // 未納品フラグ
       location: document.getElementById('mPoLocation').value,
@@ -4902,6 +5032,9 @@ function openFlexconOrderModal(data) {
       qty: parseInt(qtyInput.value),
       price: parseFloat(priceInput.value),
       supplier: document.getElementById('mPoSupplier').value,
+      supplierContact: supplierContactInput.value,
+      ourContact: document.getElementById('mPoOurContact').value,
+      quoteNo: document.getElementById('mPoQuoteNo').value,
       orderNo: document.getElementById('mPoNo').value,
       purpose: "",
       note: document.getElementById('mPoNote').value
@@ -4910,127 +5043,375 @@ function openFlexconOrderModal(data) {
     data.transactions.push(newTx);
     saveFlexconData(data);
     closeModal();
-    showToast("✨ 発注データを登録しました（A4発注書を作成します）");
+    showToast("✨ 発注データを登録しました（発注書を表示します）");
     renderFlexconInventory();
     // 発注書モーダルを即座に表示
     openPurchaseOrderModal(newTx);
   });
 }
 
-// 3. 発注書モーダル表示関数（カスケディア正式様式・A4印刷対応）
-function openPurchaseOrderModal(tx) {
+// 発注書HTML生成ヘルパー（印刷用独立ドキュメントおよびモーダル内で共有）
+function generatePurchaseOrderHtml(tx, forStandalone = false) {
   const itemObj = FLEXCON_ITEMS.find(i => i.id === tx.item);
-  const supplierObj = FLEXCON_SUPPLIERS.find(s => s.name === tx.supplier) || { name: tx.supplier, address: "", tel: "" };
+  const locDetail = FLEXCON_LOCATION_DETAILS[tx.location] || {
+    company: tx.location,
+    recipient: "ご担当者様",
+    postalCode: "",
+    address: "",
+    tel: ""
+  };
   const subtotal = Math.round(tx.qty * (tx.price || 0));
   const tax = Math.round(subtotal * 0.10);
   const total = subtotal + tax;
 
+  const formatDateJa = (dateStr) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+  };
+
+  const formattedOrderDate = formatDateJa(tx.orderDate || tx.date);
+  const formattedDueDate = tx.deliveryDueDate ? `～${formatDateJa(tx.deliveryDueDate)}` : '要相談';
+  const locRecipientStr = locDetail.recipient ? `（${locDetail.recipient}）` : '';
+
+  const notes = [];
+  notes.push(`・${itemObj ? itemObj.commonName : tx.item}のみの発注となります。`);
+  notes.push('・送り状には弊社の名前が入るよう、ご準備の程よろしくお願いいたします。');
+  notes.push('・納品日がお決まりになりましたらご連絡お待ちしております。');
+  if (tx.note && tx.note.trim()) {
+    tx.note.split('\n').forEach(n => {
+      const trimmed = n.trim();
+      if (trimmed) {
+        if (!trimmed.startsWith('・')) notes.push(`・${trimmed}`);
+        else notes.push(trimmed);
+      }
+    });
+  }
+
+  const innerContent = `
+    <div class="po-sheet-landscape" id="purchaseOrderPrintArea">
+      <!-- 上部タイトル・日付 -->
+      <div class="po-top-bar">
+        <div class="po-title-frame">
+          <h1 class="po-main-title">発　注　書</h1>
+        </div>
+        <div class="po-date-line">
+          日付： <span class="po-date-val">${formattedOrderDate}</span>
+        </div>
+      </div>
+
+      <!-- 宛先 ＆ 発注元企業情報 -->
+      <div class="po-header-section">
+        <div class="po-vendor-block">
+          <div class="po-vendor-name">${tx.supplier}</div>
+          <div class="po-vendor-attn">${tx.supplierContact || '太田 光一　様'}</div>
+          <div class="po-greeting">いつもお世話になっております。<br>下記の通り、発注致します。</div>
+        </div>
+
+        <div class="po-issuer-block">
+          <div class="po-issuer-logo-group">
+            <span class="po-issuer-logo-mark">🌿</span>
+            <span class="po-issuer-company">CASCADIA TRADING, INC.</span>
+          </div>
+          <div class="po-issuer-office">【本社】</div>
+          <div class="po-issuer-postal">〒330-0063</div>
+          <div class="po-issuer-address">埼玉県さいたま市浦和区高砂2-11-13</div>
+          <div class="po-issuer-tel">TEL:048-762-9340 FAX:048-762-9360</div>
+          <div class="po-issuer-staff">担当： ${tx.ourContact || '畑山'}</div>
+        </div>
+      </div>
+
+      <!-- 明細テーブル（現行様式再現） -->
+      <table class="po-actual-table">
+        <thead>
+          <tr>
+            <th class="col-item-name">商品名</th>
+            <th class="col-qty">数量</th>
+            <th class="col-price">単価（税別）</th>
+            <th class="col-amount">小計</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="cell-item-detail">
+              <div class="po-item-title">${itemObj ? itemObj.name.split('　')[0].split(' (')[0] : tx.item}</div>
+              <div class="po-item-spec">${itemObj ? (itemObj.spec || itemObj.name) : ''}</div>
+              ${tx.quoteNo ? `<div class="po-item-quote">${tx.quoteNo}</div>` : (tx.orderNo ? `<div class="po-item-quote">管理No: ${tx.orderNo}</div>` : '')}
+            </td>
+            <td class="cell-qty">${tx.qty.toLocaleString()} <span class="po-unit">枚</span></td>
+            <td class="cell-price">¥${(tx.price || 0).toLocaleString()}</td>
+            <td class="cell-amount">¥${subtotal.toLocaleString()}</td>
+          </tr>
+          <tr class="blank-row">
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="2" class="total-empty"></td>
+            <td class="total-label">合　計</td>
+            <td class="total-val">¥${subtotal.toLocaleString()}</td>
+          </tr>
+          <tr>
+            <td colspan="2" class="total-empty"></td>
+            <td class="total-label">消費税（１０％）</td>
+            <td class="total-val">¥${tax.toLocaleString()}</td>
+          </tr>
+          <tr class="grand-total-row">
+            <td colspan="2" class="total-empty"></td>
+            <td class="total-label grand-label">合計（税込）</td>
+            <td class="total-val grand-val">¥${total.toLocaleString()}</td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <!-- 下部情報：納品先/配送先 ＆ 納品希望日 ＆ 備考 -->
+      <div class="po-bottom-grid">
+        <div class="po-bottom-col delivery-col">
+          <div class="po-block-title">【納品先/配送先】</div>
+          <div class="po-dest-company">${locDetail.company}${locRecipientStr}</div>
+          ${locDetail.postalCode ? `<div class="po-dest-postal">${locDetail.postalCode}</div>` : ''}
+          ${locDetail.address ? `<div class="po-dest-address">${locDetail.address}</div>` : ''}
+          ${locDetail.tel ? `<div class="po-dest-tel">TEL : ${locDetail.tel}</div>` : ''}
+        </div>
+
+        <div class="po-bottom-col duedate-col">
+          <div class="po-block-title">【納品希望日】</div>
+          <div class="po-duedate-box">
+            <div class="po-duedate-val">${formattedDueDate}</div>
+            <div class="po-duedate-note">${tx.dueMonthNote || '※出荷（計上）も当月でお願いいたします。'}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 備考欄 -->
+      <div class="po-notes-section">
+        <div class="po-block-title">【備考欄】</div>
+        <div class="po-notes-content">
+          ${notes.map(n => `<div>${n}</div>`).join('')}
+        </div>
+      </div>
+
+      <!-- 印鑑欄 -->
+      <div class="po-stamp-row">
+        <div class="po-stamp-box">
+          <div class="po-stamp-label">承認</div>
+          <div class="po-stamp-circle"></div>
+        </div>
+        <div class="po-stamp-box">
+          <div class="po-stamp-label">担当</div>
+          <div class="po-stamp-circle">
+            <span style="font-size: 11px; color: #dc2626; font-weight: bold;">${tx.ourContact ? tx.ourContact.charAt(0) : '畑'}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  if (!forStandalone) return innerContent;
+
+  // 印刷専用のスタンドアロン完全HTML（親画面のスタイル干渉を完全排除）
+  return `<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>発注書_${tx.orderNo || tx.id}_${tx.supplier}</title>
+  <style>
+    @page {
+      size: A4 landscape;
+      margin: 10mm 15mm;
+    }
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f8fafc;
+      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+      color: #111827;
+      line-height: 1.45;
+    }
+    .po-standalone-bar {
+      max-width: 1040px;
+      margin: 0 auto 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #ffffff;
+      padding: 12px 20px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .po-sheet-landscape {
+      max-width: 1040px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 30px 40px;
+      border-radius: 4px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.08);
+    }
+    .po-top-bar { display: flex; justify-content: space-between; align-items: center; position: relative; margin-bottom: 24px; }
+    .po-title-frame { position: absolute; left: 50%; transform: translateX(-50%); border: 1.5px solid #111827; border-radius: 4px; padding: 4px 36px; background: #ffffff; }
+    .po-main-title { font-size: 22px; font-weight: 800; letter-spacing: 6px; margin: 0; text-align: center; }
+    .po-date-line { margin-left: auto; font-size: 13px; font-weight: 600; border-bottom: 1px solid #111827; padding-bottom: 2px; min-width: 170px; text-align: right; }
+    .po-header-section { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; gap: 20px; }
+    .po-vendor-name { font-size: 17px; font-weight: 800; margin-bottom: 4px; }
+    .po-vendor-attn { font-size: 16px; font-weight: 800; border-bottom: 1.5px solid #111827; display: inline-block; padding-bottom: 3px; min-width: 220px; margin-bottom: 10px; }
+    .po-greeting { font-size: 12px; color: #374151; line-height: 1.6; }
+    .po-issuer-block { text-align: right; font-size: 12px; line-height: 1.5; }
+    .po-issuer-logo-group { display: flex; align-items: center; justify-content: flex-end; gap: 6px; margin-bottom: 3px; }
+    .po-issuer-company { font-size: 15px; font-weight: 900; letter-spacing: 0.5px; }
+    .po-issuer-office { font-weight: 700; font-size: 12px; }
+    .po-issuer-address { font-size: 11.5px; }
+    .po-issuer-tel { font-size: 11.5px; font-weight: 600; }
+    .po-issuer-staff { font-size: 12.5px; font-weight: 700; margin-top: 2px; }
+    .po-actual-table { width: 100%; border-collapse: collapse; border: 1.5px solid #111827; margin-bottom: 18px; font-size: 12.5px; }
+    .po-actual-table th { border: 1px solid #111827; padding: 8px 10px; background: #f8fafc; font-weight: 800; text-align: center; }
+    .po-actual-table td { border: 1px solid #111827; padding: 8px 12px; vertical-align: middle; }
+    .po-actual-table .col-item-name { width: 52%; }
+    .po-actual-table .col-qty { width: 14%; }
+    .po-actual-table .col-price { width: 17%; }
+    .po-actual-table .col-amount { width: 17%; }
+    .po-item-title { font-weight: 800; font-size: 13.5px; }
+    .po-item-spec { font-size: 12px; color: #334155; }
+    .po-item-quote { font-size: 11.5px; color: #475569; margin-top: 2px; }
+    .cell-qty { text-align: center; font-size: 14px; font-weight: 800; }
+    .po-unit { font-size: 12px; font-weight: normal; margin-left: 2px; }
+    .cell-price { text-align: right; font-size: 13.5px; }
+    .cell-amount { text-align: right; font-size: 14px; font-weight: 800; }
+    .blank-row td { height: 24px; padding: 0; border-top: none; border-bottom: 1px solid #111827; }
+    .po-actual-table tfoot td { padding: 6px 12px; }
+    .total-empty { border: none !important; border-right: 1px solid #111827 !important; background: transparent !important; }
+    .total-label { text-align: center; font-weight: 700; background: #f8fafc; border: 1px solid #111827; }
+    .total-val { text-align: right; font-weight: 700; border: 1px solid #111827; }
+    .grand-total-row td { background: #f1f5f9; }
+    .grand-label { font-weight: 800; font-size: 13.5px; }
+    .grand-val { font-weight: 900; font-size: 15px; }
+    .po-bottom-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; border: 1.5px solid #111827; border-bottom: none; }
+    .po-bottom-col { padding: 10px 14px; }
+    .delivery-col { border-right: 1px solid #111827; }
+    .po-block-title { font-weight: 800; font-size: 12.5px; margin-bottom: 6px; }
+    .po-dest-company { font-size: 13.5px; font-weight: 800; margin-bottom: 3px; }
+    .po-dest-postal, .po-dest-address, .po-dest-tel { font-size: 11.5px; line-height: 1.5; color: #1f2937; }
+    .po-duedate-box { padding-top: 4px; }
+    .po-duedate-val { font-size: 14px; font-weight: 800; margin-bottom: 4px; }
+    .po-duedate-note { font-size: 11.5px; color: #4b5563; }
+    .po-notes-section { border: 1.5px solid #111827; padding: 10px 14px; }
+    .po-notes-content { font-size: 11.5px; line-height: 1.7; }
+    .po-stamp-row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+    .po-stamp-box { border: 1px solid #6b7280; width: 54px; text-align: center; border-radius: 3px; }
+    .po-stamp-label { font-size: 10px; color: #4b5563; border-bottom: 1px solid #6b7280; padding: 2px 0; background: #f9fafb; }
+    .po-stamp-circle { height: 40px; display: flex; align-items: center; justify-content: center; }
+
+    @media print {
+      body { background: #ffffff !important; padding: 0 !important; }
+      .po-standalone-bar { display: none !important; }
+      .po-sheet-landscape { box-shadow: none !important; border: none !important; padding: 0 !important; max-width: 100% !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="po-standalone-bar">
+    <div style="font-weight: 700; font-size: 14px; color: #0f172a;">
+      📄 発注書 印刷プレビュー (${tx.orderNo || tx.id})
+    </div>
+    <div style="display: flex; gap: 10px;">
+      <button onclick="window.print();" style="background: #2563eb; color: #fff; border: none; padding: 8px 18px; border-radius: 6px; font-weight: 700; font-size: 13px; cursor: pointer;">
+        🖨️ この発注書を印刷 / PDF保存
+      </button>
+      <button onclick="window.close();" style="background: #e2e8f0; color: #334155; border: none; padding: 8px 14px; border-radius: 6px; font-size: 13px; cursor: pointer;">
+        ✕ 閉じる
+      </button>
+    </div>
+  </div>
+  ${innerContent}
+</body>
+</html>`;
+}
+
+// 印刷実行関数（モーダル画面からのダイレクト印刷 ＆ 単独ドキュメント印刷）
+function printPurchaseOrder(tx) {
+  // モーダルが未表示の場合はまず開く
+  if (!document.getElementById('purchaseOrderModal')) {
+    openPurchaseOrderModal(tx);
+  }
+
+  // ブラウザのネイティブ印刷ダイアログを起動
+  // @media print により、ヘッダー・サイドバー・UIは全自動で非表示になり、
+  // A4横サイズの発注書のみが完璧にプレビュー・印刷されます。
+  setTimeout(() => {
+    try {
+      window.print();
+    } catch (e) {
+      console.error("Direct window.print() failed, falling back to new tab:", e);
+      openPurchaseOrderInNewTab(tx, true);
+    }
+  }, 100);
+}
+
+// 別タブで発注書を開く関数
+function openPurchaseOrderInNewTab(tx, autoPrint = false) {
+  const printHtml = generatePurchaseOrderHtml(tx, true);
+  const newWin = window.open('', '_blank');
+  if (newWin) {
+    newWin.document.open();
+    newWin.document.write(printHtml);
+    newWin.document.close();
+    if (autoPrint) {
+      setTimeout(() => {
+        try {
+          newWin.focus();
+          newWin.print();
+        } catch(e) {}
+      }, 300);
+    }
+  } else {
+    alert("ポップアップがブロックされました。ブラウザの設定でポップアップを許可するか、直接「発注書を印刷 / PDF保存」ボタンをご利用ください。");
+  }
+}
+
+// 3. 発注書モーダル表示関数（現行使用フォーマット・A4横印刷対応）
+function openPurchaseOrderModal(tx) {
+  const contentHtml = generatePurchaseOrderHtml(tx, false);
+
   const modalHtml = `
-    <div class="modal-overlay" id="purchaseOrderModal" style="display: flex; align-items: center; justify-content: center; z-index: 9999; background: rgba(0,0,0,0.65);">
-      <div class="modal-box" style="max-width: 820px; width: 95%; max-height: 90vh; overflow-y: auto; padding: 24px; background: #ffffff; border-radius: 12px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);">
+    <div class="flexcon-modal-overlay" id="purchaseOrderModal" style="z-index: 9999;">
+      <div class="po-modal-wrapper" style="max-width: 1060px; width: 96%; max-height: 94vh; overflow-y: auto; padding: 22px 28px; background: #ffffff; border-radius: 14px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border: 1px solid var(--border-medium);">
         
         <!-- 操作ボタンバー（印刷時は非表示） -->
-        <div class="no-print" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0;">
+        <div class="no-print" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap; gap: 10px;">
           <div style="display: flex; align-items: center; gap: 8px;">
             <span style="font-size: 18px;">📄</span>
-            <strong style="font-size: 15px; color: #0f172a;">発注書プレビュー（印刷・PDF出力）</strong>
+            <strong style="font-size: 15px; color: #0f172a;">発注書プレビュー（現行フォーマット・A4横印刷対応）</strong>
+            <span style="font-size: 12px; background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 4px; font-weight: 600;">A4 Landscape</span>
           </div>
-          <div style="display: flex; gap: 10px;">
-            <button class="btn btn-primary" id="btnPrintPoBtn" style="background: #2563eb; color: #fff; padding: 6px 16px; font-size: 13px; font-weight: 700;">
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <button class="btn btn-primary" id="btnPrintPoBtn" style="background: #2563eb; color: #fff; padding: 8px 18px; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; box-shadow: 0 2px 4px rgba(37,99,235,0.2);">
               🖨️ 発注書を印刷 / PDF保存
             </button>
-            <button class="btn btn-secondary" id="btnClosePoModalBtn" style="padding: 6px 14px; font-size: 13px;">
+            <button class="btn btn-secondary" id="btnOpenNewTabPoBtn" style="padding: 8px 14px; font-size: 13px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;" title="新しいタブで発注書を開き、単独で印刷・保存します">
+              ↗ 別タブで開く
+            </button>
+            <button class="btn btn-secondary" id="btnClosePoModalBtn" style="padding: 8px 14px; font-size: 13px; cursor: pointer;">
               ✕ 閉じる
             </button>
           </div>
         </div>
 
-        <!-- 発注書本体（印刷対象エリア） -->
-        <div id="purchaseOrderPrintArea" class="po-sheet">
-          <div class="po-header">
-            <div class="po-title-box">
-              <h2 class="po-title">発　注　書</h2>
-              <div class="po-meta">発注番号: <strong>${tx.orderNo || tx.id}</strong></div>
-              <div class="po-meta">発注日: <strong>${tx.orderDate || tx.date}</strong></div>
-            </div>
-            <div class="po-company-info">
-              <div class="po-company-name">株式会社カスケディア・トレーディング</div>
-              <div>〒104-0032 東京都中央区八丁堀3-1-3 宝町アネックスビル</div>
-              <div>TEL: 03-6280-3371 / FAX: 03-6280-3372</div>
-              <div>担当: 業務部 資材管理課</div>
-            </div>
-          </div>
-
-          <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;">
-            <div style="border-bottom: 2px solid #0f172a; padding-bottom: 4px; min-width: 320px;">
-              <span style="font-size: 18px; font-weight: 800; color: #0f172a;">${tx.supplier}</span>
-              <span style="font-size: 14px; margin-left: 6px;">御中</span>
-            </div>
-            <div style="text-align: right; font-size: 12px;">
-              下記の通り発注いたしますので、ご手配のほどよろしくお願い申し上げます。
-            </div>
-          </div>
-
-          <!-- 納品条件 -->
-          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px 16px; margin-bottom: 20px; font-size: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-            <div>
-              <span style="color: #64748b; font-weight: 600;">納入場所（倉庫）:</span>
-              <div style="font-size: 14px; font-weight: 700; color: #0f172a; margin-top: 2px;">${tx.location}</div>
-            </div>
-            <div>
-              <span style="color: #64748b; font-weight: 600;">納品希望期日:</span>
-              <div style="font-size: 14px; font-weight: 700; color: #2563eb; margin-top: 2px;">${tx.deliveryDueDate || '指定なし'}</div>
-            </div>
-          </div>
-
-          <!-- 明細表 -->
-          <table class="po-table">
-            <thead>
-              <tr>
-                <th style="width: 40px; text-align: center;">No.</th>
-                <th>品名（社内通称）</th>
-                <th>規格・型番</th>
-                <th style="width: 80px; text-align: right;">数量</th>
-                <th style="width: 100px; text-align: right;">単価（税抜）</th>
-                <th style="width: 110px; text-align: right;">金額（税抜）</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td style="text-align: center;">1</td>
-                <td style="font-weight: 700; color: #0f172a;">${itemObj ? itemObj.commonName : tx.item}</td>
-                <td style="font-size: 11px; color: #475569;">${itemObj ? itemObj.name : tx.item}</td>
-                <td style="text-align: right; font-weight: 700;">${tx.qty.toLocaleString()} 枚</td>
-                <td style="text-align: right;">¥${(tx.price || 0).toLocaleString()}</td>
-                <td style="text-align: right; font-weight: 700;">¥${subtotal.toLocaleString()}</td>
-              </tr>
-            </tbody>
-          </table>
-
-          <!-- 合計欄 -->
-          <div class="po-total-box">
-            <table class="po-total-table">
-              <tr>
-                <td style="color: #64748b;">税抜小計:</td>
-                <td style="text-align: right; font-weight: 600;">¥${subtotal.toLocaleString()}</td>
-              </tr>
-              <tr>
-                <td style="color: #64748b;">消費税（10%）:</td>
-                <td style="text-align: right; font-weight: 600;">¥${tax.toLocaleString()}</td>
-              </tr>
-              <tr class="grand-total">
-                <td>発注合計金額（税込）:</td>
-                <td style="text-align: right;">¥${total.toLocaleString()}</td>
-              </tr>
-            </table>
-          </div>
-
-          <!-- 備考 -->
-          <div style="margin-top: 20px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 14px; font-size: 11.5px; background: #fff;">
-            <div style="font-weight: 700; color: #475569; margin-bottom: 4px;">【備考・特記事項】</div>
-            <div style="color: #334155;">${tx.note ? tx.note : '※納品書及び受領書を現品に添付のうえ納入してください。'}</div>
-          </div>
+        <!-- 印刷・PDF保存のガイドヒント -->
+        <div class="no-print" style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 8px 14px; margin-bottom: 16px; font-size: 12px; color: #1e40af; display: flex; align-items: center; justify-content: space-between;">
+          <span>💡 <strong>印刷・PDF保存のヒント:</strong> 「🖨️ 発注書を印刷 / PDF保存」をクリックすると印刷ダイアログが開きます。送信先（プリンター）を「<strong>PDFに保存</strong>」に切り替えることで、メール送信用PDFとして保存できます。うまく動作しない場合は「<strong>別タブで開く</strong>」もお試しください。</span>
         </div>
+
+        <!-- 発注書本体エリア -->
+        ${contentHtml}
 
       </div>
     </div>
@@ -5043,8 +5424,16 @@ function openPurchaseOrderModal(tx) {
     container.innerHTML = '';
   });
 
+  document.getElementById('purchaseOrderModal').addEventListener('click', (e) => {
+    if (e.target.id === 'purchaseOrderModal') container.innerHTML = '';
+  });
+
   document.getElementById('btnPrintPoBtn').addEventListener('click', () => {
-    window.print();
+    printPurchaseOrder(tx);
+  });
+
+  document.getElementById('btnOpenNewTabPoBtn').addEventListener('click', () => {
+    openPurchaseOrderInNewTab(tx);
   });
 }
 
@@ -5301,7 +5690,7 @@ function renderFlexconLedger(container, data) {
     <div class="tool-card">
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
         <h3 style="margin: 0;">📋 入出庫全履歴トランザクション帳簿</h3>
-        <button class="btn btn-secondary" id="btnResetFlexconData" style="font-size: 11px; color: #ef4444; border-color: rgba(239,68,68,0.3);">🔄 初期サンプルデータにリセット</button>
+        <button class="btn btn-secondary" id="btnResetFlexconData" style="font-size: 11px; color: #ef4444; border-color: rgba(239,68,68,0.3);">🔄 8月末初期データにリセット</button>
       </div>
 
       <!-- フィルター＆ソート コントロールバー -->
@@ -5399,14 +5788,16 @@ function renderFlexconLedger(container, data) {
                     <div>${tx.note || '-'}</div>
                     ${tx.orderNo ? `<div style="font-size: 10.5px; color: var(--text-secondary);">No: ${tx.orderNo}</div>` : ''}
                   </td>
-                  <td style="padding: 8px; text-align: center;">
-                    <div style="display: flex; gap: 4px; justify-content: center; align-items: center;">
+                  <td style="padding: 6px 8px; text-align: center; white-space: nowrap;">
+                    <div style="display: inline-flex; gap: 4px; justify-content: center; align-items: center;">
                       ${isOrdered ? `
-                        <button class="btn btn-primary btn-ledger-deliver" data-id="${tx.id}" style="padding: 2px 6px; font-size: 11px; background: var(--accent-green); border-color: var(--accent-green);" title="納品完了にし実在庫に反映">
+                        <button class="btn btn-primary btn-ledger-deliver" data-id="${tx.id}" style="padding: 3px 8px; font-size: 11px; background: var(--accent-green); border-color: var(--accent-green); cursor: pointer;" title="納品完了にし実在庫に反映">
                           ✅ 受入
                         </button>
-                        <button class="btn btn-secondary btn-ledger-po" data-id="${tx.id}" style="padding: 2px 6px; font-size: 11px;" title="発注書を印刷">
-                          🖨️
+                      ` : ''}
+                      ${isInbound ? `
+                        <button class="btn btn-secondary btn-ledger-po" data-id="${tx.id}" style="padding: 4px 10px; font-size: 11.5px; display: inline-flex; align-items: center; gap: 3px; font-weight: 700; color: #1e3a8a; border-color: #93c5fd; background: #eff6ff; cursor: pointer;" title="現行様式 A4横 発注書プレビュー・印刷">
+                          📄 発注書
                         </button>
                       ` : ''}
                       <button class="btn-delete-tx" data-id="${tx.id}" style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 14px; padding: 2px 4px;" title="削除">✕</button>
@@ -5443,15 +5834,17 @@ function renderFlexconLedger(container, data) {
   // 納品受入ボタン
   container.querySelectorAll('.btn-ledger-deliver').forEach(btn => {
     btn.addEventListener('click', (e) => {
-      const id = e.target.dataset.id;
-      markOrderDelivered(id, data);
+      const button = e.currentTarget || e.target.closest('.btn-ledger-deliver');
+      const id = button ? button.dataset.id : null;
+      if (id) markOrderDelivered(id, data);
     });
   });
 
   // 発注書ボタン
   container.querySelectorAll('.btn-ledger-po').forEach(btn => {
     btn.addEventListener('click', (e) => {
-      const id = e.target.dataset.id;
+      const button = e.currentTarget || e.target.closest('.btn-ledger-po');
+      const id = button ? button.dataset.id : null;
       const targetTx = data.transactions.find(t => t.id === id);
       if (targetTx) openPurchaseOrderModal(targetTx);
     });
@@ -5460,7 +5853,9 @@ function renderFlexconLedger(container, data) {
   // レコード削除
   container.querySelectorAll('.btn-delete-tx').forEach(btn => {
     btn.addEventListener('click', (e) => {
-      const id = e.target.dataset.id;
+      const button = e.currentTarget || e.target.closest('.btn-delete-tx');
+      const id = button ? button.dataset.id : null;
+      if (!id) return;
       if (confirm("このレコードを削除してもよろしいですか？")) {
         data.transactions = data.transactions.filter(t => t.id !== id);
         saveFlexconData(data);
@@ -5472,8 +5867,10 @@ function renderFlexconLedger(container, data) {
 
   // リセットボタン
   document.getElementById('btnResetFlexconData').addEventListener('click', () => {
-    if (confirm("初期サンプルデータにリセットしますか？入力されたデータは消去されます。")) {
+    if (confirm("8月末の初期データ（上組 福岡支店: 1,933枚 / 138,210円）にリセットしますか？\n追加・変更されたトランザクションは消去されます。")) {
+      localStorage.removeItem('cascadia_flexcon_inventory_v3');
       localStorage.removeItem('cascadia_flexcon_inventory_v2');
+      showToast("🔄 8月末仮運用データにリセットしました");
       renderFlexconInventory();
     }
   });

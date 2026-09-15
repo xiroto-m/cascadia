@@ -4538,123 +4538,477 @@ tbody tr:last-child td {
   text-align: center;
 }
 
-/* 7. フレコン資材 発注書モーダル・印刷用スタイル */
-.po-sheet {
+/* 7. フレコン資材 発注書モーダル・印刷用スタイル（現行フォーマット・A4横向き完全準拠） */
+.po-sheet-landscape {
   background: #ffffff;
-  color: #1e293b;
-  padding: 24px;
-  border-radius: 8px;
-  font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+  color: #111827;
+  padding: 30px 40px;
+  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+  line-height: 1.45;
+  box-sizing: border-box;
 }
 
-.po-header {
+/* タイトル・日付バー */
+.po-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  margin-bottom: 24px;
+}
+
+.po-title-frame {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 1.5px solid #111827;
+  border-radius: 4px;
+  padding: 4px 36px;
+  background: #ffffff;
+}
+
+.po-main-title {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 6px;
+  margin: 0;
+  color: #111827;
+  text-align: center;
+}
+
+.po-date-line {
+  margin-left: auto;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1f2937;
+  border-bottom: 1px solid #111827;
+  padding-bottom: 2px;
+  min-width: 170px;
+  text-align: right;
+}
+
+.po-date-val {
+  font-weight: 700;
+}
+
+/* 宛先 ＆ 発注元企業情報 */
+.po-header-section {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 20px;
-  border-bottom: 2px solid #0f172a;
-  padding-bottom: 12px;
+  gap: 20px;
 }
 
-.po-title-box {
+.po-vendor-block {
   flex: 1;
 }
 
-.po-title {
-  font-size: 24px;
+.po-vendor-name {
+  font-size: 17px;
   font-weight: 800;
-  letter-spacing: 2px;
-  color: #0f172a;
-  margin: 0 0 6px 0;
+  color: #111827;
+  margin-bottom: 4px;
 }
 
-.po-meta {
+.po-vendor-attn {
+  font-size: 16px;
+  font-weight: 800;
+  color: #111827;
+  border-bottom: 1.5px solid #111827;
+  display: inline-block;
+  padding-bottom: 3px;
+  min-width: 220px;
+  margin-bottom: 10px;
+}
+
+.po-greeting {
   font-size: 12px;
-  color: #64748b;
+  color: #374151;
+  line-height: 1.6;
 }
 
-.po-company-info {
+.po-issuer-block {
   text-align: right;
-  font-size: 11.5px;
-  color: #334155;
+  font-size: 12px;
+  color: #1f2937;
   line-height: 1.5;
 }
 
-.po-company-name {
-  font-size: 14px;
-  font-weight: 800;
-  color: #0f172a;
-  margin-bottom: 2px;
+.po-issuer-logo-group {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-bottom: 3px;
 }
 
-.po-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 16px 0;
+.po-issuer-company {
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  color: #0f172a;
+}
+
+.po-issuer-office {
+  font-weight: 700;
   font-size: 12px;
 }
 
-.po-table th {
-  background: #f1f5f9;
-  border: 1px solid #cbd5e1;
-  padding: 8px 10px;
-  color: #1e293b;
-  font-weight: 700;
+.po-issuer-address {
+  font-size: 11.5px;
 }
 
-.po-table td {
-  border: 1px solid #cbd5e1;
+.po-issuer-tel {
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.po-issuer-staff {
+  font-size: 12.5px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+/* 明細テーブル */
+.po-actual-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1.5px solid #111827;
+  margin-bottom: 18px;
+  font-size: 12.5px;
+}
+
+.po-actual-table th {
+  border: 1px solid #111827;
   padding: 8px 10px;
+  background: #f8fafc;
+  color: #111827;
+  font-weight: 800;
+  text-align: center;
+}
+
+.po-actual-table td {
+  border: 1px solid #111827;
+  padding: 8px 12px;
+  color: #111827;
+  vertical-align: middle;
+}
+
+.po-actual-table .col-item-name { width: 52%; }
+.po-actual-table .col-qty { width: 14%; }
+.po-actual-table .col-price { width: 17%; }
+.po-actual-table .col-amount { width: 17%; }
+
+.cell-item-detail {
+  line-height: 1.5;
+}
+
+.po-item-title {
+  font-weight: 800;
+  font-size: 13.5px;
+  color: #0f172a;
+}
+
+.po-item-spec {
+  font-size: 12px;
   color: #334155;
 }
 
-.po-total-box {
+.po-item-quote {
+  font-size: 11.5px;
+  color: #475569;
+  margin-top: 2px;
+}
+
+.cell-qty {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.po-unit {
+  font-size: 12px;
+  font-weight: normal;
+  margin-left: 2px;
+}
+
+.cell-price {
+  text-align: right;
+  font-size: 13.5px;
+}
+
+.cell-amount {
+  text-align: right;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.blank-row td {
+  height: 24px;
+  padding: 0;
+  border-top: none;
+  border-bottom: 1px solid #111827;
+}
+
+/* 合計フッター */
+.po-actual-table tfoot td {
+  padding: 6px 12px;
+}
+
+.total-empty {
+  border: none !important;
+  border-right: 1px solid #111827 !important;
+  background: transparent !important;
+}
+
+.total-label {
+  text-align: center;
+  font-weight: 700;
+  background: #f8fafc;
+  border: 1px solid #111827;
+}
+
+.total-val {
+  text-align: right;
+  font-weight: 700;
+  border: 1px solid #111827;
+}
+
+.grand-total-row td {
+  background: #f1f5f9;
+}
+
+.grand-label {
+  font-weight: 800;
+  font-size: 13.5px;
+}
+
+.grand-val {
+  font-weight: 900;
+  font-size: 15px;
+}
+
+/* 下部情報ブロック：納品先 ＆ 納品希望日 */
+.po-bottom-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  border: 1.5px solid #111827;
+  border-bottom: none;
+}
+
+.po-bottom-col {
+  padding: 10px 14px;
+}
+
+.delivery-col {
+  border-right: 1px solid #111827;
+}
+
+.po-block-title {
+  font-weight: 800;
+  font-size: 12.5px;
+  color: #111827;
+  margin-bottom: 6px;
+}
+
+.po-dest-company {
+  font-size: 13.5px;
+  font-weight: 800;
+  margin-bottom: 3px;
+}
+
+.po-dest-postal,
+.po-dest-address,
+.po-dest-tel {
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: #1f2937;
+}
+
+.po-duedate-box {
+  padding-top: 4px;
+}
+
+.po-duedate-val {
+  font-size: 14px;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.po-duedate-note {
+  font-size: 11.5px;
+  color: #4b5563;
+}
+
+/* 備考欄 */
+.po-notes-section {
+  border: 1.5px solid #111827;
+  padding: 10px 14px;
+}
+
+.po-notes-content {
+  font-size: 11.5px;
+  line-height: 1.7;
+  color: #1f2937;
+}
+
+/* 印鑑欄 */
+.po-stamp-row {
   display: flex;
   justify-content: flex-end;
-  margin-top: 10px;
+  gap: 8px;
+  margin-top: 14px;
 }
 
-.po-total-table {
-  width: 280px;
-  border-collapse: collapse;
-  font-size: 12px;
+.po-stamp-box {
+  border: 1px solid #6b7280;
+  width: 54px;
+  text-align: center;
+  border-radius: 3px;
 }
 
-.po-total-table td {
-  padding: 6px 10px;
-  border-bottom: 1px solid #e2e8f0;
+.po-stamp-label {
+  font-size: 10px;
+  color: #4b5563;
+  border-bottom: 1px solid #6b7280;
+  padding: 2px 0;
+  background: #f9fafb;
 }
 
-.po-total-table tr.grand-total td {
-  font-size: 15px;
-  font-weight: 800;
-  color: #2563eb;
-  border-top: 2px solid #0f172a;
-  border-bottom: 2px solid #0f172a;
-  background: #eff6ff;
+.po-stamp-circle {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 印刷スタイル（A4横向き完全対応・現行発注書フォーマット準拠） */
+@page {
+  size: A4 landscape;
+  margin: 8mm 12mm;
 }
 
 @media print {
-  body * {
-    visibility: hidden;
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
-  #purchaseOrderPrintArea,
-  #purchaseOrderPrintArea * {
-    visibility: visible;
-  }
-  #purchaseOrderPrintArea {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    background: #ffffff !important;
-    color: #000000 !important;
-    box-shadow: none !important;
-  }
-  .no-print {
+
+  /* 親要素・ナビ・ヘッダー・ボタン・非印刷要素の完全非表示 */
+  body > *:not(#appLayout),
+  #sidebar,
+  .sidebar,
+  .topbar,
+  .progress-bar,
+  .no-print,
+  .flexcon-nav-bar,
+  .page-hero,
+  #flexconTabContent,
+  #flexconActionModalContainer,
+  #productDocModal,
+  .login-overlay,
+  .tab-badge,
+  .btn,
+  button {
     display: none !important;
+  }
+
+  html, body {
+    background: #ffffff !important;
+    color: #111827 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+  }
+
+  .app-layout {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    min-height: auto !important;
+    width: 100% !important;
+  }
+
+  .main-content {
+    display: block !important;
+    margin-left: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    min-height: auto !important;
+  }
+
+  .content-area {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  #purchaseOrderModalContainer {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+
+  .modal-overlay#purchaseOrderModal {
+    position: static !important;
+    display: block !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    inset: auto !important;
+  }
+
+  .po-modal-wrapper {
+    display: block !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+  }
+
+  #purchaseOrderPrintArea {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: #ffffff !important;
+    color: #111827 !important;
+    visibility: visible !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* 発注書罫線・枠の確実な印字保証 */
+  .po-actual-table {
+    border: 1.5px solid #111827 !important;
+  }
+  .po-actual-table th,
+  .po-actual-table td {
+    border: 1px solid #111827 !important;
+  }
+  .po-title-frame,
+  .po-bottom-grid,
+  .po-notes-section,
+  .po-stamp-box {
+    border-color: #111827 !important;
   }
 }
 
