@@ -4405,7 +4405,7 @@ const INITIAL_FLEXCON_DATA = {
 };
 
 function loadFlexconData() {
-  const saved = localStorage.getItem('cascadia_flexcon_inventory_v3');
+  const saved = localStorage.getItem('cascadia_flexcon_inventory_v4');
   if (saved) {
     try { 
       const parsed = JSON.parse(saved);
@@ -4418,13 +4418,13 @@ function loadFlexconData() {
       }
     } catch(e){}
   }
-  // v3データが存在しない場合は初期データ（上組 福岡支店の8月末在庫のみ）で初期化
-  localStorage.setItem('cascadia_flexcon_inventory_v3', JSON.stringify(INITIAL_FLEXCON_DATA));
+  // v4データが存在しない場合は初期データ（上組 福岡支店の8月末在庫のみ）で初期化
+  localStorage.setItem('cascadia_flexcon_inventory_v4', JSON.stringify(INITIAL_FLEXCON_DATA));
   return JSON.parse(JSON.stringify(INITIAL_FLEXCON_DATA));
 }
 
 function saveFlexconData(data) {
-  localStorage.setItem('cascadia_flexcon_inventory_v3', JSON.stringify(data));
+  localStorage.setItem('cascadia_flexcon_inventory_v4', JSON.stringify(data));
 }
 
 // 状態管理
@@ -5223,7 +5223,7 @@ function generatePurchaseOrderHtml(tx, forStandalone = false) {
   <style>
     @page {
       size: A4 landscape;
-      margin: 10mm 15mm;
+      margin: 12mm 12mm 8mm 12mm;
     }
     * {
       box-sizing: border-box;
@@ -5232,88 +5232,116 @@ function generatePurchaseOrderHtml(tx, forStandalone = false) {
     }
     body {
       margin: 0;
-      padding: 20px;
+      padding: 16px;
       background: #f8fafc;
       font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
       color: #111827;
-      line-height: 1.45;
+      line-height: 1.4;
     }
     .po-standalone-bar {
-      max-width: 1040px;
-      margin: 0 auto 16px;
+      max-width: 1000px;
+      margin: 0 auto 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       background: #ffffff;
-      padding: 12px 20px;
+      padding: 10px 18px;
       border-radius: 8px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
     .po-sheet-landscape {
-      max-width: 1040px;
+      max-width: 1000px;
       margin: 0 auto;
       background: #ffffff;
-      padding: 30px 40px;
+      padding: 20px 28px;
       border-radius: 4px;
       box-shadow: 0 4px 6px -1px rgba(0,0,0,0.08);
+      page-break-inside: avoid;
+      break-inside: avoid;
     }
-    .po-top-bar { display: flex; justify-content: space-between; align-items: center; position: relative; margin-bottom: 24px; }
-    .po-title-frame { position: absolute; left: 50%; transform: translateX(-50%); border: 1.5px solid #111827; border-radius: 4px; padding: 4px 36px; background: #ffffff; }
-    .po-main-title { font-size: 22px; font-weight: 800; letter-spacing: 6px; margin: 0; text-align: center; }
-    .po-date-line { margin-left: auto; font-size: 13px; font-weight: 600; border-bottom: 1px solid #111827; padding-bottom: 2px; min-width: 170px; text-align: right; }
-    .po-header-section { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; gap: 20px; }
-    .po-vendor-name { font-size: 17px; font-weight: 800; margin-bottom: 4px; }
-    .po-vendor-attn { font-size: 16px; font-weight: 800; border-bottom: 1.5px solid #111827; display: inline-block; padding-bottom: 3px; min-width: 220px; margin-bottom: 10px; }
-    .po-greeting { font-size: 12px; color: #374151; line-height: 1.6; }
-    .po-issuer-block { text-align: right; font-size: 12px; line-height: 1.5; }
-    .po-issuer-logo-group { display: flex; align-items: center; justify-content: flex-end; gap: 6px; margin-bottom: 3px; }
-    .po-issuer-company { font-size: 15px; font-weight: 900; letter-spacing: 0.5px; }
-    .po-issuer-office { font-weight: 700; font-size: 12px; }
-    .po-issuer-address { font-size: 11.5px; }
-    .po-issuer-tel { font-size: 11.5px; font-weight: 600; }
-    .po-issuer-staff { font-size: 12.5px; font-weight: 700; margin-top: 2px; }
-    .po-actual-table { width: 100%; border-collapse: collapse; border: 1.5px solid #111827; margin-bottom: 18px; font-size: 12.5px; }
-    .po-actual-table th { border: 1px solid #111827; padding: 8px 10px; background: #f8fafc; font-weight: 800; text-align: center; }
-    .po-actual-table td { border: 1px solid #111827; padding: 8px 12px; vertical-align: middle; }
+    .po-top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      position: relative;
+      min-height: 44px;
+      margin-bottom: 14px;
+    }
+    .po-title-frame {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      border: 1.5px solid #111827;
+      border-radius: 4px;
+      padding: 4px 32px;
+      background: #ffffff;
+      box-sizing: border-box;
+    }
+    .po-main-title {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 5px;
+      margin: 0;
+      color: #111827;
+      text-align: center;
+      line-height: 1.2;
+    }
+    .po-date-line { margin-left: auto; font-size: 12.5px; font-weight: 600; border-bottom: 1px solid #111827; padding-bottom: 2px; min-width: 170px; text-align: right; }
+    .po-header-section { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 20px; }
+    .po-vendor-name { font-size: 16px; font-weight: 800; margin-bottom: 3px; }
+    .po-vendor-attn { font-size: 15px; font-weight: 800; border-bottom: 1.5px solid #111827; display: inline-block; padding-bottom: 2px; min-width: 220px; margin-bottom: 6px; }
+    .po-greeting { font-size: 11.5px; color: #374151; line-height: 1.5; }
+    .po-issuer-block { text-align: right; font-size: 11.5px; line-height: 1.45; }
+    .po-issuer-logo-group { display: flex; align-items: center; justify-content: flex-end; gap: 6px; margin-bottom: 2px; }
+    .po-issuer-company { font-size: 14.5px; font-weight: 900; letter-spacing: 0.5px; color: #0f172a; }
+    .po-issuer-office { font-weight: 700; font-size: 11.5px; }
+    .po-issuer-address { font-size: 11px; }
+    .po-issuer-tel { font-size: 11px; font-weight: 600; }
+    .po-issuer-staff { font-size: 12px; font-weight: 700; margin-top: 2px; }
+    .po-actual-table { width: 100%; border-collapse: collapse; border: 1.5px solid #111827; margin-bottom: 10px; font-size: 12px; }
+    .po-actual-table th { border: 1px solid #111827; padding: 5px 8px; background: #f8fafc; font-weight: 800; text-align: center; }
+    .po-actual-table td { border: 1px solid #111827; padding: 6px 10px; vertical-align: middle; }
     .po-actual-table .col-item-name { width: 52%; }
     .po-actual-table .col-qty { width: 14%; }
     .po-actual-table .col-price { width: 17%; }
     .po-actual-table .col-amount { width: 17%; }
-    .po-item-title { font-weight: 800; font-size: 13.5px; }
-    .po-item-spec { font-size: 12px; color: #334155; }
-    .po-item-quote { font-size: 11.5px; color: #475569; margin-top: 2px; }
-    .cell-qty { text-align: center; font-size: 14px; font-weight: 800; }
-    .po-unit { font-size: 12px; font-weight: normal; margin-left: 2px; }
-    .cell-price { text-align: right; font-size: 13.5px; }
-    .cell-amount { text-align: right; font-size: 14px; font-weight: 800; }
-    .blank-row td { height: 24px; padding: 0; border-top: none; border-bottom: 1px solid #111827; }
-    .po-actual-table tfoot td { padding: 6px 12px; }
+    .cell-item-detail { line-height: 1.4; }
+    .po-item-title { font-weight: 800; font-size: 13px; color: #0f172a; }
+    .po-item-spec { font-size: 11.5px; color: #334155; }
+    .po-item-quote { font-size: 11px; color: #475569; margin-top: 2px; }
+    .cell-qty { text-align: center; font-size: 13.5px; font-weight: 800; }
+    .po-unit { font-size: 11.5px; font-weight: normal; margin-left: 2px; }
+    .cell-price { text-align: right; font-size: 13px; }
+    .cell-amount { text-align: right; font-size: 13.5px; font-weight: 800; }
+    .blank-row td { height: 16px; padding: 0; border-top: none; border-bottom: 1px solid #111827; }
+    .po-actual-table tfoot td { padding: 4px 10px; }
     .total-empty { border: none !important; border-right: 1px solid #111827 !important; background: transparent !important; }
     .total-label { text-align: center; font-weight: 700; background: #f8fafc; border: 1px solid #111827; }
     .total-val { text-align: right; font-weight: 700; border: 1px solid #111827; }
     .grand-total-row td { background: #f1f5f9; }
-    .grand-label { font-weight: 800; font-size: 13.5px; }
-    .grand-val { font-weight: 900; font-size: 15px; }
+    .grand-label { font-weight: 800; font-size: 13px; }
+    .grand-val { font-weight: 900; font-size: 14.5px; }
     .po-bottom-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; border: 1.5px solid #111827; border-bottom: none; }
-    .po-bottom-col { padding: 10px 14px; }
+    .po-bottom-col { padding: 6px 10px; }
     .delivery-col { border-right: 1px solid #111827; }
-    .po-block-title { font-weight: 800; font-size: 12.5px; margin-bottom: 6px; }
-    .po-dest-company { font-size: 13.5px; font-weight: 800; margin-bottom: 3px; }
-    .po-dest-postal, .po-dest-address, .po-dest-tel { font-size: 11.5px; line-height: 1.5; color: #1f2937; }
-    .po-duedate-box { padding-top: 4px; }
-    .po-duedate-val { font-size: 14px; font-weight: 800; margin-bottom: 4px; }
-    .po-duedate-note { font-size: 11.5px; color: #4b5563; }
-    .po-notes-section { border: 1.5px solid #111827; padding: 10px 14px; }
-    .po-notes-content { font-size: 11.5px; line-height: 1.7; }
-    .po-stamp-row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
-    .po-stamp-box { border: 1px solid #6b7280; width: 54px; text-align: center; border-radius: 3px; }
-    .po-stamp-label { font-size: 10px; color: #4b5563; border-bottom: 1px solid #6b7280; padding: 2px 0; background: #f9fafb; }
-    .po-stamp-circle { height: 40px; display: flex; align-items: center; justify-content: center; }
+    .po-block-title { font-weight: 800; font-size: 11.5px; margin-bottom: 4px; }
+    .po-dest-company { font-size: 12.5px; font-weight: 800; margin-bottom: 2px; }
+    .po-dest-postal, .po-dest-address, .po-dest-tel { font-size: 11px; line-height: 1.4; color: #1f2937; }
+    .po-duedate-box { padding-top: 2px; }
+    .po-duedate-val { font-size: 13.5px; font-weight: 800; margin-bottom: 3px; }
+    .po-duedate-note { font-size: 11px; color: #4b5563; }
+    .po-notes-section { border: 1.5px solid #111827; padding: 6px 10px; }
+    .po-notes-content { font-size: 11px; line-height: 1.5; color: #1f2937; }
+    .po-stamp-row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+    .po-stamp-box { border: 1px solid #6b7280; width: 48px; text-align: center; border-radius: 3px; }
+    .po-stamp-label { font-size: 9.5px; color: #4b5563; border-bottom: 1px solid #6b7280; padding: 1px 0; background: #f9fafb; }
+    .po-stamp-circle { height: 34px; display: flex; align-items: center; justify-content: center; }
 
     @media print {
-      body { background: #ffffff !important; padding: 0 !important; }
+      body { background: #ffffff !important; padding: 0 !important; margin: 0 !important; }
       .po-standalone-bar { display: none !important; }
-      .po-sheet-landscape { box-shadow: none !important; border: none !important; padding: 0 !important; max-width: 100% !important; }
+      .po-sheet-landscape { box-shadow: none !important; border: none !important; padding: 4mm 0 0 0 !important; margin: 0 auto !important; max-width: 100% !important; width: 100% !important; }
     }
   </style>
 </head>
@@ -5336,24 +5364,40 @@ function generatePurchaseOrderHtml(tx, forStandalone = false) {
 </html>`;
 }
 
-// 印刷実行関数（モーダル画面からのダイレクト印刷 ＆ 単独ドキュメント印刷）
+// 印刷実行関数（非表示iframeを用いて親画面UIやモーダル背景の干渉を完全排除）
 function printPurchaseOrder(tx) {
-  // モーダルが未表示の場合はまず開く
-  if (!document.getElementById('purchaseOrderModal')) {
-    openPurchaseOrderModal(tx);
+  const printHtml = generatePurchaseOrderHtml(tx, true);
+
+  // 非表示の印刷用 iframe を作成または取得
+  let printFrame = document.getElementById('poHiddenPrintIframe');
+  if (!printFrame) {
+    printFrame = document.createElement('iframe');
+    printFrame.id = 'poHiddenPrintIframe';
+    printFrame.style.position = 'fixed';
+    printFrame.style.right = '0';
+    printFrame.style.bottom = '0';
+    printFrame.style.width = '0';
+    printFrame.style.height = '0';
+    printFrame.style.border = '0';
+    printFrame.style.visibility = 'hidden';
+    document.body.appendChild(printFrame);
   }
 
-  // ブラウザのネイティブ印刷ダイアログを起動
-  // @media print により、ヘッダー・サイドバー・UIは全自動で非表示になり、
-  // A4横サイズの発注書のみが完璧にプレビュー・印刷されます。
+  const frameDoc = printFrame.contentWindow.document;
+  frameDoc.open();
+  frameDoc.write(printHtml);
+  frameDoc.close();
+
+  // iframe の読み込み完了後に印刷ダイアログを起動
   setTimeout(() => {
     try {
-      window.print();
+      printFrame.contentWindow.focus();
+      printFrame.contentWindow.print();
     } catch (e) {
-      console.error("Direct window.print() failed, falling back to new tab:", e);
-      openPurchaseOrderInNewTab(tx, true);
+      console.warn("Direct iframe print failed, falling back to window.print():", e);
+      window.print();
     }
-  }, 100);
+  }, 250);
 }
 
 // 別タブで発注書を開く関数
@@ -5868,6 +5912,7 @@ function renderFlexconLedger(container, data) {
   // リセットボタン
   document.getElementById('btnResetFlexconData').addEventListener('click', () => {
     if (confirm("8月末の初期データ（上組 福岡支店: 1,933枚 / 138,210円）にリセットしますか？\n追加・変更されたトランザクションは消去されます。")) {
+      localStorage.removeItem('cascadia_flexcon_inventory_v4');
       localStorage.removeItem('cascadia_flexcon_inventory_v3');
       localStorage.removeItem('cascadia_flexcon_inventory_v2');
       showToast("🔄 8月末仮運用データにリセットしました");
