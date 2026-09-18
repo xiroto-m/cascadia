@@ -3877,6 +3877,84 @@ tbody tr:last-child td {
   cursor: pointer;
 }
 
+/* F/T終了日 & 搬出予定日 グリッド */
+.ft-pickup-date-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+@media(max-width: 768px) {
+  .ft-pickup-date-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ft-pickup-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-medium);
+  border-radius: 12px;
+  padding: 14px 16px;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.ft-pickup-card:focus-within {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+.ft-pickup-card.ft-end {
+  border-left: 4px solid #16a34a;
+}
+
+.ft-pickup-card.pickup-date {
+  border-left: 4px solid #2563eb;
+}
+
+.ft-pickup-label {
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.ft-pickup-label .badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.ft-pickup-input {
+  width: 100%;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-medium);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.ft-pickup-input:focus {
+  border-color: var(--accent-blue);
+  outline: none;
+}
+
+.ft-pickup-help {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  margin-top: 6px;
+  line-height: 1.45;
+  display: block;
+}
+
 .result-box {
   background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(124, 58, 237, 0.04));
   border: 1px solid rgba(37, 99, 235, 0.15);

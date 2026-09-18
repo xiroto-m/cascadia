@@ -2537,6 +2537,31 @@ function renderDateCalculator() {
         </div>
       </div>
 
+      <!-- F/T終了日 & 搬出予定日のダイレクト入力カード（指示書要望に完全対応） -->
+      <div class="ft-pickup-date-grid">
+        <div class="ft-pickup-card ft-end">
+          <div class="ft-pickup-label">
+            <span style="color: #16a34a;">🏁 フリータイム終了日（F/T End）</span>
+            <span class="badge" style="background: rgba(22, 163, 74, 0.12); color: #16a34a;">基準日</span>
+          </div>
+          <input type="date" id="simFtEndDate" class="ft-pickup-input">
+          <span class="ft-pickup-help">
+            ※アライバルノーティス等に記載の無料保管終了日（上部の営業日計算から自動連動・直接変更も可）
+          </span>
+        </div>
+
+        <div class="ft-pickup-card pickup-date">
+          <div class="ft-pickup-label">
+            <span style="color: #2563eb;">🚛 搬出日 / 返却予定日（Pickup / Return）</span>
+            <span class="badge" style="background: rgba(37, 99, 235, 0.12); color: #2563eb;">予定日</span>
+          </div>
+          <input type="date" id="simPickupDate" class="ft-pickup-input">
+          <span class="ft-pickup-help">
+            ※フリータイム終了後に搬出・返却する場合、超過日数および超過料金が即時試算されます。
+          </span>
+        </div>
+      </div>
+
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;" class="fee-calc-grid">
         <div>
           <h4 style="font-size: 13px; margin: 0 0 10px; color: var(--text-secondary);">⚙️ 段階別料金設定（日額単価）</h4>
@@ -2574,6 +2599,7 @@ function renderDateCalculator() {
               <button type="button" class="btn-quick-overdue" data-days="7" style="padding: 2px 8px; font-size: 11px; border: 1px solid var(--border-medium); border-radius: 4px; background: var(--bg-card); cursor: pointer; color: var(--text-secondary);">7日</button>
               <button type="button" class="btn-quick-overdue" data-days="10" style="padding: 2px 8px; font-size: 11px; border: 1px solid var(--border-medium); border-radius: 4px; background: var(--bg-card); cursor: pointer; color: var(--text-secondary);">10日</button>
               <button type="button" class="btn-quick-overdue" data-days="14" style="padding: 2px 8px; font-size: 11px; border: 1px solid var(--border-medium); border-radius: 4px; background: var(--bg-card); cursor: pointer; color: var(--text-secondary);">14日</button>
+              <button type="button" class="btn-quick-overdue" data-days="30" style="padding: 2px 8px; font-size: 11px; border: 1px solid var(--border-medium); border-radius: 4px; background: var(--bg-card); cursor: pointer; color: var(--text-secondary);">30日</button>
               <button type="button" class="btn-quick-overdue" data-days="0" style="padding: 2px 8px; font-size: 11px; border: 1px solid var(--border-medium); border-radius: 4px; background: var(--bg-card); cursor: pointer; color: var(--text-muted);">0日</button>
             </div>
 
@@ -2703,19 +2729,20 @@ function renderDateCalculator() {
   });
 
   const overdueDaysInput = document.getElementById('feeOverdueDaysInput');
+  const simFtEndDateInput = document.getElementById('simFtEndDate');
+  const simPickupDateInput = document.getElementById('simPickupDate');
   let isUpdatingOverdue = false;
   let lastCalcResultStr = '';
 
-  function updateCalculation() {
+  function updateCalculation(triggerSource = '') {
     const startVal = startDateInput.value;
     const daysVal = parseInt(daysInput.value) || 0;
     const calcMode = modeSelect.value;
     const includeStart = includeStartCheck.checked;
-    let pickupVal = pickupDateInput.value;
 
     if (!startVal || daysVal <= 0) return;
 
-    // 計算を実行
+    // 1. 上部の営業日・フリータイム計算
     const calcResult = calculateBusinessDays(startVal, daysVal, calcMode, includeStart);
     lastCalcResultStr = calcResult.resultDateStr;
     
@@ -2739,7 +2766,7 @@ function renderDateCalculator() {
     const list = document.getElementById('skippedList');
     list.innerHTML = '';
     if (calcResult.skipped.length === 0) {
-      list.innerHTML = '<li>スキップされた曜日はありません。</li>';
+      list.innerHTML = '<li>除外日はありません。</li>';
     } else {
       calcResult.skipped.forEach(skip => {
         const li = document.createElement('li');
@@ -2748,24 +2775,43 @@ function renderDateCalculator() {
       });
     }
 
+    // 上部の計算条件が操作された場合、または初期表示時、シミュレーター側のF/T終了日に自動反映
+    if (triggerSource === 'top' || !simFtEndDateInput.value) {
+      simFtEndDateInput.value = calcResult.resultDateStr;
+    }
+
+    // 基準となるフリータイム終了日（シミュレーター側の入力を優先、なければ上部計算結果）
+    const effectiveFtEndStr = simFtEndDateInput.value || calcResult.resultDateStr;
+    const pickupVal = simPickupDateInput.value || pickupDateInput.value;
+
     // 超過日数と料金計算（双方向同期対応）
     let overdueDays = 0;
+    let isWithinFt = false;
+
     if (!isUpdatingOverdue) {
-      if (pickupVal) {
+      if (effectiveFtEndStr && pickupVal) {
+        const ftDate = new Date(effectiveFtEndStr);
         const pDate = new Date(pickupVal);
-        const tDate = new Date(calcResult.resultDateStr);
-        const diffMs = pDate.getTime() - tDate.getTime();
-        overdueDays = diffMs > 0 ? Math.floor(diffMs / (1000 * 60 * 60 * 24)) : 0;
+        const diffMs = pDate.getTime() - ftDate.getTime();
+        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+        if (diffDays > 0) {
+          overdueDays = diffDays;
+          isWithinFt = false;
+        } else {
+          overdueDays = 0;
+          isWithinFt = true;
+        }
         overdueDaysInput.value = overdueDays;
       } else {
-        // 搬出日未入力の場合、超過日数入力欄の数値を尊重
+        // 日付未指定の場合、超過日数入力欄の数値を尊重
         overdueDays = Math.max(0, parseInt(overdueDaysInput.value) || 0);
-        if (overdueDays > 0) {
-          const [y, m, d] = calcResult.resultDateStr.split('-').map(Number);
+        if (overdueDays > 0 && effectiveFtEndStr) {
+          const [y, m, d] = effectiveFtEndStr.split('-').map(Number);
           const tDate = new Date(y, m - 1, d);
           tDate.setDate(tDate.getDate() + overdueDays);
-          pickupVal = `${tDate.getFullYear()}-${String(tDate.getMonth() + 1).padStart(2, '0')}-${String(tDate.getDate()).padStart(2, '0')}`;
-          pickupDateInput.value = pickupVal;
+          const newP = `${tDate.getFullYear()}-${String(tDate.getMonth() + 1).padStart(2, '0')}-${String(tDate.getDate()).padStart(2, '0')}`;
+          simPickupDateInput.value = newP;
+          pickupDateInput.value = newP;
         }
       }
     } else {
@@ -2814,8 +2860,10 @@ function renderDateCalculator() {
           breakdownContainer.appendChild(row);
         }
       });
+    } else if (isWithinFt) {
+      breakdownContainer.innerHTML = '<span style="font-size: 12px; color: #16a34a; font-weight: 600;">✅ 搬出予定日はフリータイム内（無料保管期間内）です。超過料金は発生しません。</span>';
     } else {
-      breakdownContainer.innerHTML = '<span style="font-size: 12px; color: var(--text-muted);">超過日数を入力するか、上の搬出日を指定すると内訳・合計が自動計算されます。</span>';
+      breakdownContainer.innerHTML = '<span style="font-size: 12px; color: var(--text-muted);">上の日付（F/T終了日・搬出予定日）を入力するか、直接「超過日数」を入力すると内訳・合計が自動計算されます。</span>';
     }
 
     document.getElementById('feeTotalAmountText').textContent = `¥${totalFee.toLocaleString()}`;
@@ -2830,22 +2878,34 @@ function renderDateCalculator() {
       ...getJapanHolidays(startYear),
       ...getJapanHolidays(startYear + 1)
     };
-    drawCalendarVisualizer(calContainer, startVal, calcResult.resultDateStr, calcMode, includeStart, holidays, pickupVal);
+    drawCalendarVisualizer(
+      calContainer, 
+      startVal, 
+      effectiveFtEndStr || calcResult.resultDateStr, 
+      calcMode, 
+      includeStart, 
+      holidays, 
+      pickupVal
+    );
   }
 
   // 超過日数直接入力・クイック試算のイベントリスナー
   overdueDaysInput.addEventListener('input', (e) => {
     isUpdatingOverdue = true;
     const days = Math.max(0, parseInt(e.target.value) || 0);
-    if (days > 0 && lastCalcResultStr) {
-      const [y, m, d] = lastCalcResultStr.split('-').map(Number);
+    const baseFtStr = simFtEndDateInput.value || lastCalcResultStr;
+    if (days > 0 && baseFtStr) {
+      const [y, m, d] = baseFtStr.split('-').map(Number);
       const tDate = new Date(y, m - 1, d);
       tDate.setDate(tDate.getDate() + days);
-      pickupDateInput.value = `${tDate.getFullYear()}-${String(tDate.getMonth() + 1).padStart(2, '0')}-${String(tDate.getDate()).padStart(2, '0')}`;
-    } else {
+      const newP = `${tDate.getFullYear()}-${String(tDate.getMonth() + 1).padStart(2, '0')}-${String(tDate.getDate()).padStart(2, '0')}`;
+      simPickupDateInput.value = newP;
+      pickupDateInput.value = newP;
+    } else if (days === 0) {
+      simPickupDateInput.value = '';
       pickupDateInput.value = '';
     }
-    updateCalculation();
+    updateCalculation('overdueInput');
     isUpdatingOverdue = false;
   });
 
@@ -2860,14 +2920,31 @@ function renderDateCalculator() {
   // 初期化とイベントバインド
   renderTierRows();
 
-  startDateInput.addEventListener('input', updateCalculation);
-  daysInput.addEventListener('input', updateCalculation);
-  modeSelect.addEventListener('change', updateCalculation);
-  includeStartCheck.addEventListener('change', updateCalculation);
-  pickupDateInput.addEventListener('input', updateCalculation);
+  // 上部の計算条件
+  ['input', 'change'].forEach(evt => {
+    startDateInput.addEventListener(evt, () => updateCalculation('top'));
+    daysInput.addEventListener(evt, () => updateCalculation('top'));
+    modeSelect.addEventListener(evt, () => updateCalculation('top'));
+    includeStartCheck.addEventListener(evt, () => updateCalculation('top'));
+  });
+
+  // シミュレーター側の直接日付入力イベント
+  simFtEndDateInput.addEventListener('input', () => {
+    updateCalculation('simFt');
+  });
+
+  simPickupDateInput.addEventListener('input', () => {
+    pickupDateInput.value = simPickupDateInput.value;
+    updateCalculation('simPickup');
+  });
+
+  pickupDateInput.addEventListener('input', () => {
+    simPickupDateInput.value = pickupDateInput.value;
+    updateCalculation('topPickup');
+  });
 
   // 初期計算
-  updateCalculation();
+  updateCalculation('top');
 }
 
 function drawCalendarVisualizer(container, startDateStr, targetDateStr, calcMode, includeStart, holidays, pickupDateStr = null) {
