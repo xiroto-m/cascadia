@@ -2447,6 +2447,13 @@ const CHARGE_PRESETS = {
     tiers: [
       { startDay: 1, endDay: 999, rate: 7500 }
     ]
+  },
+  flat_1000: {
+    name: "1日目～以降: ¥1,000/日",
+    type: "flat",
+    tiers: [
+      { startDay: 1, endDay: 999, rate: 1000 }
+    ]
   }
 };
 
@@ -2530,6 +2537,7 @@ function renderDateCalculator() {
           <select id="presetSelect" style="padding: 6px 12px; font-size: 12px; border-radius: 6px; border: 1px solid var(--border-medium); background: var(--bg-primary); color: var(--text-primary);">
             <option value="demurrage_standard" selected>デマレージ汎用標準 (1-7日: ¥1,000 / 8-14日: ¥3,000 / 15日~: ¥6,000)</option>
             <option value="detention_standard">ディテンション汎用標準 (1-4日: ¥4,400 / 5-9日: ¥6,600 / 10日~: ¥10,900)</option>
+            <option value="flat_1000">1日目～以降: ¥1,000/日</option>
             <option value="whl_demurrage">WHL (Wan Hai Lines) デマレージ参考</option>
             <option value="yangming_detention">YANG MING ディテンション参考 (40HQ: ¥7,500/日)</option>
             <option value="custom">カスタム設定</option>
