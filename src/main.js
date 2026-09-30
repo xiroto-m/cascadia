@@ -4742,23 +4742,30 @@ function renderFlexconDashboard(container, data) {
   let grandTotalQty = 0;
   let grandTotalValue = 0;
   let grandTotalOrdered = 0;
-  const alertItems = [];
+  const shortageItems = []; // 未発注（発注残なし・至急手配が必要）
+  const incomingItems = []; // 入荷待ち（発注残あり・手配済）
 
   FLEXCON_LOCATIONS.forEach(loc => {
     FLEXCON_ITEMS.forEach(item => {
       const cell = matrix[loc][item.id];
       grandTotalQty += cell.qty;
       grandTotalValue += cell.totalValue;
-      grandTotalOrdered += (cell.orderedQty || 0);
+      const ordQty = cell.orderedQty || 0;
+      grandTotalOrdered += ordQty;
 
       if (cell.qty < item.safetyStock) {
-        alertItems.push({
+        const alertObj = {
           location: loc,
           item: item,
           currentQty: cell.qty,
-          orderedQty: cell.orderedQty || 0,
+          orderedQty: ordQty,
           safetyStock: item.safetyStock
-        });
+        };
+        if (ordQty > 0) {
+          incomingItems.push(alertObj);
+        } else {
+          shortageItems.push(alertObj);
+        }
       }
     });
   });
@@ -4811,10 +4818,15 @@ function renderFlexconDashboard(container, data) {
         <div style="font-size: 26px; font-weight: 800; color: ${overdueOrders.length > 0 ? '#ef4444' : 'var(--accent-green)'}; margin-top: 4px;">${overdueOrders.length} <span style="font-size: 14px; font-weight: 600;">件</span></div>
         <div style="font-size: 11px; color: ${overdueOrders.length > 0 ? '#ef4444' : 'var(--text-muted)'}; margin-top: 4px;">${overdueOrders.length > 0 ? '未納品・要納期確認！' : '遅延なし'}</div>
       </div>
-      <div class="tool-card" style="padding: 16px; ${alertItems.length > 0 ? 'border: 1px solid rgba(245,158,11,0.3); background: rgba(245,158,11,0.03);' : ''}">
-        <div style="font-size: 12px; color: var(--text-secondary); font-weight: 600;">安全在庫アラート発生数</div>
-        <div style="font-size: 26px; font-weight: 800; color: ${alertItems.length > 0 ? '#f59e0b' : 'var(--accent-green)'}; margin-top: 4px;">${alertItems.length} <span style="font-size: 14px; font-weight: 600;">件</span></div>
-        <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">基準を下回る拠点・品目</div>
+      <div class="tool-card" style="padding: 16px; ${shortageItems.length > 0 ? 'border: 1px solid rgba(239,68,68,0.3); background: rgba(239,68,68,0.03);' : ''}">
+        <div style="font-size: 12px; color: var(--text-secondary); font-weight: 600;">安全在庫アラート（要発注）</div>
+        <div style="font-size: 26px; font-weight: 800; color: ${shortageItems.length > 0 ? '#ef4444' : 'var(--accent-green)'}; margin-top: 4px;">${shortageItems.length} <span style="font-size: 14px; font-weight: 600;">件</span></div>
+        <div style="font-size: 11px; color: ${shortageItems.length > 0 ? '#ef4444' : 'var(--text-muted)'}; margin-top: 4px;">${shortageItems.length > 0 ? '未発注・至急手配が必要' : '安全在庫維持OK'}</div>
+        ${incomingItems.length > 0 ? `
+          <div style="font-size: 11px; color: var(--accent-blue); margin-top: 5px; border-top: 1px dashed var(--border-subtle); padding-top: 4px; font-weight: 600;">
+            🚚 入荷待ち(手配済): <strong>${incomingItems.length}</strong> 件
+          </div>
+        ` : ''}
       </div>
     </div>
 
@@ -4863,16 +4875,46 @@ function renderFlexconDashboard(container, data) {
       </div>
     ` : ''}
 
-    <!-- 安全在庫アラート通知 -->
-    ${alertItems.length > 0 ? `
-      <div class="alert alert-warning" style="margin-bottom: 20px; font-size: 12.5px; border-left: 4px solid #f59e0b;">
-        <strong>⚠️ 安全在庫アラート通知 (${alertItems.length}件):</strong><br>
-        <ul style="margin: 6px 0 0; padding-left: 20px;">
-          ${alertItems.map(a => `
-            <li>
-              <strong>${a.location}</strong> - <span style="color:var(--accent-blue); font-weight:700;">【${a.item.commonName}】</span> ${a.item.name}: 
-              現在庫 <strong>${a.currentQty} 枚</strong> (安全基準: ${a.safetyStock}枚)
-              ${a.orderedQty > 0 ? ` ── <span style="color:var(--accent-green);">※発注残(入荷待ち) ${a.orderedQty}枚 あり</span>` : ' ── <strong style="color:#ef4444;">資材発注をご検討ください</strong>'}
+    <!-- 🚨 安全在庫アラート通知（未発注・至急手配が必要） -->
+    ${shortageItems.length > 0 ? `
+      <div class="alert" style="background: rgba(239, 68, 68, 0.06); border: 1px solid rgba(239, 68, 68, 0.25); border-left: 5px solid #ef4444; border-radius: 10px; padding: 14px 18px; margin-bottom: 16px; font-size: 12.5px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+          <div style="color: #ef4444; font-size: 13.5px; font-weight: 700; display: flex; align-items: center; gap: 6px;">
+            <span style="font-size: 16px;">🚨</span> 安全在庫アラート通知（未発注・要手配） (${shortageItems.length}件):
+          </div>
+          <span style="font-size: 11.5px; color: var(--text-muted);">
+            現在庫が安全基準を下回っており、発注残（入荷待ち）がありません。至急発注をご検討ください。
+          </span>
+        </div>
+        <ul style="margin: 8px 0 0; padding-left: 20px;">
+          ${shortageItems.map(a => `
+            <li style="margin-bottom: 4px; line-height: 1.5;">
+              <strong>${a.location}</strong> ── <span style="color:var(--accent-blue); font-weight:700;">【${a.item.commonName}】</span> ${a.item.name}: 
+              現在庫 <strong>${a.currentQty.toLocaleString()} 枚</strong> (安全基準: ${a.safetyStock.toLocaleString()}枚)
+              ── <strong style="color:#ef4444;">資材発注をご検討ください</strong>
+            </li>
+          `).join('')}
+        </ul>
+      </div>
+    ` : ''}
+
+    <!-- 🚚 入荷待ちアラート通知（発注済・手配中） -->
+    ${incomingItems.length > 0 ? `
+      <div class="alert" style="background: rgba(37, 99, 235, 0.05); border: 1px solid rgba(37, 99, 235, 0.25); border-left: 5px solid var(--accent-blue); border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; font-size: 12.5px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+          <div style="color: var(--accent-blue); font-size: 13.5px; font-weight: 700; display: flex; align-items: center; gap: 6px;">
+            <span style="font-size: 16px;">🚚</span> 入荷待ち通知（発注済・手配中） (${incomingItems.length}件):
+          </div>
+          <span style="font-size: 11.5px; color: var(--text-muted);">
+            実在庫は安全基準未満ですが、すでに発注済み（入荷待ち）の資材です。到着・納品をお待ちください。
+          </span>
+        </div>
+        <ul style="margin: 8px 0 0; padding-left: 20px;">
+          ${incomingItems.map(a => `
+            <li style="margin-bottom: 4px; line-height: 1.5;">
+              <strong>${a.location}</strong> ── <span style="color:var(--accent-blue); font-weight:700;">【${a.item.commonName}】</span> ${a.item.name}: 
+              現在庫 <strong>${a.currentQty.toLocaleString()} 枚</strong> (安全基準: ${a.safetyStock.toLocaleString()}枚)
+              ── <span style="color: #059669; font-weight: 700;">※発注残(入荷待ち) ${a.orderedQty.toLocaleString()}枚 あり（手配済）</span>
             </li>
           `).join('')}
         </ul>
