@@ -4364,42 +4364,118 @@ const FLEXCON_LOCATION_DETAILS = {
     recipient: "祐谷様",
     postalCode: "〒810-8512",
     address: "福岡県福岡市中央区那の津3丁目2番10号",
-    tel: "092-752-5586"
+    tel: "092-752-5586",
+    presets: [
+      {
+        name: "那の津 本社・倉庫（標準）",
+        company: "株式会社 上組 福岡支店",
+        recipient: "祐谷様",
+        postalCode: "〒810-8512",
+        address: "福岡県福岡市中央区那の津3丁目2番10号",
+        tel: "092-752-5586"
+      },
+      {
+        name: "箱崎ふ頭物流センター",
+        company: "株式会社 上組 福岡支店 箱崎物流センター",
+        recipient: "ご担当者様",
+        postalCode: "〒812-0051",
+        address: "福岡県福岡市東区箱崎ふ頭",
+        tel: "092-641-1111"
+      },
+      {
+        name: "須崎埠頭営業所",
+        company: "株式会社 上組 福岡支店 須崎営業所",
+        recipient: "ご担当者様",
+        postalCode: "〒812-0031",
+        address: "福岡県福岡市博多区沖浜町",
+        tel: "092-281-2222"
+      }
+    ]
   },
   "八代サイロ（上組福岡支店八代出張所）": {
     company: "上組 福岡支店 八代出張所（八代サイロ）",
     recipient: "業務担当様",
     postalCode: "〒866-0034",
     address: "熊本県八代市新港町1-1",
-    tel: "0965-37-1234"
+    tel: "0965-37-1234",
+    presets: [
+      {
+        name: "八代出張所（八代サイロ）",
+        company: "上組 福岡支店 八代出張所（八代サイロ）",
+        recipient: "業務担当様",
+        postalCode: "〒866-0034",
+        address: "熊本県八代市新港町1-1",
+        tel: "0965-37-1234"
+      }
+    ]
   },
   "熊本南関工場": {
     company: "カスケディア 熊本南関工場",
     recipient: "工場長様",
     postalCode: "〒861-0814",
     address: "熊本県玉名郡南関町大字小原",
-    tel: "0968-53-8800"
+    tel: "0968-53-8800",
+    presets: [
+      {
+        name: "熊本南関工場",
+        company: "カスケディア 熊本南関工場",
+        recipient: "工場長様",
+        postalCode: "〒861-0814",
+        address: "熊本県玉名郡南関町大字小原",
+        tel: "0968-53-8800"
+      }
+    ]
   },
   "志布志倉庫": {
     company: "カスケディア 志布志保管倉庫",
     recipient: "業務担当様",
     postalCode: "〒899-7103",
     address: "鹿児島県志布志市志布志町志布志",
-    tel: "099-472-1111"
+    tel: "099-472-1111",
+    presets: [
+      {
+        name: "志布志保管倉庫",
+        company: "カスケディア 志布志保管倉庫",
+        recipient: "業務担当様",
+        postalCode: "〒899-7103",
+        address: "鹿児島県志布志市志布志町志布志",
+        tel: "099-472-1111"
+      }
+    ]
   },
   "門司倉庫": {
     company: "カスケディア 門司港湾倉庫",
     recipient: "業務担当様",
     postalCode: "〒801-0853",
     address: "福岡県北九州市門司区東港町",
-    tel: "093-331-2222"
+    tel: "093-331-2222",
+    presets: [
+      {
+        name: "門司港湾倉庫",
+        company: "カスケディア 門司港湾倉庫",
+        recipient: "業務担当様",
+        postalCode: "〒801-0853",
+        address: "福岡県北九州市門司区東港町",
+        tel: "093-331-2222"
+      }
+    ]
   },
   "本社倉庫": {
     company: "CASCADIA TRADING, INC. 本社",
     recipient: "資材担当様",
     postalCode: "〒330-0063",
     address: "埼玉県さいたま市浦和区高砂2-11-13",
-    tel: "048-762-9340"
+    tel: "048-762-9340",
+    presets: [
+      {
+        name: "本社（浦和）",
+        company: "CASCADIA TRADING, INC. 本社",
+        recipient: "資材担当様",
+        postalCode: "〒330-0063",
+        address: "埼玉県さいたま市浦和区高砂2-11-13",
+        tel: "048-762-9340"
+      }
+    ]
   }
 };
 
@@ -4979,7 +5055,7 @@ function openFlexconOrderModal(data) {
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
             <div class="tool-group">
-              <label for="mPoLocation">納品先（受入倉庫・拠点） <span style="color:#ef4444;">*</span></label>
+              <label for="mPoLocation">受入拠点（在庫管理場所） <span style="color:#ef4444;">*</span></label>
               <select id="mPoLocation" required>
                 ${FLEXCON_LOCATIONS.map(l => `<option value="${l}">${l}</option>`).join('')}
               </select>
@@ -4990,9 +5066,49 @@ function openFlexconOrderModal(data) {
             </div>
           </div>
 
-          <!-- 納品先詳細プレビュー -->
-          <div id="locDetailPreview" style="font-size: 11.5px; color: var(--text-muted); background: var(--bg-primary); padding: 8px 12px; border-radius: 6px; margin-bottom: 16px; border: 1px dashed var(--border-subtle);">
-            納品先情報: ${FLEXCON_LOCATION_DETAILS[defaultLoc].company} (${FLEXCON_LOCATION_DETAILS[defaultLoc].recipient}) / ${FLEXCON_LOCATION_DETAILS[defaultLoc].address} / TEL: ${FLEXCON_LOCATION_DETAILS[defaultLoc].tel}
+          <!-- 納品先・配送先詳細ブロック（プリセット選択 ＋ 直接手入力・微調整） -->
+          <div style="margin-bottom: 16px; background: var(--bg-primary); border: 1px solid var(--border-medium); border-radius: 10px; padding: 12px 14px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
+              <span style="font-size: 12px; font-weight: 800; color: var(--text-primary); display: flex; align-items: center; gap: 5px;">
+                <span>🚚</span> 納品先／配送先詳細（発注書に印字）
+              </span>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <label for="mPoAddressPreset" style="font-size: 11px; color: var(--text-secondary); margin: 0; font-weight: 600;">住所候補:</label>
+                <select id="mPoAddressPreset" style="padding: 3px 8px; font-size: 11px; border-radius: 6px; border: 1px solid var(--border-medium); background: var(--bg-card); color: var(--text-primary); max-width: 240px; text-overflow: ellipsis;">
+                </select>
+              </div>
+            </div>
+
+            <!-- 編集可能な宛先会社名・担当者名 -->
+            <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 8px; margin-bottom: 8px;">
+              <div>
+                <label style="font-size: 10.5px; color: var(--text-muted); display: block; margin-bottom: 2px;">宛先会社・事業所名 <span style="color:#ef4444;">*</span></label>
+                <input type="text" id="mPoDeliveryCompany" required style="width: 100%; font-size: 12px; padding: 5px 8px; border-radius: 6px; border: 1px solid var(--border-medium); background: var(--bg-card); color: var(--text-primary); box-sizing: border-box;">
+              </div>
+              <div>
+                <label style="font-size: 10.5px; color: var(--text-muted); display: block; margin-bottom: 2px;">先方ご担当者様名（括弧内印字）</label>
+                <input type="text" id="mPoDeliveryRecipient" placeholder="例: 祐谷様、ご担当者様" style="width: 100%; font-size: 12px; padding: 5px 8px; border-radius: 6px; border: 1px solid var(--border-medium); background: var(--bg-card); color: var(--text-primary); box-sizing: border-box;">
+              </div>
+            </div>
+
+            <!-- 編集可能な郵便番号・住所・電話番号 -->
+            <div style="display: grid; grid-template-columns: 100px 1fr 130px; gap: 8px;">
+              <div>
+                <label style="font-size: 10.5px; color: var(--text-muted); display: block; margin-bottom: 2px;">郵便番号</label>
+                <input type="text" id="mPoDeliveryPostal" placeholder="〒000-0000" style="width: 100%; font-size: 12px; padding: 5px 8px; border-radius: 6px; border: 1px solid var(--border-medium); background: var(--bg-card); color: var(--text-primary); box-sizing: border-box;">
+              </div>
+              <div>
+                <label style="font-size: 10.5px; color: var(--text-muted); display: block; margin-bottom: 2px;">納品先住所（番地・ヤード等） <span style="color:#ef4444;">*</span></label>
+                <input type="text" id="mPoDeliveryAddress" required style="width: 100%; font-size: 12px; padding: 5px 8px; border-radius: 6px; border: 1px solid var(--border-medium); background: var(--bg-card); color: var(--text-primary); box-sizing: border-box;">
+              </div>
+              <div>
+                <label style="font-size: 10.5px; color: var(--text-muted); display: block; margin-bottom: 2px;">電話番号</label>
+                <input type="text" id="mPoDeliveryTel" placeholder="000-000-0000" style="width: 100%; font-size: 12px; padding: 5px 8px; border-radius: 6px; border: 1px solid var(--border-medium); background: var(--bg-card); color: var(--text-primary); box-sizing: border-box;">
+              </div>
+            </div>
+            <div style="margin-top: 5px; font-size: 10.5px; color: var(--text-muted);">
+              💡 住所候補で切り替えできるほか、この欄で番地や担当者名を直接タイピングして修正できます（発注書にそのまま印字されます）。
+            </div>
           </div>
 
           <!-- 発注明細（複数品名対応） -->
@@ -5062,10 +5178,65 @@ function openFlexconOrderModal(data) {
   const supplierSelect = document.getElementById('mPoSupplier');
   const supplierContactInput = document.getElementById('mPoSupplierContact');
   const locationSelect = document.getElementById('mPoLocation');
-  const locPreview = document.getElementById('locDetailPreview');
+  const addressPresetSelect = document.getElementById('mPoAddressPreset');
+  const deliveryCompanyInput = document.getElementById('mPoDeliveryCompany');
+  const deliveryRecipientInput = document.getElementById('mPoDeliveryRecipient');
+  const deliveryPostalInput = document.getElementById('mPoDeliveryPostal');
+  const deliveryAddressInput = document.getElementById('mPoDeliveryAddress');
+  const deliveryTelInput = document.getElementById('mPoDeliveryTel');
   const dueDateInput = document.getElementById('mPoDueDate');
   const dueMonthNoteInput = document.getElementById('mPoDueMonthNote');
   const rowsContainer = document.getElementById('poItemsRowsContainer');
+
+  // 納品先住所プリセットの連動＆反映
+  function applyAddressPreset(preset) {
+    if (!preset) return;
+    deliveryCompanyInput.value = preset.company || '';
+    deliveryRecipientInput.value = preset.recipient || '';
+    deliveryPostalInput.value = preset.postalCode || '';
+    deliveryAddressInput.value = preset.address || '';
+    deliveryTelInput.value = preset.tel || '';
+  }
+
+  function updateAddressPresetList() {
+    const locKey = locationSelect.value;
+    const detail = FLEXCON_LOCATION_DETAILS[locKey];
+    if (!detail) return;
+
+    const presets = detail.presets && detail.presets.length > 0
+      ? detail.presets
+      : [{
+          name: "標準住所",
+          company: detail.company,
+          recipient: detail.recipient,
+          postalCode: detail.postalCode,
+          address: detail.address,
+          tel: detail.tel
+        }];
+
+    addressPresetSelect.innerHTML = presets.map((p, idx) => `<option value="${idx}">${p.name}</option>`).join('')
+      + `<option value="custom">✏️ 自由入力・直接編集</option>`;
+
+    applyAddressPreset(presets[0]);
+  }
+
+  locationSelect.addEventListener('change', updateAddressPresetList);
+
+  addressPresetSelect.addEventListener('change', () => {
+    const val = addressPresetSelect.value;
+    if (val === 'custom') {
+      deliveryAddressInput.focus();
+      return;
+    }
+    const locKey = locationSelect.value;
+    const detail = FLEXCON_LOCATION_DETAILS[locKey];
+    if (detail && detail.presets && detail.presets[val]) {
+      applyAddressPreset(detail.presets[val]);
+    }
+  });
+
+  // 初期住所セット
+  updateAddressPresetList();
 
   function updateOrderTotals() {
     let subtotal = 0;
@@ -5220,14 +5391,6 @@ function openFlexconOrderModal(data) {
     }
   });
 
-  // 納品先切替時のプレビュー連動
-  locationSelect.addEventListener('change', () => {
-    const locDetail = FLEXCON_LOCATION_DETAILS[locationSelect.value];
-    if (locDetail) {
-      locPreview.textContent = `納品先情報: ${locDetail.company} (${locDetail.recipient}) / ${locDetail.address} / TEL: ${locDetail.tel}`;
-    }
-  });
-
   // 納品希望日変更時に出荷月注記を自動更新
   dueDateInput.addEventListener('change', () => {
     if (dueDateInput.value) {
@@ -5272,6 +5435,14 @@ function openFlexconOrderModal(data) {
     const primaryItem = items[0].item;
     const primaryPrice = items[0].price;
 
+    const deliveryInfo = {
+      company: deliveryCompanyInput.value.trim(),
+      recipient: deliveryRecipientInput.value.trim(),
+      postalCode: deliveryPostalInput.value.trim(),
+      address: deliveryAddressInput.value.trim(),
+      tel: deliveryTelInput.value.trim()
+    };
+
     const newTx = {
       id: "TX-" + Date.now().toString().slice(-6),
       date: document.getElementById('mPoDate').value,
@@ -5281,6 +5452,8 @@ function openFlexconOrderModal(data) {
       type: "inbound",
       status: "ordered", // 未納品フラグ
       location: document.getElementById('mPoLocation').value,
+      // 納品先詳細情報（手入力・プリセット変更に対応）
+      deliveryInfo: deliveryInfo,
       // 複数品目データ
       items: items,
       // 既存コードとの後方互換性
@@ -5312,7 +5485,7 @@ function generatePurchaseOrderHtml(tx, forStandalone = false) {
     ? tx.items
     : [{ item: tx.item, qty: tx.qty, price: tx.price, quoteNo: tx.quoteNo || '' }];
 
-  const locDetail = FLEXCON_LOCATION_DETAILS[tx.location] || {
+  const locDetail = tx.deliveryInfo || FLEXCON_LOCATION_DETAILS[tx.location] || {
     company: tx.location,
     recipient: "ご担当者様",
     postalCode: "",
@@ -6119,8 +6292,14 @@ function renderFlexconLedger(container, data) {
                         ${isInbound ? '📥 入庫' : '📤 出庫'}
                       </span>
                     `}
+                  <td style="padding: 8px;">
+                    <div style="font-weight: 600;">${tx.location}</div>
+                    ${tx.deliveryInfo && (tx.deliveryInfo.company || tx.deliveryInfo.address) ? `
+                      <div style="font-size: 10.5px; color: var(--text-secondary); line-height: 1.25; margin-top: 2px;" title="${tx.deliveryInfo.postalCode || ''} ${tx.deliveryInfo.address || ''}">
+                        🚚 ${tx.deliveryInfo.company || ''}${tx.deliveryInfo.recipient ? ` (${tx.deliveryInfo.recipient})` : ''}
+                      </div>
+                    ` : ''}
                   </td>
-                  <td style="padding: 8px;">${tx.location}</td>
                   <td style="padding: 8px;">
                     ${hasMultipleItems ? `
                       <div style="display: flex; flex-direction: column; gap: 3px;">
