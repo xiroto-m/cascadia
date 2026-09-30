@@ -4831,8 +4831,9 @@ function renderFlexconDashboard(container, data) {
             const itemObj = FLEXCON_ITEMS.find(i => i.id === o.item);
             const supObj = FLEXCON_SUPPLIERS.find(s => s.name === o.supplier) || {};
             const diffDays = Math.floor((new Date(today) - new Date(o.deliveryDueDate)) / (1000 * 60 * 60 * 24));
+            const dueDisplayStr = o.isEarliestDelivery ? `最短希望 (目安: ${o.deliveryDueDate})` : o.deliveryDueDate;
             const mailSubject = encodeURIComponent(`【納期確認】発注書(${o.orderNo || o.id})の納品状況について (株式会社カスケディア・トレーディング)`);
-            const mailBody = encodeURIComponent(`${o.supplier} 御中\n\nお世話になっております。株式会社カスケディア・トレーディングの業務部です。\n\n下記の発注につきまして、納品予定日(${o.deliveryDueDate})を過ぎておりますが、現在の到着・発送状況はいかがでしょうか。\nご確認のほどよろしくお願い申し上げます。\n\n■発注番号: ${o.orderNo || o.id}\n■納入場所: ${o.location}\n■品名: ${itemObj ? itemObj.name : o.item}\n■数量: ${o.qty} 枚\n■納品希望日: ${o.deliveryDueDate}\n`);
+            const mailBody = encodeURIComponent(`${o.supplier} 御中\n\nお世話になっております。株式会社カスケディア・トレーディングの業務部です。\n\n下記の発注につきまして、納品希望日(${dueDisplayStr})を過ぎておりますが、現在の到着・発送状況はいかがでしょうか。\nご確認のほどよろしくお願い申し上げます。\n\n■発注番号: ${o.orderNo || o.id}\n■納入場所: ${o.location}\n■品名: ${itemObj ? itemObj.name : o.item}\n■数量: ${o.qty} 枚\n■納品希望日: ${dueDisplayStr}\n`);
             return `
               <div style="background: var(--bg-primary); border: 1px solid rgba(239,68,68,0.2); border-radius: 8px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                 <div>
@@ -4841,7 +4842,7 @@ function renderFlexconDashboard(container, data) {
                     <strong>${o.location}</strong> 宛 ── ${itemObj ? `<span style="color: var(--accent-blue);">【${itemObj.commonName}】</span> ${itemObj.id}` : o.item} × <strong>${o.qty}枚</strong>
                   </div>
                   <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">
-                    発注日: ${o.orderDate || o.date} ｜ 納品予定日: <strong style="color: #ef4444;">${o.deliveryDueDate}</strong> ｜ 仕入先: ${o.supplier} ${supObj.tel ? `(TEL: ${supObj.tel})` : ''} ｜ 発注No: ${o.orderNo || o.id}
+                    発注日: ${o.orderDate || o.date} ｜ 納品予定日: <strong style="color: #ef4444;">${o.isEarliestDelivery ? `⚡最短希望 (目安: ${o.deliveryDueDate})` : o.deliveryDueDate}</strong> ｜ 仕入先: ${o.supplier} ${supObj.tel ? `(TEL: ${supObj.tel})` : ''} ｜ 発注No: ${o.orderNo || o.id}
                   </div>
                 </div>
                 <div style="display: flex; gap: 6px;">
@@ -5041,8 +5042,17 @@ function openFlexconOrderModal(data) {
               <input type="date" id="mPoDate" value="${today}" required>
             </div>
             <div class="tool-group">
-              <label for="mPoDueDate">納品希望日 <span style="color:#ef4444;">*</span></label>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                <label for="mPoDueDate" style="margin: 0;">納品希望日 <span style="color:#ef4444;">*</span></label>
+                <label style="display: inline-flex; align-items: center; gap: 4px; font-size: 11px; cursor: pointer; color: var(--accent-blue); font-weight: 600; margin: 0; user-select: none;" title="最短での納品を希望（社内アラート管理用に2週間後を目安期日に設定）">
+                  <input type="checkbox" id="mPoIsEarliest" style="width: auto; margin: 0; cursor: pointer;">
+                  <span>⚡ 最短納期希望</span>
+                </label>
+              </div>
               <input type="date" id="mPoDueDate" value="${defaultDueDate}" required>
+              <div id="mPoEarliestNotice" style="font-size: 10.5px; color: var(--accent-blue); margin-top: 3px; display: none;">
+                ※社内の遅延アラート管理用として2週間後を目安期日に設定しています
+              </div>
             </div>
           </div>
 
@@ -5218,6 +5228,17 @@ function openFlexconOrderModal(data) {
   });
   document.getElementById('btnClearPoNo').addEventListener('click', () => {
     poNoInput.value = '';
+  });
+
+  const isEarliestCheckbox = document.getElementById('mPoIsEarliest');
+  const earliestNotice = document.getElementById('mPoEarliestNotice');
+  isEarliestCheckbox.addEventListener('change', (e) => {
+    if (e.target.checked) {
+      dueDateInput.value = defaultDueDate;
+      earliestNotice.style.display = 'block';
+    } else {
+      earliestNotice.style.display = 'none';
+    }
   });
 
   const noteTextarea = document.getElementById('mPoNote');
@@ -5530,6 +5551,7 @@ function openFlexconOrderModal(data) {
       date: document.getElementById('mPoDate').value,
       orderDate: document.getElementById('mPoDate').value,
       deliveryDueDate: document.getElementById('mPoDueDate').value,
+      isEarliestDelivery: isEarliestCheckbox.checked,
       dueMonthNote: dueMonthNoteInput.value,
       type: "inbound",
       status: "ordered", // 未納品フラグ
@@ -5631,7 +5653,14 @@ function generatePurchaseOrderHtml(tx, forStandalone = false) {
   };
 
   const formattedOrderDate = formatDateJa(tx.orderDate || tx.date);
-  const formattedDueDate = tx.deliveryDueDate ? `～${formatDateJa(tx.deliveryDueDate)}` : '要相談';
+  let formattedDueDate = '要相談';
+  if (tx.isEarliestDelivery) {
+    formattedDueDate = tx.deliveryDueDate
+      ? `最短納期希望（目安: ～${formatDateJa(tx.deliveryDueDate)}頃）`
+      : '最短納期希望';
+  } else if (tx.deliveryDueDate) {
+    formattedDueDate = `～${formatDateJa(tx.deliveryDueDate)}`;
+  }
   const locRecipientStr = locDetail.recipient ? `（${locDetail.recipient}）` : '';
 
   const notes = [];
@@ -6399,7 +6428,14 @@ function renderFlexconLedger(container, data) {
                     ${isOrdered ? `
                       <div style="font-weight: 600;">${tx.supplier || '-'}</div>
                       <div style="font-size: 11px; color: ${isOverdue ? '#ef4444; font-weight:700;' : 'var(--text-muted);'}">
-                        納品予定: ${tx.deliveryDueDate || '未定'}
+                        ${tx.isEarliestDelivery ? `
+                          <span style="display: inline-flex; align-items: center; gap: 2px; color: ${isOverdue ? '#ef4444' : 'var(--accent-blue)'}; font-weight: 700;">
+                            ⚡ 最短希望
+                          </span>
+                          <span style="font-size: 10.5px; opacity: 0.9;">(${tx.deliveryDueDate || ''}目安${isOverdue ? '・遅延' : ''})</span>
+                        ` : `
+                          納品予定: ${tx.deliveryDueDate || '未定'}
+                        `}
                       </div>
                     ` : (tx.supplier || tx.purpose || '-')}
                   </td>
@@ -6562,12 +6598,14 @@ function renderFlexconCheck(container, data) {
           const p = it.price || 0;
           const quote = it.quoteNo ? `[${it.quoteNo}] ` : '';
           const noteText = `${quote}${tx.note || ''}`.trim();
-          csv += `"${tx.date}","${typeText}","${statusText}","${tx.location}","${itemId}","${common}",${q},${p},${Math.round(q * p)},"${tx.supplier || tx.purpose || ''}","${tx.deliveryDueDate || ''}","${tx.orderNo || ''}","${noteText}"\n`;
+          const dueStr = tx.isEarliestDelivery ? `最短希望(${tx.deliveryDueDate || ''})` : (tx.deliveryDueDate || '');
+          csv += `"${tx.date}","${typeText}","${statusText}","${tx.location}","${itemId}","${common}",${q},${p},${Math.round(q * p)},"${tx.supplier || tx.purpose || ''}","${dueStr}","${tx.orderNo || ''}","${noteText}"\n`;
         });
       } else {
         const itemObj = FLEXCON_ITEMS.find(i => i.id === tx.item);
         const common = itemObj ? itemObj.commonName : '';
-        csv += `"${tx.date}","${typeText}","${statusText}","${tx.location}","${tx.item}","${common}",${tx.qty},${tx.price || 0},${tx.qty * (tx.price || 0)},"${tx.supplier || tx.purpose || ''}","${tx.deliveryDueDate || ''}","${tx.orderNo || ''}","${tx.note || ''}"\n`;
+        const dueStr = tx.isEarliestDelivery ? `最短希望(${tx.deliveryDueDate || ''})` : (tx.deliveryDueDate || '');
+        csv += `"${tx.date}","${typeText}","${statusText}","${tx.location}","${tx.item}","${common}",${tx.qty},${tx.price || 0},${tx.qty * (tx.price || 0)},"${tx.supplier || tx.purpose || ''}","${dueStr}","${tx.orderNo || ''}","${tx.note || ''}"\n`;
       }
     });
 
