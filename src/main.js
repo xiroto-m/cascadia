@@ -4770,6 +4770,19 @@ function renderFlexconDashboard(container, data) {
     });
   });
 
+  // 拠点ごとにアイテムをまとめる
+  const shortageByLoc = {};
+  shortageItems.forEach(a => {
+    if (!shortageByLoc[a.location]) shortageByLoc[a.location] = [];
+    shortageByLoc[a.location].push(a);
+  });
+
+  const incomingByLoc = {};
+  incomingItems.forEach(a => {
+    if (!incomingByLoc[a.location]) incomingByLoc[a.location] = [];
+    incomingByLoc[a.location].push(a);
+  });
+
   // 納品予定日超過アラート（status: 'ordered' かつ deliveryDueDate < today）
   const overdueOrders = data.transactions.filter(t => 
     t.status === 'ordered' && t.deliveryDueDate && t.deliveryDueDate < today
@@ -4875,49 +4888,74 @@ function renderFlexconDashboard(container, data) {
       </div>
     ` : ''}
 
-    <!-- 🚨 安全在庫アラート通知（未発注・至急手配が必要） -->
-    ${shortageItems.length > 0 ? `
-      <div class="alert" style="background: rgba(239, 68, 68, 0.06); border: 1px solid rgba(239, 68, 68, 0.25); border-left: 5px solid #ef4444; border-radius: 10px; padding: 14px 18px; margin-bottom: 16px; font-size: 12.5px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-          <div style="color: #ef4444; font-size: 13.5px; font-weight: 700; display: flex; align-items: center; gap: 6px;">
-            <span style="font-size: 16px;">🚨</span> 安全在庫アラート通知（未発注・要手配） (${shortageItems.length}件):
+    <!-- 📊 アラート通知エリア（2カラム・拠点別にコンパクト整理） -->
+    ${(shortageItems.length > 0 || incomingItems.length > 0) ? `
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 14px; margin-bottom: 20px;">
+        <!-- 🚨 要発注（未手配） -->
+        <div class="alert" style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.25); border-left: 4px solid #ef4444; border-radius: 8px; padding: 12px 14px; margin: 0;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <div style="color: #ef4444; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px;">
+              <span>🚨</span> 要発注・安全在庫不足 (${shortageItems.length}件)
+            </div>
+            <span style="font-size: 11px; color: #ef4444; font-weight: 600; background: rgba(239,68,68,0.1); padding: 2px 8px; border-radius: 10px;">発注残なし・至急手配</span>
           </div>
-          <span style="font-size: 11.5px; color: var(--text-muted);">
-            現在庫が安全基準を下回っており、発注残（入荷待ち）がありません。至急発注をご検討ください。
-          </span>
+          ${shortageItems.length === 0 ? `
+            <div style="font-size: 12px; color: var(--text-muted); padding: 6px 0;">現在、未発注の在庫不足品目はありません。</div>
+          ` : `
+            <div style="max-height: 240px; overflow-y: auto; padding-right: 4px; display: flex; flex-direction: column; gap: 6px;">
+              ${Object.entries(shortageByLoc).map(([loc, list]) => `
+                <div style="background: var(--bg-primary); border: 1px solid rgba(239,68,68,0.15); border-radius: 6px; padding: 6px 10px; font-size: 12px;">
+                  <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 4px; display: flex; justify-content: space-between;">
+                    <span>📍 ${loc}</span>
+                    <span style="font-size: 11px; color: #ef4444; font-weight: 600;">${list.length}品目 要手配</span>
+                  </div>
+                  <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                    ${list.map(a => `
+                      <span title="${a.item.name}" style="display: inline-flex; align-items: center; gap: 4px; background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); border-radius: 4px; padding: 2px 6px; font-size: 11px;">
+                        <strong>【${a.item.commonName}】</strong>
+                        <span style="color: #ef4444; font-weight: 700;">残${a.currentQty}枚</span>
+                        <span style="color: var(--text-muted); font-size: 10px;">(基準:${a.safetyStock})</span>
+                      </span>
+                    `).join('')}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `}
         </div>
-        <ul style="margin: 8px 0 0; padding-left: 20px;">
-          ${shortageItems.map(a => `
-            <li style="margin-bottom: 4px; line-height: 1.5;">
-              <strong>${a.location}</strong> ── <span style="color:var(--accent-blue); font-weight:700;">【${a.item.commonName}】</span> ${a.item.name}: 
-              現在庫 <strong>${a.currentQty.toLocaleString()} 枚</strong> (安全基準: ${a.safetyStock.toLocaleString()}枚)
-              ── <strong style="color:#ef4444;">資材発注をご検討ください</strong>
-            </li>
-          `).join('')}
-        </ul>
-      </div>
-    ` : ''}
 
-    <!-- 🚚 入荷待ちアラート通知（発注済・手配中） -->
-    ${incomingItems.length > 0 ? `
-      <div class="alert" style="background: rgba(37, 99, 235, 0.05); border: 1px solid rgba(37, 99, 235, 0.25); border-left: 5px solid var(--accent-blue); border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; font-size: 12.5px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-          <div style="color: var(--accent-blue); font-size: 13.5px; font-weight: 700; display: flex; align-items: center; gap: 6px;">
-            <span style="font-size: 16px;">🚚</span> 入荷待ち通知（発注済・手配中） (${incomingItems.length}件):
+        <!-- 🚚 入荷待ち（発注済・手配中） -->
+        <div class="alert" style="background: rgba(37, 99, 235, 0.04); border: 1px solid rgba(37, 99, 235, 0.22); border-left: 4px solid var(--accent-blue); border-radius: 8px; padding: 12px 14px; margin: 0;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <div style="color: var(--accent-blue); font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px;">
+              <span>🚚</span> 入荷待ち（発注済・手配中） (${incomingItems.length}件)
+            </div>
+            <span style="font-size: 11px; color: var(--accent-blue); font-weight: 600; background: rgba(37,99,235,0.1); padding: 2px 8px; border-radius: 10px;">手配済・到着待ち</span>
           </div>
-          <span style="font-size: 11.5px; color: var(--text-muted);">
-            実在庫は安全基準未満ですが、すでに発注済み（入荷待ち）の資材です。到着・納品をお待ちください。
-          </span>
+          ${incomingItems.length === 0 ? `
+            <div style="font-size: 12px; color: var(--text-muted); padding: 6px 0;">現在、入荷待ちの品目はありません。</div>
+          ` : `
+            <div style="max-height: 240px; overflow-y: auto; padding-right: 4px; display: flex; flex-direction: column; gap: 6px;">
+              ${Object.entries(incomingByLoc).map(([loc, list]) => `
+                <div style="background: var(--bg-primary); border: 1px solid rgba(37,99,235,0.15); border-radius: 6px; padding: 6px 10px; font-size: 12px;">
+                  <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 4px; display: flex; justify-content: space-between;">
+                    <span>📍 ${loc}</span>
+                    <span style="font-size: 11px; color: var(--accent-blue); font-weight: 600;">${list.length}品目 手配中</span>
+                  </div>
+                  <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                    ${list.map(a => `
+                      <span title="${a.item.name}" style="display: inline-flex; align-items: center; gap: 4px; background: rgba(37,99,235,0.06); border: 1px solid rgba(37,99,235,0.22); border-radius: 4px; padding: 2px 6px; font-size: 11px;">
+                        <strong>【${a.item.commonName}】</strong>
+                        <span style="color: var(--text-muted); font-size: 10px;">残${a.currentQty}枚</span>
+                        <span style="color: #059669; font-weight: 700;">+発注残${a.orderedQty}枚</span>
+                      </span>
+                    `).join('')}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `}
         </div>
-        <ul style="margin: 8px 0 0; padding-left: 20px;">
-          ${incomingItems.map(a => `
-            <li style="margin-bottom: 4px; line-height: 1.5;">
-              <strong>${a.location}</strong> ── <span style="color:var(--accent-blue); font-weight:700;">【${a.item.commonName}】</span> ${a.item.name}: 
-              現在庫 <strong>${a.currentQty.toLocaleString()} 枚</strong> (安全基準: ${a.safetyStock.toLocaleString()}枚)
-              ── <span style="color: #059669; font-weight: 700;">※発注残(入荷待ち) ${a.orderedQty.toLocaleString()}枚 あり（手配済）</span>
-            </li>
-          `).join('')}
-        </ul>
       </div>
     ` : ''}
 
