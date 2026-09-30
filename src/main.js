@@ -4599,6 +4599,7 @@ let activeFlexconTab = 'dashboard'; // 'dashboard' | 'ledger' | 'check'
 let currentFlexconAsOf = 'latest'; // 'latest' or 'YYYY-MM-DD'
 let ledgerFilterLoc = 'all';
 let ledgerFilterType = 'all';
+let ledgerFilterMonth = 'all'; // 'all' or 'YYYY-MM'
 let ledgerSortAsc = false; // デフォルトは新しい順（降順）
 
 function renderFlexconInventory() {
@@ -6303,12 +6304,26 @@ function openFlexconOutboundModal(data) {
 function renderFlexconLedger(container, data) {
   const today = new Date().toISOString().split('T')[0];
 
+  // 納品日ベースの年月リストを抽出（発注中は納品予定日、それ以外は取引日）
+  const monthSet = new Set();
+  data.transactions.forEach(t => {
+    const dStr = (t.status === 'ordered' && t.deliveryDueDate) ? t.deliveryDueDate : t.date;
+    if (dStr && dStr.length >= 7) {
+      monthSet.add(dStr.slice(0, 7)); // 'YYYY-MM'
+    }
+  });
+  const availableMonths = Array.from(monthSet).sort().reverse();
+
   // フィルタリング処理
   let filteredList = data.transactions.filter(tx => {
     if (ledgerFilterLoc !== 'all' && tx.location !== ledgerFilterLoc) return false;
     if (ledgerFilterType === 'ordered' && tx.status !== 'ordered') return false;
     if (ledgerFilterType === 'inbound' && (tx.type !== 'inbound' || tx.status === 'ordered')) return false;
     if (ledgerFilterType === 'outbound' && tx.type !== 'outbound') return false;
+    if (ledgerFilterMonth !== 'all') {
+      const targetDate = (tx.status === 'ordered' && tx.deliveryDueDate) ? tx.deliveryDueDate : tx.date;
+      if (!targetDate || !targetDate.startsWith(ledgerFilterMonth)) return false;
+    }
     return true;
   });
 
@@ -6329,9 +6344,20 @@ function renderFlexconLedger(container, data) {
       </div>
 
       <!-- フィルター＆ソート コントロールバー -->
-      <div style="background: var(--bg-primary); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px 16px; margin-bottom: 16px; display: flex; gap: 16px; flex-wrap: wrap; align-items: center;">
+      <div style="background: var(--bg-primary); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px 16px; margin-bottom: 16px; display: flex; gap: 14px; flex-wrap: wrap; align-items: center;">
         <div style="display: flex; align-items: center; gap: 6px;">
-          <label for="ledgerFilterLocSelect" style="font-size: 12px; font-weight: 700; color: var(--text-secondary);">🏢 保管場所フィルター:</label>
+          <label for="ledgerFilterMonthSelect" style="font-size: 12px; font-weight: 700; color: var(--accent-blue);">📅 納品月:</label>
+          <select id="ledgerFilterMonthSelect" style="padding: 4px 10px; font-size: 12px; border-radius: 6px; border: 1px solid var(--border-medium); background: var(--bg-card); color: var(--text-primary); font-weight: 600;">
+            <option value="all" ${ledgerFilterMonth === 'all' ? 'selected' : ''}>すべての年月（全期間）</option>
+            ${availableMonths.map(m => {
+              const [y, mo] = m.split('-');
+              return `<option value="${m}" ${ledgerFilterMonth === m ? 'selected' : ''}>${y}年${parseInt(mo, 10)}月 納品分</option>`;
+            }).join('')}
+          </select>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <label for="ledgerFilterLocSelect" style="font-size: 12px; font-weight: 700; color: var(--text-secondary);">🏢 保管場所:</label>
           <select id="ledgerFilterLocSelect" style="padding: 4px 10px; font-size: 12px; border-radius: 6px; border: 1px solid var(--border-medium); background: var(--bg-card); color: var(--text-primary);">
             <option value="all" ${ledgerFilterLoc === 'all' ? 'selected' : ''}>すべての保管場所（全拠点）</option>
             ${FLEXCON_LOCATIONS.map(l => `<option value="${l}" ${ledgerFilterLoc === l ? 'selected' : ''}>${l}</option>`).join('')}
@@ -6339,7 +6365,7 @@ function renderFlexconLedger(container, data) {
         </div>
 
         <div style="display: flex; align-items: center; gap: 6px;">
-          <label for="ledgerFilterTypeSelect" style="font-size: 12px; font-weight: 700; color: var(--text-secondary);">🏷️ 区分フィルター:</label>
+          <label for="ledgerFilterTypeSelect" style="font-size: 12px; font-weight: 700; color: var(--text-secondary);">🏷️ 区分:</label>
           <select id="ledgerFilterTypeSelect" style="padding: 4px 10px; font-size: 12px; border-radius: 6px; border: 1px solid var(--border-medium); background: var(--bg-card); color: var(--text-primary);">
             <option value="all" ${ledgerFilterType === 'all' ? 'selected' : ''}>すべての区分</option>
             <option value="ordered" ${ledgerFilterType === 'ordered' ? 'selected' : ''}>📝 未納品（発注中）のみ</option>
@@ -6348,7 +6374,14 @@ function renderFlexconLedger(container, data) {
           </select>
         </div>
 
+        ${(ledgerFilterMonth !== 'all' || ledgerFilterLoc !== 'all' || ledgerFilterType !== 'all') ? `
+          <button type="button" id="btnClearLedgerFilters" style="background: none; border: 1px solid var(--border-subtle); color: #ef4444; border-radius: 6px; padding: 4px 8px; font-size: 11px; cursor: pointer;" title="フィルターをすべて解除">
+            ✕ 絞り込み解除
+          </button>
+        ` : ''}
+
         <div style="display: flex; align-items: center; gap: 6px; margin-left: auto;">
+          <span style="font-size: 11.5px; color: var(--text-muted);">表示: <strong>${filteredList.length}</strong> 件</span>
           <button class="btn btn-secondary" id="btnToggleSort" style="padding: 5px 12px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
             <span>${ledgerSortAsc ? '⬆️ 日付: 古い順 (昇順)' : '⬇️ 日付: 新しい順 (降順)'}</span>
           </button>
@@ -6482,6 +6515,11 @@ function renderFlexconLedger(container, data) {
   `;
 
   // フィルター・ソートイベント
+  document.getElementById('ledgerFilterMonthSelect').addEventListener('change', (e) => {
+    ledgerFilterMonth = e.target.value;
+    renderFlexconLedger(container, data);
+  });
+
   document.getElementById('ledgerFilterLocSelect').addEventListener('change', (e) => {
     ledgerFilterLoc = e.target.value;
     renderFlexconLedger(container, data);
@@ -6491,6 +6529,16 @@ function renderFlexconLedger(container, data) {
     ledgerFilterType = e.target.value;
     renderFlexconLedger(container, data);
   });
+
+  const clearBtn = document.getElementById('btnClearLedgerFilters');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      ledgerFilterMonth = 'all';
+      ledgerFilterLoc = 'all';
+      ledgerFilterType = 'all';
+      renderFlexconLedger(container, data);
+    });
+  }
 
   const toggleSort = () => {
     ledgerSortAsc = !ledgerSortAsc;
