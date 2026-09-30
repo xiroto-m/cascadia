@@ -6312,10 +6312,12 @@ function renderFlexconLedger(container, data) {
     return true;
   });
 
-  // ソート処理（日付昇順 / 降順）
+  // ソート処理（納品日/取引日 昇順 / 降順）
   filteredList.sort((a, b) => {
-    const da = new Date(a.date);
-    const db = new Date(b.date);
+    const daStr = (a.status === 'ordered' && a.deliveryDueDate) ? a.deliveryDueDate : a.date;
+    const dbStr = (b.status === 'ordered' && b.deliveryDueDate) ? b.deliveryDueDate : b.date;
+    const da = new Date(daStr);
+    const db = new Date(dbStr);
     return ledgerSortAsc ? (da - db) : (db - da);
   });
 
@@ -6358,7 +6360,7 @@ function renderFlexconLedger(container, data) {
           <thead>
             <tr style="background: var(--bg-primary); text-align: left;">
               <th style="padding: 8px; cursor: pointer; user-select: none;" id="thDateSort" title="クリックで昇順・降順切替">
-                日付 ${ledgerSortAsc ? '▲' : '▼'}
+                日付（納品日） ${ledgerSortAsc ? '▲' : '▼'}
               </th>
               <th style="padding: 8px;">区分・状態</th>
               <th style="padding: 8px;">保管場所（拠点）</th>
@@ -6366,7 +6368,7 @@ function renderFlexconLedger(container, data) {
               <th style="padding: 8px; text-align: right;">枚数</th>
               <th style="padding: 8px; text-align: right;">単価</th>
               <th style="padding: 8px; text-align: right;">小計金額</th>
-              <th style="padding: 8px;">仕入先 / 納品期日 / 用途</th>
+              <th style="padding: 8px;">仕入先 / 発注日 / 用途</th>
               <th style="padding: 8px;">備考 / 発注No</th>
               <th style="padding: 8px; text-align: center; min-width: 110px;">操作</th>
             </tr>
@@ -6390,10 +6392,18 @@ function renderFlexconLedger(container, data) {
                 ? tx.items.reduce((s, it) => s + (it.qty || 0), 0)
                 : tx.qty;
               const isOverdue = isOrdered && tx.deliveryDueDate && tx.deliveryDueDate < today;
+              const displayDate = isOrdered ? (tx.deliveryDueDate || tx.date) : tx.date;
 
               return `
                 <tr style="${isOverdue ? 'background: rgba(239,68,68,0.04);' : (isOrdered ? 'background: rgba(245,158,11,0.03);' : '')}">
-                  <td style="padding: 8px; font-weight: 600;">${tx.date}</td>
+                  <td style="padding: 8px; font-weight: 600;">
+                    <div>${displayDate}</div>
+                    ${isOrdered && tx.isEarliestDelivery ? `
+                      <span style="font-size: 10px; color: ${isOverdue ? '#ef4444' : 'var(--accent-blue)'}; font-weight: 700; display: block; line-height: 1.2;">
+                        ⚡ 最短希望
+                      </span>
+                    ` : ''}
+                  </td>
                   <td style="padding: 8px;">
                     ${isOrdered ? `
                       <span style="padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 700; ${isOverdue ? 'background: rgba(239,68,68,0.15); color: #ef4444;' : 'background: rgba(245,158,11,0.15); color: #f59e0b;'}">
@@ -6404,6 +6414,7 @@ function renderFlexconLedger(container, data) {
                         ${isInbound ? '📥 入庫' : '📤 出庫'}
                       </span>
                     `}
+                  </td>
                   <td style="padding: 8px;">
                     <div style="font-weight: 600;">${tx.location}</div>
                     ${tx.deliveryInfo && (tx.deliveryInfo.company || tx.deliveryInfo.address) ? `
@@ -6437,15 +6448,8 @@ function renderFlexconLedger(container, data) {
                   <td style="padding: 8px;">
                     ${isOrdered ? `
                       <div style="font-weight: 600;">${tx.supplier || '-'}</div>
-                      <div style="font-size: 11px; color: ${isOverdue ? '#ef4444; font-weight:700;' : 'var(--text-muted);'}">
-                        ${tx.isEarliestDelivery ? `
-                          <span style="display: inline-flex; align-items: center; gap: 2px; color: ${isOverdue ? '#ef4444' : 'var(--accent-blue)'}; font-weight: 700;">
-                            ⚡ 最短希望
-                          </span>
-                          <span style="font-size: 10.5px; opacity: 0.9;">(${tx.deliveryDueDate || ''}目安${isOverdue ? '・遅延' : ''})</span>
-                        ` : `
-                          納品予定: ${tx.deliveryDueDate || '未定'}
-                        `}
+                      <div style="font-size: 11px; color: var(--text-muted); margin-top: 1px;">
+                        発注日: ${tx.orderDate || tx.date}
                       </div>
                     ` : (tx.supplier || tx.purpose || '-')}
                   </td>
@@ -6593,11 +6597,13 @@ function renderFlexconCheck(container, data) {
   `;
 
   document.getElementById('btnExportFlexconCSV').addEventListener('click', () => {
-    let csv = "\uFEFF日付,区分,ステータス,保管場所,品名ID,品名通称,枚数,単価,金額,仕入先/用途,納品期日,発注No,備考\n";
+    let csv = "\uFEFF日付(納品日),区分,ステータス,保管場所,品名ID,品名通称,枚数,単価,金額,仕入先/用途,発注日,発注No,備考\n";
     data.transactions.forEach(tx => {
       const isOrdered = tx.status === 'ordered';
       const statusText = isOrdered ? '発注中(未納品)' : '納品完了';
       const typeText = tx.type === 'inbound' ? '入庫' : '出庫';
+      const recordDate = (isOrdered && tx.deliveryDueDate) ? tx.deliveryDueDate : tx.date;
+      const orderDateStr = isOrdered ? (tx.orderDate || tx.date) : '';
 
       if (tx.items && Array.isArray(tx.items) && tx.items.length > 0) {
         tx.items.forEach(it => {
@@ -6608,14 +6614,12 @@ function renderFlexconCheck(container, data) {
           const p = it.price || 0;
           const quote = it.quoteNo ? `[${it.quoteNo}] ` : '';
           const noteText = `${quote}${tx.note || ''}`.trim();
-          const dueStr = tx.isEarliestDelivery ? `最短希望(${tx.deliveryDueDate || ''})` : (tx.deliveryDueDate || '');
-          csv += `"${tx.date}","${typeText}","${statusText}","${tx.location}","${itemId}","${common}",${q},${p},${Math.round(q * p)},"${tx.supplier || tx.purpose || ''}","${dueStr}","${tx.orderNo || ''}","${noteText}"\n`;
+          csv += `"${recordDate}","${typeText}","${statusText}","${tx.location}","${itemId}","${common}",${q},${p},${Math.round(q * p)},"${tx.supplier || tx.purpose || ''}","${orderDateStr}","${tx.orderNo || ''}","${noteText}"\n`;
         });
       } else {
         const itemObj = FLEXCON_ITEMS.find(i => i.id === tx.item);
         const common = itemObj ? itemObj.commonName : '';
-        const dueStr = tx.isEarliestDelivery ? `最短希望(${tx.deliveryDueDate || ''})` : (tx.deliveryDueDate || '');
-        csv += `"${tx.date}","${typeText}","${statusText}","${tx.location}","${tx.item}","${common}",${tx.qty},${tx.price || 0},${tx.qty * (tx.price || 0)},"${tx.supplier || tx.purpose || ''}","${dueStr}","${tx.orderNo || ''}","${tx.note || ''}"\n`;
+        csv += `"${recordDate}","${typeText}","${statusText}","${tx.location}","${tx.item}","${common}",${tx.qty},${tx.price || 0},${tx.qty * (tx.price || 0)},"${tx.supplier || tx.purpose || ''}","${orderDateStr}","${tx.orderNo || ''}","${tx.note || ''}"\n`;
       }
     });
 
