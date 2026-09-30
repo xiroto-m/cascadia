@@ -33,6 +33,7 @@ jobs:
       - name: Build
         run: |
           npm run build
+          [ -d src ] && cp -r src dist/ || true
           [ -d product-docs ] && cp -r product-docs dist/ || true
           [ -d backoffice-docs ] && cp -r backoffice-docs dist/ || true
 

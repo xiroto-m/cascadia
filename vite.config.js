@@ -24,6 +24,7 @@ export default defineConfig({
             fs.cpSync(src, dest, { recursive: true, force: true });
           }
         };
+        copyFolder('src', 'dist/src');
         copyFolder('product-docs', 'dist/product-docs');
         copyFolder('backoffice-docs', 'dist/backoffice-docs');
       }
