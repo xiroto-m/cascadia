@@ -4361,8 +4361,8 @@ function showToast(message, duration = 3000) {
 const FLEXCON_LOCATION_DETAILS = {
   "上組 福岡支店": {
     company: "株式会社 上組 福岡支店",
-    recipient: "祐谷様",
-    contacts: ["祐谷様", "業務ご担当者様"],
+    recipient: "",
+    contacts: ["業務ご担当者様"],
     postalCode: "〒810-8512",
     address: "福岡県福岡市中央区那の津3丁目2番10号",
     tel: "092-752-5586",
@@ -4370,7 +4370,7 @@ const FLEXCON_LOCATION_DETAILS = {
       {
         name: "那の津 本社・倉庫（標準）",
         company: "株式会社 上組 福岡支店",
-        recipient: "祐谷様",
+        recipient: "",
         postalCode: "〒810-8512",
         address: "福岡県福岡市中央区那の津3丁目2番10号",
         tel: "092-752-5586"
@@ -5096,7 +5096,7 @@ function openFlexconOrderModal(data) {
                   <label style="font-size: 10.5px; color: var(--text-muted); margin: 0;">先方ご担当者様名（受取人）</label>
                   <div id="recipientQuickTags" style="display: flex; gap: 3px; flex-wrap: wrap;"></div>
                 </div>
-                <input type="text" id="mPoDeliveryRecipient" placeholder="例: 祐谷様（空欄で担当なし）" style="width: 100%; font-size: 12px; padding: 5px 8px; border-radius: 6px; border: 1px solid var(--border-medium); background: var(--bg-card); color: var(--text-primary); box-sizing: border-box;">
+                <input type="text" id="mPoDeliveryRecipient" placeholder="例: ご担当者様（空欄で担当なし）" style="width: 100%; font-size: 12px; padding: 5px 8px; border-radius: 6px; border: 1px solid var(--border-medium); background: var(--bg-card); color: var(--text-primary); box-sizing: border-box;">
               </div>
             </div>
 
