@@ -5034,7 +5034,7 @@ function openFlexconOrderModal(data) {
           <button type="button" id="btnCloseOrderModal" style="background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-muted); line-height: 1;">✕</button>
         </div>
 
-        <form id="modalOrderForm" class="tool-form">
+        <form id="modalOrderForm" class="tool-form" novalidate>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
             <div class="tool-group">
               <label for="mPoDate">発注日 <span style="color:#ef4444;">*</span></label>
@@ -5136,8 +5136,14 @@ function openFlexconOrderModal(data) {
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
             <div class="tool-group">
-              <label for="mPoNo">発注書番号（管理No） <span style="font-size: 11px; color: var(--text-muted); font-weight: normal;">(任意)</span></label>
-              <input type="text" id="mPoNo" value="${autoPoNo}" placeholder="例: PO-20260930-01（空欄可）">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <label for="mPoNo" style="margin: 0;">発注書番号（管理No） <span style="font-size: 11px; color: var(--text-muted); font-weight: normal;">(空白・未記入可)</span></label>
+                <div style="display: flex; gap: 4px;">
+                  <button type="button" id="btnGenPoNo" style="background: none; border: 1px solid var(--border-medium); border-radius: 4px; font-size: 10.5px; padding: 1px 6px; cursor: pointer; color: var(--accent-blue);" title="自動採番コードを挿入">🎲 採番</button>
+                  <button type="button" id="btnClearPoNo" style="background: none; border: 1px solid var(--border-subtle); border-radius: 4px; font-size: 10.5px; padding: 1px 6px; cursor: pointer; color: #ef4444;" title="空白にする">✕ 空白</button>
+                </div>
+              </div>
+              <input type="text" id="mPoNo" value="" placeholder="例: PO-20260930-01（空白のまま印刷・登録可能）">
             </div>
             <div class="tool-group">
               <label for="mPoDueMonthNote">計上月等の特記事項</label>
@@ -5195,7 +5201,15 @@ function openFlexconOrderModal(data) {
   const deliveryTelInput = document.getElementById('mPoDeliveryTel');
   const dueDateInput = document.getElementById('mPoDueDate');
   const dueMonthNoteInput = document.getElementById('mPoDueMonthNote');
+  const poNoInput = document.getElementById('mPoNo');
   const rowsContainer = document.getElementById('poItemsRowsContainer');
+
+  document.getElementById('btnGenPoNo').addEventListener('click', () => {
+    poNoInput.value = autoPoNo;
+  });
+  document.getElementById('btnClearPoNo').addEventListener('click', () => {
+    poNoInput.value = '';
+  });
 
   // 納品先住所プリセットの連動＆反映
   function applyAddressPreset(preset) {
