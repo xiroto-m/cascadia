@@ -5373,13 +5373,12 @@ function openFlexconOrderModal(data) {
     row.style.cssText = 'background: var(--bg-card); border: 1px solid var(--border-medium); border-radius: 8px; padding: 12px 14px; position: relative;';
 
     const selectedItemId = defaultData.item || (FLEXCON_ITEMS[0] ? FLEXCON_ITEMS[0].id : 'SNS-1');
-    const isCustom = selectedItemId === 'CUSTOM';
     const defItem = FLEXCON_ITEMS.find(i => i.id === selectedItemId);
+    const itemName = defaultData.name || defaultData.customName || (defItem ? defItem.name : (defaultData.item || 'フレコンワンウェイバッグSNS-1 上下全開タイプφ1100×1200'));
+    const itemSpec = defaultData.spec || defaultData.customSpec || (defItem ? (defItem.spec || '') : '');
     const price = defaultData.price !== undefined ? defaultData.price : (defItem ? defItem.defaultPrice : 1000);
     const qty = defaultData.qty !== undefined ? defaultData.qty : 150;
     const quoteNo = defaultData.quoteNo || '';
-    const customName = defaultData.customName || '';
-    const customSpec = defaultData.customSpec || '';
 
     row.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
@@ -5392,26 +5391,24 @@ function openFlexconOrderModal(data) {
       </div>
 
       <div style="margin-bottom: 8px;">
-        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-secondary); display: block; margin-bottom: 4px;">
-          品名（マスター選択 または 自由入力） <span style="color:#ef4444;">*</span>
-        </label>
-        <select class="row-item-select" required style="width: 100%; font-size: 13px; padding: 7px 10px; border-radius: 6px; border: 1px solid var(--border-medium); background: var(--bg-primary); color: var(--text-primary);">
-          ${FLEXCON_ITEMS.map(i => `
-            <option value="${i.id}" ${i.id === selectedItemId ? 'selected' : ''}>【${i.commonName}】 ${i.name} (基準単価: ¥${i.defaultPrice})</option>
-          `).join('')}
-          <option value="CUSTOM" ${isCustom ? 'selected' : ''}>✏️ 【自由入力】その他の品名・独自規格</option>
-        </select>
-      </div>
-
-      <!-- 自由入力用フィールド -->
-      <div class="row-custom-fields" style="display: ${isCustom ? 'grid' : 'none'}; grid-template-columns: 1.5fr 1fr; gap: 10px; margin-bottom: 8px;">
-        <div>
-          <label style="font-size: 11px; color: var(--text-secondary); display: block; margin-bottom: 2px;">自由入力 品名・商品名 *</label>
-          <input type="text" class="row-custom-name" placeholder="例: 特注ワンウェイバッグ" value="${customName}" style="width: 100%; font-size: 12.5px; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border-medium); background: var(--bg-primary); color: var(--text-primary); box-sizing: border-box;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; flex-wrap: wrap; gap: 4px;">
+          <label style="font-size: 11.5px; font-weight: 700; color: var(--text-secondary); margin: 0;">
+            品名・商品名（直接自由入力・編集可能） <span style="color:#ef4444;">*</span>
+          </label>
+          <div style="display: flex; gap: 4px; align-items: center;">
+            <span style="font-size: 10.5px; color: var(--text-muted);">マスタから引用:</span>
+            <select class="row-item-select" style="font-size: 11px; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border-medium); background: var(--bg-card); color: var(--text-primary); max-width: 250px;">
+              <option value="">-- 定型マスタから選ぶ --</option>
+              ${FLEXCON_ITEMS.map(i => `
+                <option value="${i.id}" ${i.id === selectedItemId ? 'selected' : ''}>【${i.commonName}】 ${i.name} (¥${i.defaultPrice})</option>
+              `).join('')}
+            </select>
+            <button type="button" class="btn-clear-item-name" style="border: 1px solid var(--border-subtle); background: var(--bg-card); font-size: 10.5px; padding: 2px 6px; border-radius: 4px; cursor: pointer; color: #ef4444;" title="品名欄を空にして手入力">✕ 空白</button>
+          </div>
         </div>
-        <div>
-          <label style="font-size: 11px; color: var(--text-secondary); display: block; margin-bottom: 2px;">仕様・サイズ (任意)</label>
-          <input type="text" class="row-custom-spec" placeholder="例: φ1100×1400 反転ベルト付" value="${customSpec}" style="width: 100%; font-size: 12.5px; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border-medium); background: var(--bg-primary); color: var(--text-primary); box-sizing: border-box;">
+        <input type="text" class="row-item-name-input" value="${itemName}" placeholder="例: フレコンワンウェイバッグSNS-1 上下全開タイプ（自由に入力・編集できます）" required style="width: 100%; font-size: 13px; font-weight: 600; padding: 7px 10px; border-radius: 6px; border: 1px solid var(--border-medium); background: var(--bg-primary); color: var(--text-primary); box-sizing: border-box;">
+        <div style="margin-top: 4px;">
+          <input type="text" class="row-item-spec-input" value="${itemSpec}" placeholder="仕様・規格・サイズ（例: φ1100×1200 / 反転ベルト付）（任意）" style="width: 100%; font-size: 11.5px; padding: 5px 8px; border-radius: 4px; border: 1px solid var(--border-subtle); background: var(--bg-card); color: var(--text-secondary); box-sizing: border-box;">
         </div>
       </div>
 
@@ -5436,22 +5433,29 @@ function openFlexconOrderModal(data) {
     `;
 
     const itemSelect = row.querySelector('.row-item-select');
-    const customFields = row.querySelector('.row-custom-fields');
+    const nameInput = row.querySelector('.row-item-name-input');
+    const specInput = row.querySelector('.row-item-spec-input');
+    const clearBtn = row.querySelector('.btn-clear-item-name');
     const priceInput = row.querySelector('.row-item-price');
     const qtyInput = row.querySelector('.row-item-qty');
     const delBtn = row.querySelector('.btn-remove-po-item');
 
     itemSelect.addEventListener('change', () => {
-      if (itemSelect.value === 'CUSTOM') {
-        customFields.style.display = 'grid';
-      } else {
-        customFields.style.display = 'none';
-        const found = FLEXCON_ITEMS.find(i => i.id === itemSelect.value);
-        if (found) {
-          priceInput.value = found.defaultPrice;
-        }
+      if (!itemSelect.value) return;
+      const found = FLEXCON_ITEMS.find(i => i.id === itemSelect.value);
+      if (found) {
+        nameInput.value = found.name;
+        specInput.value = found.spec || '';
+        priceInput.value = found.defaultPrice;
+        updateOrderTotals();
       }
-      updateOrderTotals();
+    });
+
+    clearBtn.addEventListener('click', () => {
+      nameInput.value = '';
+      specInput.value = '';
+      itemSelect.value = '';
+      nameInput.focus();
     });
 
     qtyInput.addEventListener('input', updateOrderTotals);
@@ -5511,18 +5515,23 @@ function openFlexconOrderModal(data) {
 
     const items = [];
     rowsContainer.querySelectorAll('.po-item-row-card').forEach(row => {
-      const sel = row.querySelector('.row-item-select').value;
-      const isCust = sel === 'CUSTOM';
+      const nameVal = row.querySelector('.row-item-name-input').value.trim();
+      const specVal = row.querySelector('.row-item-spec-input').value.trim();
+      const selVal = row.querySelector('.row-item-select').value;
       const q = parseInt(row.querySelector('.row-item-qty').value) || 0;
       const p = parseFloat(row.querySelector('.row-item-price').value) || 0;
       const quote = row.querySelector('.row-item-quote').value || '';
-      const custName = isCust ? (row.querySelector('.row-custom-name').value.trim() || '特注フレコン') : '';
-      const custSpec = isCust ? (row.querySelector('.row-custom-spec').value.trim() || '') : '';
+
+      const matched = FLEXCON_ITEMS.find(i => (selVal && i.id === selVal) || i.name === nameVal);
+      const itemId = matched ? matched.id : 'CUSTOM';
+      const finalName = nameVal || (matched ? matched.name : '資材・商品');
 
       items.push({
-        item: sel,
-        customName: custName,
-        customSpec: custSpec,
+        item: itemId,
+        name: finalName,
+        spec: specVal,
+        customName: finalName,
+        customSpec: specVal,
         qty: q,
         price: p,
         quoteNo: quote
@@ -5601,9 +5610,9 @@ function generatePurchaseOrderHtml(tx, forStandalone = false) {
   const itemRowsHtml = rawItems.map(it => {
     let title = '';
     let spec = '';
-    if (it.item === 'CUSTOM') {
-      title = it.customName || '特注フレコン';
-      spec = it.customSpec || '';
+    if (it.name || it.customName) {
+      title = it.name || it.customName;
+      spec = it.spec || it.customSpec || '';
     } else {
       const found = FLEXCON_ITEMS.find(i => i.id === it.item);
       title = found ? found.name.split('　')[0].split(' (')[0] : (it.item || 'フレコン');
@@ -5665,8 +5674,9 @@ function generatePurchaseOrderHtml(tx, forStandalone = false) {
 
   const notes = [];
   if (rawItems.length === 1) {
-    const singleObj = FLEXCON_ITEMS.find(i => i.id === rawItems[0].item);
-    const singleName = rawItems[0].item === 'CUSTOM' ? (rawItems[0].customName || '特注品') : (singleObj ? singleObj.commonName : rawItems[0].item);
+    const single = rawItems[0];
+    const singleObj = FLEXCON_ITEMS.find(i => i.id === single.item);
+    const singleName = single.name || single.customName || (singleObj ? singleObj.commonName : single.item);
     notes.push(`・${singleName}のみの発注となります。`);
   } else {
     notes.push(`・上記${rawItems.length}品目の発注となります。`);
@@ -6408,12 +6418,12 @@ function renderFlexconLedger(container, data) {
                         <span style="font-size: 10px; background: rgba(37,99,235,0.12); color: var(--accent-blue); padding: 1px 6px; border-radius: 4px; display: inline-block; font-weight: 700; width: fit-content;">複数品目 (${tx.items.length}件)</span>
                         ${tx.items.map(it => {
                           const itObj = FLEXCON_ITEMS.find(i => i.id === it.item);
-                          const name = it.item === 'CUSTOM' ? (it.customName || '特注品') : (itObj ? itObj.commonName : it.item);
+                          const name = it.name || it.customName || (itObj ? itObj.commonName : it.item);
                           return `<div style="font-size: 11.5px; font-weight: 600; line-height: 1.3;"><span style="color: var(--accent-blue);">・</span>${name} <span style="font-size: 10.5px; color: var(--text-muted); font-weight: normal;">(${it.qty}枚 @¥${(it.price || 0).toLocaleString()})</span></div>`;
                         }).join('')}
                       </div>
                     ` : `
-                      <div style="font-weight: 700; color: var(--accent-blue);">【${itemObj ? itemObj.commonName : ((tx.items && tx.items[0] && tx.items[0].customName) || tx.item)}】</div>
+                      <div style="font-weight: 700; color: var(--accent-blue);">【${(tx.items && tx.items[0] && (tx.items[0].name || tx.items[0].customName)) || (itemObj ? itemObj.commonName : tx.item)}】</div>
                       <div style="font-size: 10.5px; color: var(--text-muted);">${itemObj ? itemObj.id : ''}</div>
                     `}
                   </td>
