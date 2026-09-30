@@ -4611,28 +4611,40 @@ function calculateStockMatrix(transactions, asOfDate = null) {
 
   filtered.slice().sort((a, b) => new Date(a.date) - new Date(b.date)).forEach(tx => {
     if (!matrix[tx.location]) return;
-    if (!matrix[tx.location][tx.item]) {
-      matrix[tx.location][tx.item] = { qty: 0, totalValue: 0, lastPrice: tx.price || 1000, orderedQty: 0 };
-    }
 
-    const cell = matrix[tx.location][tx.item];
-    if (tx.price > 0) cell.lastPrice = tx.price;
+    // 複数品目対応（tx.items があればそれを使用、なければ従来の単一品目）
+    const items = (tx.items && tx.items.length > 0) ? tx.items : [{
+      item: tx.item,
+      qty: tx.qty,
+      price: tx.price
+    }];
 
-    if (tx.type === 'inbound') {
-      if (tx.status === 'ordered') {
-        // 未納品（発注残）としてカウント（実在庫にはまだ加算しない）
-        cell.orderedQty = (cell.orderedQty || 0) + tx.qty;
-      } else {
-        // 納品完了（実在庫）に加算
-        cell.qty += tx.qty;
-        cell.totalValue += (tx.qty * (tx.price || cell.lastPrice));
+    items.forEach(it => {
+      const itemKey = it.item;
+      if (!itemKey) return;
+      if (!matrix[tx.location][itemKey]) {
+        matrix[tx.location][itemKey] = { qty: 0, totalValue: 0, lastPrice: it.price || 1000, orderedQty: 0 };
       }
-    } else if (tx.type === 'outbound') {
-      cell.qty -= tx.qty;
-      cell.totalValue -= (tx.qty * (tx.price || cell.lastPrice));
-      if (cell.qty < 0) cell.qty = 0;
-      if (cell.totalValue < 0) cell.totalValue = 0;
-    }
+
+      const cell = matrix[tx.location][itemKey];
+      if (it.price > 0) cell.lastPrice = it.price;
+
+      if (tx.type === 'inbound') {
+        if (tx.status === 'ordered') {
+          // 未納品（発注残）としてカウント（実在庫にはまだ加算しない）
+          cell.orderedQty = (cell.orderedQty || 0) + it.qty;
+        } else {
+          // 納品完了（実在庫）に加算
+          cell.qty += it.qty;
+          cell.totalValue += (it.qty * (it.price || cell.lastPrice));
+        }
+      } else if (tx.type === 'outbound') {
+        cell.qty -= it.qty;
+        cell.totalValue -= (it.qty * (it.price || cell.lastPrice));
+        if (cell.qty < 0) cell.qty = 0;
+        if (cell.totalValue < 0) cell.totalValue = 0;
+      }
+    });
   });
 
   return matrix;
@@ -4890,21 +4902,34 @@ function renderFlexconDashboard(container, data) {
   });
 }
 
-// 納品完了処理
+// 納品完了処理（複数品目対応）
 function markOrderDelivered(txId, data) {
   const tx = data.transactions.find(t => t.id === txId);
   if (!tx) return;
   const today = new Date().toISOString().split('T')[0];
-  if (confirm(`発注番号 ${tx.orderNo || tx.id} (${tx.location}宛 ${tx.qty}枚) の納品受入を完了しますか？\n（本日 ${today} 付で実在庫に計上されます）`)) {
+
+  const items = (tx.items && tx.items.length > 0) ? tx.items : [{
+    item: tx.item,
+    qty: tx.qty,
+    price: tx.price
+  }];
+
+  const itemsSummary = items.map(it => {
+    const itemObj = FLEXCON_ITEMS.find(i => i.id === it.item);
+    const name = it.customName || (itemObj ? itemObj.commonName : it.item);
+    return `${name} (${it.qty.toLocaleString()}枚)`;
+  }).join('、');
+
+  if (confirm(`発注番号 ${tx.orderNo || tx.id} (${tx.location}宛: ${itemsSummary}) の納品受入を完了しますか？\n（本日 ${today} 付で実在庫に計上されます）`)) {
     tx.status = 'delivered';
     tx.date = today;
     saveFlexconData(data);
-    showToast("✨ 納品受入を完了しました（実在庫に計上されました）");
+    showToast("✨ 納品受入を完了しました（各品目が実在庫に計上されました）");
     renderFlexconInventory();
   }
 }
 
-// 2. 資材発注・発注書自動出力モーダル
+// 2. 資材発注・発注書自動出力モーダル（複数品目対応・自由入力対応）
 function openFlexconOrderModal(data) {
   const modalContainer = document.getElementById('flexconActionModalContainer');
   const today = new Date().toISOString().split('T')[0];
@@ -4915,12 +4940,11 @@ function openFlexconOrderModal(data) {
 
   const defaultSup = FLEXCON_SUPPLIERS[0];
   const defaultLoc = FLEXCON_LOCATIONS[0];
-  const defaultItem = FLEXCON_ITEMS[0];
 
   modalContainer.innerHTML = `
     <div class="flexcon-modal-overlay" id="flexconOrderModalOverlay">
-      <div class="flexcon-modal-box" style="max-width: 680px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
+      <div class="flexcon-modal-box" style="max-width: 780px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
           <div style="display: flex; align-items: center; gap: 8px;">
             <span style="font-size: 20px;">📝</span>
             <h3 style="margin: 0; font-size: 17px; font-weight: 800;">フレコン資材 新規発注・発注書作成</h3>
@@ -4967,38 +4991,28 @@ function openFlexconOrderModal(data) {
           </div>
 
           <!-- 納品先詳細プレビュー -->
-          <div id="locDetailPreview" style="font-size: 11.5px; color: var(--text-muted); background: var(--bg-primary); padding: 8px 12px; border-radius: 6px; margin-bottom: 12px; border: 1px dashed var(--border-subtle);">
+          <div id="locDetailPreview" style="font-size: 11.5px; color: var(--text-muted); background: var(--bg-primary); padding: 8px 12px; border-radius: 6px; margin-bottom: 16px; border: 1px dashed var(--border-subtle);">
             納品先情報: ${FLEXCON_LOCATION_DETAILS[defaultLoc].company} (${FLEXCON_LOCATION_DETAILS[defaultLoc].recipient}) / ${FLEXCON_LOCATION_DETAILS[defaultLoc].address} / TEL: ${FLEXCON_LOCATION_DETAILS[defaultLoc].tel}
           </div>
 
-          <div class="tool-group">
-            <label for="mPoItem">品名（社内通称・読み替え名 / 正式商品名） <span style="color:#ef4444;">*</span></label>
-            <select id="mPoItem" required style="width: 100%; text-overflow: ellipsis;">
-              ${FLEXCON_ITEMS.map(i => `
-                <option value="${i.id}">【${i.commonName}】 ${i.name} (基準単価: ¥${i.defaultPrice})</option>
-              `).join('')}
-            </select>
-          </div>
+          <!-- 発注明細（複数品名対応） -->
+          <div style="margin-bottom: 18px; background: rgba(37,99,235,0.02); border: 1px solid var(--border-medium); border-radius: 10px; padding: 14px 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <label style="font-weight: 800; font-size: 14px; display: flex; align-items: center; gap: 6px; margin: 0; color: var(--text-primary);">
+                <span>📦</span> 発注明細（品名・数量・単価） <span style="color:#ef4444;">*</span>
+              </label>
+              <button type="button" id="btnAddPoItemRow" class="btn btn-secondary" style="padding: 5px 12px; font-size: 12px; display: inline-flex; align-items: center; gap: 4px; font-weight: 700; color: var(--accent-blue); border-color: var(--accent-blue); background: var(--bg-card); cursor: pointer;">
+                ➕ 品目を追加
+              </button>
+            </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px;">
-            <div class="tool-group">
-              <label for="mPoQty">発注枚数 <span style="color:#ef4444;">*</span></label>
-              <input type="number" id="mPoQty" min="1" max="99999" value="150" required>
-            </div>
-            <div class="tool-group">
-              <label for="mPoPrice">発注単価（税別円） <span style="color:#ef4444;">*</span></label>
-              <input type="number" id="mPoPrice" min="0" step="0.1" value="${defaultItem.defaultPrice}" required>
-            </div>
-            <div class="tool-group">
-              <label for="mPoQuoteNo">見積書No（任意）</label>
-              <input type="text" id="mPoQuoteNo" placeholder="例: 見積書No.23922">
-            </div>
+            <div id="poItemsRowsContainer" style="display: flex; flex-direction: column; gap: 12px;"></div>
           </div>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
             <div class="tool-group">
-              <label for="mPoNo">発注書番号（管理No）</label>
-              <input type="text" id="mPoNo" value="${autoPoNo}" required>
+              <label for="mPoNo">発注書番号（管理No） <span style="font-size: 11px; color: var(--text-muted); font-weight: normal;">(任意)</span></label>
+              <input type="text" id="mPoNo" value="${autoPoNo}" placeholder="例: PO-20260930-01（空欄可）">
             </div>
             <div class="tool-group">
               <label for="mPoDueMonthNote">計上月等の特記事項</label>
@@ -5008,27 +5022,28 @@ function openFlexconOrderModal(data) {
 
           <div class="tool-group">
             <label for="mPoNote">備考欄（発注書に印字）</label>
-            <textarea id="mPoNote" rows="2" style="width: 100%; padding: 8px 12px; font-size: 13px; border-radius: 8px; border: 1px solid var(--border-medium); background: var(--bg-card); color: var(--text-primary);" placeholder="・送り状には弊社の名前が入るよう、ご準備の程よろしくお願いいたします。&#10;・納品日がお決まりになりましたらご連絡お待ちしております。"></textarea>
+            <textarea id="mPoNote" rows="3" style="width: 100%; padding: 8px 12px; font-size: 13px; border-radius: 8px; border: 1px solid var(--border-medium); background: var(--bg-card); color: var(--text-primary); box-sizing: border-box;">・送り状には弊社の名前が入るよう、ご準備の程よろしくお願いいたします。
+・納品日がお決まりになりましたらご連絡お待ちしております。</textarea>
           </div>
 
-          <div style="background: var(--bg-primary); border: 1px solid var(--border-subtle); padding: 14px 18px; border-radius: 10px; margin-top: 8px; font-size: 13px;">
+          <div style="background: var(--bg-primary); border: 1px solid var(--border-subtle); padding: 14px 18px; border-radius: 10px; margin-top: 12px; font-size: 13px;">
             <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
               <span>発注小計（税抜）:</span>
-              <strong id="mPoSubtotal">¥150,000</strong>
+              <strong id="mPoSubtotal">¥0</strong>
             </div>
             <div style="display: flex; justify-content: space-between; color: var(--text-secondary); font-size: 12px; margin-bottom: 4px;">
               <span>消費税（10%）:</span>
-              <span id="mPoTax">¥15,000</span>
+              <span id="mPoTax">¥0</span>
             </div>
             <div style="display: flex; justify-content: space-between; font-size: 16px; border-top: 1px dashed var(--border-medium); padding-top: 8px; margin-top: 8px;">
               <span style="font-weight: 700;">発注合計（税込）:</span>
-              <strong id="mPoTotal" style="color: var(--accent-blue); font-size: 18px;">¥165,000</strong>
+              <strong id="mPoTotal" style="color: var(--accent-blue); font-size: 18px;">¥0</strong>
             </div>
           </div>
 
           <div style="display: flex; gap: 10px; margin-top: 20px;">
             <button type="button" id="btnCancelOrderModal" class="btn btn-secondary" style="flex: 1; padding: 11px;">キャンセル</button>
-            <button type="submit" class="btn btn-primary" style="flex: 2; padding: 11px; font-size: 14px; background: linear-gradient(135deg, #10b981, #059669); border-color: #059669;">
+            <button type="submit" class="btn btn-primary" style="flex: 2; padding: 11px; font-size: 14px; background: linear-gradient(135deg, #10b981, #059669); border-color: #059669; cursor: pointer;">
               📄 発注登録 ＆ 発注書プレビュー・印刷
             </button>
           </div>
@@ -5044,26 +5059,158 @@ function openFlexconOrderModal(data) {
     if (e.target.id === 'flexconOrderModalOverlay') closeModal();
   });
 
-  const qtyInput = document.getElementById('mPoQty');
-  const priceInput = document.getElementById('mPoPrice');
-  const itemSelect = document.getElementById('mPoItem');
   const supplierSelect = document.getElementById('mPoSupplier');
   const supplierContactInput = document.getElementById('mPoSupplierContact');
   const locationSelect = document.getElementById('mPoLocation');
   const locPreview = document.getElementById('locDetailPreview');
   const dueDateInput = document.getElementById('mPoDueDate');
   const dueMonthNoteInput = document.getElementById('mPoDueMonthNote');
+  const rowsContainer = document.getElementById('poItemsRowsContainer');
 
   function updateOrderTotals() {
-    const qty = parseInt(qtyInput.value) || 0;
-    const price = parseFloat(priceInput.value) || 0;
-    const subtotal = Math.round(qty * price);
+    let subtotal = 0;
+    rowsContainer.querySelectorAll('.po-item-row-card').forEach(row => {
+      const q = parseInt(row.querySelector('.row-item-qty').value) || 0;
+      const p = parseFloat(row.querySelector('.row-item-price').value) || 0;
+      const rowAmt = Math.round(q * p);
+      row.querySelector('.row-item-subtotal').textContent = `¥${rowAmt.toLocaleString()}`;
+      subtotal += rowAmt;
+    });
     const tax = Math.round(subtotal * 0.10);
     const total = subtotal + tax;
     document.getElementById('mPoSubtotal').textContent = `¥${subtotal.toLocaleString()}`;
     document.getElementById('mPoTax').textContent = `¥${tax.toLocaleString()}`;
     document.getElementById('mPoTotal').textContent = `¥${total.toLocaleString()}`;
   }
+
+  function updateRowBadgesAndButtons() {
+    const rows = rowsContainer.querySelectorAll('.po-item-row-card');
+    rows.forEach((row, idx) => {
+      const badge = row.querySelector('.row-num-badge');
+      if (badge) badge.textContent = `品目 #${idx + 1}`;
+      const delBtn = row.querySelector('.btn-remove-po-item');
+      if (delBtn) delBtn.style.display = rows.length > 1 ? 'inline-flex' : 'none';
+    });
+  }
+
+  function addPoItemRow(defaultData = {}) {
+    const row = document.createElement('div');
+    row.className = 'po-item-row-card';
+    row.style.cssText = 'background: var(--bg-card); border: 1px solid var(--border-medium); border-radius: 8px; padding: 12px 14px; position: relative;';
+
+    const selectedItemId = defaultData.item || (FLEXCON_ITEMS[0] ? FLEXCON_ITEMS[0].id : 'SNS-1');
+    const isCustom = selectedItemId === 'CUSTOM';
+    const defItem = FLEXCON_ITEMS.find(i => i.id === selectedItemId);
+    const price = defaultData.price !== undefined ? defaultData.price : (defItem ? defItem.defaultPrice : 1000);
+    const qty = defaultData.qty !== undefined ? defaultData.qty : 150;
+    const quoteNo = defaultData.quoteNo || '';
+    const customName = defaultData.customName || '';
+    const customSpec = defaultData.customSpec || '';
+
+    row.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <span class="row-num-badge" style="font-size: 11.5px; font-weight: 800; color: var(--accent-blue); background: rgba(37,99,235,0.08); padding: 2px 8px; border-radius: 4px;">
+          品目
+        </span>
+        <button type="button" class="btn-remove-po-item" style="background: none; border: none; color: #ef4444; font-size: 12px; font-weight: 700; cursor: pointer; display: none; align-items: center; gap: 2px;">
+          ✕ 削除
+        </button>
+      </div>
+
+      <div style="margin-bottom: 8px;">
+        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-secondary); display: block; margin-bottom: 4px;">
+          品名（マスター選択 または 自由入力） <span style="color:#ef4444;">*</span>
+        </label>
+        <select class="row-item-select" required style="width: 100%; font-size: 13px; padding: 7px 10px; border-radius: 6px; border: 1px solid var(--border-medium); background: var(--bg-primary); color: var(--text-primary);">
+          ${FLEXCON_ITEMS.map(i => `
+            <option value="${i.id}" ${i.id === selectedItemId ? 'selected' : ''}>【${i.commonName}】 ${i.name} (基準単価: ¥${i.defaultPrice})</option>
+          `).join('')}
+          <option value="CUSTOM" ${isCustom ? 'selected' : ''}>✏️ 【自由入力】その他の品名・独自規格</option>
+        </select>
+      </div>
+
+      <!-- 自由入力用フィールド -->
+      <div class="row-custom-fields" style="display: ${isCustom ? 'grid' : 'none'}; grid-template-columns: 1.5fr 1fr; gap: 10px; margin-bottom: 8px;">
+        <div>
+          <label style="font-size: 11px; color: var(--text-secondary); display: block; margin-bottom: 2px;">自由入力 品名・商品名 *</label>
+          <input type="text" class="row-custom-name" placeholder="例: 特注ワンウェイバッグ" value="${customName}" style="width: 100%; font-size: 12.5px; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border-medium); background: var(--bg-primary); color: var(--text-primary); box-sizing: border-box;">
+        </div>
+        <div>
+          <label style="font-size: 11px; color: var(--text-secondary); display: block; margin-bottom: 2px;">仕様・サイズ (任意)</label>
+          <input type="text" class="row-custom-spec" placeholder="例: φ1100×1400 反転ベルト付" value="${customSpec}" style="width: 100%; font-size: 12.5px; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border-medium); background: var(--bg-primary); color: var(--text-primary); box-sizing: border-box;">
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1.2fr 1.2fr 1.6fr auto; gap: 10px; align-items: flex-end;">
+        <div>
+          <label style="font-size: 11px; color: var(--text-secondary); display: block; margin-bottom: 2px;">発注枚数 <span style="color:#ef4444;">*</span></label>
+          <input type="number" class="row-item-qty" min="1" max="99999" value="${qty}" required style="width: 100%; font-size: 13.5px; font-weight: 700; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--border-medium); background: var(--bg-primary); color: var(--text-primary); box-sizing: border-box;">
+        </div>
+        <div>
+          <label style="font-size: 11px; color: var(--text-secondary); display: block; margin-bottom: 2px;">発注単価 (税別円) <span style="color:#ef4444;">*</span></label>
+          <input type="number" class="row-item-price" min="0" step="0.1" value="${price}" required style="width: 100%; font-size: 13.5px; font-weight: 700; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--border-medium); background: var(--bg-primary); color: var(--text-primary); box-sizing: border-box;">
+        </div>
+        <div>
+          <label style="font-size: 11px; color: var(--text-secondary); display: block; margin-bottom: 2px;">見積書No (任意)</label>
+          <input type="text" class="row-item-quote" placeholder="例: 見積書No.23922" value="${quoteNo}" style="width: 100%; font-size: 12px; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--border-medium); background: var(--bg-primary); color: var(--text-primary); box-sizing: border-box;">
+        </div>
+        <div style="text-align: right; min-width: 85px; padding-bottom: 6px;">
+          <span style="font-size: 10.5px; color: var(--text-muted); display: block;">小計(税別)</span>
+          <strong class="row-item-subtotal" style="font-size: 13.5px; color: var(--accent-blue);">¥${Math.round(qty * price).toLocaleString()}</strong>
+        </div>
+      </div>
+    `;
+
+    const itemSelect = row.querySelector('.row-item-select');
+    const customFields = row.querySelector('.row-custom-fields');
+    const priceInput = row.querySelector('.row-item-price');
+    const qtyInput = row.querySelector('.row-item-qty');
+    const delBtn = row.querySelector('.btn-remove-po-item');
+
+    itemSelect.addEventListener('change', () => {
+      if (itemSelect.value === 'CUSTOM') {
+        customFields.style.display = 'grid';
+      } else {
+        customFields.style.display = 'none';
+        const found = FLEXCON_ITEMS.find(i => i.id === itemSelect.value);
+        if (found) {
+          priceInput.value = found.defaultPrice;
+        }
+      }
+      updateOrderTotals();
+    });
+
+    qtyInput.addEventListener('input', updateOrderTotals);
+    priceInput.addEventListener('input', updateOrderTotals);
+
+    delBtn.addEventListener('click', () => {
+      row.remove();
+      updateRowBadgesAndButtons();
+      updateOrderTotals();
+    });
+
+    rowsContainer.appendChild(row);
+    updateRowBadgesAndButtons();
+    updateOrderTotals();
+  }
+
+  // 初期行として1件追加
+  addPoItemRow({
+    item: FLEXCON_ITEMS[0].id,
+    qty: 150,
+    price: FLEXCON_ITEMS[0].defaultPrice,
+    quoteNo: ''
+  });
+
+  // 「品目を追加」ボタン
+  document.getElementById('btnAddPoItemRow').addEventListener('click', () => {
+    addPoItemRow({
+      item: FLEXCON_ITEMS[1] ? FLEXCON_ITEMS[1].id : FLEXCON_ITEMS[0].id,
+      qty: 100,
+      price: FLEXCON_ITEMS[1] ? FLEXCON_ITEMS[1].defaultPrice : 1000,
+      quoteNo: ''
+    });
+  });
 
   // 仕入先切替時の担当者連動
   supplierSelect.addEventListener('change', () => {
@@ -5092,18 +5239,39 @@ function openFlexconOrderModal(data) {
     }
   });
 
-  itemSelect.addEventListener('change', () => {
-    const selectedItem = FLEXCON_ITEMS.find(i => i.id === itemSelect.value);
-    if (selectedItem) priceInput.value = selectedItem.defaultPrice;
-    updateOrderTotals();
-  });
-
-  qtyInput.addEventListener('input', updateOrderTotals);
-  priceInput.addEventListener('input', updateOrderTotals);
-  updateOrderTotals();
-
+  // フォーム送信時
   document.getElementById('modalOrderForm').addEventListener('submit', (e) => {
     e.preventDefault();
+
+    const items = [];
+    rowsContainer.querySelectorAll('.po-item-row-card').forEach(row => {
+      const sel = row.querySelector('.row-item-select').value;
+      const isCust = sel === 'CUSTOM';
+      const q = parseInt(row.querySelector('.row-item-qty').value) || 0;
+      const p = parseFloat(row.querySelector('.row-item-price').value) || 0;
+      const quote = row.querySelector('.row-item-quote').value || '';
+      const custName = isCust ? (row.querySelector('.row-custom-name').value.trim() || '特注フレコン') : '';
+      const custSpec = isCust ? (row.querySelector('.row-custom-spec').value.trim() || '') : '';
+
+      items.push({
+        item: sel,
+        customName: custName,
+        customSpec: custSpec,
+        qty: q,
+        price: p,
+        quoteNo: quote
+      });
+    });
+
+    if (items.length === 0) {
+      alert("発注明細を1品目以上指定してください。");
+      return;
+    }
+
+    const totalQty = items.reduce((sum, it) => sum + it.qty, 0);
+    const primaryItem = items[0].item;
+    const primaryPrice = items[0].price;
+
     const newTx = {
       id: "TX-" + Date.now().toString().slice(-6),
       date: document.getElementById('mPoDate').value,
@@ -5113,14 +5281,17 @@ function openFlexconOrderModal(data) {
       type: "inbound",
       status: "ordered", // 未納品フラグ
       location: document.getElementById('mPoLocation').value,
-      item: document.getElementById('mPoItem').value,
-      qty: parseInt(qtyInput.value),
-      price: parseFloat(priceInput.value),
+      // 複数品目データ
+      items: items,
+      // 既存コードとの後方互換性
+      item: primaryItem,
+      qty: totalQty,
+      price: primaryPrice,
       supplier: document.getElementById('mPoSupplier').value,
       supplierContact: supplierContactInput.value,
       ourContact: document.getElementById('mPoOurContact').value,
-      quoteNo: document.getElementById('mPoQuoteNo').value,
-      orderNo: document.getElementById('mPoNo').value,
+      quoteNo: items[0].quoteNo || '',
+      orderNo: document.getElementById('mPoNo').value.trim(),
       purpose: "",
       note: document.getElementById('mPoNote').value
     };
@@ -5137,7 +5308,10 @@ function openFlexconOrderModal(data) {
 
 // 発注書HTML生成ヘルパー（印刷用独立ドキュメントおよびモーダル内で共有）
 function generatePurchaseOrderHtml(tx, forStandalone = false) {
-  const itemObj = FLEXCON_ITEMS.find(i => i.id === tx.item);
+  const rawItems = (tx.items && Array.isArray(tx.items) && tx.items.length > 0)
+    ? tx.items
+    : [{ item: tx.item, qty: tx.qty, price: tx.price, quoteNo: tx.quoteNo || '' }];
+
   const locDetail = FLEXCON_LOCATION_DETAILS[tx.location] || {
     company: tx.location,
     recipient: "ご担当者様",
@@ -5145,7 +5319,52 @@ function generatePurchaseOrderHtml(tx, forStandalone = false) {
     address: "",
     tel: ""
   };
-  const subtotal = Math.round(tx.qty * (tx.price || 0));
+
+  let subtotal = 0;
+  const itemRowsHtml = rawItems.map(it => {
+    let title = '';
+    let spec = '';
+    if (it.item === 'CUSTOM') {
+      title = it.customName || '特注フレコン';
+      spec = it.customSpec || '';
+    } else {
+      const found = FLEXCON_ITEMS.find(i => i.id === it.item);
+      title = found ? found.name.split('　')[0].split(' (')[0] : (it.item || 'フレコン');
+      spec = found ? (found.spec || found.name) : '';
+    }
+    const q = it.qty || 0;
+    const p = it.price || 0;
+    const lineTotal = Math.round(q * p);
+    subtotal += lineTotal;
+
+    const quoteLine = it.quoteNo
+      ? `<div class="po-item-quote">${it.quoteNo}</div>`
+      : (tx.orderNo ? `<div class="po-item-quote">管理No: ${tx.orderNo}</div>` : '');
+
+    return `
+      <tr>
+        <td class="cell-item-detail">
+          <div class="po-item-title">${title}</div>
+          ${spec ? `<div class="po-item-spec">${spec}</div>` : ''}
+          ${quoteLine}
+        </td>
+        <td class="cell-qty">${q.toLocaleString()} <span class="po-unit">枚</span></td>
+        <td class="cell-price">¥${p.toLocaleString()}</td>
+        <td class="cell-amount">¥${lineTotal.toLocaleString()}</td>
+      </tr>
+    `;
+  }).join('');
+
+  const blankRowsCount = Math.max(0, 2 - rawItems.length);
+  const blankRowsHtml = blankRowsCount > 0 ? `
+    <tr class="blank-row">
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  `.repeat(blankRowsCount) : '';
+
   const tax = Math.round(subtotal * 0.10);
   const total = subtotal + tax;
 
@@ -5161,18 +5380,32 @@ function generatePurchaseOrderHtml(tx, forStandalone = false) {
   const locRecipientStr = locDetail.recipient ? `（${locDetail.recipient}）` : '';
 
   const notes = [];
-  notes.push(`・${itemObj ? itemObj.commonName : tx.item}のみの発注となります。`);
-  notes.push('・送り状には弊社の名前が入るよう、ご準備の程よろしくお願いいたします。');
-  notes.push('・納品日がお決まりになりましたらご連絡お待ちしております。');
+  if (rawItems.length === 1) {
+    const singleObj = FLEXCON_ITEMS.find(i => i.id === rawItems[0].item);
+    const singleName = rawItems[0].item === 'CUSTOM' ? (rawItems[0].customName || '特注品') : (singleObj ? singleObj.commonName : rawItems[0].item);
+    notes.push(`・${singleName}のみの発注となります。`);
+  } else {
+    notes.push(`・上記${rawItems.length}品目の発注となります。`);
+  }
+
+  const userNotes = [];
   if (tx.note && tx.note.trim()) {
     tx.note.split('\n').forEach(n => {
       const trimmed = n.trim();
       if (trimmed) {
-        if (!trimmed.startsWith('・')) notes.push(`・${trimmed}`);
-        else notes.push(trimmed);
+        userNotes.push(trimmed.startsWith('・') ? trimmed : `・${trimmed}`);
       }
     });
   }
+
+  const userNotesText = userNotes.join('\n');
+  if (!userNotesText.includes('送り状')) {
+    notes.push('・送り状には弊社の名前が入るよう、ご準備の程よろしくお願いいたします。');
+  }
+  if (!userNotesText.includes('納品日')) {
+    notes.push('・納品日がお決まりになりましたらご連絡お待ちしております。');
+  }
+  userNotes.forEach(un => notes.push(un));
 
   const innerContent = `
     <div class="po-sheet-landscape" id="purchaseOrderPrintArea">
@@ -5218,22 +5451,8 @@ function generatePurchaseOrderHtml(tx, forStandalone = false) {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td class="cell-item-detail">
-              <div class="po-item-title">${itemObj ? itemObj.name.split('　')[0].split(' (')[0] : tx.item}</div>
-              <div class="po-item-spec">${itemObj ? (itemObj.spec || itemObj.name) : ''}</div>
-              ${tx.quoteNo ? `<div class="po-item-quote">${tx.quoteNo}</div>` : (tx.orderNo ? `<div class="po-item-quote">管理No: ${tx.orderNo}</div>` : '')}
-            </td>
-            <td class="cell-qty">${tx.qty.toLocaleString()} <span class="po-unit">枚</span></td>
-            <td class="cell-price">¥${(tx.price || 0).toLocaleString()}</td>
-            <td class="cell-amount">¥${subtotal.toLocaleString()}</td>
-          </tr>
-          <tr class="blank-row">
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
+          ${itemRowsHtml}
+          ${blankRowsHtml}
         </tbody>
         <tfoot>
           <tr>
@@ -5878,7 +6097,13 @@ function renderFlexconLedger(container, data) {
               const itemObj = FLEXCON_ITEMS.find(i => i.id === tx.item);
               const isOrdered = tx.status === 'ordered';
               const isInbound = tx.type === 'inbound';
-              const amt = tx.qty * (tx.price || 0);
+              const hasMultipleItems = tx.items && Array.isArray(tx.items) && tx.items.length > 1;
+              const totalAmt = (tx.items && Array.isArray(tx.items) && tx.items.length > 0)
+                ? tx.items.reduce((s, it) => s + (it.qty * (it.price || 0)), 0)
+                : (tx.qty * (tx.price || 0));
+              const totalQty = (tx.items && Array.isArray(tx.items) && tx.items.length > 0)
+                ? tx.items.reduce((s, it) => s + (it.qty || 0), 0)
+                : tx.qty;
               const isOverdue = isOrdered && tx.deliveryDueDate && tx.deliveryDueDate < today;
 
               return `
@@ -5897,14 +6122,27 @@ function renderFlexconLedger(container, data) {
                   </td>
                   <td style="padding: 8px;">${tx.location}</td>
                   <td style="padding: 8px;">
-                    <div style="font-weight: 700; color: var(--accent-blue);">【${itemObj ? itemObj.commonName : tx.item}】</div>
-                    <div style="font-size: 10.5px; color: var(--text-muted);">${itemObj ? itemObj.id : ''}</div>
+                    ${hasMultipleItems ? `
+                      <div style="display: flex; flex-direction: column; gap: 3px;">
+                        <span style="font-size: 10px; background: rgba(37,99,235,0.12); color: var(--accent-blue); padding: 1px 6px; border-radius: 4px; display: inline-block; font-weight: 700; width: fit-content;">複数品目 (${tx.items.length}件)</span>
+                        ${tx.items.map(it => {
+                          const itObj = FLEXCON_ITEMS.find(i => i.id === it.item);
+                          const name = it.item === 'CUSTOM' ? (it.customName || '特注品') : (itObj ? itObj.commonName : it.item);
+                          return `<div style="font-size: 11.5px; font-weight: 600; line-height: 1.3;"><span style="color: var(--accent-blue);">・</span>${name} <span style="font-size: 10.5px; color: var(--text-muted); font-weight: normal;">(${it.qty}枚 @¥${(it.price || 0).toLocaleString()})</span></div>`;
+                        }).join('')}
+                      </div>
+                    ` : `
+                      <div style="font-weight: 700; color: var(--accent-blue);">【${itemObj ? itemObj.commonName : ((tx.items && tx.items[0] && tx.items[0].customName) || tx.item)}】</div>
+                      <div style="font-size: 10.5px; color: var(--text-muted);">${itemObj ? itemObj.id : ''}</div>
+                    `}
                   </td>
                   <td style="padding: 8px; text-align: right; font-weight: 700; color: ${isOrdered ? '#f59e0b' : (isInbound ? 'var(--accent-blue)' : '#ef4444')};">
-                    ${isInbound ? '+' : '-'}${tx.qty.toLocaleString()} 枚
+                    ${isInbound ? '+' : '-'}${totalQty.toLocaleString()} 枚
                   </td>
-                  <td style="padding: 8px; text-align: right;">¥${(tx.price || 0).toLocaleString()}</td>
-                  <td style="padding: 8px; text-align: right; font-weight: 700;">¥${Math.round(amt).toLocaleString()}</td>
+                  <td style="padding: 8px; text-align: right;">
+                    ${hasMultipleItems ? '<span style="font-size: 11px; color: var(--text-muted);">（内訳参照）</span>' : `¥${(tx.price || 0).toLocaleString()}`}
+                  </td>
+                  <td style="padding: 8px; text-align: right; font-weight: 700;">¥${Math.round(totalAmt).toLocaleString()}</td>
                   <td style="padding: 8px;">
                     ${isOrdered ? `
                       <div style="font-weight: 600;">${tx.supplier || '-'}</div>
@@ -6059,12 +6297,26 @@ function renderFlexconCheck(container, data) {
   document.getElementById('btnExportFlexconCSV').addEventListener('click', () => {
     let csv = "\uFEFF日付,区分,ステータス,保管場所,品名ID,品名通称,枚数,単価,金額,仕入先/用途,納品期日,発注No,備考\n";
     data.transactions.forEach(tx => {
-      const itemObj = FLEXCON_ITEMS.find(i => i.id === tx.item);
       const isOrdered = tx.status === 'ordered';
       const statusText = isOrdered ? '発注中(未納品)' : '納品完了';
       const typeText = tx.type === 'inbound' ? '入庫' : '出庫';
-      const common = itemObj ? itemObj.commonName : '';
-      csv += `"${tx.date}","${typeText}","${statusText}","${tx.location}","${tx.item}","${common}",${tx.qty},${tx.price || 0},${tx.qty * (tx.price || 0)},"${tx.supplier || tx.purpose || ''}","${tx.deliveryDueDate || ''}","${tx.orderNo || ''}","${tx.note || ''}"\n`;
+
+      if (tx.items && Array.isArray(tx.items) && tx.items.length > 0) {
+        tx.items.forEach(it => {
+          const itemObj = FLEXCON_ITEMS.find(i => i.id === it.item);
+          const itemId = it.item;
+          const common = it.item === 'CUSTOM' ? (it.customName || '特注品') : (itemObj ? itemObj.commonName : it.item);
+          const q = it.qty || 0;
+          const p = it.price || 0;
+          const quote = it.quoteNo ? `[${it.quoteNo}] ` : '';
+          const noteText = `${quote}${tx.note || ''}`.trim();
+          csv += `"${tx.date}","${typeText}","${statusText}","${tx.location}","${itemId}","${common}",${q},${p},${Math.round(q * p)},"${tx.supplier || tx.purpose || ''}","${tx.deliveryDueDate || ''}","${tx.orderNo || ''}","${noteText}"\n`;
+        });
+      } else {
+        const itemObj = FLEXCON_ITEMS.find(i => i.id === tx.item);
+        const common = itemObj ? itemObj.commonName : '';
+        csv += `"${tx.date}","${typeText}","${statusText}","${tx.location}","${tx.item}","${common}",${tx.qty},${tx.price || 0},${tx.qty * (tx.price || 0)},"${tx.supplier || tx.purpose || ''}","${tx.deliveryDueDate || ''}","${tx.orderNo || ''}","${tx.note || ''}"\n`;
+      }
     });
 
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
