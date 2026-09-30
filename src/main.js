@@ -5152,8 +5152,17 @@ function openFlexconOrderModal(data) {
           </div>
 
           <div class="tool-group">
-            <label for="mPoNote">備考欄（発注書に印字）</label>
-            <textarea id="mPoNote" rows="3" style="width: 100%; padding: 8px 12px; font-size: 13px; border-radius: 8px; border: 1px solid var(--border-medium); background: var(--bg-card); color: var(--text-primary); box-sizing: border-box;">・送り状には弊社の名前が入るよう、ご準備の程よろしくお願いいたします。
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; flex-wrap: wrap; gap: 4px;">
+              <label for="mPoNote" style="margin: 0;">備考欄（発注書に印字）</label>
+              <div style="display: flex; gap: 4px; flex-wrap: wrap; align-items: center;">
+                <span style="font-size: 10.5px; color: var(--text-muted); margin-right: 2px;">定型文:</span>
+                <button type="button" id="btnNotePresetAll" style="border: 1px solid var(--border-medium); background: var(--bg-card); font-size: 10.5px; padding: 2px 7px; border-radius: 4px; cursor: pointer; color: var(--accent-blue); font-weight: 600;" title="標準の2行定型文をセット">🔄 標準定型文</button>
+                <button type="button" id="btnNoteAddInvoice" style="border: 1px solid var(--border-medium); background: var(--bg-card); font-size: 10.5px; padding: 2px 7px; border-radius: 4px; cursor: pointer; color: var(--text-secondary);" title="送り状社名注記を追加">＋ 送り状社名</button>
+                <button type="button" id="btnNoteAddDueDate" style="border: 1px solid var(--border-medium); background: var(--bg-card); font-size: 10.5px; padding: 2px 7px; border-radius: 4px; cursor: pointer; color: var(--text-secondary);" title="納品日連絡希望を追加">＋ 納品日連絡</button>
+                <button type="button" id="btnNoteClear" style="border: 1px solid var(--border-subtle); background: var(--bg-card); font-size: 10.5px; padding: 2px 7px; border-radius: 4px; cursor: pointer; color: #ef4444;" title="備考欄を空にして自由に手入力">✕ 空白にする</button>
+              </div>
+            </div>
+            <textarea id="mPoNote" rows="3" placeholder="備考を自由に入力できます（右上のボタンで定型文の挿入やクリアも可能）" style="width: 100%; padding: 8px 12px; font-size: 13px; border-radius: 8px; border: 1px solid var(--border-medium); background: var(--bg-card); color: var(--text-primary); box-sizing: border-box;">・送り状には弊社の名前が入るよう、ご準備の程よろしくお願いいたします。
 ・納品日がお決まりになりましたらご連絡お待ちしております。</textarea>
           </div>
 
@@ -5209,6 +5218,29 @@ function openFlexconOrderModal(data) {
   });
   document.getElementById('btnClearPoNo').addEventListener('click', () => {
     poNoInput.value = '';
+  });
+
+  const noteTextarea = document.getElementById('mPoNote');
+  const defaultNotesText = `・送り状には弊社の名前が入るよう、ご準備の程よろしくお願いいたします。\n・納品日がお決まりになりましたらご連絡お待ちしております。`;
+  const noteInvoiceText = '・送り状には弊社の名前が入るよう、ご準備の程よろしくお願いいたします。';
+  const noteDueDateText = '・納品日がお決まりになりましたらご連絡お待ちしております。';
+
+  document.getElementById('btnNotePresetAll').addEventListener('click', () => {
+    noteTextarea.value = defaultNotesText;
+  });
+  document.getElementById('btnNoteClear').addEventListener('click', () => {
+    noteTextarea.value = '';
+    noteTextarea.focus();
+  });
+  document.getElementById('btnNoteAddInvoice').addEventListener('click', () => {
+    if (!noteTextarea.value.includes(noteInvoiceText)) {
+      noteTextarea.value = (noteTextarea.value.trim() ? noteTextarea.value.trim() + '\n' : '') + noteInvoiceText;
+    }
+  });
+  document.getElementById('btnNoteAddDueDate').addEventListener('click', () => {
+    if (!noteTextarea.value.includes(noteDueDateText)) {
+      noteTextarea.value = (noteTextarea.value.trim() ? noteTextarea.value.trim() + '\n' : '') + noteDueDateText;
+    }
   });
 
   // 納品先住所プリセットの連動＆反映
@@ -5611,24 +5643,14 @@ function generatePurchaseOrderHtml(tx, forStandalone = false) {
     notes.push(`・上記${rawItems.length}品目の発注となります。`);
   }
 
-  const userNotes = [];
   if (tx.note && tx.note.trim()) {
     tx.note.split('\n').forEach(n => {
       const trimmed = n.trim();
       if (trimmed) {
-        userNotes.push(trimmed.startsWith('・') ? trimmed : `・${trimmed}`);
+        notes.push(trimmed.startsWith('・') ? trimmed : `・${trimmed}`);
       }
     });
   }
-
-  const userNotesText = userNotes.join('\n');
-  if (!userNotesText.includes('送り状')) {
-    notes.push('・送り状には弊社の名前が入るよう、ご準備の程よろしくお願いいたします。');
-  }
-  if (!userNotesText.includes('納品日')) {
-    notes.push('・納品日がお決まりになりましたらご連絡お待ちしております。');
-  }
-  userNotes.forEach(un => notes.push(un));
 
   const innerContent = `
     <div class="po-sheet-landscape" id="purchaseOrderPrintArea">
