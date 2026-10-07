@@ -5237,8 +5237,14 @@ function openFlexconOrderModal(data) {
               <input type="text" id="mPoNo" value="" placeholder="例: PO-20260930-01（空白のまま印刷・登録可能）">
             </div>
             <div class="tool-group">
-              <label for="mPoDueMonthNote">計上月等の特記事項</label>
-              <input type="text" id="mPoDueMonthNote" value="※出荷（計上）も当月でお願いいたします。">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <label for="mPoDueMonthNote" style="margin: 0;">計上月等の特記事項 <span style="font-size: 11px; color: var(--text-muted); font-weight: normal;">(空白出力可)</span></label>
+                <div style="display: flex; gap: 4px;">
+                  <button type="button" id="btnResetDueMonthNote" style="background: none; border: 1px solid var(--border-medium); border-radius: 4px; font-size: 10.5px; padding: 1px 6px; cursor: pointer; color: var(--accent-blue);" title="標準の出荷月注記をセット">🔄 標準文</button>
+                  <button type="button" id="btnClearDueMonthNote" style="background: none; border: 1px solid var(--border-subtle); border-radius: 4px; font-size: 10.5px; padding: 1px 6px; cursor: pointer; color: #ef4444;" title="空白にする">✕ 空白</button>
+                </div>
+              </div>
+              <input type="text" id="mPoDueMonthNote" value="※出荷（計上）も当月でお願いいたします。" placeholder="※空白の場合は発注書にも印字されません">
             </div>
           </div>
 
@@ -5272,10 +5278,13 @@ function openFlexconOrderModal(data) {
             </div>
           </div>
 
-          <div style="display: flex; gap: 10px; margin-top: 20px;">
-            <button type="button" id="btnCancelOrderModal" class="btn btn-secondary" style="flex: 1; padding: 11px;">キャンセル</button>
-            <button type="submit" class="btn btn-primary" style="flex: 2; padding: 11px; font-size: 14px; background: linear-gradient(135deg, #10b981, #059669); border-color: #059669; cursor: pointer;">
-              📄 発注登録 ＆ 発注書プレビュー・印刷
+          <div style="display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap;">
+            <button type="button" id="btnCancelOrderModal" class="btn btn-secondary" style="flex: 1; min-width: 90px; padding: 11px;">キャンセル</button>
+            <button type="button" id="btnPreviewOrderModal" class="btn btn-secondary" style="flex: 1.5; min-width: 150px; padding: 11px; font-size: 13.5px; font-weight: 700; color: #1d4ed8; border-color: #93c5fd; background: #eff6ff; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;" title="発注登録を確定する前に、発注書プレビュー（A4横）を確認します">
+              👁️ 発注書プレビュー
+            </button>
+            <button type="submit" id="btnSubmitOrderModal" class="btn btn-primary" style="flex: 1.5; min-width: 150px; padding: 11px; font-size: 13.5px; font-weight: 700; background: linear-gradient(135deg, #10b981, #059669); border-color: #059669; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;" title="この内容で発注登録を実行し、在庫・入出庫台帳に反映します">
+              ✅ 発注登録する
             </button>
           </div>
         </form>
@@ -5309,6 +5318,31 @@ function openFlexconOrderModal(data) {
   });
   document.getElementById('btnClearPoNo').addEventListener('click', () => {
     poNoInput.value = '';
+  });
+
+  document.getElementById('btnClearDueMonthNote').addEventListener('click', () => {
+    dueMonthNoteInput.value = '';
+    dueMonthNoteInput.dataset.userCleared = 'true';
+    dueMonthNoteInput.focus();
+  });
+  document.getElementById('btnResetDueMonthNote').addEventListener('click', () => {
+    dueMonthNoteInput.dataset.userCleared = 'false';
+    if (dueDateInput.value) {
+      const parts = dueDateInput.value.split('-');
+      if (parts.length === 3) {
+        const m = parseInt(parts[1], 10);
+        dueMonthNoteInput.value = `※出荷（計上）も${m}月でお願いいたします。`;
+        return;
+      }
+    }
+    dueMonthNoteInput.value = '※出荷（計上）も当月でお願いいたします。';
+  });
+  dueMonthNoteInput.addEventListener('input', () => {
+    if (dueMonthNoteInput.value.trim() === '') {
+      dueMonthNoteInput.dataset.userCleared = 'true';
+    } else {
+      dueMonthNoteInput.dataset.userCleared = 'false';
+    }
   });
 
   const isEarliestCheckbox = document.getElementById('mPoIsEarliest');
@@ -5579,9 +5613,9 @@ function openFlexconOrderModal(data) {
     }
   });
 
-  // 納品希望日変更時に出荷月注記を自動更新
+  // 納品希望日変更時に出荷月注記を自動更新（ユーザーが意図して空白にした場合は上書きしない）
   dueDateInput.addEventListener('change', () => {
-    if (dueDateInput.value) {
+    if (dueDateInput.value && dueMonthNoteInput.dataset.userCleared !== 'true') {
       const parts = dueDateInput.value.split('-');
       if (parts.length === 3) {
         const m = parseInt(parts[1], 10);
@@ -5590,10 +5624,8 @@ function openFlexconOrderModal(data) {
     }
   });
 
-  // フォーム送信時
-  document.getElementById('modalOrderForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-
+  // フォームデータから発注オブジェクトを生成する共通ヘルパー
+  const getFormDataTx = (forPreview = false) => {
     const items = [];
     rowsContainer.querySelectorAll('.po-item-row-card').forEach(row => {
       const nameVal = row.querySelector('.row-item-name-input').value.trim();
@@ -5621,7 +5653,7 @@ function openFlexconOrderModal(data) {
 
     if (items.length === 0) {
       alert("発注明細を1品目以上指定してください。");
-      return;
+      return null;
     }
 
     const totalQty = items.reduce((sum, it) => sum + it.qty, 0);
@@ -5636,8 +5668,8 @@ function openFlexconOrderModal(data) {
       tel: deliveryTelInput.value.trim()
     };
 
-    const newTx = {
-      id: "TX-" + Date.now().toString().slice(-6),
+    return {
+      id: forPreview ? ("PO-PREVIEW-" + Date.now().toString().slice(-4)) : ("TX-" + Date.now().toString().slice(-6)),
       date: document.getElementById('mPoDate').value,
       orderDate: document.getElementById('mPoDate').value,
       deliveryDueDate: document.getElementById('mPoDueDate').value,
@@ -5662,14 +5694,51 @@ function openFlexconOrderModal(data) {
       purpose: "",
       note: document.getElementById('mPoNote').value
     };
+  };
 
-    data.transactions.push(newTx);
+  // 発注登録実行処理
+  const registerOrder = (txToSave) => {
+    data.transactions.push(txToSave);
     saveFlexconData(data);
     closeModal();
-    showToast("✨ 発注データを登録しました（発注書を表示します）");
+    // プレビューモーダルが開いていれば閉じる
+    const poContainer = document.getElementById('purchaseOrderModalContainer');
+    if (poContainer) poContainer.innerHTML = '';
+
+    showToast("✨ 発注データを登録しました（発注台帳に反映されました）");
     renderFlexconInventory();
-    // 発注書モーダルを即座に表示
-    openPurchaseOrderModal(newTx);
+    // 登録後の確定発注書モーダルを表示
+    openPurchaseOrderModal(txToSave, { isPreview: false });
+  };
+
+  // 「👁️ 発注書プレビュー」ボタン押下時（発注登録は行わずプレビュー表示のみ）
+  document.getElementById('btnPreviewOrderModal').addEventListener('click', () => {
+    const form = document.getElementById('modalOrderForm');
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+    const previewTx = getFormDataTx(true);
+    if (!previewTx) return;
+
+    openPurchaseOrderModal(previewTx, {
+      isPreview: true,
+      onConfirmRegister: () => {
+        // プレビュー画面からそのまま確定登録を実行
+        const finalTx = getFormDataTx(false);
+        if (finalTx) {
+          registerOrder(finalTx);
+        }
+      }
+    });
+  });
+
+  // 「✅ 発注登録する」送信時（プレビューなしで直接登録）
+  document.getElementById('modalOrderForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const newTx = getFormDataTx(false);
+    if (!newTx) return;
+    registerOrder(newTx);
   });
 }
 
@@ -5752,17 +5821,11 @@ function generatePurchaseOrderHtml(tx, forStandalone = false) {
     formattedDueDate = `～${formatDateJa(tx.deliveryDueDate)}`;
   }
   const locRecipientStr = locDetail.recipient ? `（${locDetail.recipient}）` : '';
+  const dueMonthNoteText = (tx.dueMonthNote !== undefined && tx.dueMonthNote !== null)
+    ? tx.dueMonthNote.trim()
+    : '※出荷（計上）も当月でお願いいたします。';
 
   const notes = [];
-  if (rawItems.length === 1) {
-    const single = rawItems[0];
-    const singleObj = FLEXCON_ITEMS.find(i => i.id === single.item);
-    const singleName = single.name || single.customName || (singleObj ? singleObj.commonName : single.item);
-    notes.push(`・${singleName}のみの発注となります。`);
-  } else {
-    notes.push(`・上記${rawItems.length}品目の発注となります。`);
-  }
-
   if (tx.note && tx.note.trim()) {
     tx.note.split('\n').forEach(n => {
       const trimmed = n.trim();
@@ -5853,7 +5916,7 @@ function generatePurchaseOrderHtml(tx, forStandalone = false) {
           <div class="po-block-title">【納品希望日】</div>
           <div class="po-duedate-box">
             <div class="po-duedate-val">${formattedDueDate}</div>
-            <div class="po-duedate-note">${tx.dueMonthNote || '※出荷（計上）も当月でお願いいたします。'}</div>
+            ${dueMonthNoteText ? `<div class="po-duedate-note">${dueMonthNoteText}</div>` : ''}
           </div>
         </div>
       </div>
@@ -6092,7 +6155,8 @@ function openPurchaseOrderInNewTab(tx, autoPrint = false) {
 }
 
 // 3. 発注書モーダル表示関数（現行使用フォーマット・A4横印刷対応）
-function openPurchaseOrderModal(tx) {
+function openPurchaseOrderModal(tx, options = {}) {
+  const isPreview = !!options.isPreview;
   const contentHtml = generatePurchaseOrderHtml(tx, false);
 
   const modalHtml = `
@@ -6103,25 +6167,37 @@ function openPurchaseOrderModal(tx) {
         <div class="no-print" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap; gap: 10px;">
           <div style="display: flex; align-items: center; gap: 8px;">
             <span style="font-size: 18px;">📄</span>
-            <strong style="font-size: 15px; color: #0f172a;">発注書プレビュー（現行フォーマット・A4横印刷対応）</strong>
-            <span style="font-size: 12px; background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 4px; font-weight: 600;">A4 Landscape</span>
+            <strong style="font-size: 15px; color: #0f172a;">${isPreview ? '発注書 プレビュー確認（未登録）' : '発注書プレビュー（現行フォーマット・A4横印刷対応）'}</strong>
+            <span style="font-size: 12px; background: ${isPreview ? '#fef3c7' : '#e0f2fe'}; color: ${isPreview ? '#92400e' : '#0369a1'}; padding: 2px 8px; border-radius: 4px; font-weight: 600;">
+              ${isPreview ? '⚠️ プレビューモード (未確定)' : 'A4 Landscape'}
+            </span>
           </div>
-          <div style="display: flex; gap: 8px; align-items: center;">
-            <button class="btn btn-primary" id="btnPrintPoBtn" style="background: #2563eb; color: #fff; padding: 8px 18px; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; box-shadow: 0 2px 4px rgba(37,99,235,0.2);">
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            ${isPreview ? `
+              <button type="button" class="btn btn-secondary" id="btnBackToEditPoBtn" style="padding: 8px 14px; font-size: 13px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; border-color: #64748b; font-weight: 700; color: #334155; background: #f8fafc;" title="プレビューを閉じて入力・編集画面に戻ります">
+                ✏️ 修正に戻る
+              </button>
+            ` : ''}
+            <button type="button" class="btn btn-primary" id="btnPrintPoBtn" style="background: #2563eb; color: #fff; padding: 8px 18px; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; box-shadow: 0 2px 4px rgba(37,99,235,0.2);">
               🖨️ 発注書を印刷 / PDF保存
             </button>
-            <button class="btn btn-secondary" id="btnOpenNewTabPoBtn" style="padding: 8px 14px; font-size: 13px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;" title="新しいタブで発注書を開き、単独で印刷・保存します">
+            <button type="button" class="btn btn-secondary" id="btnOpenNewTabPoBtn" style="padding: 8px 14px; font-size: 13px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;" title="新しいタブで発注書を開き、単独で印刷・保存します">
               ↗ 別タブで開く
             </button>
-            <button class="btn btn-secondary" id="btnClosePoModalBtn" style="padding: 8px 14px; font-size: 13px; cursor: pointer;">
+            ${isPreview ? `
+              <button type="button" class="btn btn-primary" id="btnConfirmRegisterPoBtn" style="background: linear-gradient(135deg, #10b981, #059669); border-color: #059669; color: #fff; padding: 8px 18px; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; box-shadow: 0 2px 4px rgba(16,185,129,0.25);" title="このプレビュー内容で発注を確定し、在庫システムに登録します">
+                ✅ この内容で発注登録する
+              </button>
+            ` : ''}
+            <button type="button" class="btn btn-secondary" id="btnClosePoModalBtn" style="padding: 8px 14px; font-size: 13px; cursor: pointer;">
               ✕ 閉じる
             </button>
           </div>
         </div>
 
         <!-- 印刷・PDF保存のガイドヒント -->
-        <div class="no-print" style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 8px 14px; margin-bottom: 16px; font-size: 12px; color: #1e40af; display: flex; align-items: center; justify-content: space-between;">
-          <span>💡 <strong>印刷・PDF保存のヒント:</strong> 「🖨️ 発注書を印刷 / PDF保存」をクリックすると印刷ダイアログが開きます。送信先（プリンター）を「<strong>PDFに保存</strong>」に切り替えることで、メール送信用PDFとして保存できます。うまく動作しない場合は「<strong>別タブで開く</strong>」もお試しください。</span>
+        <div class="no-print" style="background: ${isPreview ? '#fffbeb' : '#eff6ff'}; border: 1px solid ${isPreview ? '#fde68a' : '#bfdbfe'}; border-radius: 6px; padding: 8px 14px; margin-bottom: 16px; font-size: 12px; color: ${isPreview ? '#92400e' : '#1e40af'}; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+          <span>💡 <strong>${isPreview ? 'プレビュー中:' : '印刷・PDF保存のヒント:'}</strong> ${isPreview ? 'まだ発注データは確定・登録されていません。修正したい項目がある場合は「✏️ 修正に戻る」を押してください。内容に問題がなければ「✅ この内容で発注登録する」を押すと発注台帳および在庫システムに反映されます。' : '「🖨️ 発注書を印刷 / PDF保存」をクリックすると印刷ダイアログが開きます。送信先（プリンター）を「<strong>PDFに保存</strong>」に切り替えることで、メール送信用PDFとして保存できます。うまく動作しない場合は「<strong>別タブで開く</strong>」もお試しください。'}</span>
         </div>
 
         <!-- 発注書本体エリア -->
@@ -6134,12 +6210,30 @@ function openPurchaseOrderModal(tx) {
   const container = document.getElementById('purchaseOrderModalContainer');
   container.innerHTML = modalHtml;
 
-  document.getElementById('btnClosePoModalBtn').addEventListener('click', () => {
+  const closePoModal = () => {
     container.innerHTML = '';
-  });
+    if (options.onClose) options.onClose();
+  };
+
+  document.getElementById('btnClosePoModalBtn').addEventListener('click', closePoModal);
+
+  if (document.getElementById('btnBackToEditPoBtn')) {
+    document.getElementById('btnBackToEditPoBtn').addEventListener('click', () => {
+      container.innerHTML = '';
+      if (options.onBackToEdit) options.onBackToEdit();
+    });
+  }
+
+  if (document.getElementById('btnConfirmRegisterPoBtn')) {
+    document.getElementById('btnConfirmRegisterPoBtn').addEventListener('click', () => {
+      if (options.onConfirmRegister) {
+        options.onConfirmRegister();
+      }
+    });
+  }
 
   document.getElementById('purchaseOrderModal').addEventListener('click', (e) => {
-    if (e.target.id === 'purchaseOrderModal') container.innerHTML = '';
+    if (e.target.id === 'purchaseOrderModal') closePoModal();
   });
 
   document.getElementById('btnPrintPoBtn').addEventListener('click', () => {
