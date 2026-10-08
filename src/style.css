@@ -5298,3 +5298,71 @@ tbody tr:last-child td {
 
 
 
+
+
+/* =========================================================================
+   フレコン在庫マトリックス 拠点列（左端1列目）の固定表示（横スクロール対応）
+   ========================================================================= */
+.flexcon-matrix-scroll-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 8px;
+  position: relative;
+  max-width: 100%;
+}
+
+.flexcon-matrix-table {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  width: 100%;
+}
+
+/* 拠点列の固定 (th & td) */
+.flexcon-matrix-table th.col-sticky-loc,
+.flexcon-matrix-table td.col-sticky-loc {
+  position: sticky !important;
+  left: 0 !important;
+  border-right: 2px solid var(--border-medium) !important;
+  box-shadow: 4px 0 8px -3px rgba(15, 23, 42, 0.12);
+  white-space: nowrap;
+}
+
+/* ヘッダーの固定セル (top & left) */
+.flexcon-matrix-table thead th.col-sticky-loc {
+  top: 0;
+  z-index: 30 !important;
+  background: var(--bg-primary) !important;
+  border-bottom: 2px solid var(--border-medium);
+}
+
+/* ボディ行の固定セル */
+.flexcon-matrix-table tbody td.col-sticky-loc {
+  z-index: 15 !important;
+  background: var(--bg-card) !important;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* ホバー時の固定セル連動ハイライト */
+.flexcon-matrix-table tbody tr:hover td.col-sticky-loc {
+  background: var(--bg-card-hover, #f1f5f9) !important;
+}
+
+.flexcon-matrix-table tbody tr:hover td {
+  background: var(--bg-card-hover, #f1f5f9);
+}
+
+/* フッター合計行 */
+.flexcon-matrix-table tfoot tr {
+  background: var(--bg-primary) !important;
+}
+
+.flexcon-matrix-table tfoot td {
+  border-top: 2px solid var(--border-medium);
+  border-bottom: none;
+  background: var(--bg-primary);
+}
+
+.flexcon-matrix-table tfoot td.col-sticky-loc {
+  z-index: 15 !important;
+  background: var(--bg-primary) !important;
+}

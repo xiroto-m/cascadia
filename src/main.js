@@ -4968,11 +4968,11 @@ function renderFlexconDashboard(container, data) {
         </button>
       </div>
 
-      <div style="overflow-x: auto;">
-        <table class="assistant-table" style="font-size: 12px; width: 100%; border-collapse: collapse;">
+      <div class="flexcon-matrix-scroll-wrapper" style="overflow-x: auto;">
+        <table class="assistant-table flexcon-matrix-table" style="font-size: 12px; width: 100%; border-collapse: separate; border-spacing: 0;">
           <thead>
             <tr style="background: var(--bg-primary); text-align: center;">
-              <th style="padding: 10px; text-align: left; min-width: 170px;">保管場所（拠点）</th>
+              <th class="col-sticky-loc" style="padding: 10px 14px; text-align: left; min-width: 190px;">保管場所（拠点）</th>
               ${FLEXCON_ITEMS.map(item => `
                 <th style="padding: 8px 10px; min-width: 160px;">
                   <div style="color: var(--accent-blue); font-weight: 700; font-size: 12px;">【${item.commonName}】</div>
@@ -4988,7 +4988,7 @@ function renderFlexconDashboard(container, data) {
               let locTotalVal = 0;
               return `
                 <tr>
-                  <td style="padding: 10px; font-weight: 600;">${loc}</td>
+                  <td class="col-sticky-loc" style="padding: 10px 14px; font-weight: 600;">${loc}</td>
                   ${FLEXCON_ITEMS.map(item => {
                     const cell = matrix[loc][item.id];
                     locTotalVal += cell.totalValue;
@@ -5016,7 +5016,7 @@ function renderFlexconDashboard(container, data) {
           </tbody>
           <tfoot>
             <tr style="background: var(--bg-primary); font-weight: 800; border-top: 2px solid var(--border-medium);">
-              <td style="padding: 10px; text-align: left;">全社品目別 合計</td>
+              <td class="col-sticky-loc" style="padding: 10px 14px; text-align: left;">全社品目別 合計</td>
               ${FLEXCON_ITEMS.map(item => {
                 let itemTotalQty = 0;
                 let itemTotalVal = 0;
