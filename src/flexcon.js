@@ -29,196 +29,392 @@ function showToast(message, duration = 3000) {
   }, duration);
 }
 
-const FLEXCON_LOCATION_DETAILS = {
-  "上組 福岡支店": {
-    company: "株式会社 上組 福岡支店",
-    recipient: "",
-    contacts: ["業務ご担当者様"],
-    postalCode: "〒810-8512",
-    address: "福岡県福岡市中央区那の津3丁目2番10号",
+// ===== マスター初期定義（2026年10月13日 畑山様提出マスター精査版） =====
+const DEFAULT_FLEXCON_LOCATION_DETAILS = {
+  "上組福岡支店 須崎倉庫": {
+    company: "上組福岡支店 須崎倉庫",
+    recipient: "営業１課　　祐谷様",
+    contacts: ["営業１課　　祐谷様"],
+    postalCode: "〒810-0071",
+    address: "福岡県福岡市中央区那の津５丁目９−２３",
     tel: "092-752-5586",
+    deliveryNote: "",
+    itemStocks: {
+      "フレコンSNS-1": 330
+    },
     presets: [
       {
-        name: "那の津 本社・倉庫（標準）",
-        company: "株式会社 上組 福岡支店",
-        recipient: "",
-        postalCode: "〒810-8512",
-        address: "福岡県福岡市中央区那の津3丁目2番10号",
+        name: "須崎倉庫（標準）",
+        company: "上組福岡支店 須崎倉庫",
+        recipient: "営業１課　　祐谷様",
+        postalCode: "〒810-0071",
+        address: "福岡県福岡市中央区那の津５丁目９−２３",
         tel: "092-752-5586"
-      },
-      {
-        name: "箱崎ふ頭物流センター",
-        company: "株式会社 上組 福岡支店 箱崎物流センター",
-        recipient: "ご担当者様",
-        postalCode: "〒812-0051",
-        address: "福岡県福岡市東区箱崎ふ頭",
-        tel: "092-641-1111"
-      },
-      {
-        name: "須崎埠頭営業所",
-        company: "株式会社 上組 福岡支店 須崎営業所",
-        recipient: "ご担当者様",
-        postalCode: "〒812-0031",
-        address: "福岡県福岡市博多区沖浜町",
-        tel: "092-281-2222"
       }
     ]
   },
-  "八代サイロ（上組福岡支店八代出張所）": {
-    company: "上組 福岡支店 八代出張所（八代サイロ）",
-    recipient: "業務担当様",
-    contacts: ["業務担当様", "出張所長様"],
-    postalCode: "〒866-0034",
-    address: "熊本県八代市新港町1-1",
-    tel: "0965-37-1234",
+  "上組福岡支店 須崎ふ頭東二号": {
+    company: "上組福岡支店 須崎ふ頭東二号",
+    recipient: "営業１課　　祐谷様",
+    contacts: ["営業１課　　祐谷様"],
+    postalCode: "〒810-0071",
+    address: "福岡県福岡市中央区那の津５丁目１−１５",
+    tel: "092-752-5586",
+    deliveryNote: "",
+    itemStocks: {
+      "紙袋（ソイパス詰替用）": 1000
+    },
     presets: [
       {
-        name: "八代出張所（八代サイロ）",
-        company: "上組 福岡支店 八代出張所（八代サイロ）",
-        recipient: "業務担当様",
-        postalCode: "〒866-0034",
-        address: "熊本県八代市新港町1-1",
-        tel: "0965-37-1234"
+        name: "須崎ふ頭東二号（標準）",
+        company: "上組福岡支店 須崎ふ頭東二号",
+        recipient: "営業１課　　祐谷様",
+        postalCode: "〒810-0071",
+        address: "福岡県福岡市中央区那の津５丁目１−１５",
+        tel: "092-752-5586"
+      }
+    ]
+  },
+  "シャイニー": {
+    company: "シャイニー",
+    recipient: "五十嵐様",
+    contacts: ["五十嵐様", "受入ご担当者様"],
+    postalCode: "",
+    address: "五十嵐さんに要確認",
+    tel: "",
+    deliveryNote: "",
+    itemStocks: {
+      "フレコンSNS-1-PE（コンテナ直送）": 0,
+      "フレコンSNS-1-PE（コンテナ分納）": 0
+    },
+    presets: [
+      {
+        name: "シャイニー工場（標準）",
+        company: "シャイニー",
+        recipient: "五十嵐様",
+        postalCode: "",
+        address: "五十嵐さんに要確認",
+        tel: ""
+      }
+    ]
+  },
+  "青森黒石工場": {
+    company: "青森黒石工場",
+    recipient: "五十嵐工場長",
+    contacts: ["五十嵐工場長"],
+    postalCode: "〒036-0343",
+    address: "青森県黒石市浅瀬石川合160-14",
+    tel: "080-4009-7959",
+    deliveryNote: "受入れは平日のみ",
+    itemStocks: {
+      "フレコンSNS-1": 0,
+      "PE内袋": 0,
+      "フレコンSNS-1-PE（コンテナ直送）": 0,
+      "フレコンSNS-1-PE（コンテナ分納）": 0,
+      "BTNR-1000C": 0,
+      "BTNRL-1000C": 0
+    },
+    presets: [
+      {
+        name: "青森黒石工場（標準）",
+        company: "青森黒石工場",
+        recipient: "五十嵐工場長",
+        postalCode: "〒036-0343",
+        address: "青森県黒石市浅瀬石川合160-14",
+        tel: "080-4009-7959"
       }
     ]
   },
   "熊本南関工場": {
-    company: "カスケディア 熊本南関工場",
-    recipient: "工場長様",
-    contacts: ["工場長様", "受入担当様"],
-    postalCode: "〒861-0814",
-    address: "熊本県玉名郡南関町大字小原",
-    tel: "0968-53-8800",
+    company: "熊本南関工場",
+    recipient: "兼行工場長",
+    contacts: ["兼行工場長"],
+    postalCode: "〒861-0822",
+    address: "熊本県玉名郡南関町上坂下723番地",
+    tel: "0968-82-7288",
+    deliveryNote: "受入れは平日のみ",
+    itemStocks: {
+      "フレコンSNS-1": 0,
+      "PE内袋": 0,
+      "フレコンSNS-1-PE（コンテナ直送）": 0,
+      "フレコンSNS-1-PE（コンテナ分納）": 0,
+      "BTNR-1000C": 0
+    },
     presets: [
       {
-        name: "熊本南関工場",
-        company: "カスケディア 熊本南関工場",
-        recipient: "工場長様",
-        postalCode: "〒861-0814",
-        address: "熊本県玉名郡南関町大字小原",
-        tel: "0968-53-8800"
+        name: "熊本南関工場（標準）",
+        company: "熊本南関工場",
+        recipient: "兼行工場長",
+        postalCode: "〒861-0822",
+        address: "熊本県玉名郡南関町上坂下723番地",
+        tel: "0968-82-7288"
       }
     ]
   },
-  "志布志倉庫": {
-    company: "カスケディア 志布志保管倉庫",
-    recipient: "業務担当様",
-    contacts: ["業務担当様", "現場担当様"],
-    postalCode: "〒899-7103",
-    address: "鹿児島県志布志市志布志町志布志",
-    tel: "099-472-1111",
+  "中村商店（釘宮牧場）": {
+    company: "中村商店（釘宮牧場）",
+    recipient: "毛利様",
+    contacts: ["毛利様", "受入ご担当者様"],
+    postalCode: "",
+    address: "毛利さんに要確認",
+    tel: "",
+    deliveryNote: "",
+    itemStocks: {
+      "フレコンSNS-1-PE（コンテナ直送）": 0,
+      "フレコンSNS-1-PE（コンテナ分納）": 0
+    },
     presets: [
       {
-        name: "志布志保管倉庫",
-        company: "カスケディア 志布志保管倉庫",
-        recipient: "業務担当様",
-        postalCode: "〒899-7103",
-        address: "鹿児島県志布志市志布志町志布志",
-        tel: "099-472-1111"
+        name: "釘宮牧場 納品場所",
+        company: "中村商店（釘宮牧場）",
+        recipient: "毛利様",
+        postalCode: "",
+        address: "毛利さんに要確認",
+        tel: ""
       }
     ]
   },
-  "門司倉庫": {
-    company: "カスケディア 門司港湾倉庫",
-    recipient: "業務担当様",
-    contacts: ["業務担当様", "港湾担当様"],
-    postalCode: "〒801-0853",
-    address: "福岡県北九州市門司区東港町",
-    tel: "093-331-2222",
+  "上組福岡　八代出張所　八代サイロ": {
+    company: "上組福岡　八代出張所　八代サイロ",
+    recipient: "小堀様",
+    contacts: ["小堀様", "業務担当様"],
+    postalCode: "〒866-0034",
+    address: "熊本県八代市新港3-2-12",
+    tel: "0965-37-3565",
+    deliveryNote: "受入れは平日のみ",
+    itemStocks: {
+      "BTNR-1000C": 0
+    },
     presets: [
       {
-        name: "門司港湾倉庫",
-        company: "カスケディア 門司港湾倉庫",
-        recipient: "業務担当様",
-        postalCode: "〒801-0853",
-        address: "福岡県北九州市門司区東港町",
-        tel: "093-331-2222"
+        name: "八代サイロ（標準）",
+        company: "上組福岡　八代出張所　八代サイロ",
+        recipient: "小堀様",
+        postalCode: "〒866-0034",
+        address: "熊本県八代市新港3-2-12",
+        tel: "0965-37-3565"
       }
     ]
   },
-  "本社倉庫": {
-    company: "CASCADIA TRADING, INC. 本社",
-    recipient: "資材担当様",
-    contacts: ["資材担当様", "業務部担当様"],
-    postalCode: "〒330-0063",
-    address: "埼玉県さいたま市浦和区高砂2-11-13",
-    tel: "048-762-9340",
+  "シオヤ倉庫": {
+    company: "シオヤ倉庫",
+    recipient: "大原様",
+    contacts: ["大原様（製造部）", "太田様（シオヤ）"],
+    postalCode: "",
+    address: "シオヤ　太田さんに確認必要",
+    tel: "",
+    deliveryNote: "",
+    itemStocks: {
+      "フレコンSNS-1-PE（コンテナ分納）": 0
+    },
     presets: [
       {
-        name: "本社（浦和）",
-        company: "CASCADIA TRADING, INC. 本社",
-        recipient: "資材担当様",
-        postalCode: "〒330-0063",
-        address: "埼玉県さいたま市浦和区高砂2-11-13",
-        tel: "048-762-9340"
+        name: "シオヤ倉庫（標準）",
+        company: "シオヤ倉庫",
+        recipient: "大原様",
+        postalCode: "",
+        address: "シオヤ　太田さんに確認必要",
+        tel: ""
+      }
+    ]
+  },
+  "井手運送有限会社　桜町営業所": {
+    company: "井手運送有限会社　桜町営業所",
+    recipient: "柳様",
+    contacts: ["柳様"],
+    postalCode: "〒841-0014",
+    address: "佐賀県鳥栖市桜町1240-6",
+    tel: "080-8381-6938",
+    deliveryNote: "",
+    itemStocks: {
+      "フレコンSNS-1": 330,
+      "PP袋（綿実詰替用）": 3000
+    },
+    presets: [
+      {
+        name: "桜町営業所（標準）",
+        company: "井手運送有限会社　桜町営業所",
+        recipient: "柳様",
+        postalCode: "〒841-0014",
+        address: "佐賀県鳥栖市桜町1240-6",
+        tel: "080-8381-6938"
       }
     ]
   }
 };
 
-const FLEXCON_LOCATIONS = Object.keys(FLEXCON_LOCATION_DETAILS);
-
-// 品名マスター（商品名読み替え表【仮】に基づく読み替え後名称・正式商品名マッピング）
-const FLEXCON_ITEMS = [
-  { 
-    id: "SNS-1", 
-    commonName: "フレコンSNS-1", 
-    name: "フレコンワンウェイバッグSNS-1　上下全開タイプφ1100×1200", 
-    spec: "上下全開タイプ φ1100×1200 / 耐荷重1t",
-    defaultPrice: 1000, 
-    safetyStock: 300 
+const DEFAULT_FLEXCON_ITEMS = [
+  {
+    id: "SOYPASS-BAG",
+    commonName: "紙袋（ソイパス詰替用）",
+    name: "ソイパス用紙袋 新印刷",
+    spec: "813×419×76×3P",
+    defaultPrice: 71.5,
+    defaultSupplier: "佐藤産業株式会社",
+    note: ""
   },
-  { 
-    id: "PE-INNER", 
-    commonName: "PE内袋", 
-    name: "国産PE内袋(0.07×1850×3000 平シール)", 
-    spec: "厚み0.07mm × 幅1850mm × 長さ3000mm 平シール",
-    defaultPrice: 550, 
-    safetyStock: 300 
+  {
+    id: "SNS-1",
+    commonName: "フレコンSNS-1",
+    name: "フレコンワンウェイバッグSNS-1　上下全開タイプ",
+    spec: "φ1100×1200",
+    defaultPrice: 1150,
+    defaultSupplier: "株式会社シオヤ",
+    note: ""
   },
-  { 
-    id: "SOYPASS-BAG", 
-    commonName: "紙袋（ソイパス詰替用）", 
-    name: "ソイパス用紙袋 新印刷(813×419×76mm)", 
-    spec: "3層クラフト紙 813×419×76mm (25kg詰替用)",
-    defaultPrice: 71.5, 
-    safetyStock: 1000 
+  {
+    id: "SNS-1-PE-DIRECT",
+    commonName: "フレコンSNS-1-PE（コンテナ直送）",
+    name: "フレコンワンウェイバッグSNS-1-PE　上下全開タイプ",
+    spec: "φ1100×1200　内袋入り",
+    defaultPrice: 1380,
+    defaultSupplier: "株式会社シオヤ",
+    note: "直送分　9/8見積書"
   },
-  { 
-    id: "BTNR-1000C", 
-    commonName: "投入口全開フレコン (1t用)", 
-    name: "フレコンワンウェイバッグ BTNR-1000C (投入口全開型 φ1100×1100H)", 
-    spec: "投入口全開型 φ1100×1100H / 排出口付",
-    defaultPrice: 1000, 
-    safetyStock: 200 
+  {
+    id: "SNS-1-PE-SPLIT",
+    commonName: "フレコンSNS-1-PE（コンテナ分納）",
+    name: "フレコンワンウェイバッグSNS-1-PE　上下全開タイプ",
+    spec: "φ1100×1200　内袋入り",
+    defaultPrice: 1460,
+    defaultSupplier: "株式会社シオヤ",
+    note: "分納分　9/8見積書"
+  },
+  {
+    id: "BTNR-1000C",
+    commonName: "BTNR-1000C",
+    name: "フレコンワンウェイバッグBTNR-1000C",
+    spec: "φ1100×1100",
+    defaultPrice: 1000,
+    defaultSupplier: "株式会社シオヤ",
+    note: ""
+  },
+  {
+    id: "BTNRL-1000C",
+    commonName: "BTNRL-1000C",
+    name: "フレコンワンウェイバッグBTNRL-1000C",
+    spec: "φ1100×1100",
+    defaultPrice: 950,
+    defaultSupplier: "株式会社シオヤ",
+    note: "2024年見積書"
+  },
+  {
+    id: "PE-INNER",
+    commonName: "PE内袋",
+    name: "国産PE内袋",
+    spec: "0.07×1850×3000",
+    defaultPrice: 550,
+    defaultSupplier: "株式会社シオヤ",
+    note: ""
+  },
+  {
+    id: "PP-BAG",
+    commonName: "PP袋（綿実詰替用）",
+    name: "PP袋",
+    spec: "",
+    defaultPrice: 34.7,
+    defaultSupplier: "輸入分",
+    note: ""
+  },
+  {
+    id: "SNS-1-REPAIRED",
+    commonName: "フレコンSNS-1(補修済)",
+    name: "フレコンワンウェイバッグSNS-1　上下全開タイプ",
+    spec: "φ1100×1200",
+    defaultPrice: 0,
+    defaultSupplier: "補修作業実施",
+    note: ""
   }
 ];
 
-const FLEXCON_SUPPLIERS = [
-  { 
-    name: "株式会社シオヤ", 
-    contactPerson: "太田 光一　様", 
-    tel: "092-712-1234", 
-    email: "order@shioya-pack.co.jp", 
-    address: "福岡県福岡市博多区博多駅前2-10-5" 
+const DEFAULT_FLEXCON_SUPPLIERS = [
+  {
+    name: "株式会社シオヤ",
+    postalCode: "〒454-0027",
+    address: "愛知県名古屋市中川区広川町５－１",
+    tel: "052-351-0531",
+    contactPerson: "太田様"
   },
-  { 
-    name: "佐藤産業株式会社", 
-    contactPerson: "資材営業担当　様", 
-    tel: "03-3661-5432", 
-    email: "info@sato-sangyo.co.jp", 
-    address: "東京都中央区日本橋本町3-4-1" 
+  {
+    name: "佐藤産業株式会社",
+    postalCode: "〒891-0122",
+    address: "鹿児島県鹿児島市南栄4丁目15-1",
+    tel: "092-235-5990",
+    contactPerson: "松元様"
   },
-  { 
-    name: "その他仕入先", 
-    contactPerson: "ご担当者　様", 
-    tel: "", 
-    email: "", 
-    address: "" 
+  {
+    name: "輸入分",
+    postalCode: "",
+    address: "",
+    tel: "",
+    contactPerson: ""
   }
 ];
 
-// 1拠点仮運用（上組 福岡支店）初期データ：8月末在庫数 1,933枚 / 金額 138,210円（71.5円/枚）
+// マスター管理機能：ローカルストレージからカスタムマスターをロード（未保存時は初期定義）
+function loadFlexconMaster() {
+  const saved = localStorage.getItem('cascadia_flexcon_master_v5');
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      if (parsed && parsed.locations && parsed.items && parsed.suppliers) {
+        return parsed;
+      }
+    } catch(e) {}
+  }
+  return {
+    locations: JSON.parse(JSON.stringify(DEFAULT_FLEXCON_LOCATION_DETAILS)),
+    items: JSON.parse(JSON.stringify(DEFAULT_FLEXCON_ITEMS)),
+    suppliers: JSON.parse(JSON.stringify(DEFAULT_FLEXCON_SUPPLIERS))
+  };
+}
+
+function saveFlexconMaster(master) {
+  localStorage.setItem('cascadia_flexcon_master_v5', JSON.stringify(master));
+  refreshActiveMaster();
+}
+
+// 実行時マスター変数
+let activeFlexconMaster = loadFlexconMaster();
+let FLEXCON_LOCATION_DETAILS = activeFlexconMaster.locations;
+let FLEXCON_LOCATIONS = Object.keys(FLEXCON_LOCATION_DETAILS);
+let FLEXCON_ITEMS = activeFlexconMaster.items;
+let FLEXCON_SUPPLIERS = activeFlexconMaster.suppliers;
+
+function refreshActiveMaster() {
+  activeFlexconMaster = loadFlexconMaster();
+  FLEXCON_LOCATION_DETAILS = activeFlexconMaster.locations;
+  FLEXCON_LOCATIONS = Object.keys(FLEXCON_LOCATION_DETAILS);
+  FLEXCON_ITEMS = activeFlexconMaster.items;
+  FLEXCON_SUPPLIERS = activeFlexconMaster.suppliers;
+}
+
+// 安全在庫判定ヘルパー（提出資料仕様：拠点 × 取扱商品ごとの個別設定）
+function getSafetyStock(location, item) {
+  const locDetail = FLEXCON_LOCATION_DETAILS[location];
+  if (!locDetail || !locDetail.itemStocks) return 0;
+
+  let itemObj = typeof item === 'object' ? item : null;
+  if (!itemObj && typeof item === 'string') {
+    itemObj = FLEXCON_ITEMS.find(i => i.id === item || i.commonName === item);
+  }
+
+  const itemCommon = itemObj ? itemObj.commonName : (typeof item === 'string' ? item : '');
+  const itemId = itemObj ? itemObj.id : (typeof item === 'string' ? item : '');
+
+  if (locDetail.itemStocks[itemCommon] !== undefined) return Number(locDetail.itemStocks[itemCommon]) || 0;
+  if (locDetail.itemStocks[itemId] !== undefined) return Number(locDetail.itemStocks[itemId]) || 0;
+  for (const [k, v] of Object.entries(locDetail.itemStocks)) {
+    if (k === itemCommon || k === itemId) return Number(v) || 0;
+    if (itemCommon && itemCommon.includes('フレコンSNS-1-PE') && k.includes('フレコンSNS-1-PE')) {
+      return Number(v) || 0;
+    }
+  }
+  return 0;
+}
+
+// 1拠点仮運用（上組福岡支店 須崎ふ頭東二号）初期データ：8月末在庫数 1,933枚 / 金額 138,210円（71.5円/枚）
+// ※その他拠点・商品は畑山様のご指示通り「仮で0枚」として管理
 const INITIAL_FLEXCON_DATA = {
   transactions: [
     { 
@@ -227,42 +423,64 @@ const INITIAL_FLEXCON_DATA = {
       orderDate: "2026-08-31", 
       type: "inbound", 
       status: "delivered", // 実在庫として即時計上
-      location: "上組 福岡支店", 
+      location: "上組福岡支店 須崎ふ頭東二号", 
       item: "SOYPASS-BAG", 
       qty: 1933, 
       price: 71.5, 
       supplier: "佐藤産業株式会社", 
-      supplierContact: "資材営業担当　様",
+      supplierContact: "松元様",
       ourContact: "畑山",
       quoteNo: "",
       orderNo: "INIT-20260831", 
       purpose: "8月末繰越残高（仮運用開始）", 
-      note: "2026年8月末時点の繰越在庫: 1,933枚 / 138,210円（単価: 71.5円）にて登録" 
+      note: "2026年8月末時点の繰越在庫: 1,933枚 / 138,210円（単価: 71.5円）にて登録（その他拠点・商品は仮在庫0枚）" 
     }
   ]
 };
 
 function loadFlexconData() {
-  const saved = localStorage.getItem('cascadia_flexcon_inventory_v4');
+  refreshActiveMaster();
+  const saved = localStorage.getItem('cascadia_flexcon_inventory_v5');
   if (saved) {
     try { 
       const parsed = JSON.parse(saved);
       if (parsed && Array.isArray(parsed.transactions)) {
-        // status 補完
         parsed.transactions.forEach(tx => {
           if (!tx.status) tx.status = 'delivered';
+          if (tx.location === '上組 福岡支店') {
+            tx.location = '上組福岡支店 須崎ふ頭東二号';
+          }
         });
         return parsed;
       }
     } catch(e){}
   }
-  // v4データが存在しない場合は初期データ（上組 福岡支店の8月末在庫のみ）で初期化
-  localStorage.setItem('cascadia_flexcon_inventory_v4', JSON.stringify(INITIAL_FLEXCON_DATA));
+
+  // 以前のv4データがあれば移行
+  const v4 = localStorage.getItem('cascadia_flexcon_inventory_v4');
+  if (v4) {
+    try {
+      const parsed = JSON.parse(v4);
+      if (parsed && Array.isArray(parsed.transactions)) {
+        parsed.transactions.forEach(tx => {
+          if (!tx.status) tx.status = 'delivered';
+          if (tx.location === '上組 福岡支店') {
+            tx.location = '上組福岡支店 須崎ふ頭東二号';
+          }
+        });
+        localStorage.setItem('cascadia_flexcon_inventory_v5', JSON.stringify(parsed));
+        return parsed;
+      }
+    } catch(e){}
+  }
+
+  // 初期データで初期化
+  localStorage.setItem('cascadia_flexcon_inventory_v5', JSON.stringify(INITIAL_FLEXCON_DATA));
   return JSON.parse(JSON.stringify(INITIAL_FLEXCON_DATA));
 }
 
 function saveFlexconData(data) {
-  localStorage.setItem('cascadia_flexcon_inventory_v4', JSON.stringify(data));
+  localStorage.setItem('cascadia_flexcon_inventory_v5', JSON.stringify(data));
 }
 
 // 状態管理
@@ -323,6 +541,9 @@ function renderFlexconInventory(targetEl) {
         <button class="flexcon-tab-pill ${activeFlexconTab === 'check' ? 'active' : ''}" id="tabFlexconCheck">
           <span>📑</span> 月末棚卸し・CSV
         </button>
+        <button class="flexcon-tab-pill ${activeFlexconTab === 'master' ? 'active' : ''}" id="tabFlexconMaster" title="拠点・商品・仕入先マスターの登録・変更・安全在庫設定">
+          <span>⚙️</span> マスター管理
+        </button>
       </div>
 
       <!-- クイック登録アクション（モーダル起動） -->
@@ -348,6 +569,7 @@ function renderFlexconInventory(targetEl) {
   document.getElementById('tabFlexconDash').addEventListener('click', () => { activeFlexconTab = 'dashboard'; renderFlexconInventory(); });
   document.getElementById('tabFlexconLedger').addEventListener('click', () => { activeFlexconTab = 'ledger'; renderFlexconInventory(); });
   document.getElementById('tabFlexconCheck').addEventListener('click', () => { activeFlexconTab = 'check'; renderFlexconInventory(); });
+  document.getElementById('tabFlexconMaster').addEventListener('click', () => { activeFlexconTab = 'master'; renderFlexconInventory(); });
 
   // アクションモーダル起動
   document.getElementById('btnOpenOrderModal').addEventListener('click', () => { openFlexconOrderModal(data); });
@@ -359,6 +581,7 @@ function renderFlexconInventory(targetEl) {
   if (activeFlexconTab === 'dashboard') renderFlexconDashboard(container, data);
   else if (activeFlexconTab === 'ledger') renderFlexconLedger(container, data);
   else if (activeFlexconTab === 'check') renderFlexconCheck(container, data);
+  else if (activeFlexconTab === 'master') renderFlexconMaster(container);
   else {
     activeFlexconTab = 'dashboard';
     renderFlexconDashboard(container, data);
@@ -441,13 +664,14 @@ function renderFlexconDashboard(container, data) {
       const ordQty = cell.orderedQty || 0;
       grandTotalOrdered += ordQty;
 
-      if (cell.qty < item.safetyStock) {
+      const sStock = getSafetyStock(loc, item);
+      if (sStock > 0 && cell.qty < sStock) {
         const alertObj = {
           location: loc,
           item: item,
           currentQty: cell.qty,
           orderedQty: ordQty,
-          safetyStock: item.safetyStock
+          safetyStock: sStock
         };
         if (ordQty > 0) {
           incomingItems.push(alertObj);
@@ -680,13 +904,15 @@ function renderFlexconDashboard(container, data) {
                   ${FLEXCON_ITEMS.map(item => {
                     const cell = matrix[loc][item.id];
                     locTotalVal += cell.totalValue;
-                    const isAlert = cell.qty < item.safetyStock;
+                    const sStock = getSafetyStock(loc, item);
+                    const isAlert = sStock > 0 && cell.qty < sStock;
                     return `
                       <td style="padding: 8px 10px; text-align: right; ${isAlert ? 'background: rgba(239,68,68,0.06);' : ''}">
                         <div style="font-size: 14px; font-weight: 700; color: ${isAlert ? '#ef4444' : 'var(--text-primary)'};">
                           ${cell.qty.toLocaleString()} <span style="font-size: 11px; font-weight: normal;">枚</span>
                         </div>
                         <div style="font-size: 11px; color: var(--text-muted);">¥${Math.round(cell.totalValue).toLocaleString()}</div>
+                        ${sStock > 0 ? `<div style="font-size: 9.5px; color: ${isAlert ? '#ef4444' : 'var(--text-muted)'}; margin-top: 1px;">(基準 ${sStock}枚)</div>` : ''}
                         ${cell.orderedQty > 0 ? `
                           <div style="font-size: 10px; color: var(--accent-green); font-weight: 600; margin-top: 2px;">
                             (入荷待 +${cell.orderedQty}枚)
@@ -2541,5 +2767,709 @@ function renderFlexconCheck(container, data) {
     a.click();
     URL.revokeObjectURL(url);
     showToast("📄 CSVファイルをダウンロードしました");
+  });
+}
+
+// ===== 4. マスター管理画面描画（セルフメンテナンス機能） =====
+let activeMasterSubTab = 'locations'; // 'locations', 'items', 'suppliers', 'backup'
+
+function renderFlexconMaster(container) {
+  refreshActiveMaster();
+
+  container.innerHTML = `
+    <div style="background: #ffffff; border-radius: 12px; border: 1px solid var(--border-medium); padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); margin-bottom: 24px;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; margin-bottom: 20px;">
+        <div>
+          <h2 style="font-size: 18px; font-weight: 800; color: var(--text-primary); margin: 0 0 6px 0; display: flex; align-items: center; gap: 8px;">
+            <span>⚙️</span> マスター管理（登録・変更・安全在庫設定）
+          </h2>
+          <p style="font-size: 13px; color: var(--text-muted); margin: 0;">
+            拠点、商品（資材）、仕入先のマスター情報を直接追加・編集・削除できます。拠点ごとの安全在庫数の調整も即時反映されます。
+          </p>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button id="btnResetMasterDefault" style="padding: 7px 14px; font-size: 12.5px; font-weight: 600; background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; border-radius: 8px; cursor: pointer;">
+            🔄 初期マスターへ復元
+          </button>
+        </div>
+      </div>
+
+      <!-- サブタブ切替バー -->
+      <div style="display: flex; gap: 8px; border-bottom: 2px solid var(--border-subtle); padding-bottom: 12px; margin-bottom: 20px; overflow-x: auto;">
+        <button class="master-subtab-btn ${activeMasterSubTab === 'locations' ? 'active' : ''}" data-tab="locations" style="padding: 8px 16px; font-size: 13.5px; font-weight: 700; border-radius: 8px; border: none; cursor: pointer; transition: all 0.2s; ${activeMasterSubTab === 'locations' ? 'background: #7c3aed; color: #ffffff;' : 'background: #f1f5f9; color: #475569;'}">
+          🏢 拠点マスター (${FLEXCON_LOCATIONS.length}件)
+        </button>
+        <button class="master-subtab-btn ${activeMasterSubTab === 'items' ? 'active' : ''}" data-tab="items" style="padding: 8px 16px; font-size: 13.5px; font-weight: 700; border-radius: 8px; border: none; cursor: pointer; transition: all 0.2s; ${activeMasterSubTab === 'items' ? 'background: #7c3aed; color: #ffffff;' : 'background: #f1f5f9; color: #475569;'}">
+          📦 商品マスター (${FLEXCON_ITEMS.length}品目)
+        </button>
+        <button class="master-subtab-btn ${activeMasterSubTab === 'suppliers' ? 'active' : ''}" data-tab="suppliers" style="padding: 8px 16px; font-size: 13.5px; font-weight: 700; border-radius: 8px; border: none; cursor: pointer; transition: all 0.2s; ${activeMasterSubTab === 'suppliers' ? 'background: #7c3aed; color: #ffffff;' : 'background: #f1f5f9; color: #475569;'}">
+          🏭 仕入先マスター (${FLEXCON_SUPPLIERS.length}社)
+        </button>
+        <button class="master-subtab-btn ${activeMasterSubTab === 'backup' ? 'active' : ''}" data-tab="backup" style="padding: 8px 16px; font-size: 13.5px; font-weight: 700; border-radius: 8px; border: none; cursor: pointer; transition: all 0.2s; ${activeMasterSubTab === 'backup' ? 'background: #7c3aed; color: #ffffff;' : 'background: #f1f5f9; color: #475569;'}">
+          💾 バックアップ・データ取込
+        </button>
+      </div>
+
+      <!-- 各サブタブコンテンツ -->
+      <div id="masterSubTabContent"></div>
+    </div>
+  `;
+
+  // サブタブイベント
+  container.querySelectorAll('.master-subtab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeMasterSubTab = btn.dataset.tab;
+      renderFlexconMaster(container);
+    });
+  });
+
+  // 初期復元ボタン
+  document.getElementById('btnResetMasterDefault').addEventListener('click', () => {
+    if (confirm("2026年10月13日提出の初期マスター状態（全9拠点・全9商品・全3仕入先）にリセットしますか？\n※個別に変更した内容がある場合は初期化されます。")) {
+      localStorage.removeItem('cascadia_flexcon_master_v5');
+      refreshActiveMaster();
+      showToast("🔄 初期マスターに復元しました");
+      renderFlexconMaster(container);
+    }
+  });
+
+  const subContainer = document.getElementById('masterSubTabContent');
+  if (activeMasterSubTab === 'locations') renderMasterLocations(subContainer);
+  else if (activeMasterSubTab === 'items') renderMasterItems(subContainer);
+  else if (activeMasterSubTab === 'suppliers') renderMasterSuppliers(subContainer);
+  else if (activeMasterSubTab === 'backup') renderMasterBackup(subContainer);
+}
+
+// ① 拠点マスター画面
+function renderMasterLocations(container) {
+  let html = `
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <div style="font-size: 14px; font-weight: 700; color: var(--text-primary);">
+        全 ${FLEXCON_LOCATIONS.length} 拠点一覧（取扱商品・安全在庫設定）
+      </div>
+      <button id="btnAddNewLocation" style="padding: 7px 15px; font-size: 13px; font-weight: 700; background: #7c3aed; color: #ffffff; border: none; border-radius: 8px; cursor: pointer;">
+        ➕ 新規拠点を追加
+      </button>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+  `;
+
+  FLEXCON_LOCATIONS.forEach(loc => {
+    const detail = FLEXCON_LOCATION_DETAILS[loc] || {};
+    const itemStocks = detail.itemStocks || {};
+    const itemKeys = Object.keys(itemStocks);
+
+    html += `
+      <div style="background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 10px; padding: 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; border-bottom: 1px solid #f3e8ff; padding-bottom: 10px;">
+          <div>
+            <div style="font-size: 16px; font-weight: 800; color: #581c87; display: flex; align-items: center; gap: 8px;">
+              <span>🏢</span> ${loc}
+            </div>
+            <div style="font-size: 12.5px; color: #6b21a8; margin-top: 3px;">
+              ${detail.postalCode || ''} ${detail.address || '(住所未登録)'}
+              ${detail.tel ? ` / TEL: ${detail.tel}` : ''}
+              ${detail.recipient ? ` / 受取担当: ${detail.recipient}` : ''}
+              ${detail.deliveryNote ? ` / <span style="color:#b91c1c; font-weight:600;">※${detail.deliveryNote}</span>` : ''}
+            </div>
+          </div>
+          <div style="display: flex; gap: 6px;">
+            <button class="btn-edit-loc" data-loc="${loc}" style="padding: 5px 10px; font-size: 12px; font-weight: 600; background: #ffffff; color: #7c3aed; border: 1px solid #c084fc; border-radius: 6px; cursor: pointer;">
+              ✏️ 拠点情報編集
+            </button>
+            <button class="btn-del-loc" data-loc="${loc}" style="padding: 5px 10px; font-size: 12px; font-weight: 600; background: #ffffff; color: #ef4444; border: 1px solid #fca5a5; border-radius: 6px; cursor: pointer;">
+              🗑️ 削除
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size: 12.5px; font-weight: 700; color: #6b21a8; margin-bottom: 8px;">
+            取扱資材および安全在庫数（下回ると要手配アラートが点灯）:
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+            ${itemKeys.length > 0 ? itemKeys.map(k => `
+              <div style="background: #ffffff; border: 1px solid #d8b4fe; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 12.5px; font-weight: 600; color: #374151;">${k}:</span>
+                <input type="number" class="input-safety-stock" data-loc="${loc}" data-item="${k}" value="${itemStocks[k]}" min="0" style="width: 75px; padding: 4px 6px; font-size: 13px; font-weight: 700; text-align: right; border: 1px solid #cbd5e1; border-radius: 4px;">
+                <span style="font-size: 11px; color: #64748b;">枚</span>
+              </div>
+            `).join('') : '<div style="font-size: 12px; color: #94a3b8;">取扱商品の安全在庫は未登録です</div>'}
+            <button class="btn-save-stock" data-loc="${loc}" style="padding: 6px 12px; font-size: 12px; font-weight: 700; background: #9333ea; color: #ffffff; border: none; border-radius: 6px; cursor: pointer;">
+              💾 この拠点の安全在庫を保存
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  html += `</div>`;
+  container.innerHTML = html;
+
+  // 安全在庫保存
+  container.querySelectorAll('.btn-save-stock').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const loc = btn.dataset.loc;
+      const inputs = container.querySelectorAll(`.input-safety-stock[data-loc="${loc}"]`);
+      inputs.forEach(inp => {
+        const itemKey = inp.dataset.item;
+        const val = parseInt(inp.value, 10) || 0;
+        if (!activeFlexconMaster.locations[loc].itemStocks) activeFlexconMaster.locations[loc].itemStocks = {};
+        activeFlexconMaster.locations[loc].itemStocks[itemKey] = val;
+      });
+      saveFlexconMaster(activeFlexconMaster);
+      showToast(`✅ ${loc} の安全在庫設定を保存しました`);
+    });
+  });
+
+  // 拠点編集
+  container.querySelectorAll('.btn-edit-loc').forEach(btn => {
+    btn.addEventListener('click', () => {
+      openLocationEditModal(btn.dataset.loc);
+    });
+  });
+
+  // 拠点削除
+  container.querySelectorAll('.btn-del-loc').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const loc = btn.dataset.loc;
+      if (confirm(`拠点「${loc}」を削除しますか？\n※既存の入出庫履歴にこの拠点が含まれている場合はご注意ください。`)) {
+        delete activeFlexconMaster.locations[loc];
+        saveFlexconMaster(activeFlexconMaster);
+        showToast(`🗑️ ${loc} を削除しました`);
+        renderMasterLocations(container);
+      }
+    });
+  });
+
+  // 新規拠点追加
+  document.getElementById('btnAddNewLocation').addEventListener('click', () => {
+    openLocationEditModal(null);
+  });
+}
+
+// 拠点編集モーダル
+function openLocationEditModal(locKey) {
+  const isNew = !locKey;
+  const detail = isNew ? {
+    company: "",
+    recipient: "",
+    postalCode: "",
+    address: "",
+    tel: "",
+    deliveryNote: "",
+    itemStocks: {}
+  } : (FLEXCON_LOCATION_DETAILS[locKey] || {});
+
+  const modalOverlay = document.createElement('div');
+  modalOverlay.style.cssText = 'position: fixed; inset: 0; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 20px;';
+
+  modalOverlay.innerHTML = `
+    <div style="background: #ffffff; border-radius: 14px; max-width: 560px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);">
+      <h3 style="font-size: 17px; font-weight: 800; color: #1e293b; margin: 0 0 16px 0;">
+        ${isNew ? '🏢 新規拠点の追加' : `🏢 拠点情報の編集: ${locKey}`}
+      </h3>
+      <form id="formLocEdit" style="display: flex; flex-direction: column; gap: 12px;">
+        <div>
+          <label style="font-size: 12.5px; font-weight: 700; color: #475569;">拠点名（必須）</label>
+          <input type="text" id="mLocName" value="${locKey || ''}" required style="width: 100%; box-sizing: border-box; padding: 8px 10px; font-size: 13.5px; border: 1px solid #cbd5e1; border-radius: 6px;">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 10px;">
+          <div>
+            <label style="font-size: 12.5px; font-weight: 700; color: #475569;">郵便番号</label>
+            <input type="text" id="mLocPostal" value="${detail.postalCode || ''}" placeholder="例: 〒810-0071" style="width: 100%; box-sizing: border-box; padding: 8px 10px; font-size: 13.5px; border: 1px solid #cbd5e1; border-radius: 6px;">
+          </div>
+          <div>
+            <label style="font-size: 12.5px; font-weight: 700; color: #475569;">電話番号</label>
+            <input type="text" id="mLocTel" value="${detail.tel || ''}" placeholder="例: 092-752-5586" style="width: 100%; box-sizing: border-box; padding: 8px 10px; font-size: 13.5px; border: 1px solid #cbd5e1; border-radius: 6px;">
+          </div>
+        </div>
+        <div>
+          <label style="font-size: 12.5px; font-weight: 700; color: #475569;">納品先住所（倉庫・ビル名まで）</label>
+          <input type="text" id="mLocAddress" value="${detail.address || ''}" placeholder="例: 福岡県福岡市中央区那の津5丁目9-23" style="width: 100%; box-sizing: border-box; padding: 8px 10px; font-size: 13.5px; border: 1px solid #cbd5e1; border-radius: 6px;">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div>
+            <label style="font-size: 12.5px; font-weight: 700; color: #475569;">受取担当者名</label>
+            <input type="text" id="mLocRecipient" value="${detail.recipient || ''}" placeholder="例: 営業１課　祐谷様" style="width: 100%; box-sizing: border-box; padding: 8px 10px; font-size: 13.5px; border: 1px solid #cbd5e1; border-radius: 6px;">
+          </div>
+          <div>
+            <label style="font-size: 12.5px; font-weight: 700; color: #475569;">納品受入の注意点</label>
+            <input type="text" id="mLocNote" value="${detail.deliveryNote || ''}" placeholder="例: 受入れは平日のみ" style="width: 100%; box-sizing: border-box; padding: 8px 10px; font-size: 13.5px; border: 1px solid #cbd5e1; border-radius: 6px;">
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px;">
+          <button type="button" id="btnCancelLocEdit" style="padding: 8px 16px; font-size: 13px; font-weight: 600; background: #f1f5f9; color: #475569; border: none; border-radius: 6px; cursor: pointer;">
+            キャンセル
+          </button>
+          <button type="submit" style="padding: 8px 18px; font-size: 13px; font-weight: 700; background: #7c3aed; color: #ffffff; border: none; border-radius: 6px; cursor: pointer;">
+            💾 保存する
+          </button>
+        </div>
+      </form>
+    </div>
+  `;
+
+  document.body.appendChild(modalOverlay);
+
+  document.getElementById('btnCancelLocEdit').addEventListener('click', () => {
+    document.body.removeChild(modalOverlay);
+  });
+
+  document.getElementById('formLocEdit').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const newName = document.getElementById('mLocName').value.trim();
+    if (!newName) return;
+
+    const postal = document.getElementById('mLocPostal').value.trim();
+    const tel = document.getElementById('mLocTel').value.trim();
+    const address = document.getElementById('mLocAddress').value.trim();
+    const recipient = document.getElementById('mLocRecipient').value.trim();
+    const note = document.getElementById('mLocNote').value.trim();
+
+    // 既存拠点のキー名変更時
+    if (!isNew && locKey !== newName) {
+      delete activeFlexconMaster.locations[locKey];
+    }
+
+    const prevStocks = detail.itemStocks || {};
+    activeFlexconMaster.locations[newName] = {
+      company: newName,
+      recipient: recipient,
+      contacts: recipient ? [recipient] : ["業務ご担当者様"],
+      postalCode: postal,
+      address: address,
+      tel: tel,
+      deliveryNote: note,
+      itemStocks: prevStocks,
+      presets: [
+        {
+          name: `${newName}（標準）`,
+          company: newName,
+          recipient: recipient,
+          postalCode: postal,
+          address: address,
+          tel: tel
+        }
+      ]
+    };
+
+    saveFlexconMaster(activeFlexconMaster);
+    document.body.removeChild(modalOverlay);
+    showToast(`✅ 拠点「${newName}」を保存しました`);
+    const container = document.getElementById('masterSubTabContent');
+    if (container) renderMasterLocations(container);
+  });
+}
+
+// ② 商品マスター画面
+function renderMasterItems(container) {
+  let html = `
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <div style="font-size: 14px; font-weight: 700; color: var(--text-primary);">
+        全 ${FLEXCON_ITEMS.length} 品目一覧（社内通称・正式品名・基準単価・主な仕入先）
+      </div>
+      <button id="btnAddNewItem" style="padding: 7px 15px; font-size: 13px; font-weight: 700; background: #7c3aed; color: #ffffff; border: none; border-radius: 8px; cursor: pointer;">
+        ➕ 新規商品を追加
+      </button>
+    </div>
+
+    <div style="overflow-x: auto; background: #ffffff; border: 1px solid var(--border-medium); border-radius: 10px;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+        <thead>
+          <tr style="background: #f8fafc; border-bottom: 2px solid var(--border-medium); color: #475569; font-weight: 700;">
+            <th style="padding: 10px 12px;">社内通称（画面表示）</th>
+            <th style="padding: 10px 12px;">正式品名（発注書用）</th>
+            <th style="padding: 10px 12px;">規格・仕様</th>
+            <th style="padding: 10px 12px; text-align: right;">基準単価</th>
+            <th style="padding: 10px 12px;">主な仕入先</th>
+            <th style="padding: 10px 12px;">備考</th>
+            <th style="padding: 10px 12px; text-align: center;">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
+
+  FLEXCON_ITEMS.forEach(it => {
+    html += `
+      <tr style="border-bottom: 1px solid var(--border-subtle);">
+        <td style="padding: 10px 12px; font-weight: 700; color: #1e293b;">${it.commonName}</td>
+        <td style="padding: 10px 12px; color: #334155;">${it.name || '-'}</td>
+        <td style="padding: 10px 12px; color: #64748b; font-size: 12px;">${it.spec || '-'}</td>
+        <td style="padding: 10px 12px; text-align: right; font-weight: 700; color: #7c3aed;">
+          ${it.defaultPrice > 0 ? `¥${it.defaultPrice.toLocaleString()}` : '-'}
+        </td>
+        <td style="padding: 10px 12px; color: #475569;">${it.defaultSupplier || '-'}</td>
+        <td style="padding: 10px 12px; color: #64748b; font-size: 11.5px;">${it.note || '-'}</td>
+        <td style="padding: 10px 12px; text-align: center;">
+          <div style="display: flex; gap: 4px; justify-content: center;">
+            <button class="btn-edit-item" data-id="${it.id}" style="padding: 4px 8px; font-size: 11.5px; background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; border-radius: 4px; cursor: pointer;">✏️</button>
+            <button class="btn-del-item" data-id="${it.id}" style="padding: 4px 8px; font-size: 11.5px; background: #fff1f2; color: #ef4444; border: 1px solid #fecdd3; border-radius: 4px; cursor: pointer;">🗑️</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  });
+
+  html += `
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  container.innerHTML = html;
+
+  container.querySelectorAll('.btn-edit-item').forEach(b => {
+    b.addEventListener('click', () => {
+      openItemEditModal(b.dataset.id);
+    });
+  });
+
+  container.querySelectorAll('.btn-del-item').forEach(b => {
+    b.addEventListener('click', () => {
+      const id = b.dataset.id;
+      if (confirm(`商品「${id}」を削除しますか？`)) {
+        activeFlexconMaster.items = activeFlexconMaster.items.filter(i => i.id !== id);
+        saveFlexconMaster(activeFlexconMaster);
+        showToast(`🗑️ 商品を削除しました`);
+        renderMasterItems(container);
+      }
+    });
+  });
+
+  document.getElementById('btnAddNewItem').addEventListener('click', () => {
+    openItemEditModal(null);
+  });
+}
+
+function openItemEditModal(itemId) {
+  const isNew = !itemId;
+  const itemObj = isNew ? {
+    id: "",
+    commonName: "",
+    name: "",
+    spec: "",
+    defaultPrice: 1000,
+    defaultSupplier: "株式会社シオヤ",
+    note: ""
+  } : (FLEXCON_ITEMS.find(i => i.id === itemId) || {});
+
+  const modalOverlay = document.createElement('div');
+  modalOverlay.style.cssText = 'position: fixed; inset: 0; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 20px;';
+
+  modalOverlay.innerHTML = `
+    <div style="background: #ffffff; border-radius: 14px; max-width: 520px; width: 100%; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);">
+      <h3 style="font-size: 17px; font-weight: 800; color: #1e293b; margin: 0 0 16px 0;">
+        ${isNew ? '📦 新規商品（資材）の追加' : `📦 商品情報の編集: ${itemObj.commonName}`}
+      </h3>
+      <form id="formItemEdit" style="display: flex; flex-direction: column; gap: 12px;">
+        <div>
+          <label style="font-size: 12.5px; font-weight: 700; color: #475569;">社内通称（画面表示・必須）</label>
+          <input type="text" id="mItemCommon" value="${itemObj.commonName || ''}" required placeholder="例: フレコンSNS-1" style="width: 100%; box-sizing: border-box; padding: 8px 10px; font-size: 13.5px; border: 1px solid #cbd5e1; border-radius: 6px;">
+        </div>
+        <div>
+          <label style="font-size: 12.5px; font-weight: 700; color: #475569;">正式品名（発注書印字用・必須）</label>
+          <input type="text" id="mItemFormal" value="${itemObj.name || ''}" required placeholder="例: フレコンワンウェイバッグSNS-1 上下全開タイプ" style="width: 100%; box-sizing: border-box; padding: 8px 10px; font-size: 13.5px; border: 1px solid #cbd5e1; border-radius: 6px;">
+        </div>
+        <div>
+          <label style="font-size: 12.5px; font-weight: 700; color: #475569;">規格・仕様</label>
+          <input type="text" id="mItemSpec" value="${itemObj.spec || ''}" placeholder="例: φ1100×1200 / 耐荷重1t" style="width: 100%; box-sizing: border-box; padding: 8px 10px; font-size: 13.5px; border: 1px solid #cbd5e1; border-radius: 6px;">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div>
+            <label style="font-size: 12.5px; font-weight: 700; color: #475569;">基準単価（円）</label>
+            <input type="number" id="mItemPrice" value="${itemObj.defaultPrice || 0}" step="0.1" style="width: 100%; box-sizing: border-box; padding: 8px 10px; font-size: 13.5px; border: 1px solid #cbd5e1; border-radius: 6px;">
+          </div>
+          <div>
+            <label style="font-size: 12.5px; font-weight: 700; color: #475569;">主な仕入先</label>
+            <input type="text" id="mItemSup" value="${itemObj.defaultSupplier || ''}" placeholder="例: 株式会社シオヤ" style="width: 100%; box-sizing: border-box; padding: 8px 10px; font-size: 13.5px; border: 1px solid #cbd5e1; border-radius: 6px;">
+          </div>
+        </div>
+        <div>
+          <label style="font-size: 12.5px; font-weight: 700; color: #475569;">備考</label>
+          <input type="text" id="mItemNote" value="${itemObj.note || ''}" placeholder="例: 直送分 9/8見積書" style="width: 100%; box-sizing: border-box; padding: 8px 10px; font-size: 13.5px; border: 1px solid #cbd5e1; border-radius: 6px;">
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px;">
+          <button type="button" id="btnCancelItemEdit" style="padding: 8px 16px; font-size: 13px; font-weight: 600; background: #f1f5f9; color: #475569; border: none; border-radius: 6px; cursor: pointer;">
+            キャンセル
+          </button>
+          <button type="submit" style="padding: 8px 18px; font-size: 13px; font-weight: 700; background: #7c3aed; color: #ffffff; border: none; border-radius: 6px; cursor: pointer;">
+            💾 保存する
+          </button>
+        </div>
+      </form>
+    </div>
+  `;
+
+  document.body.appendChild(modalOverlay);
+
+  document.getElementById('btnCancelItemEdit').addEventListener('click', () => {
+    document.body.removeChild(modalOverlay);
+  });
+
+  document.getElementById('formItemEdit').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const common = document.getElementById('mItemCommon').value.trim();
+    const formal = document.getElementById('mItemFormal').value.trim();
+    const spec = document.getElementById('mItemSpec').value.trim();
+    const price = parseFloat(document.getElementById('mItemPrice').value) || 0;
+    const sup = document.getElementById('mItemSup').value.trim();
+    const note = document.getElementById('mItemNote').value.trim();
+
+    const id = isNew ? common.replace(/[\s\(\)（）]/g, '_') : itemId;
+
+    const newItem = {
+      id: id,
+      commonName: common,
+      name: formal,
+      spec: spec,
+      defaultPrice: price,
+      defaultSupplier: sup,
+      note: note
+    };
+
+    if (isNew) {
+      activeFlexconMaster.items.push(newItem);
+    } else {
+      const idx = activeFlexconMaster.items.findIndex(i => i.id === itemId);
+      if (idx >= 0) activeFlexconMaster.items[idx] = newItem;
+    }
+
+    saveFlexconMaster(activeFlexconMaster);
+    document.body.removeChild(modalOverlay);
+    showToast(`✅ 商品「${common}」を保存しました`);
+    const container = document.getElementById('masterSubTabContent');
+    if (container) renderMasterItems(container);
+  });
+}
+
+// ③ 仕入先マスター画面
+function renderMasterSuppliers(container) {
+  let html = `
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <div style="font-size: 14px; font-weight: 700; color: var(--text-primary);">
+        全 ${FLEXCON_SUPPLIERS.length} 社一覧（発注先名・所在地・連絡先・担当者名）
+      </div>
+      <button id="btnAddNewSupplier" style="padding: 7px 15px; font-size: 13px; font-weight: 700; background: #7c3aed; color: #ffffff; border: none; border-radius: 8px; cursor: pointer;">
+        ➕ 新規仕入先を追加
+      </button>
+    </div>
+
+    <div style="overflow-x: auto; background: #ffffff; border: 1px solid var(--border-medium); border-radius: 10px;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+        <thead>
+          <tr style="background: #f8fafc; border-bottom: 2px solid var(--border-medium); color: #475569; font-weight: 700;">
+            <th style="padding: 10px 12px;">仕入先名</th>
+            <th style="padding: 10px 12px;">郵便番号・住所</th>
+            <th style="padding: 10px 12px;">電話番号</th>
+            <th style="padding: 10px 12px;">先方担当者名（発注書印字）</th>
+            <th style="padding: 10px 12px; text-align: center;">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
+
+  FLEXCON_SUPPLIERS.forEach(s => {
+    html += `
+      <tr style="border-bottom: 1px solid var(--border-subtle);">
+        <td style="padding: 10px 12px; font-weight: 700; color: #1e293b;">${s.name}</td>
+        <td style="padding: 10px 12px; color: #475569;">${s.postalCode || ''} ${s.address || '-'}</td>
+        <td style="padding: 10px 12px; color: #475569;">${s.tel || '-'}</td>
+        <td style="padding: 10px 12px; font-weight: 600; color: #7c3aed;">${s.contactPerson || '-'}</td>
+        <td style="padding: 10px 12px; text-align: center;">
+          <div style="display: flex; gap: 4px; justify-content: center;">
+            <button class="btn-edit-sup" data-name="${s.name}" style="padding: 4px 8px; font-size: 11.5px; background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; border-radius: 4px; cursor: pointer;">✏️</button>
+            <button class="btn-del-sup" data-name="${s.name}" style="padding: 4px 8px; font-size: 11.5px; background: #fff1f2; color: #ef4444; border: 1px solid #fecdd3; border-radius: 4px; cursor: pointer;">🗑️</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  });
+
+  html += `
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  container.innerHTML = html;
+
+  container.querySelectorAll('.btn-edit-sup').forEach(b => {
+    b.addEventListener('click', () => {
+      openSupplierEditModal(b.dataset.name);
+    });
+  });
+
+  container.querySelectorAll('.btn-del-sup').forEach(b => {
+    b.addEventListener('click', () => {
+      const name = b.dataset.name;
+      if (confirm(`仕入先「${name}」を削除しますか？`)) {
+        activeFlexconMaster.suppliers = activeFlexconMaster.suppliers.filter(s => s.name !== name);
+        saveFlexconMaster(activeFlexconMaster);
+        showToast(`🗑️ 仕入先を削除しました`);
+        renderMasterSuppliers(container);
+      }
+    });
+  });
+
+  document.getElementById('btnAddNewSupplier').addEventListener('click', () => {
+    openSupplierEditModal(null);
+  });
+}
+
+function openSupplierEditModal(supName) {
+  const isNew = !supName;
+  const supObj = isNew ? {
+    name: "",
+    postalCode: "",
+    address: "",
+    tel: "",
+    contactPerson: ""
+  } : (FLEXCON_SUPPLIERS.find(s => s.name === supName) || {});
+
+  const modalOverlay = document.createElement('div');
+  modalOverlay.style.cssText = 'position: fixed; inset: 0; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 20px;';
+
+  modalOverlay.innerHTML = `
+    <div style="background: #ffffff; border-radius: 14px; max-width: 500px; width: 100%; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);">
+      <h3 style="font-size: 17px; font-weight: 800; color: #1e293b; margin: 0 0 16px 0;">
+        ${isNew ? '🏭 新規仕入先の追加' : `🏭 仕入先情報の編集: ${supName}`}
+      </h3>
+      <form id="formSupEdit" style="display: flex; flex-direction: column; gap: 12px;">
+        <div>
+          <label style="font-size: 12.5px; font-weight: 700; color: #475569;">仕入先名（必須）</label>
+          <input type="text" id="mSupName" value="${supObj.name || ''}" required placeholder="例: 株式会社シオヤ" style="width: 100%; box-sizing: border-box; padding: 8px 10px; font-size: 13.5px; border: 1px solid #cbd5e1; border-radius: 6px;">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div>
+            <label style="font-size: 12.5px; font-weight: 700; color: #475569;">郵便番号</label>
+            <input type="text" id="mSupPostal" value="${supObj.postalCode || ''}" placeholder="例: 〒454-0027" style="width: 100%; box-sizing: border-box; padding: 8px 10px; font-size: 13.5px; border: 1px solid #cbd5e1; border-radius: 6px;">
+          </div>
+          <div>
+            <label style="font-size: 12.5px; font-weight: 700; color: #475569;">電話番号</label>
+            <input type="text" id="mSupTel" value="${supObj.tel || ''}" placeholder="例: 052-351-0531" style="width: 100%; box-sizing: border-box; padding: 8px 10px; font-size: 13.5px; border: 1px solid #cbd5e1; border-radius: 6px;">
+          </div>
+        </div>
+        <div>
+          <label style="font-size: 12.5px; font-weight: 700; color: #475569;">住所</label>
+          <input type="text" id="mSupAddress" value="${supObj.address || ''}" placeholder="例: 愛知県名古屋市中川区広川町5-1" style="width: 100%; box-sizing: border-box; padding: 8px 10px; font-size: 13.5px; border: 1px solid #cbd5e1; border-radius: 6px;">
+        </div>
+        <div>
+          <label style="font-size: 12.5px; font-weight: 700; color: #475569;">先方ご担当者様名（発注書印字用）</label>
+          <input type="text" id="mSupContact" value="${supObj.contactPerson || ''}" placeholder="例: 太田様" style="width: 100%; box-sizing: border-box; padding: 8px 10px; font-size: 13.5px; border: 1px solid #cbd5e1; border-radius: 6px;">
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px;">
+          <button type="button" id="btnCancelSupEdit" style="padding: 8px 16px; font-size: 13px; font-weight: 600; background: #f1f5f9; color: #475569; border: none; border-radius: 6px; cursor: pointer;">
+            キャンセル
+          </button>
+          <button type="submit" style="padding: 8px 18px; font-size: 13px; font-weight: 700; background: #7c3aed; color: #ffffff; border: none; border-radius: 6px; cursor: pointer;">
+            💾 保存する
+          </button>
+        </div>
+      </form>
+    </div>
+  `;
+
+  document.body.appendChild(modalOverlay);
+
+  document.getElementById('btnCancelSupEdit').addEventListener('click', () => {
+    document.body.removeChild(modalOverlay);
+  });
+
+  document.getElementById('formSupEdit').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = document.getElementById('mSupName').value.trim();
+    const postal = document.getElementById('mSupPostal').value.trim();
+    const tel = document.getElementById('mSupTel').value.trim();
+    const address = document.getElementById('mSupAddress').value.trim();
+    const contact = document.getElementById('mSupContact').value.trim();
+
+    const newSup = {
+      name: name,
+      postalCode: postal,
+      address: address,
+      tel: tel,
+      contactPerson: contact
+    };
+
+    if (isNew) {
+      activeFlexconMaster.suppliers.push(newSup);
+    } else {
+      const idx = activeFlexconMaster.suppliers.findIndex(s => s.name === supName);
+      if (idx >= 0) activeFlexconMaster.suppliers[idx] = newSup;
+    }
+
+    saveFlexconMaster(activeFlexconMaster);
+    document.body.removeChild(modalOverlay);
+    showToast(`✅ 仕入先「${name}」を保存しました`);
+    const container = document.getElementById('masterSubTabContent');
+    if (container) renderMasterSuppliers(container);
+  });
+}
+
+// ④ バックアップ・取込画面
+function renderMasterBackup(container) {
+  container.innerHTML = `
+    <div style="max-width: 680px; display: flex; flex-direction: column; gap: 20px;">
+      <div style="background: #f8fafc; border: 1px solid var(--border-medium); border-radius: 10px; padding: 20px;">
+        <h4 style="font-size: 15px; font-weight: 700; color: #1e293b; margin: 0 0 8px 0; display: flex; align-items: center; gap: 6px;">
+          <span>📥</span> マスター設定のエクスポート（バックアップ）
+        </h4>
+        <p style="font-size: 13px; color: #64748b; margin: 0 0 14px 0;">
+          現在設定されている全拠点・全商品・全仕入先のマスターデータ（安全在庫含む）をJSON形式のファイルとしてPCに保存します。他PCへの共有やバックアップ用にご活用ください。
+        </p>
+        <button id="btnExportMasterJson" style="padding: 8px 18px; font-size: 13px; font-weight: 700; background: #7c3aed; color: #ffffff; border: none; border-radius: 6px; cursor: pointer;">
+          💾 マスターJSONをダウンロード
+        </button>
+      </div>
+
+      <div style="background: #f8fafc; border: 1px solid var(--border-medium); border-radius: 10px; padding: 20px;">
+        <h4 style="font-size: 15px; font-weight: 700; color: #1e293b; margin: 0 0 8px 0; display: flex; align-items: center; gap: 6px;">
+          <span>📤</span> マスター設定のインポート（ファイル取込）
+        </h4>
+        <p style="font-size: 13px; color: #64748b; margin: 0 0 14px 0;">
+          エクスポートしたマスター設定JSONファイルを選択して読み込み、現在のツールへ反映します。
+        </p>
+        <input type="file" id="inputImportMasterJson" accept=".json" style="font-size: 13px;">
+      </div>
+    </div>
+  `;
+
+  document.getElementById('btnExportMasterJson').addEventListener('click', () => {
+    const jsonStr = JSON.stringify(activeFlexconMaster, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `cascadia_flexcon_master_${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast("💾 マスター設定ファイルをダウンロードしました");
+  });
+
+  document.getElementById('inputImportMasterJson').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      try {
+        const parsed = JSON.parse(evt.target.result);
+        if (parsed.locations && parsed.items && parsed.suppliers) {
+          saveFlexconMaster(parsed);
+          showToast("✅ マスター設定を取り込みました");
+          renderFlexconMaster(document.getElementById('contentArea') || document.getElementById('flexconAppContent'));
+        } else {
+          alert("マスターファイルの形式が正しくありません（locations, items, suppliersが必要です）");
+        }
+      } catch (err) {
+        alert("JSONファイルの解析に失敗しました: " + err.message);
+      }
+    };
+    reader.readAsText(file);
   });
 }
