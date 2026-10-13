@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cascadia Trading | フレコンバッグ資材 在庫管理システム</title>
+  <meta name="description" content="株式会社カスケディア・トレーディング フレコンバッグ資材 在庫数・在庫金額管理システム（業務部・関係部署連携）">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="src/style.css?v=3.2">
+  <link rel="icon" type="image/png" href="src/favicon.png">
+  <style>
+    /* Standalone Portal Specialized Styles */
+    body.flexcon-standalone-page {
+      background: var(--bg-primary, #f8fafc);
+      color: var(--text-primary, #1e293b);
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .flexcon-portal-header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border-subtle, #e2e8f0);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 12px 28px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+    }
+
+    .flexcon-header-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .flexcon-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .flexcon-brand-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: #ffffff;
+      padding: 4px;
+      border: 1px solid var(--border-subtle, #e2e8f0);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .flexcon-brand-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .flexcon-brand-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text-primary, #0f172a);
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .flexcon-brand-sub {
+      font-size: 12px;
+      color: var(--text-muted, #64748b);
+      margin-top: 1px;
+    }
+
+    .flexcon-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .badge-portal-scope {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      background: rgba(16, 185, 129, 0.08);
+      color: #059669;
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+
+    .badge-portal-scope::before {
+      content: '';
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+    }
+
+    .btn-portal-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 15px;
+      background: #ffffff;
+      border: 1px solid var(--border-medium, #cbd5e1);
+      border-radius: 8px;
+      color: var(--text-secondary, #475569);
+      font-size: 12.5px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .btn-portal-back:hover {
+      background: #f1f5f9;
+      color: var(--text-primary, #0f172a);
+      border-color: #94a3b8;
+    }
+
+    .flexcon-standalone-main {
+      flex: 1;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    /* Wide responsive layout for standalone page */
+    .flexcon-standalone-page .content-area {
+      max-width: 1440px;
+      padding: 24px 28px 80px;
+      margin: 0 auto;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    @media (max-width: 768px) {
+      .flexcon-portal-header {
+        padding: 10px 16px;
+      }
+      .flexcon-standalone-page .content-area {
+        padding: 16px 12px 60px;
+      }
+      .flexcon-brand-title {
+        font-size: 15px;
+      }
+      .flexcon-brand-sub {
+        font-size: 11px;
+      }
+    }
+  </style>
+</head>
+<body class="auth-guarded flexcon-standalone-page">
+  <!-- Standalone Header -->
+  <header class="flexcon-portal-header">
+    <div class="flexcon-header-inner">
+      <div class="flexcon-brand">
+        <div class="flexcon-brand-logo">
+          <img src="src/logo-mark.png" alt="Cascadia Trading Symbol">
+        </div>
+        <div>
+          <div class="flexcon-brand-title">
+            Cascadia Trading
+            <span style="font-weight: 400; color: var(--border-medium);">|</span>
+            <span>フレコンバッグ在庫管理システム</span>
+          </div>
+          <div class="flexcon-brand-sub">資材実在庫数・評価金額・発注書発行（業務部・各拠点・関係部署共用ポータル）</div>
+        </div>
+      </div>
+      <div class="flexcon-header-actions">
+        <span class="badge-portal-scope">本運用・専用ポータル</span>
+        <a href="index.html" class="btn-portal-back" title="総合マニュアルポータルへ戻る">
+          <span>📚 総合ポータルへ</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="flexcon-standalone-main">
+    <div class="content-area" id="contentArea"></div>
+  </main>
+
+  <!-- Global Toast -->
+  <div class="toast" id="toast">
+    <span class="toast-emoji"></span>
+    <span class="toast-text"></span>
+  </div>
+
+  <script src="src/auth.js"></script>
+  <script src="src/flexcon.js?v=4.5"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof checkSession === 'function' && checkSession()) {
+        initFlexconStandalone();
+      } else if (typeof showLogin === 'function') {
+        showLogin(initFlexconStandalone);
+      } else {
+        initFlexconStandalone();
+      }
+    });
+
+    function initFlexconStandalone() {
+      if (typeof renderFlexconInventory === 'function') {
+        renderFlexconInventory();
+      }
+    }
+  </script>
+</body>
+</html>
