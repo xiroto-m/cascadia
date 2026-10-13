@@ -4608,6 +4608,7 @@ tbody tr:last-child td {
 }
 
 .doc-fallback-notice {
+  display: none;
   padding: 10px 20px;
   background: rgba(245, 158, 11, 0.15);
   border-top: 1px solid rgba(245, 158, 11, 0.3);
@@ -5366,3 +5367,39 @@ tbody tr:last-child td {
   z-index: 15 !important;
   background: var(--bg-primary) !important;
 }
+
+/* インラインスタイル解消用のユーティリティクラス */
+.topbar-actions-flex {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.btn-start-quiz-accent {
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-violet));
+  color: #ffffff;
+}
+
+.preview-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.preview-modal-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent-blue);
+}
+
+.btn-close-preview-modal {
+  padding: 4px 12px;
+  font-size: 11px;
+}
+
+.doc-fallback-hidden {
+  display: none;
+}
+

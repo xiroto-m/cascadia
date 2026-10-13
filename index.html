@@ -57,7 +57,7 @@
           <span class="sep">/</span>
           <span class="current" id="currentPath">ホーム</span>
         </div>
-        <div class="topbar-actions" style="display: flex; align-items: center; gap: 14px;">
+        <div class="topbar-actions topbar-actions-flex">
           <span class="status-badge" id="statusBadge">ポータル</span>
         </div>
       </header>
@@ -93,7 +93,7 @@
 
       <div class="modal-actions">
         <button type="button" class="btn btn-secondary" id="btnPreviewManual">📚 まずマニュアルを読む</button>
-        <button type="button" class="btn btn-primary" id="btnStartQuiz" style="background:linear-gradient(135deg,var(--accent-blue),var(--accent-violet));color:#fff;">💡 いきなりクイズに挑戦！</button>
+        <button type="button" class="btn btn-primary btn-start-quiz-accent" id="btnStartQuiz">💡 いきなりクイズに挑戦！</button>
         <button type="button" class="btn btn-muted" id="btnCloseModal">キャンセル</button>
       </div>
     </div>
@@ -101,9 +101,9 @@
   <!-- Modal for Screen Preview -->
   <div class="modal-overlay" id="previewModal">
     <div class="modal-box preview-modal-box">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px;">
-        <h3 id="previewModalTitle" style="margin:0; font-size:15px; font-weight:700; color:var(--accent-blue);">🖥️ 画面操作見本</h3>
-        <button type="button" class="btn-check-action btn-clear-checks" id="btnClosePreviewModal" style="padding:4px 12px; font-size:11px;">✕ 閉じる</button>
+      <div class="preview-modal-header">
+        <h3 id="previewModalTitle" class="preview-modal-title">🖥️ 画面操作見本</h3>
+        <button type="button" class="btn-check-action btn-clear-checks btn-close-preview-modal" id="btnClosePreviewModal">✕ 閉じる</button>
       </div>
       <div id="previewModalContent">
         <!-- Rendered dynamically by main.js -->
@@ -141,7 +141,7 @@
       <!-- Document Content Viewer -->
       <div class="doc-modal-body" id="docModalBody">
         <iframe id="docPdfIframe" class="doc-pdf-iframe" src="about:blank" title="ドキュメントプレビュー"></iframe>
-        <div id="docFallbackNotice" class="doc-fallback-notice" style="display:none;">
+        <div id="docFallbackNotice" class="doc-fallback-notice">
           <p>⚠️ プレビューが表示されない場合は、右上の「別タブで開く」または「保存」ボタンをご利用ください。</p>
         </div>
       </div>
