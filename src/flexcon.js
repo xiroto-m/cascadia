@@ -438,8 +438,128 @@ const INITIAL_FLEXCON_DATA = {
   ]
 };
 
+// --- FIREBASE CLOUD FIRESTORE REAL-TIME SYNC ---
+const CASCADIA_FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDuRK-JlfLdnSW8RAUyptNk_BIx39U3Lns",
+  authDomain: "cascadia-trading-flexcon.firebaseapp.com",
+  projectId: "cascadia-trading-flexcon",
+  storageBucket: "cascadia-trading-flexcon.firebasestorage.app",
+  messagingSenderId: "913475294878",
+  appId: "1:913475294878:web:d20f0d40154ab44e6d0d8f"
+};
+
+let cascadiaFirestore = null;
+let cloudSyncStatus = 'connecting'; // 'synced' | 'connecting' | 'saving' | 'offline' | 'error'
+let lastRemoteUpdatedAt = null;
+let hasInitiatedSync = false;
+
+function initFirestoreSync() {
+  if (hasInitiatedSync) return;
+  hasInitiatedSync = true;
+
+  if (typeof firebase === 'undefined') {
+    console.warn('[Firestore] Firebase SDK is not loaded. Operating in offline/localStorage mode.');
+    cloudSyncStatus = 'offline';
+    updateSyncBadgeUI();
+    return;
+  }
+
+  try {
+    if (!firebase.apps || firebase.apps.length === 0) {
+      firebase.initializeApp(CASCADIA_FIREBASE_CONFIG);
+    }
+    cascadiaFirestore = firebase.firestore();
+    const docRef = cascadiaFirestore.collection('cascadia_flexcon').doc('shared_inventory');
+
+    docRef.onSnapshot((docSnap) => {
+      if (!docSnap.exists) {
+        // クラウドにデータがまだ存在しない場合、既存ローカルデータを初回アップロードして共有DBを構築
+        console.log('[Firestore] No remote data found. Initializing cloud database from local store...');
+        const initialData = loadFlexconData();
+        initialData.updatedAt = new Date().toISOString();
+        initialData.updatedBy = '初期セットアップ';
+        docRef.set(initialData).then(() => {
+          cloudSyncStatus = 'synced';
+          lastRemoteUpdatedAt = initialData.updatedAt;
+          updateSyncBadgeUI();
+          console.log('[Firestore] Cloud database initialized successfully.');
+        }).catch(err => {
+          console.error('[Firestore] Initialization error:', err);
+          cloudSyncStatus = 'error';
+          updateSyncBadgeUI();
+        });
+        return;
+      }
+
+      const remoteData = docSnap.data();
+      if (remoteData && Array.isArray(remoteData.transactions)) {
+        const remoteUpdated = remoteData.updatedAt || 'initial';
+        if (remoteUpdated !== lastRemoteUpdatedAt) {
+          console.log('[Firestore] Received real-time update from cloud at:', remoteUpdated);
+          lastRemoteUpdatedAt = remoteUpdated;
+          localStorage.setItem('cascadia_flexcon_inventory_v5', JSON.stringify(remoteData));
+          cloudSyncStatus = 'synced';
+          updateSyncBadgeUI();
+
+          // ユーザーがモーダルで作業中（入力中）でなければ画面をリアルタイム自動再描画
+          const isModalActive = document.querySelector('.modal-overlay') || 
+                                document.getElementById('flexconEditModalOverlay') ||
+                                (document.getElementById('flexconActionModalContainer') && document.getElementById('flexconActionModalContainer').children.length > 0) ||
+                                (document.getElementById('purchaseOrderModalContainer') && document.getElementById('purchaseOrderModalContainer').children.length > 0);
+          
+          if (!isModalActive) {
+            renderFlexconInventory();
+          }
+        }
+      }
+    }, (error) => {
+      console.warn('[Firestore] Real-time listener disconnected:', error);
+      cloudSyncStatus = 'offline';
+      updateSyncBadgeUI();
+    });
+  } catch (e) {
+    console.error('[Firestore Init Exception]', e);
+    cloudSyncStatus = 'error';
+    updateSyncBadgeUI();
+  }
+}
+
+function updateSyncBadgeUI() {
+  const badges = document.querySelectorAll('.cloud-sync-badge-target');
+  badges.forEach(badge => {
+    if (cloudSyncStatus === 'synced') {
+      badge.style.background = '#ecfdf5';
+      badge.style.color = '#065f46';
+      badge.style.borderColor = '#a7f3d0';
+      badge.innerHTML = '🟢 <span style="font-weight:700;">クラウド自動同期中</span> <span style="font-size:10.5px; opacity:0.85;">(リアルタイム)</span>';
+      badge.title = 'Google Cloud (Firestore) とリアルタイム接続中。他端末の変更も即時反映されます。';
+    } else if (cloudSyncStatus === 'saving') {
+      badge.style.background = '#eff6ff';
+      badge.style.color = '#1e40af';
+      badge.style.borderColor = '#bfdbfe';
+      badge.innerHTML = '⏳ <span style="font-weight:700;">クラウド保存中...</span>';
+    } else if (cloudSyncStatus === 'connecting') {
+      badge.style.background = '#fefce8';
+      badge.style.color = '#854d0e';
+      badge.style.borderColor = '#fef08a';
+      badge.innerHTML = '🟡 <span style="font-weight:700;">クラウド接続中...</span>';
+    } else {
+      badge.style.background = '#f8fafc';
+      badge.style.color = '#64748b';
+      badge.style.borderColor = '#cbd5e1';
+      badge.innerHTML = '⚪ <span style="font-weight:700;">ローカル保存</span>';
+      badge.title = 'オフラインまたはクラウド未接続。端末内ローカルストレージに安全に保管されています。';
+    }
+  });
+}
+
 function loadFlexconData() {
   refreshActiveMaster();
+  // Firestore 同期リスナーを一度だけ起動
+  if (!hasInitiatedSync && typeof window !== 'undefined') {
+    initFirestoreSync();
+  }
+
   const saved = localStorage.getItem('cascadia_flexcon_inventory_v5');
   if (saved) {
     try { 
@@ -480,7 +600,30 @@ function loadFlexconData() {
 }
 
 function saveFlexconData(data) {
+  // 1. ローカルストレージに即時保存（オフライン耐性・即時応答）
   localStorage.setItem('cascadia_flexcon_inventory_v5', JSON.stringify(data));
+
+  // 2. クラウド（Firebase Firestore）へ非同期保存
+  if (cascadiaFirestore) {
+    cloudSyncStatus = 'saving';
+    updateSyncBadgeUI();
+
+    data.updatedAt = new Date().toISOString();
+    lastRemoteUpdatedAt = data.updatedAt;
+
+    cascadiaFirestore.collection('cascadia_flexcon').doc('shared_inventory')
+      .set(data)
+      .then(() => {
+        cloudSyncStatus = 'synced';
+        updateSyncBadgeUI();
+        console.log('[Firestore] Saved successfully to cloud:', data.updatedAt);
+      })
+      .catch((err) => {
+        console.error('[Firestore Save Error]', err);
+        cloudSyncStatus = 'error';
+        updateSyncBadgeUI();
+      });
+  }
 }
 
 // 状態管理
@@ -509,8 +652,13 @@ function renderFlexconInventory(targetEl) {
     <div class="page-hero" style="padding: 24px; margin-bottom: 20px; background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(168,85,247,0.05)); border: 1px solid rgba(139,92,246,0.2); border-radius: 14px;">
       <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 14px;">
         <div style="flex: 1; min-width: 280px;">
-          <h1 class="page-title" style="margin-bottom: 6px;">📦 フレコンバッグ資材 在庫数・在庫金額確認ツール</h1>
-          <p class="page-subtitle" style="margin: 0;">消耗品として費用処理されるフレコンバッグ等のリアルタイム実在庫枚数・評価金額を一元管理し、発注書自動出力および納期遅延アラートに対応します。</p>
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap;">
+            <h1 class="page-title" style="margin: 0;">📦 フレコンバッグ資材 在庫数・在庫金額確認ツール</h1>
+            <span class="cloud-sync-badge-target" style="display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; font-size: 11.5px; border-radius: 20px; border: 1px solid #cbd5e1; background: #f8fafc; color: #64748b; font-weight: 700; cursor: pointer; transition: all 0.2s ease;">
+              🟡 クラウド接続中...
+            </span>
+          </div>
+          <p class="page-subtitle" style="margin: 0;">消耗品として費用処理されるフレコンバッグ等のリアルタイム実在庫枚数・評価金額を一元管理し、発注書自動出力および納期遅延アラートに対応します。<strong>Google Cloud (Firestore) により全端末でリアルタイム自動同期されます。</strong></p>
         </div>
         ${!isStandalone ? `
         <div>
@@ -579,6 +727,9 @@ function renderFlexconInventory(targetEl) {
   document.getElementById('btnOpenInboundModal').addEventListener('click', () => { openFlexconInboundModal(data); });
   document.getElementById('btnOpenOutboundModal').addEventListener('click', () => { openFlexconOutboundModal(data); });
   document.getElementById('btnOpenTransferModal').addEventListener('click', () => { openFlexconTransferModal(data); });
+
+  // クラウド同期バッジの更新
+  updateSyncBadgeUI();
 
   const container = document.getElementById('flexconTabContent');
 
