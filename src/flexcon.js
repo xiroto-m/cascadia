@@ -557,6 +557,9 @@ function renderFlexconInventory(targetEl) {
         <button class="btn-action-sub" id="btnOpenOutboundModal" title="現場での使用・出荷を実在庫から減算します">
           <span>📤</span> 出庫
         </button>
+        <button class="btn-action-sub" id="btnOpenTransferModal" title="拠点間の在庫移動（移動元出庫＋移動先入庫）を一括登録します">
+          <span>🔄</span> 拠点間移動
+        </button>
       </div>
     </div>
 
@@ -575,6 +578,7 @@ function renderFlexconInventory(targetEl) {
   document.getElementById('btnOpenOrderModal').addEventListener('click', () => { openFlexconOrderModal(data); });
   document.getElementById('btnOpenInboundModal').addEventListener('click', () => { openFlexconInboundModal(data); });
   document.getElementById('btnOpenOutboundModal').addEventListener('click', () => { openFlexconOutboundModal(data); });
+  document.getElementById('btnOpenTransferModal').addEventListener('click', () => { openFlexconTransferModal(data); });
 
   const container = document.getElementById('flexconTabContent');
 
@@ -689,10 +693,12 @@ function renderFlexconDashboard(container, data) {
     shortageByLoc[a.location].push(a);
   });
 
-  const incomingByLoc = {};
-  incomingItems.forEach(a => {
-    if (!incomingByLoc[a.location]) incomingByLoc[a.location] = [];
-    incomingByLoc[a.location].push(a);
+  // 未納品・手配済みの全トランザクション（期限制限なし・先日付でもすべて対象）
+  const allOrderedTxs = data.transactions.filter(t => t.status === 'ordered');
+  const incomingOrdersByLoc = {};
+  allOrderedTxs.forEach(tx => {
+    if (!incomingOrdersByLoc[tx.location]) incomingOrdersByLoc[tx.location] = [];
+    incomingOrdersByLoc[tx.location].push(tx);
   });
 
   // 納品予定日超過アラート（status: 'ordered' かつ deliveryDueDate < today）
@@ -747,9 +753,9 @@ function renderFlexconDashboard(container, data) {
         <div style="font-size: 12px; color: var(--text-secondary); font-weight: 600;">安全在庫アラート（要発注）</div>
         <div style="font-size: 26px; font-weight: 800; color: ${shortageItems.length > 0 ? '#ef4444' : 'var(--accent-green)'}; margin-top: 4px;">${shortageItems.length} <span style="font-size: 14px; font-weight: 600;">件</span></div>
         <div style="font-size: 11px; color: ${shortageItems.length > 0 ? '#ef4444' : 'var(--text-muted)'}; margin-top: 4px;">${shortageItems.length > 0 ? '未発注・至急手配が必要' : '安全在庫維持OK'}</div>
-        ${incomingItems.length > 0 ? `
+        ${allOrderedTxs.length > 0 ? `
           <div style="font-size: 11px; color: var(--accent-blue); margin-top: 5px; border-top: 1px dashed var(--border-subtle); padding-top: 4px; font-weight: 600;">
-            🚚 入荷待ち(手配済): <strong>${incomingItems.length}</strong> 件
+            🚚 入荷待ち(手配済): <strong>${allOrderedTxs.length}</strong> 件
           </div>
         ` : ''}
       </div>
@@ -801,7 +807,7 @@ function renderFlexconDashboard(container, data) {
     ` : ''}
 
     <!-- 📊 アラート通知エリア（2カラム・拠点別にコンパクト整理） -->
-    ${(shortageItems.length > 0 || incomingItems.length > 0) ? `
+    ${(shortageItems.length > 0 || allOrderedTxs.length > 0) ? `
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 14px; margin-bottom: 20px;">
         <!-- 🚨 要発注（未手配） -->
         <div class="alert" style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.25); border-left: 4px solid #ef4444; border-radius: 8px; padding: 12px 14px; margin: 0;">
@@ -814,20 +820,21 @@ function renderFlexconDashboard(container, data) {
           ${shortageItems.length === 0 ? `
             <div style="font-size: 12px; color: var(--text-muted); padding: 6px 0;">現在、未発注の在庫不足品目はありません。</div>
           ` : `
-            <div style="max-height: 240px; overflow-y: auto; padding-right: 4px; display: flex; flex-direction: column; gap: 6px;">
+            <div style="max-height: 280px; overflow-y: auto; padding-right: 4px; display: flex; flex-direction: column; gap: 6px;">
               ${Object.entries(shortageByLoc).map(([loc, list]) => `
                 <div style="background: var(--bg-primary); border: 1px solid rgba(239,68,68,0.15); border-radius: 6px; padding: 6px 10px; font-size: 12px;">
-                  <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 4px; display: flex; justify-content: space-between;">
+                  <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center;">
                     <span>📍 ${loc}</span>
                     <span style="font-size: 11px; color: #ef4444; font-weight: 600;">${list.length}品目 要手配</span>
                   </div>
-                  <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                  <div style="display: flex; flex-wrap: wrap; gap: 6px;">
                     ${list.map(a => `
-                      <span title="${a.item.name}" style="display: inline-flex; align-items: center; gap: 4px; background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); border-radius: 4px; padding: 2px 6px; font-size: 11px;">
+                      <button type="button" class="btn-quick-order-from-shortage" data-location="${a.location}" data-item-id="${a.item.id}" data-suggested-qty="${Math.max(a.safetyStock - a.currentQty, 0)}" style="display: inline-flex; align-items: center; gap: 5px; background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.3); border-radius: 6px; padding: 4px 8px; font-size: 11px; cursor: pointer; text-align: left; transition: all 0.15s ease;" title="クリックしてこの品目の発注書を作成（${a.location}宛）">
                         <strong>【${a.item.commonName}】</strong>
                         <span style="color: #ef4444; font-weight: 700;">残${a.currentQty}枚</span>
                         <span style="color: var(--text-muted); font-size: 10px;">(基準:${a.safetyStock})</span>
-                      </span>
+                        <span style="background: #ef4444; color: #ffffff; padding: 1px 5px; border-radius: 3px; font-size: 10px; font-weight: 700; margin-left: 2px;">📝 発注</span>
+                      </button>
                     `).join('')}
                   </div>
                 </div>
@@ -840,28 +847,53 @@ function renderFlexconDashboard(container, data) {
         <div class="alert" style="background: rgba(37, 99, 235, 0.04); border: 1px solid rgba(37, 99, 235, 0.22); border-left: 4px solid var(--accent-blue); border-radius: 8px; padding: 12px 14px; margin: 0;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
             <div style="color: var(--accent-blue); font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px;">
-              <span>🚚</span> 入荷待ち（発注済・手配中） (${incomingItems.length}件)
+              <span>🚚</span> 入荷待ち（発注済・手配中） (${allOrderedTxs.length}件)
             </div>
             <span style="font-size: 11px; color: var(--accent-blue); font-weight: 600; background: rgba(37,99,235,0.1); padding: 2px 8px; border-radius: 10px;">手配済・到着待ち</span>
           </div>
-          ${incomingItems.length === 0 ? `
+          ${allOrderedTxs.length === 0 ? `
             <div style="font-size: 12px; color: var(--text-muted); padding: 6px 0;">現在、入荷待ちの品目はありません。</div>
           ` : `
-            <div style="max-height: 240px; overflow-y: auto; padding-right: 4px; display: flex; flex-direction: column; gap: 6px;">
-              ${Object.entries(incomingByLoc).map(([loc, list]) => `
-                <div style="background: var(--bg-primary); border: 1px solid rgba(37,99,235,0.15); border-radius: 6px; padding: 6px 10px; font-size: 12px;">
-                  <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 4px; display: flex; justify-content: space-between;">
+            <div style="max-height: 280px; overflow-y: auto; padding-right: 4px; display: flex; flex-direction: column; gap: 8px;">
+              ${Object.entries(incomingOrdersByLoc).map(([loc, txList]) => `
+                <div style="background: var(--bg-primary); border: 1px solid rgba(37,99,235,0.18); border-radius: 6px; padding: 8px 10px; font-size: 12px;">
+                  <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
                     <span>📍 ${loc}</span>
-                    <span style="font-size: 11px; color: var(--accent-blue); font-weight: 600;">${list.length}品目 手配中</span>
+                    <span style="font-size: 11px; color: var(--accent-blue); font-weight: 600;">${txList.length}件 手配中</span>
                   </div>
-                  <div style="display: flex; flex-wrap: wrap; gap: 4px;">
-                    ${list.map(a => `
-                      <span title="${a.item.name}" style="display: inline-flex; align-items: center; gap: 4px; background: rgba(37,99,235,0.06); border: 1px solid rgba(37,99,235,0.22); border-radius: 4px; padding: 2px 6px; font-size: 11px;">
-                        <strong>【${a.item.commonName}】</strong>
-                        <span style="color: var(--text-muted); font-size: 10px;">残${a.currentQty}枚</span>
-                        <span style="color: #059669; font-weight: 700;">+発注残${a.orderedQty}枚</span>
-                      </span>
-                    `).join('')}
+                  <div style="display: flex; flex-direction: column; gap: 6px;">
+                    ${txList.map(tx => {
+                      const rawItems = (tx.items && Array.isArray(tx.items) && tx.items.length > 0)
+                        ? tx.items
+                        : [{ item: tx.item, qty: tx.qty, price: tx.price }];
+                      const summary = rawItems.map(it => {
+                        const itemObj = FLEXCON_ITEMS.find(i => i.id === it.item);
+                        const name = it.name || it.customName || (itemObj ? itemObj.commonName : it.item);
+                        return `<strong>【${name}】</strong> <span style="color:#059669; font-weight:700;">${it.qty}枚</span>`;
+                      }).join('、');
+                      const isOver = tx.deliveryDueDate && tx.deliveryDueDate < today;
+                      return `
+                        <div style="background: rgba(37,99,235,0.03); border: 1px solid rgba(37,99,235,0.15); border-radius: 6px; padding: 6px 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+                          <div style="line-height: 1.4;">
+                            <div style="font-size: 11.5px; color: var(--text-primary);">${summary}</div>
+                            <div style="font-size: 11px; color: ${isOver ? '#ef4444' : '#1e40af'}; font-weight: 600; display: flex; align-items: center; gap: 6px; margin-top: 2px;">
+                              <span>📅 納品予定: <strong>${tx.deliveryDueDate || '未定'}</strong></span>
+                              ${tx.isEarliestDelivery ? '<span style="font-size: 10px; background: #dbeafe; color: #1e40af; padding: 1px 4px; border-radius: 3px;">⚡最短希望</span>' : ''}
+                              ${isOver ? '<span style="font-size: 10px; background: #fee2e2; color: #dc2626; padding: 1px 4px; border-radius: 3px;">⚠️ 納期超過</span>' : ''}
+                              <span style="font-weight: normal; color: var(--text-muted);">(${tx.supplier || '仕入先未設定'})</span>
+                            </div>
+                          </div>
+                          <div style="display: flex; gap: 4px; align-items: center;">
+                            <button type="button" class="btn btn-secondary btn-quick-change-duedate" data-id="${tx.id}" data-duedate="${tx.deliveryDueDate || ''}" style="padding: 3px 8px; font-size: 11px; color: #1e40af; border-color: #93c5fd; background: #f8fafc; cursor: pointer;" title="納品予定日を変更する">
+                              📅 納期変更
+                            </button>
+                            <button type="button" class="btn btn-primary btn-quick-deliver" data-id="${tx.id}" style="padding: 3px 8px; font-size: 11px; background: var(--accent-green); border-color: var(--accent-green); cursor: pointer;" title="納品受入を完了し実在庫に反映">
+                              ✅ 受入
+                            </button>
+                          </div>
+                        </div>
+                      `;
+                    }).join('')}
                   </div>
                 </div>
               `).join('')}
@@ -974,17 +1006,56 @@ function renderFlexconDashboard(container, data) {
   // 納品完了クイックボタン
   container.querySelectorAll('.btn-quick-deliver').forEach(btn => {
     btn.addEventListener('click', (e) => {
-      const id = e.target.dataset.id;
-      markOrderDelivered(id, data);
+      const button = e.currentTarget || e.target.closest('.btn-quick-deliver');
+      const id = button ? button.dataset.id : null;
+      if (id) markOrderDelivered(id, data);
+    });
+  });
+
+  // 安全在庫アラートからの発注書作成連動
+  container.querySelectorAll('.btn-quick-order-from-shortage').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const b = e.currentTarget || e.target.closest('.btn-quick-order-from-shortage');
+      if (!b) return;
+      const loc = b.dataset.location;
+      const itemId = b.dataset.itemId;
+      const suggestedQty = parseInt(b.dataset.suggestedQty, 10) || 100;
+      openFlexconOrderModal(data, {
+        location: loc,
+        itemId: itemId,
+        suggestedQty: suggestedQty
+      });
+    });
+  });
+
+  // 入荷待ちアラートからの納品予定日変更
+  container.querySelectorAll('.btn-quick-change-duedate').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const b = e.currentTarget || e.target.closest('.btn-quick-change-duedate');
+      if (!b) return;
+      const id = b.dataset.id;
+      const currentDueDate = b.dataset.duedate || '';
+      const newDate = prompt(`【納品予定日の変更】\n新しい納品予定日を入力してください (YYYY-MM-DD):`, currentDueDate);
+      if (newDate !== null && newDate.trim()) {
+        const trimmed = newDate.trim();
+        const targetTx = data.transactions.find(t => t.id === id);
+        if (targetTx) {
+          targetTx.deliveryDueDate = trimmed;
+          saveFlexconData(data);
+          showToast(`📅 納品予定日を「${trimmed}」に更新しました`);
+          renderFlexconInventory();
+        }
+      }
     });
   });
 }
 
-// 納品完了処理（複数品目対応）
+// 納品完了処理（複数品目対応・納品予定日を反映）
 function markOrderDelivered(txId, data) {
   const tx = data.transactions.find(t => t.id === txId);
   if (!tx) return;
   const today = new Date().toISOString().split('T')[0];
+  const effectiveDate = tx.deliveryDueDate || tx.orderDate || today;
 
   const items = (tx.items && tx.items.length > 0) ? tx.items : [{
     item: tx.item,
@@ -998,17 +1069,17 @@ function markOrderDelivered(txId, data) {
     return `${name} (${it.qty.toLocaleString()}枚)`;
   }).join('、');
 
-  if (confirm(`発注番号 ${tx.orderNo || tx.id} (${tx.location}宛: ${itemsSummary}) の納品受入を完了しますか？\n（本日 ${today} 付で実在庫に計上されます）`)) {
+  if (confirm(`発注番号 ${tx.orderNo || tx.id} (${tx.location}宛: ${itemsSummary}) の納品受入を完了しますか？\n（納品予定日 ${effectiveDate} 付で実在庫に計上されます）`)) {
     tx.status = 'delivered';
-    tx.date = today;
+    tx.date = effectiveDate;
     saveFlexconData(data);
-    showToast("✨ 納品受入を完了しました（各品目が実在庫に計上されました）");
+    showToast(`✨ 納品受入を完了しました（${effectiveDate}付で実在庫に計上されました）`);
     renderFlexconInventory();
   }
 }
 
-// 2. 資材発注・発注書自動出力モーダル（複数品目対応・自由入力対応）
-function openFlexconOrderModal(data) {
+// 2. 資材発注・発注書自動出力モーダル（複数品目対応・自由入力対応・プリセット連動）
+function openFlexconOrderModal(data, options = {}) {
   const modalContainer = document.getElementById('flexconActionModalContainer');
   const today = new Date().toISOString().split('T')[0];
   const targetDate = new Date();
@@ -1017,7 +1088,7 @@ function openFlexconOrderModal(data) {
   const autoPoNo = "PO-" + today.replace(/-/g, '') + "-" + String(Math.floor(Math.random() * 90) + 10);
 
   const defaultSup = FLEXCON_SUPPLIERS[0];
-  const defaultLoc = FLEXCON_LOCATIONS[0];
+  const defaultLoc = (options && options.location) ? options.location : FLEXCON_LOCATIONS[0];
 
   modalContainer.innerHTML = `
     <div class="flexcon-modal-overlay" id="flexconOrderModalOverlay">
@@ -1068,7 +1139,7 @@ function openFlexconOrderModal(data) {
             <div class="tool-group">
               <label for="mPoLocation">受入拠点（在庫管理場所） <span style="color:#ef4444;">*</span></label>
               <select id="mPoLocation" required>
-                ${FLEXCON_LOCATIONS.map(l => `<option value="${l}">${l}</option>`).join('')}
+                ${FLEXCON_LOCATIONS.map(l => `<option value="${l}" ${l === defaultLoc ? 'selected' : ''}>${l}</option>`).join('')}
               </select>
             </div>
             <div class="tool-group">
@@ -1501,11 +1572,18 @@ function openFlexconOrderModal(data) {
     updateOrderTotals();
   }
 
-  // 初期行として1件追加
+  // 初期行として1件追加（指定品目・数量があれば優先セット）
+  const initialItem = (options && options.itemId)
+    ? (FLEXCON_ITEMS.find(i => i.id === options.itemId) || FLEXCON_ITEMS[0])
+    : FLEXCON_ITEMS[0];
+  const initialQty = (options && options.suggestedQty && options.suggestedQty > 0)
+    ? options.suggestedQty
+    : (initialItem.id.includes('BAG') ? 150 : 100);
+
   addPoItemRow({
-    item: FLEXCON_ITEMS[0].id,
-    qty: 150,
-    price: FLEXCON_ITEMS[0].defaultPrice,
+    item: initialItem.id,
+    qty: initialQty,
+    price: initialItem.defaultPrice || 1000,
     quoteNo: ''
   });
 
@@ -1705,16 +1783,6 @@ function generatePurchaseOrderHtml(tx, forStandalone = false) {
     `;
   }).join('');
 
-  const blankRowsCount = Math.max(0, 2 - rawItems.length);
-  const blankRowsHtml = blankRowsCount > 0 ? `
-    <tr class="blank-row">
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-  `.repeat(blankRowsCount) : '';
-
   const tax = Math.round(subtotal * 0.10);
   const total = subtotal + tax;
 
@@ -1771,7 +1839,7 @@ function generatePurchaseOrderHtml(tx, forStandalone = false) {
 
         <div class="po-issuer-block">
           <div class="po-issuer-logo-group">
-            <span class="po-issuer-logo-mark">🌿</span>
+            <img src="src/cti-logo.jpg" alt="CTI Logo" class="po-issuer-logo-img">
             <span class="po-issuer-company">CASCADIA TRADING, INC.</span>
           </div>
           <div class="po-issuer-office">【本社】</div>
@@ -1794,7 +1862,6 @@ function generatePurchaseOrderHtml(tx, forStandalone = false) {
         </thead>
         <tbody>
           ${itemRowsHtml}
-          ${blankRowsHtml}
         </tbody>
         <tfoot>
           <tr>
@@ -1941,6 +2008,7 @@ function generatePurchaseOrderHtml(tx, forStandalone = false) {
     .po-greeting { font-size: 11.5px; color: #374151; line-height: 1.5; }
     .po-issuer-block { text-align: right; font-size: 11.5px; line-height: 1.45; }
     .po-issuer-logo-group { display: flex; align-items: center; justify-content: flex-end; gap: 6px; margin-bottom: 2px; }
+    .po-issuer-logo-img { width: 24px; height: 24px; object-fit: contain; }
     .po-issuer-company { font-size: 14.5px; font-weight: 900; letter-spacing: 0.5px; color: #0f172a; }
     .po-issuer-office { font-weight: 700; font-size: 11.5px; }
     .po-issuer-address { font-size: 11px; }
@@ -2388,7 +2456,377 @@ function openFlexconOutboundModal(data) {
   });
 }
 
-// 6. 入出庫全履歴帳簿（ソート＆保管場所フィルター対応）
+// 5. 拠点間移動モーダル（出庫＋入庫を一括生成・単価欄ロック）
+function openFlexconTransferModal(data) {
+  const modalContainer = document.getElementById('flexconActionModalContainer');
+  const today = new Date().toISOString().split('T')[0];
+
+  modalContainer.innerHTML = `
+    <div class="flexcon-modal-overlay" id="flexconTransferModalOverlay">
+      <div class="flexcon-modal-box" style="max-width: 620px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 20px;">🔄</span>
+            <h3 style="margin: 0; font-size: 17px; font-weight: 800;">フレコン資材 拠点間移動登録</h3>
+          </div>
+          <button type="button" id="btnCloseTransferModal" style="background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-muted); line-height: 1;">✕</button>
+        </div>
+
+        <form id="modalTransferForm" class="tool-form" novalidate>
+          <div class="tool-group">
+            <label for="mTransferDate">移動日 <span style="color:#ef4444;">*</span></label>
+            <input type="date" id="mTransferDate" value="${today}" required>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="tool-group">
+              <label for="mTransferFromLoc">移動元拠点（出庫場所） <span style="color:#ef4444;">*</span></label>
+              <select id="mTransferFromLoc" required>
+                ${FLEXCON_LOCATIONS.map(l => `<option value="${l}">${l}</option>`).join('')}
+              </select>
+            </div>
+            <div class="tool-group">
+              <label for="mTransferToLoc">移動先拠点（受入場所） <span style="color:#ef4444;">*</span></label>
+              <select id="mTransferToLoc" required>
+                ${FLEXCON_LOCATIONS.map((l, idx) => `<option value="${l}" ${idx === 1 ? 'selected' : ''}>${l}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+
+          <div class="tool-group">
+            <label for="mTransferItem">対象資材（品目） <span style="color:#ef4444;">*</span></label>
+            <select id="mTransferItem" required>
+              ${FLEXCON_ITEMS.map(i => `<option value="${i.id}">【${i.commonName}】 ${i.id} - ${i.name.split('　')[0]}</option>`).join('')}
+            </select>
+            <div id="mTransferStockInfo" style="font-size: 11.5px; color: var(--accent-blue); font-weight: 600; margin-top: 4px;"></div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="tool-group">
+              <label for="mTransferQty">移動数量 (枚) <span style="color:#ef4444;">*</span></label>
+              <input type="number" id="mTransferQty" min="1" max="99999" placeholder="例: 100" required>
+            </div>
+            <div class="tool-group">
+              <label for="mTransferPrice" style="color: var(--text-muted);">単価 (円) <span style="font-size: 10px; font-weight: normal;">※入力不可（自動引継）</span></label>
+              <input type="text" id="mTransferPrice" value="※拠点間移動のため入力不要" disabled style="background: #f1f5f9; color: #64748b; cursor: not-allowed; border-color: #cbd5e1;">
+            </div>
+          </div>
+
+          <div class="tool-group">
+            <label for="mTransferNote">備考</label>
+            <input type="text" id="mTransferNote" placeholder="例: 拠点間振替、定期配車移動など">
+          </div>
+
+          <div style="background: rgba(37,99,235,0.04); border: 1px solid rgba(37,99,235,0.18); border-radius: 8px; padding: 10px 14px; margin-top: 10px; font-size: 11.5px; color: var(--text-secondary); line-height: 1.4;">
+            💡 <strong>登録の仕組み:</strong> 移動元拠点からの「出庫」と移動先拠点への「入庫」の2レコードが一度に自動作成されます。移動元の実在庫が減算され、移動先の実在庫に加算されます。
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button type="button" id="btnCancelTransferModal" class="btn btn-secondary" style="flex: 1; padding: 11px;">キャンセル</button>
+            <button type="submit" class="btn btn-primary" style="flex: 2; padding: 11px; font-size: 14px; background: linear-gradient(135deg, var(--accent-blue), #1d4ed8);">🔄 拠点間移動を登録する</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+
+  const closeModal = () => { modalContainer.innerHTML = ''; };
+  document.getElementById('btnCloseTransferModal').addEventListener('click', closeModal);
+  document.getElementById('btnCancelTransferModal').addEventListener('click', closeModal);
+  document.getElementById('flexconTransferModalOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'flexconTransferModalOverlay') closeModal();
+  });
+
+  const fromLocSelect = document.getElementById('mTransferFromLoc');
+  const toLocSelect = document.getElementById('mTransferToLoc');
+  const itemSelect = document.getElementById('mTransferItem');
+  const stockInfoDiv = document.getElementById('mTransferStockInfo');
+
+  const updateCurrentStockInfo = () => {
+    const fromLoc = fromLocSelect.value;
+    const itemId = itemSelect.value;
+    const matrix = calculateStockMatrix(data.transactions);
+    const avail = (matrix[fromLoc] && matrix[fromLoc][itemId]) ? matrix[fromLoc][itemId].qty : 0;
+    const itemObj = FLEXCON_ITEMS.find(i => i.id === itemId);
+    const itemName = itemObj ? itemObj.commonName : itemId;
+    stockInfoDiv.innerHTML = `📍 移動元【${fromLoc}】の現在庫: <strong>${avail.toLocaleString()}</strong> 枚 (${itemName})`;
+    stockInfoDiv.dataset.avail = avail;
+  };
+
+  fromLocSelect.addEventListener('change', updateCurrentStockInfo);
+  itemSelect.addEventListener('change', updateCurrentStockInfo);
+  updateCurrentStockInfo();
+
+  document.getElementById('modalTransferForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const fromLoc = fromLocSelect.value;
+    const toLoc = toLocSelect.value;
+    const itemId = itemSelect.value;
+    const qty = parseInt(document.getElementById('mTransferQty').value, 10);
+    const date = document.getElementById('mTransferDate').value;
+    const note = document.getElementById('mTransferNote').value.trim();
+
+    if (!date) {
+      alert("移動日を入力してください。");
+      return;
+    }
+    if (fromLoc === toLoc) {
+      alert("⚠️ 移動元拠点と移動先拠点が同じです。異なる拠点を選択してください。");
+      return;
+    }
+    if (!qty || qty <= 0) {
+      alert("移動数量を1枚以上で入力してください。");
+      return;
+    }
+
+    const avail = parseInt(stockInfoDiv.dataset.avail || '0', 10);
+    if (qty > avail) {
+      if (!confirm(`⚠️ 在庫超過警告: 移動元 (${fromLoc}) の現在庫は ${avail} 枚です。\n移動数量 (${qty} 枚) が現在庫を超えていますが、登録を続行しますか？`)) {
+        return;
+      }
+    }
+
+    const matrix = calculateStockMatrix(data.transactions);
+    const unitPrice = (matrix[fromLoc] && matrix[fromLoc][itemId] && matrix[fromLoc][itemId].lastPrice)
+      ? matrix[fromLoc][itemId].lastPrice
+      : 1000;
+
+    const baseId = Date.now().toString().slice(-6);
+
+    // 1. 移動元からの出庫
+    const outboundTx = {
+      id: "TX-" + baseId + "-OUT",
+      date: date,
+      type: "outbound",
+      status: "delivered",
+      location: fromLoc,
+      item: itemId,
+      qty: qty,
+      price: unitPrice,
+      supplier: "",
+      purpose: `【拠点間移動】${toLoc}宛`,
+      note: note ? `移動先: ${toLoc} / ${note}` : `移動先: ${toLoc}へ振替`
+    };
+
+    // 2. 移動先への入庫
+    const inboundTx = {
+      id: "TX-" + baseId + "-IN",
+      date: date,
+      type: "inbound",
+      status: "delivered",
+      location: toLoc,
+      item: itemId,
+      qty: qty,
+      price: unitPrice,
+      supplier: `【拠点間移動】${fromLoc}発`,
+      purpose: "",
+      note: note ? `移動元: ${fromLoc} / ${note}` : `移動元: ${fromLoc}より受入`
+    };
+
+    data.transactions.push(outboundTx, inboundTx);
+    saveFlexconData(data);
+    closeModal();
+    showToast(`🔄 拠点間移動を登録しました（${fromLoc} → ${toLoc} : ${qty}枚）`);
+    renderFlexconInventory();
+  });
+}
+
+// 6. トランザクション変更モーダル（発注内容・受入内容・数量・納品予定日の変更）
+function openEditTransactionModal(txId, data) {
+  const tx = data.transactions.find(t => t.id === txId);
+  if (!tx) return;
+  const modalContainer = document.getElementById('flexconActionModalContainer');
+  const isOrdered = tx.status === 'ordered';
+  const isInbound = tx.type === 'inbound';
+  const rawItems = (tx.items && Array.isArray(tx.items) && tx.items.length > 0)
+    ? JSON.parse(JSON.stringify(tx.items))
+    : [{
+        item: tx.item || FLEXCON_ITEMS[0].id,
+        name: (FLEXCON_ITEMS.find(i => i.id === tx.item) || {}).commonName || tx.item || '',
+        spec: (FLEXCON_ITEMS.find(i => i.id === tx.item) || {}).spec || '',
+        qty: tx.qty || 0,
+        price: tx.price || 0,
+        quoteNo: tx.quoteNo || ''
+      }];
+
+  modalContainer.innerHTML = `
+    <div class="flexcon-modal-overlay" id="flexconEditModalOverlay">
+      <div class="flexcon-modal-box" style="max-width: 720px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 20px;">✏️</span>
+            <h3 style="margin: 0; font-size: 17px; font-weight: 800;">
+              ${isOrdered ? '発注・受入内容の変更' : (isInbound ? '入庫データの変更' : '出庫データの変更')}
+            </h3>
+            <span style="font-size: 11px; background: rgba(37,99,235,0.1); color: var(--accent-blue); padding: 2px 8px; border-radius: 4px; font-weight: 700;">
+              ${tx.orderNo || tx.id}
+            </span>
+          </div>
+          <button type="button" id="btnCloseEditModal" style="background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-muted); line-height: 1;">✕</button>
+        </div>
+
+        <form id="modalEditForm" class="tool-form" novalidate>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="tool-group">
+              <label for="mEditDate">${isOrdered ? '発注日' : '取引日'} <span style="color:#ef4444;">*</span></label>
+              <input type="date" id="mEditDate" value="${tx.orderDate || tx.date}" required>
+            </div>
+            ${isOrdered ? `
+              <div class="tool-group">
+                <label for="mEditDueDate">納品予定日 <span style="color:#ef4444;">*</span></label>
+                <input type="date" id="mEditDueDate" value="${tx.deliveryDueDate || tx.date}" required>
+              </div>
+            ` : `
+              <div class="tool-group">
+                <label for="mEditLocation">対象拠点 <span style="color:#ef4444;">*</span></label>
+                <select id="mEditLocation" required>
+                  ${FLEXCON_LOCATIONS.map(l => `<option value="${l}" ${l === tx.location ? 'selected' : ''}>${l}</option>`).join('')}
+                </select>
+              </div>
+            `}
+          </div>
+
+          ${isOrdered ? `
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+              <div class="tool-group">
+                <label for="mEditLocation">受入拠点 <span style="color:#ef4444;">*</span></label>
+                <select id="mEditLocation" required>
+                  ${FLEXCON_LOCATIONS.map(l => `<option value="${l}" ${l === tx.location ? 'selected' : ''}>${l}</option>`).join('')}
+                </select>
+              </div>
+              <div class="tool-group">
+                <label for="mEditSupplier">仕入先企業 <span style="color:#ef4444;">*</span></label>
+                <select id="mEditSupplier" required>
+                  ${FLEXCON_SUPPLIERS.map(s => `<option value="${s.name}" ${s.name === tx.supplier ? 'selected' : ''}>${s.name}</option>`).join('')}
+                </select>
+              </div>
+            </div>
+          ` : `
+            <div class="tool-group">
+              <label for="mEditParty">${isInbound ? '仕入先 / 納品元' : '出庫用途 / 納品先'}</label>
+              <input type="text" id="mEditParty" value="${tx.supplier || tx.purpose || ''}">
+            </div>
+          `}
+
+          <!-- 品目・数量・単価の内訳一覧 -->
+          <div style="margin: 14px 0; background: var(--bg-primary); border: 1px solid var(--border-medium); border-radius: 8px; padding: 12px 14px;">
+            <div style="font-size: 13px; font-weight: 800; color: var(--text-primary); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+              <span>📦 明細・数量・単価の修正</span>
+            </div>
+            <div id="editItemsContainer" style="display: flex; flex-direction: column; gap: 8px;">
+              ${rawItems.map((it, idx) => `
+                <div class="edit-item-row" data-idx="${idx}" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 8px 10px; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 8px; align-items: center;">
+                  <div>
+                    <select class="edit-item-select" style="width: 100%; font-size: 12px; padding: 4px 6px;">
+                      ${FLEXCON_ITEMS.map(i => `<option value="${i.id}" ${i.id === it.item ? 'selected' : ''}>【${i.commonName}】 ${i.name.split('　')[0]}</option>`).join('')}
+                    </select>
+                  </div>
+                  <div>
+                    <label style="font-size: 10px; color: var(--text-muted); display: block;">数量(枚)</label>
+                    <input type="number" class="edit-item-qty" min="1" max="99999" value="${it.qty || 0}" style="width: 100%; font-size: 12px; padding: 4px 6px; font-weight: 700;">
+                  </div>
+                  <div>
+                    <label style="font-size: 10px; color: var(--text-muted); display: block;">単価(円)</label>
+                    <input type="number" class="edit-item-price" min="0" step="0.1" value="${it.price || 0}" style="width: 100%; font-size: 12px; padding: 4px 6px;">
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="tool-group">
+            <label for="mEditNote">備考</label>
+            <input type="text" id="mEditNote" value="${tx.note || ''}" placeholder="備考メモ">
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap;">
+            <button type="button" id="btnCancelEditModal" class="btn btn-secondary" style="flex: 1; padding: 11px;">キャンセル</button>
+            <button type="submit" id="btnSaveEditOnly" class="btn btn-primary" style="flex: 2; padding: 11px; font-size: 13.5px; background: #2563eb;">💾 変更内容を保存する</button>
+            ${isOrdered ? `
+              <button type="button" id="btnSaveAndDeliver" class="btn btn-primary" style="flex: 2; padding: 11px; font-size: 13.5px; background: var(--accent-green); border-color: var(--accent-green);" title="修正した内容で直ちに納品受入を確定し、実在庫に反映します">
+                ✅ この内容で受入完了にする
+              </button>
+            ` : ''}
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+
+  const closeModal = () => { modalContainer.innerHTML = ''; };
+  document.getElementById('btnCloseEditModal').addEventListener('click', closeModal);
+  document.getElementById('btnCancelEditModal').addEventListener('click', closeModal);
+  document.getElementById('flexconEditModalOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'flexconEditModalOverlay') closeModal();
+  });
+
+  const collectEditedData = () => {
+    const updatedRows = [];
+    modalContainer.querySelectorAll('.edit-item-row').forEach(row => {
+      const itId = row.querySelector('.edit-item-select').value;
+      const itQty = parseInt(row.querySelector('.edit-item-qty').value, 10) || 0;
+      const itPrice = parseFloat(row.querySelector('.edit-item-price').value) || 0;
+      const itObj = FLEXCON_ITEMS.find(i => i.id === itId);
+      updatedRows.push({
+        item: itId,
+        name: itObj ? itObj.commonName : itId,
+        spec: itObj ? itObj.spec : '',
+        qty: itQty,
+        price: itPrice
+      });
+    });
+
+    const dateVal = document.getElementById('mEditDate').value;
+    const locVal = document.getElementById('mEditLocation').value;
+    const noteVal = document.getElementById('mEditNote').value.trim();
+
+    tx.date = dateVal;
+    tx.location = locVal;
+    tx.note = noteVal;
+    if (isOrdered) {
+      tx.orderDate = dateVal;
+      tx.deliveryDueDate = document.getElementById('mEditDueDate').value;
+      tx.supplier = document.getElementById('mEditSupplier').value;
+    } else {
+      const party = document.getElementById('mEditParty').value.trim();
+      if (isInbound) tx.supplier = party;
+      else tx.purpose = party;
+    }
+
+    if (updatedRows.length > 0) {
+      tx.items = updatedRows;
+      tx.item = updatedRows[0].item;
+      tx.qty = updatedRows.reduce((s, it) => s + it.qty, 0);
+      tx.price = updatedRows[0].price;
+    }
+  };
+
+  // 1. 変更保存のみ
+  document.getElementById('modalEditForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    collectEditedData();
+    saveFlexconData(data);
+    closeModal();
+    showToast("💾 データを正常に更新・保存しました");
+    renderFlexconInventory();
+  });
+
+  // 2. この内容で受入完了にする
+  if (isOrdered && document.getElementById('btnSaveAndDeliver')) {
+    document.getElementById('btnSaveAndDeliver').addEventListener('click', () => {
+      collectEditedData();
+      const effectiveDate = tx.deliveryDueDate || tx.orderDate || new Date().toISOString().split('T')[0];
+      tx.status = 'delivered';
+      tx.date = effectiveDate;
+      saveFlexconData(data);
+      closeModal();
+      showToast(`✨ 変更内容を保存し、納品受入を完了しました（${effectiveDate}付で実在庫に計上）`);
+      renderFlexconInventory();
+    });
+  }
+}
+
+// 7. 入出庫全履歴帳簿（ソート＆保管場所フィルター対応）
 function renderFlexconLedger(container, data) {
   const today = new Date().toISOString().split('T')[0];
 
@@ -2585,6 +3023,9 @@ function renderFlexconLedger(container, data) {
                           ✅ 受入
                         </button>
                       ` : ''}
+                      <button class="btn btn-secondary btn-ledger-edit" data-id="${tx.id}" style="padding: 3px 8px; font-size: 11.5px; display: inline-flex; align-items: center; gap: 3px; font-weight: 700; color: #334155; border-color: #cbd5e1; background: #f8fafc; cursor: pointer;" title="数量・内容・納品予定日を変更">
+                        ✏️ 変更
+                      </button>
                       ${isInbound ? `
                         <button class="btn btn-secondary btn-ledger-po" data-id="${tx.id}" style="padding: 4px 10px; font-size: 11.5px; display: inline-flex; align-items: center; gap: 3px; font-weight: 700; color: #1e3a8a; border-color: #93c5fd; background: #eff6ff; cursor: pointer;" title="現行様式 A4横 発注書プレビュー・印刷">
                           📄 発注書
@@ -2642,6 +3083,15 @@ function renderFlexconLedger(container, data) {
       const button = e.currentTarget || e.target.closest('.btn-ledger-deliver');
       const id = button ? button.dataset.id : null;
       if (id) markOrderDelivered(id, data);
+    });
+  });
+
+  // 変更ボタン（発注・受入・入出庫データの修正）
+  container.querySelectorAll('.btn-ledger-edit').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const button = e.currentTarget || e.target.closest('.btn-ledger-edit');
+      const id = button ? button.dataset.id : null;
+      if (id) openEditTransactionModal(id, data);
     });
   });
 
