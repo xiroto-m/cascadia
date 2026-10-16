@@ -917,12 +917,18 @@ function initFirestoreSync() {
 
       const remoteData = docSnap.data();
       // クラウド上の共有データに9月末確定在庫を1回だけ反映し、全端末へ同期
-      if (remoteData && Array.isArray(remoteData.transactions) && applySep2026Opening(remoteData)) {
+      // （トランザクション内で最新版を再判定し、複数端末の同時移行や他端末の登録との競合を防止）
+      if (remoteData && Array.isArray(remoteData.transactions) &&
+          !(remoteData.migrations && remoteData.migrations.sep2026Opening)) {
         console.log('[Firestore] Applying 2026-09 closing inventory to shared data.');
-        saveFlexconData(remoteData);
-        localStorage.setItem('cascadia_flexcon_inventory_v6', JSON.stringify(remoteData));
-        renderFlexconInventory();
-        return;
+        cascadiaFirestore.runTransaction((t) => t.get(docRef).then((snap) => {
+          const fresh = snap.exists ? snap.data() : null;
+          if (!fresh || !applySep2026Opening(fresh)) return null; // 既に他端末で移行済み
+          fresh.updatedAt = new Date().toISOString();
+          t.set(docRef, fresh);
+          return fresh;
+        })).catch(err => console.error('[Firestore] Sep2026 migration error:', err));
+        return; // 移行後のスナップショット受信時に画面へ反映
       }
       if (remoteData && Array.isArray(remoteData.transactions)) {
         const remoteUpdated = remoteData.updatedAt || 'initial';
@@ -1059,6 +1065,71 @@ function applySep2026Opening(data) {
 }
 
 function loadFlexconData() {
+  return trackFlexconBaseline(loadFlexconDataRaw());
+}
+
+// ===== 同時入力対策：差分マージ保存 =====
+// 画面・モーダルが保持する data は開いた時点のスナップショットのため、丸ごと上書きすると
+// その間に他端末が登録した伝票が消える。読込時点の状態（ベースライン）との差分
+// （追加・変更・削除）だけを、Firestore トランザクション内でクラウド最新版に適用する。
+const flexconBaselines = new WeakMap();
+
+function snapshotTxMap(transactions) {
+  const map = new Map();
+  (transactions || []).forEach(t => { if (t && t.id) map.set(t.id, JSON.stringify(t)); });
+  return map;
+}
+
+function trackFlexconBaseline(data) {
+  if (data && Array.isArray(data.transactions)) {
+    flexconBaselines.set(data, snapshotTxMap(data.transactions));
+  }
+  return data;
+}
+
+function computeFlexconTxOps(data) {
+  const baseline = flexconBaselines.get(data);
+  if (!baseline) return null; // ベースライン無し（リセット等）は全体上書き
+  const upserts = [];
+  const currentIds = new Set();
+  data.transactions.forEach(t => {
+    if (!t || !t.id) return;
+    currentIds.add(t.id);
+    const json = JSON.stringify(t);
+    if (baseline.get(t.id) !== json) upserts.push(JSON.parse(json));
+  });
+  const deletes = [];
+  baseline.forEach((_, id) => { if (!currentIds.has(id)) deletes.push(id); });
+  return { upserts, deletes };
+}
+
+function applyFlexconTxOps(remote, ops) {
+  const merged = Object.assign({}, remote);
+  const deleteSet = new Set(ops.deletes);
+  const upsertMap = new Map(ops.upserts.map(t => [t.id, t]));
+  const list = [];
+  (remote.transactions || []).forEach(t => {
+    if (deleteSet.has(t.id)) return;
+    if (upsertMap.has(t.id)) {
+      list.push(upsertMap.get(t.id));
+      upsertMap.delete(t.id);
+    } else {
+      list.push(t);
+    }
+  });
+  upsertMap.forEach(t => list.push(t)); // 新規伝票は末尾に追加
+  merged.transactions = list;
+  return merged;
+}
+
+function isFlexconModalActive() {
+  return !!(document.querySelector('.modal-overlay') ||
+    document.getElementById('flexconEditModalOverlay') ||
+    (document.getElementById('flexconActionModalContainer') && document.getElementById('flexconActionModalContainer').children.length > 0) ||
+    (document.getElementById('purchaseOrderModalContainer') && document.getElementById('purchaseOrderModalContainer').children.length > 0));
+}
+
+function loadFlexconDataRaw() {
   refreshActiveMaster();
   // Firestore 同期リスナーを一度だけ起動
   if (!hasInitiatedSync && typeof window !== 'undefined') {
@@ -1115,27 +1186,49 @@ function saveFlexconData(data) {
   // 1. ローカルストレージに即時保存（オフライン耐性・即時応答）
   localStorage.setItem('cascadia_flexcon_inventory_v6', JSON.stringify(data));
 
+  // 今回の変更点（差分）を算出し、以降の保存で重複適用しないようベースラインを更新
+  const ops = computeFlexconTxOps(data);
+  trackFlexconBaseline(data);
+
   // 2. クラウド（Firebase Firestore）へ非同期保存
-  if (cascadiaFirestore) {
-    cloudSyncStatus = 'saving';
+  if (!cascadiaFirestore) return;
+  if (ops && ops.upserts.length === 0 && ops.deletes.length === 0) return;
+
+  cloudSyncStatus = 'saving';
+  updateSyncBadgeUI();
+  const docRef = cascadiaFirestore.collection('cascadia_flexcon').doc('shared_inventory');
+  const updatedAt = new Date().toISOString();
+  lastRemoteUpdatedAt = updatedAt;
+
+  cascadiaFirestore.runTransaction((t) => t.get(docRef).then((snap) => {
+    let merged;
+    if (ops && snap.exists && snap.data() && Array.isArray(snap.data().transactions)) {
+      // クラウド最新版に自分の差分だけを適用（他端末の登録を保持）
+      merged = applyFlexconTxOps(snap.data(), ops);
+    } else {
+      // リセット等の明示的な全体書込み、またはクラウド未初期化
+      merged = JSON.parse(JSON.stringify(data));
+    }
+    merged.updatedAt = updatedAt;
+    t.set(docRef, merged);
+    return merged;
+  })).then((merged) => {
+    cloudSyncStatus = 'synced';
     updateSyncBadgeUI();
-
-    data.updatedAt = new Date().toISOString();
-    lastRemoteUpdatedAt = data.updatedAt;
-
-    cascadiaFirestore.collection('cascadia_flexcon').doc('shared_inventory')
-      .set(data)
-      .then(() => {
-        cloudSyncStatus = 'synced';
-        updateSyncBadgeUI();
-        console.log('[Firestore] Saved successfully to cloud:', data.updatedAt);
-      })
-      .catch((err) => {
-        console.error('[Firestore Save Error]', err);
-        cloudSyncStatus = 'error';
-        updateSyncBadgeUI();
-      });
-  }
+    console.log('[Firestore] Saved (merged) to cloud:', updatedAt);
+    // マージ結果（他端末の登録を含む）を手元にも反映
+    localStorage.setItem('cascadia_flexcon_inventory_v6', JSON.stringify(merged));
+    data.transactions = JSON.parse(JSON.stringify(merged.transactions));
+    trackFlexconBaseline(data);
+    if (!isFlexconModalActive()) renderFlexconInventory();
+  }).catch((err) => {
+    console.error('[Firestore Save Error]', err);
+    cloudSyncStatus = 'error';
+    updateSyncBadgeUI();
+    if (typeof showToast === 'function') {
+      showToast('⚠️ クラウド保存に失敗しました。通信状態をご確認の上、再度登録してください。', 6000);
+    }
+  });
 }
 
 // 状態管理
