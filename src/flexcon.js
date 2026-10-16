@@ -423,9 +423,13 @@ function loadFlexconMaster() {
   return initMaster;
 }
 
-function saveFlexconMaster(master) {
-  localStorage.setItem('cascadia_flexcon_master_v5', JSON.stringify(master));
+function saveFlexconMaster(master, options = {}) {
+  localStorage.setItem('cascadia_flexcon_master_v6', JSON.stringify(master));
   refreshActiveMaster();
+  // マスター（拠点・商品・仕入先・担当者・備考）もクラウド共有し、全端末に反映
+  if (!options.skipCloud && typeof pushFlexconMasterToCloud === 'function') {
+    pushFlexconMasterToCloud(master);
+  }
 }
 
 // 実行時マスター変数
@@ -434,6 +438,8 @@ let FLEXCON_LOCATION_DETAILS = activeFlexconMaster.locations;
 let FLEXCON_LOCATIONS = Object.keys(FLEXCON_LOCATION_DETAILS);
 let FLEXCON_ITEMS = activeFlexconMaster.items;
 let FLEXCON_SUPPLIERS = activeFlexconMaster.suppliers;
+let FLEXCON_OPERATORS = activeFlexconMaster.operators || JSON.parse(JSON.stringify(DEFAULT_FLEXCON_OPERATORS));
+let FLEXCON_NOTE_PRESETS = activeFlexconMaster.notePresets || JSON.parse(JSON.stringify(DEFAULT_FLEXCON_NOTE_PRESETS));
 
 
 // ===== 担当者・備考 共通セレクタ補助関数 =====
@@ -517,6 +523,8 @@ function refreshActiveMaster() {
   FLEXCON_LOCATIONS = Object.keys(FLEXCON_LOCATION_DETAILS);
   FLEXCON_ITEMS = activeFlexconMaster.items;
   FLEXCON_SUPPLIERS = activeFlexconMaster.suppliers;
+  FLEXCON_OPERATORS = activeFlexconMaster.operators || JSON.parse(JSON.stringify(DEFAULT_FLEXCON_OPERATORS));
+  FLEXCON_NOTE_PRESETS = activeFlexconMaster.notePresets || JSON.parse(JSON.stringify(DEFAULT_FLEXCON_NOTE_PRESETS));
 }
 
 // 安全在庫判定ヘルパー（提出資料仕様：拠点 × 取扱商品ごとの個別設定）
@@ -543,8 +551,6 @@ function getSafetyStock(location, item) {
   return 0;
 }
 
-// 1拠点仮運用（上組福岡支店 須崎ふ頭東二号）初期データ：8月末在庫数 1,933枚 / 金額 138,210円（71.5円/枚）
-// ※その他拠点・商品は畑山様のご指示通り「仮で0枚」として管理
 // 2026年9月末確定在庫データ（畑山様ご提出『水谷様ご提出用_9月末在庫.xlsx』に基づく全21拠点/商品実棚確定反映）
 const INITIAL_FLEXCON_DATA = {
   transactions: [
@@ -887,6 +893,7 @@ function initFirestoreSync() {
     }
     cascadiaFirestore = firebase.firestore();
     const docRef = cascadiaFirestore.collection('cascadia_flexcon').doc('shared_inventory');
+    initFirestoreMasterSync();
 
     docRef.onSnapshot((docSnap) => {
       if (!docSnap.exists) {
@@ -909,6 +916,14 @@ function initFirestoreSync() {
       }
 
       const remoteData = docSnap.data();
+      // クラウド上の共有データに9月末確定在庫を1回だけ反映し、全端末へ同期
+      if (remoteData && Array.isArray(remoteData.transactions) && applySep2026Opening(remoteData)) {
+        console.log('[Firestore] Applying 2026-09 closing inventory to shared data.');
+        saveFlexconData(remoteData);
+        localStorage.setItem('cascadia_flexcon_inventory_v6', JSON.stringify(remoteData));
+        renderFlexconInventory();
+        return;
+      }
       if (remoteData && Array.isArray(remoteData.transactions)) {
         const remoteUpdated = remoteData.updatedAt || 'initial';
         if (remoteUpdated !== lastRemoteUpdatedAt) {
@@ -941,6 +956,54 @@ function initFirestoreSync() {
   }
 }
 
+// --- マスター（担当者・備考マスター等）のクラウド共有 ---
+let lastRemoteMasterUpdatedAt = null;
+
+function pushFlexconMasterToCloud(master) {
+  if (!cascadiaFirestore || !master) return;
+  const payload = JSON.parse(JSON.stringify(master));
+  payload.updatedAt = new Date().toISOString();
+  lastRemoteMasterUpdatedAt = payload.updatedAt;
+  cascadiaFirestore.collection('cascadia_flexcon').doc('shared_master')
+    .set(payload)
+    .then(() => console.log('[Firestore] Master saved to cloud:', payload.updatedAt))
+    .catch(err => console.error('[Firestore Master Save Error]', err));
+}
+
+function initFirestoreMasterSync() {
+  if (!cascadiaFirestore) return;
+  const masterRef = cascadiaFirestore.collection('cascadia_flexcon').doc('shared_master');
+  masterRef.onSnapshot((snap) => {
+    if (!snap.exists) {
+      // クラウドに未登録なら、この端末のマスターを初回アップロード
+      pushFlexconMasterToCloud(loadFlexconMaster());
+      return;
+    }
+    const remote = snap.data();
+    if (!remote || !remote.locations || !remote.items || !remote.suppliers) return;
+    const remoteUpdated = remote.updatedAt || 'initial';
+    if (remoteUpdated === lastRemoteMasterUpdatedAt) return;
+    lastRemoteMasterUpdatedAt = remoteUpdated;
+
+    const master = JSON.parse(JSON.stringify(remote));
+    delete master.updatedAt;
+    if (!master.operators) master.operators = JSON.parse(JSON.stringify(DEFAULT_FLEXCON_OPERATORS));
+    if (!master.notePresets) master.notePresets = JSON.parse(JSON.stringify(DEFAULT_FLEXCON_NOTE_PRESETS));
+    saveFlexconMaster(master, { skipCloud: true });
+    console.log('[Firestore] Received master update from cloud at:', remoteUpdated);
+
+    const isModalActive = document.querySelector('.modal-overlay') ||
+                          document.getElementById('flexconEditModalOverlay') ||
+                          (document.getElementById('flexconActionModalContainer') && document.getElementById('flexconActionModalContainer').children.length > 0) ||
+                          (document.getElementById('purchaseOrderModalContainer') && document.getElementById('purchaseOrderModalContainer').children.length > 0);
+    if (!isModalActive && typeof renderFlexconInventory === 'function') {
+      renderFlexconInventory();
+    }
+  }, (error) => {
+    console.warn('[Firestore] Master listener disconnected:', error);
+  });
+}
+
 function updateSyncBadgeUI() {
   const badges = document.querySelectorAll('.cloud-sync-badge-target');
   badges.forEach(badge => {
@@ -970,6 +1033,31 @@ function updateSyncBadgeUI() {
   });
 }
 
+// 2026年9月末確定在庫の繰越処理（1回限り）
+// ・9/30以前の納品済み伝票は archivedTransactions へ退避（削除はしない）
+// ・9/30付の確定繰越伝票（INITIAL_FLEXCON_DATA）を投入
+// ・未納品（発注中）伝票と 10/1以降の伝票はそのまま保持
+const SEP2026_CUTOFF = '2026-09-30';
+function applySep2026Opening(data) {
+  if (!data || !Array.isArray(data.transactions)) return false;
+  data.migrations = data.migrations || {};
+  if (data.migrations.sep2026Opening) return false;
+
+  const isOpeningTx = (t) => typeof t.id === 'string' && t.id.startsWith('TX-INIT-0930');
+  const toArchive = data.transactions.filter(t =>
+    !isOpeningTx(t) && t.status !== 'ordered' && t.date && t.date <= SEP2026_CUTOFF
+  );
+  const keep = data.transactions.filter(t => !toArchive.includes(t) && !isOpeningTx(t));
+  const opening = JSON.parse(JSON.stringify(INITIAL_FLEXCON_DATA.transactions));
+
+  data.archivedTransactions = (data.archivedTransactions || []).concat(
+    toArchive.map(t => Object.assign({}, t, { archivedReason: '2026年9月末確定在庫への繰越により退避' }))
+  );
+  data.transactions = opening.concat(keep);
+  data.migrations.sep2026Opening = new Date().toISOString();
+  return true;
+}
+
 function loadFlexconData() {
   refreshActiveMaster();
   // Firestore 同期リスナーを一度だけ起動
@@ -988,6 +1076,10 @@ function loadFlexconData() {
             tx.location = '上組福岡支店 須崎ふ頭東二号';
           }
         });
+        // ローカル表示のみ先行反映（クラウドへの書込みはクラウド受信時に行い、古い端末データでの上書きを防ぐ）
+        if (applySep2026Opening(parsed)) {
+          localStorage.setItem('cascadia_flexcon_inventory_v6', JSON.stringify(parsed));
+        }
         return parsed;
       }
     } catch(e){}
@@ -1005,6 +1097,7 @@ function loadFlexconData() {
             tx.location = '上組福岡支店 須崎ふ頭東二号';
           }
         });
+        applySep2026Opening(parsed);
         localStorage.setItem('cascadia_flexcon_inventory_v6', JSON.stringify(parsed));
         return parsed;
       }
@@ -1012,8 +1105,10 @@ function loadFlexconData() {
   }
 
   // 初期データで初期化
-  localStorage.setItem('cascadia_flexcon_inventory_v6', JSON.stringify(INITIAL_FLEXCON_DATA));
-  return JSON.parse(JSON.stringify(INITIAL_FLEXCON_DATA));
+  const freshData = JSON.parse(JSON.stringify(INITIAL_FLEXCON_DATA));
+  freshData.migrations = { sep2026Opening: new Date().toISOString() };
+  localStorage.setItem('cascadia_flexcon_inventory_v6', JSON.stringify(freshData));
+  return freshData;
 }
 
 function saveFlexconData(data) {
@@ -1245,7 +1340,59 @@ function calculateStockMatrix(transactions, asOfDate = null) {
     });
   });
 
+  // 残存ロット（FIFOキュー）を各セルに公開（払出単価の算出に使用）
+  Object.keys(fifoQueues).forEach(loc => {
+    Object.keys(fifoQueues[loc]).forEach(k => {
+      if (matrix[loc] && matrix[loc][k]) matrix[loc][k].lots = fifoQueues[loc][k];
+    });
+  });
+
   return matrix;
+}
+
+// 先入先出（FIFO）で払い出されるロット内訳を算出（出庫・拠点間移動の単価決定用）
+// 戻り値: [{ qty, price }]（古いロット順・同単価はまとめる）
+function getFifoIssueLots(transactions, loc, itemId, qty, asOfDate = null) {
+  const matrix = calculateStockMatrix(transactions, asOfDate);
+  const cell = matrix[loc] && matrix[loc][itemId];
+  const lots = (cell && cell.lots) ? cell.lots.map(l => ({ qty: l.qty, price: l.price })) : [];
+  const itemObj = FLEXCON_ITEMS.find(i => i.id === itemId);
+  const fallbackPrice = (cell && cell.lastPrice) || (itemObj ? itemObj.defaultPrice : 0) || 0;
+
+  const issued = [];
+  let remaining = qty;
+  while (remaining > 0 && lots.length > 0) {
+    const lot = lots[0];
+    const take = Math.min(lot.qty, remaining);
+    issued.push({ qty: take, price: lot.price });
+    lot.qty -= take;
+    remaining -= take;
+    if (lot.qty <= 0) lots.shift();
+  }
+  // 在庫不足分（在庫超過で登録を続行した場合）は直近単価で計上
+  if (remaining > 0) issued.push({ qty: remaining, price: fallbackPrice });
+
+  const merged = [];
+  issued.forEach(l => {
+    const last = merged[merged.length - 1];
+    if (last && last.price === l.price) last.qty += l.qty;
+    else merged.push({ qty: l.qty, price: l.price });
+  });
+  return merged;
+}
+
+// FIFO払出ロットを伝票フィールドへ展開（単一単価なら単一行、複数単価ならロット別内訳 items）
+function buildFifoTxFields(itemId, lots) {
+  const totalQty = lots.reduce((s, l) => s + l.qty, 0);
+  if (lots.length <= 1) {
+    return { item: itemId, qty: totalQty, price: lots.length ? lots[0].price : 0 };
+  }
+  return {
+    item: itemId,
+    qty: totalQty,
+    price: lots[0].price,
+    items: lots.map(l => ({ item: itemId, qty: l.qty, price: l.price }))
+  };
 }
 
 // 1. ダッシュボード描画（何月末時点対応 ＆ 納期遅延アラート表示）
@@ -1321,6 +1468,7 @@ function renderFlexconDashboard(container, data) {
       <div style="display: flex; align-items: center; gap: 8px;">
         <select id="asOfSelect" style="padding: 6px 12px; font-size: 13px; font-weight: 600; border-radius: 8px; border: 1px solid var(--border-medium); background: var(--bg-primary); color: var(--text-primary);">
           <option value="latest" ${currentFlexconAsOf === 'latest' ? 'selected' : ''}>⚡ 最新リアルタイム（全期間）</option>
+          <option value="2026-09-30" ${currentFlexconAsOf === '2026-09-30' ? 'selected' : ''}>2026年 9月末 時点 (2026/09/30)</option>
           <option value="2026-08-31" ${currentFlexconAsOf === '2026-08-31' ? 'selected' : ''}>2026年 8月末 時点 (2026/08/31)</option>
           <option value="2026-07-31" ${currentFlexconAsOf === '2026-07-31' ? 'selected' : ''}>2026年 7月末 時点 (2026/07/31)</option>
           <option value="2026-06-30" ${currentFlexconAsOf === '2026-06-30' ? 'selected' : ''}>2026年 6月末 時点 (2026/06/30)</option>
@@ -1744,7 +1892,9 @@ function openFlexconOrderModal(data, options = {}) {
             </div>
             <div class="tool-group">
               <label for="mPoOurContact">当社担当者</label>
-              <input type="text" id="mPoOurContact" value="畑山" required placeholder="例: 畑山">
+              <select id="mPoOurContact" required style="font-weight: 600;">
+                ${FLEXCON_OPERATORS.map(op => `<option value="${op}" ${op === (options.ourContact || '畑山') ? 'selected' : ''}>👤 ${op}</option>`).join('')}
+              </select>
             </div>
           </div>
 
@@ -2281,6 +2431,7 @@ function openFlexconOrderModal(data, options = {}) {
       supplier: document.getElementById('mPoSupplier').value,
       supplierContact: supplierContactInput.value,
       ourContact: document.getElementById('mPoOurContact').value,
+      operator: document.getElementById('mPoOurContact').value,
       quoteNo: items[0].quoteNo || '',
       orderNo: document.getElementById('mPoNo').value.trim(),
       purpose: "",
@@ -2631,7 +2782,8 @@ function generatePurchaseOrderHtml(tx, forStandalone = false) {
     .cell-amount { text-align: right; font-size: 13.5px; font-weight: 800; }
     .blank-row td { height: 16px; padding: 0; border-top: none; border-bottom: 1px solid #111827; }
     .po-actual-table tfoot td { padding: 4px 10px; }
-    .total-empty { border: 1px solid #111827 !important; background: #ffffff !important; }
+    .total-empty { border: none !important; border-right: 1px solid #111827 !important; background: transparent !important; }
+    .po-actual-table tfoot tr:first-child .total-empty { border-top: 1px solid #111827 !important; }
     .total-label { text-align: center; font-weight: 700; background: #f8fafc; border: 1px solid #111827; }
     .total-val { text-align: right; font-weight: 700; border: 1px solid #111827; }
     .grand-total-row td { background: #f1f5f9; }
@@ -2881,10 +3033,8 @@ function openFlexconInboundModal(data) {
             </select>
           </div>
 
-          <div class="tool-group">
-            <label for="mInNote">備考・伝票Noなど</label>
-            <input type="text" id="mInNote" placeholder="例: 納品伝票受領済">
-          </div>
+          ${renderOperatorSelectHtml('mInOperator', '入力担当者')}
+          ${renderNoteSelectHtml('mInNotePreset', 'mInNote')}
 
           <div style="background: var(--bg-primary); border: 1px solid var(--border-subtle); padding: 12px 16px; border-radius: 8px; margin-top: 12px; font-size: 13px; display: flex; justify-content: space-between; align-items: center;">
             <span>入庫小計金額:</span>
@@ -2925,6 +3075,7 @@ function openFlexconInboundModal(data) {
 
   qtyIn.addEventListener('input', updateInSubtotal);
   priceIn.addEventListener('input', updateInSubtotal);
+  setupModalOperatorAndNote('mInOperator', 'mInNotePreset', 'mInNote');
 
   document.getElementById('modalInboundForm').addEventListener('submit', (e) => {
     e.preventDefault();
@@ -2938,9 +3089,11 @@ function openFlexconInboundModal(data) {
       qty: parseInt(qtyIn.value),
       price: parseFloat(priceIn.value),
       supplier: document.getElementById('mInSupplier').value,
+      operator: getSelectedOperator('mInOperator'),
       purpose: "",
       note: document.getElementById('mInNote').value
     };
+    newTx.ourContact = newTx.operator;
 
     data.transactions.push(newTx);
     saveFlexconData(data);
@@ -3014,6 +3167,7 @@ function openFlexconOutboundModal(data) {
   document.getElementById('flexconOutboundModalOverlay').addEventListener('click', (e) => {
     if (e.target.id === 'flexconOutboundModalOverlay') closeModal();
   });
+  setupModalOperatorAndNote('mOutOperator', 'mOutNotePreset', 'mOutNote');
 
   document.getElementById('modalOutboundForm').addEventListener('submit', (e) => {
     e.preventDefault();
@@ -3032,19 +3186,22 @@ function openFlexconOutboundModal(data) {
       }
     }
 
-    const newTx = {
+    const outDate = document.getElementById('mOutDate').value;
+    const operator = getSelectedOperator('mOutOperator');
+    // 先入先出（FIFO）で払い出すロット単価を算出
+    const issueLots = getFifoIssueLots(data.transactions, loc, itemId, qty, outDate);
+    const newTx = Object.assign({
       id: "TX-" + Date.now().toString().slice(-6),
-      date: document.getElementById('mOutDate').value,
+      date: outDate,
       type: "outbound",
       status: "delivered",
       location: loc,
-      item: itemId,
-      qty: qty,
-      price: matrix[loc][itemId] ? matrix[loc][itemId].lastPrice : 1000,
       supplier: "",
+      operator: operator,
+      ourContact: operator,
       purpose: document.getElementById('mOutPurpose').value,
       note: document.getElementById('mOutNote').value
-    };
+    }, buildFifoTxFields(itemId, issueLots));
 
     data.transactions.push(newTx);
     saveFlexconData(data);
@@ -3184,46 +3341,39 @@ function openFlexconTransferModal(data) {
       }
     }
 
-    const matrix = calculateStockMatrix(data.transactions);
-    const unitPrice = (matrix[fromLoc] && matrix[fromLoc][itemId] && matrix[fromLoc][itemId].lastPrice)
-      ? matrix[fromLoc][itemId].lastPrice
-      : 1000;
+    // 移動元の在庫を先入先出（FIFO）で払い出し、そのロット単価をそのまま移動先へ引き継ぐ
+    const issueLots = getFifoIssueLots(data.transactions, fromLoc, itemId, qty, date);
+    const lotFields = buildFifoTxFields(itemId, issueLots);
 
     const baseId = Date.now().toString().slice(-6);
 
     // 1. 移動元からの出庫
-    const outboundTx = {
+    const outboundTx = Object.assign({
       id: "TX-" + baseId + "-OUT",
       date: date,
       type: "outbound",
       status: "delivered",
       location: fromLoc,
-      item: itemId,
-      qty: qty,
-      price: unitPrice,
       supplier: "",
       operator: operator,
       ourContact: operator,
       purpose: `【拠点間移動】${toLoc}宛`,
       note: note ? `移動先: ${toLoc} / ${note}` : `移動先: ${toLoc}へ振替`
-    };
+    }, JSON.parse(JSON.stringify(lotFields)));
 
-    // 2. 移動先への入庫
-    const inboundTx = {
+    // 2. 移動先への入庫（移動元のロット単価を引継ぎ）
+    const inboundTx = Object.assign({
       id: "TX-" + baseId + "-IN",
       date: date,
       type: "inbound",
       status: "delivered",
       location: toLoc,
-      item: itemId,
-      qty: qty,
-      price: unitPrice,
       operator: operator,
       ourContact: operator,
       supplier: `【拠点間移動】${fromLoc}発`,
       purpose: "",
       note: note ? `移動元: ${fromLoc} / ${note}` : `移動元: ${fromLoc}より受入`
-    };
+    }, JSON.parse(JSON.stringify(lotFields)));
 
     data.transactions.push(outboundTx, inboundTx);
     saveFlexconData(data);
@@ -3336,10 +3486,9 @@ function openEditTransactionModal(txId, data) {
             </div>
           </div>
 
-          <div class="tool-group">
-            <label for="mEditNote">備考</label>
-            <input type="text" id="mEditNote" value="${tx.note || ''}" placeholder="備考メモ">
-          </div>
+          ${renderOperatorSelectHtml('mEditOperator', '入力担当者 / 発注担当者', tx.operator || tx.ourContact || '畑山')}
+
+          ${renderNoteSelectHtml('mEditNotePreset', 'mEditNote', (tx.note || '').replace(/"/g, '&quot;'))}
 
           <div style="display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap;">
             <button type="button" id="btnCancelEditModal" class="btn btn-secondary" style="flex: 1; padding: 11px;">キャンセル</button>
@@ -3357,7 +3506,7 @@ function openEditTransactionModal(txId, data) {
 
   const closeModal = () => { modalContainer.innerHTML = ''; };
   document.getElementById('btnCloseEditModal').addEventListener('click', closeModal);
-  setupModalOperatorAndNote('mEditOperator', '', '');
+  setupModalOperatorAndNote('mEditOperator', 'mEditNotePreset', 'mEditNote');
   document.getElementById('btnCancelEditModal').addEventListener('click', closeModal);
   document.getElementById('flexconEditModalOverlay').addEventListener('click', (e) => {
     if (e.target.id === 'flexconEditModalOverlay') closeModal();
@@ -3386,6 +3535,8 @@ function openEditTransactionModal(txId, data) {
     tx.date = dateVal;
     tx.location = locVal;
     tx.note = noteVal;
+    tx.operator = getSelectedOperator('mEditOperator');
+    tx.ourContact = tx.operator;
     if (isOrdered) {
       tx.orderDate = dateVal;
       tx.deliveryDueDate = document.getElementById('mEditDueDate').value;
@@ -3473,7 +3624,7 @@ function renderFlexconLedger(container, data) {
     <div class="tool-card">
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
         <h3 style="margin: 0;">📋 入出庫全履歴トランザクション帳簿</h3>
-        <button class="btn btn-secondary" id="btnResetFlexconData" style="font-size: 11px; color: #ef4444; border-color: rgba(239,68,68,0.3);">🔄 8月末初期データにリセット</button>
+        <button class="btn btn-secondary" id="btnResetFlexconData" style="font-size: 11px; color: #ef4444; border-color: rgba(239,68,68,0.3);">🔄 9月末確定データにリセット</button>
       </div>
 
       <!-- フィルター＆ソート コントロールバー -->
@@ -3489,8 +3640,6 @@ function renderFlexconLedger(container, data) {
           </select>
         </div>
 
-        <div style="display: flex; align-items: center; gap: 6px;">
-          
         <div style="display: flex; align-items: center; gap: 6px;">
           <label for="ledgerFilterOperatorSelect" style="font-size: 12px; font-weight: 700; color: #7c3aed;">👤 担当者:</label>
           <select id="ledgerFilterOperatorSelect" style="padding: 4px 10px; font-size: 12px; border-radius: 6px; border: 1px solid var(--border-medium); background: var(--bg-card); color: var(--text-primary); font-weight: 700;">
@@ -3517,7 +3666,7 @@ function renderFlexconLedger(container, data) {
           </select>
         </div>
 
-        ${(ledgerFilterMonth !== 'all' || ledgerFilterLoc !== 'all' || ledgerFilterType !== 'all') ? `
+        ${(ledgerFilterMonth !== 'all' || ledgerFilterLoc !== 'all' || ledgerFilterType !== 'all' || ledgerFilterOperator !== 'all') ? `
           <button type="button" id="btnClearLedgerFilters" style="background: none; border: 1px solid var(--border-subtle); color: #ef4444; border-radius: 6px; padding: 4px 8px; font-size: 11px; cursor: pointer;" title="フィルターをすべて解除">
             ✕ 絞り込み解除
           </button>
@@ -3553,7 +3702,7 @@ function renderFlexconLedger(container, data) {
           <tbody>
             ${filteredList.length === 0 ? `
               <tr>
-                <td colspan="10" style="text-align: center; padding: 24px; color: var(--text-muted);">
+                <td colspan="11" style="text-align: center; padding: 24px; color: var(--text-muted);">
                   条件に一致するトランザクションレコードはありません。
                 </td>
               </tr>
@@ -3622,6 +3771,11 @@ function renderFlexconLedger(container, data) {
                     ${hasMultipleItems ? '<span style="font-size: 11px; color: var(--text-muted);">（内訳参照）</span>' : `¥${(tx.price || 0).toLocaleString()}`}
                   </td>
                   <td style="padding: 8px; text-align: right; font-weight: 700;">¥${Math.round(totalAmt).toLocaleString()}</td>
+                  <td style="padding: 8px; text-align: center; white-space: nowrap;">
+                    <span style="display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 12px; background: rgba(124,58,237,0.08); color: #6d28d9; font-size: 11px; font-weight: 800; border: 1px solid rgba(124,58,237,0.2);">
+                      👤 ${tx.operator || tx.ourContact || '畑山'}
+                    </span>
+                  </td>
                   <td style="padding: 8px;">
                     ${isOrdered ? `
                       <div style="font-weight: 600;">${tx.supplier || '-'}</div>
@@ -3688,6 +3842,7 @@ function renderFlexconLedger(container, data) {
       ledgerFilterMonth = 'all';
       ledgerFilterLoc = 'all';
       ledgerFilterType = 'all';
+      ledgerFilterOperator = 'all';
       renderFlexconLedger(container, data);
     });
   }
@@ -3745,11 +3900,11 @@ function renderFlexconLedger(container, data) {
 
   // リセットボタン
   document.getElementById('btnResetFlexconData').addEventListener('click', () => {
-    if (confirm("8月末の初期データ（上組 福岡支店: 1,933枚 / 138,210円）にリセットしますか？\n追加・変更されたトランザクションは消去されます。")) {
-      localStorage.removeItem('cascadia_flexcon_inventory_v5');
-      localStorage.removeItem('cascadia_flexcon_inventory_v3');
-      localStorage.removeItem('cascadia_flexcon_inventory_v2');
-      showToast("🔄 8月末仮運用データにリセットしました");
+    if (confirm("2026年9月末の確定在庫データにリセットしますか？\n10月以降に追加・変更されたトランザクションは消去され、全端末（クラウド）に反映されます。")) {
+      const resetData = JSON.parse(JSON.stringify(INITIAL_FLEXCON_DATA));
+      resetData.migrations = { sep2026Opening: new Date().toISOString() };
+      saveFlexconData(resetData);
+      showToast("🔄 9月末確定データにリセットしました");
       renderFlexconInventory();
     }
   });

@@ -4861,6 +4861,11 @@ tbody tr:last-child td {
   background: transparent !important;
 }
 
+/* 明細最終行の下線（合計欄左の空白セル上端） */
+.po-actual-table tfoot tr:first-child .total-empty {
+  border-top: 1px solid #111827 !important;
+}
+
 .total-label {
   text-align: center;
   font-weight: 700;
