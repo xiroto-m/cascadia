@@ -1382,15 +1382,18 @@ function calculateStockMatrix(transactions, asOfDate = null) {
     items.forEach(it => {
       const itemKey = it.item;
       if (!itemKey) return;
+      const hasExplicitPrice = typeof it.price === 'number' && !isNaN(it.price) && (it.price > 0 || (tx.type === 'inbound' && it.price === 0));
       if (!matrix[tx.location][itemKey]) {
-        matrix[tx.location][itemKey] = { qty: 0, totalValue: 0, lastPrice: it.price || 1000, orderedQty: 0 };
+        matrix[tx.location][itemKey] = { qty: 0, totalValue: 0, lastPrice: hasExplicitPrice ? it.price : 1000, orderedQty: 0 };
         fifoQueues[tx.location][itemKey] = [];
       }
 
       const cell = matrix[tx.location][itemKey];
       const queue = fifoQueues[tx.location][itemKey];
-      const unitPrice = (it.price && it.price > 0) ? it.price : (cell.lastPrice || 1000);
-      if (it.price > 0) cell.lastPrice = it.price;
+      // 入庫伝票で単価が数値入力されていれば 0円 も有効な評価単価として扱う（例: 補修済品 0円評価）
+      const fallbackUnit = (typeof cell.lastPrice === 'number' && !isNaN(cell.lastPrice)) ? cell.lastPrice : 1000;
+      const unitPrice = hasExplicitPrice ? it.price : fallbackUnit;
+      if (hasExplicitPrice) cell.lastPrice = it.price;
 
       if (tx.type === 'inbound') {
         if (tx.status === 'ordered') {
