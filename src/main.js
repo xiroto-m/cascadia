@@ -144,6 +144,7 @@ function generateNavTree() {
         <a class="nav-item" data-page="schedule-assistant"><span class="nav-dot"></span>得意先スケジュール支援</a>
         <a class="nav-item" data-page="lat-inventory-tool"><span class="nav-dot"></span>LAT機材・在庫金額計算</a>
         <a class="nav-item" data-page="flexcon-inventory"><span class="nav-dot"></span>フレコンバッグ在庫・金額管理</a>
+        <a class="nav-item" data-page="freight-calculator"><span class="nav-dot"></span>運搬料 按分計算</a>
       </div>
     </div>
 
@@ -309,6 +310,14 @@ function navigateTo(pageId, highlightSearch = null) {
     statusBadge.textContent = 'ツール';
     statusBadge.className = 'status-badge status-sales-approved';
     renderFlexconInventory();
+    return;
+  }
+
+  if (pageId === 'freight-calculator') {
+    currentPath.textContent = '便利ツール ＞ 運搬料 按分計算';
+    statusBadge.textContent = 'ツール';
+    statusBadge.className = 'status-badge status-sales-approved';
+    renderFreightCalculator();
     return;
   }
 
@@ -988,6 +997,12 @@ function renderPortalHome() {
         <div class="mini-card-title">フレコン資材 在庫・金額管理</div>
         <div class="mini-card-desc">拠点別のフレコンバッグ在庫枚数と金額評価、安全在庫アラート。</div>
         <span class="mini-card-badge" style="background:var(--accent-violet); color:#fff;">新ツール</span>
+      </div>
+      <div class="mini-card" data-target="freight-calculator" style="background: linear-gradient(135deg, rgba(234,88,12,0.06), rgba(249,115,22,0.04)); border: 1px solid rgba(234,88,12,0.2);">
+        <div class="mini-card-icon">🚚</div>
+        <div class="mini-card-title">運搬料 按分計算</div>
+        <div class="mini-card-desc">複数箇所下ろしの運賃を納品数量に応じて自動按分（最大10箇所以上対応）。</div>
+        <span class="mini-card-badge" style="background:#ea580c; color:#fff;">新ツール</span>
       </div>
     </div>
   `;
@@ -4563,4 +4578,391 @@ function renderLatInventoryTool() {
       renderLatInventoryTool();
     }
   });
+}
+
+// =========================================================================
+//   運搬料 按分計算ツール（業務部 畑山様ご依頼 / 2026-10）
+//   1台あたりの運搬料を、荷下ろし先ごとの納品数量に応じて按分する
+// =========================================================================
+
+const FREIGHT_STORAGE_KEY = 'cascadia_freight_calculator';
+const FREIGHT_SAMPLE = {
+  total: 30000,
+  memo: '例）A・B・C農場 3箇所下ろし便',
+  unit: 'kg',
+  rounding: 'adjust',
+  rows: [
+    { name: 'A農場', qty: 500, note: '' },
+    { name: 'B農場', qty: 1000, note: '' },
+    { name: 'C農場', qty: 3500, note: '' }
+  ]
+};
+
+function freightEscape(str) {
+  return String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+// 按分計算本体
+// rounding: 'adjust'（最大剰余法で合計を総額に一致） / 'round' / 'floor' / 'ceil'
+function calcFreightAllocation(total, rows, rounding) {
+  const qtys = rows.map(r => Math.max(0, Number(r.qty) || 0));
+  const sumQty = qtys.reduce((a, b) => a + b, 0);
+  if (!(total > 0) || sumQty <= 0) {
+    return { sumQty, amounts: qtys.map(() => 0), sumAmount: 0 };
+  }
+  const raw = qtys.map(q => total * q / sumQty);
+  let amounts;
+  if (rounding === 'adjust') {
+    // 最大剰余法：まず切り捨て、残りの円を端数の大きい順に1円ずつ配分
+    amounts = raw.map(v => Math.floor(v + 1e-9));
+    let remain = Math.round(total) - amounts.reduce((a, b) => a + b, 0);
+    const order = raw
+      .map((v, i) => ({ i, frac: v - Math.floor(v + 1e-9), q: qtys[i] }))
+      .filter(o => o.q > 0)
+      .sort((a, b) => (b.frac - a.frac) || (b.q - a.q));
+    for (let k = 0; remain > 0 && order.length; k = (k + 1) % order.length, remain--) {
+      amounts[order[k].i] += 1;
+    }
+  } else {
+    const fn = rounding === 'floor' ? Math.floor : rounding === 'ceil' ? Math.ceil : Math.round;
+    amounts = raw.map(v => fn(v - (rounding === 'ceil' ? 1e-9 : 0) + (rounding === 'floor' ? 1e-9 : 0)));
+  }
+  return { sumQty, amounts, sumAmount: amounts.reduce((a, b) => a + b, 0) };
+}
+
+function renderFreightCalculator() {
+  const content = contentArea;
+  let state;
+  try {
+    state = JSON.parse(localStorage.getItem(FREIGHT_STORAGE_KEY) || 'null');
+  } catch (e) { state = null; }
+  if (!state || !Array.isArray(state.rows)) state = JSON.parse(JSON.stringify(FREIGHT_SAMPLE));
+
+  const yen = n => '¥' + Math.round(n).toLocaleString('ja-JP');
+  const num = (n, d = 0) => Number(n).toLocaleString('ja-JP', { minimumFractionDigits: d, maximumFractionDigits: d });
+  const roundingLabel = {
+    adjust: '端数自動調整（合計一致）',
+    round: '四捨五入',
+    floor: '切り捨て',
+    ceil: '切り上げ'
+  };
+
+  const cardStyle = 'background:#ffffff; padding:16px; border-radius:12px; border:1px solid #e2e8f0; box-shadow:0 2px 4px rgba(0,0,0,0.04);';
+  const inputStyle = 'width:100%; padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.95em; box-sizing:border-box; background:#fff;';
+  const btn = (bg) => `background:${bg}; color:#fff; border:none; padding:10px 16px; border-radius:8px; font-weight:bold; cursor:pointer;`;
+
+  content.innerHTML = `
+    <style>
+      .freight-table { width:100%; border-collapse:collapse; font-size:0.92em; }
+      .freight-table th { background:#f1f5f9; color:#334155; padding:10px 8px; text-align:left; border-bottom:2px solid #e2e8f0; white-space:nowrap; }
+      .freight-table td { padding:8px; border-bottom:1px solid #f1f5f9; vertical-align:middle; }
+      .freight-table tr:hover td { background:#fff7ed; }
+      .freight-table input { width:100%; padding:7px 10px; border:1px solid #cbd5e1; border-radius:6px; box-sizing:border-box; font-size:0.95em; }
+      .freight-table input:focus, #freightTotal:focus, #freightMemo:focus { outline:none; border-color:#ea580c; box-shadow:0 0 0 3px rgba(234,88,12,0.15); }
+      .freight-table .num { text-align:right; font-variant-numeric:tabular-nums; }
+      .freight-bar { height:6px; background:#f1f5f9; border-radius:3px; overflow:hidden; margin-top:4px; }
+      .freight-bar > span { display:block; height:100%; background:linear-gradient(90deg,#f97316,#ea580c); transition:width .25s; }
+      .freight-icon-btn { border:1px solid #e2e8f0; background:#fff; border-radius:6px; padding:4px 8px; cursor:pointer; font-size:0.9em; }
+      .freight-icon-btn:hover { background:#f1f5f9; }
+      .freight-icon-btn:disabled { opacity:.35; cursor:not-allowed; }
+      #freightTool button.btn:hover { filter:brightness(1.08); transform:translateY(-1px); }
+      .freight-kpi-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:14px; margin-bottom:20px; }
+      .freight-kpi-grid > div { min-width:0; }
+      @media (max-width: 900px) { .freight-kpi-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+      @media print {
+        .sidebar, .topbar, .freight-no-print { display:none !important; }
+        .main-content { margin:0 !important; }
+        #freightTool { max-width:none !important; padding:0 !important; }
+        #freightTool .section-hero { background:#fff !important; color:#000 !important; box-shadow:none !important; border:1px solid #000; }
+        .freight-table input { border:none; padding:0; }
+      }
+    </style>
+    <div class="tool-container" id="freightTool" style="max-width:1200px; margin:0 auto; padding:20px;">
+      <div class="section-hero" style="background:linear-gradient(135deg,#7c2d12 0%,#c2410c 55%,#ea580c 100%); border-radius:16px; padding:28px; color:#fff; margin-bottom:24px; box-shadow:0 10px 25px -5px rgba(194,65,12,0.35);">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">
+          <div>
+            <span class="hero-emoji">🚚</span>
+            <h1 style="margin:8px 0; font-size:1.8em;">運搬料 按分計算ツール</h1>
+            <p class="hero-sub" style="margin:0; color:#fed7aa;">1台あたりの運搬料を、荷下ろし先ごとの納品数量に応じて自動按分します</p>
+          </div>
+          <div class="freight-no-print" style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button id="btnFreightCopyText" class="btn" style="${btn('#2563eb')}">📋 結果をコピー</button>
+            <button id="btnFreightCopyTsv" class="btn" style="${btn('#0891b2')}">📊 Excel用コピー</button>
+            <button id="btnFreightCsv" class="btn" style="${btn('#475569')}">📥 CSV出力</button>
+            <button id="btnFreightPrint" class="btn" style="${btn('#334155')}">🖨️ 印刷</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 基本条件 -->
+      <div style="${cardStyle} margin-bottom:20px;">
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px; align-items:end;">
+          <label style="display:block;">
+            <div style="font-size:0.85em; font-weight:bold; color:#475569; margin-bottom:6px;">🚛 運搬料 総額（1台あたり・円）</div>
+            <input id="freightTotal" type="number" min="0" step="1" inputmode="numeric" style="${inputStyle} font-size:1.15em; font-weight:bold;" value="${state.total ?? ''}">
+          </label>
+          <label style="display:block;">
+            <div style="font-size:0.85em; font-weight:bold; color:#475569; margin-bottom:6px;">📏 数量単位</div>
+            <select id="freightUnit" style="${inputStyle}">
+              ${['kg', 't', '袋', 'ケース', '個'].map(u => `<option value="${u}" ${state.unit === u ? 'selected' : ''}>${u}</option>`).join('')}
+            </select>
+          </label>
+          <label style="display:block;">
+            <div style="font-size:0.85em; font-weight:bold; color:#475569; margin-bottom:6px;">🔢 端数処理</div>
+            <select id="freightRounding" style="${inputStyle}">
+              ${Object.entries(roundingLabel).map(([k, v]) => `<option value="${k}" ${state.rounding === k ? 'selected' : ''}>${v}</option>`).join('')}
+            </select>
+          </label>
+          <label style="display:block; grid-column:span 1;">
+            <div style="font-size:0.85em; font-weight:bold; color:#475569; margin-bottom:6px;">📝 便名・メモ（任意）</div>
+            <input id="freightMemo" type="text" style="${inputStyle}" placeholder="例）10/22 ◯◯運輸 4t車" value="${freightEscape(state.memo)}">
+          </label>
+        </div>
+        <div style="margin-top:10px; font-size:0.8em; color:#64748b;">
+          ※「端数自動調整」は1円未満の端数を端数の大きい納品先から順に配分し、按分合計を運搬料総額と<strong>1円単位でぴったり一致</strong>させます。
+        </div>
+      </div>
+
+      <!-- KPI -->
+      <div class="freight-kpi-grid">
+        <div style="${cardStyle}"><div style="font-size:0.85em; color:#64748b; font-weight:bold;">📍 荷下ろし箇所</div><div id="kpiFreightCount" style="font-size:1.35em; font-weight:bold; color:#0f172a; margin-top:4px;">0</div></div>
+        <div style="${cardStyle}"><div style="font-size:0.85em; color:#64748b; font-weight:bold;">⚖️ 積載合計</div><div id="kpiFreightQty" style="font-size:1.35em; font-weight:bold; color:#0f172a; margin-top:4px;">0</div></div>
+        <div style="${cardStyle}"><div style="font-size:0.85em; color:#64748b; font-weight:bold;">📐 平均単価</div><div id="kpiFreightUnitPrice" style="font-size:1.35em; font-weight:bold; color:#0f172a; margin-top:4px;">-</div></div>
+        <div style="${cardStyle}"><div style="font-size:0.85em; color:#64748b; font-weight:bold;">🧮 按分合計 / 差額</div><div id="kpiFreightDiff" style="font-size:1.35em; font-weight:bold; margin-top:4px;">-</div></div>
+        <div style="background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%); padding:16px; border-radius:12px; color:#fff; box-shadow:0 4px 6px rgba(0,0,0,0.1);"><div style="font-size:0.85em; color:#cbd5e1; font-weight:bold;">💰 運搬料 総額</div><div id="kpiFreightTotal" style="font-size:1.45em; font-weight:bold; color:#fdba74; margin-top:4px;">¥0</div></div>
+      </div>
+
+      <!-- 明細 -->
+      <div style="${cardStyle} padding:0; overflow:hidden;">
+        <div class="freight-no-print" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding:14px 16px; border-bottom:1px solid #e2e8f0;">
+          <div style="font-weight:bold; color:#0f172a;">📦 荷下ろし先別 納品数量・按分運賃</div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button id="btnFreightAdd" class="btn" style="${btn('#ea580c')} padding:8px 14px;">➕ 荷下ろし先を追加</button>
+            <button id="btnFreightSample" class="btn" style="${btn('#64748b')} padding:8px 14px;">🧪 サンプル読込</button>
+            <button id="btnFreightClear" class="btn" style="${btn('#ef4444')} padding:8px 14px;">🔄 クリア</button>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="freight-table">
+            <thead>
+              <tr>
+                <th style="width:40px;">No.</th>
+                <th style="min-width:160px;">荷下ろし先（納品先）</th>
+                <th style="width:140px;" class="num">納品数量（<span class="freightUnitLabel"></span>）</th>
+                <th style="width:130px;" class="num">構成比</th>
+                <th style="width:130px;" class="num">按分運賃</th>
+                <th style="width:120px;" class="num">単価（円/<span class="freightUnitLabel"></span>）</th>
+                <th style="min-width:140px;">備考</th>
+                <th class="freight-no-print" style="width:110px;">操作</th>
+              </tr>
+            </thead>
+            <tbody id="freightRows"></tbody>
+            <tfoot>
+              <tr style="background:#fff7ed; font-weight:bold;">
+                <td></td>
+                <td>合計</td>
+                <td class="num" id="freightFootQty">0</td>
+                <td class="num" id="freightFootRatio">-</td>
+                <td class="num" id="freightFootAmount">¥0</td>
+                <td class="num" id="freightFootUnit">-</td>
+                <td colspan="2"></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+      <div class="freight-no-print" style="margin-top:12px; font-size:0.8em; color:#64748b;">💾 入力内容はこのブラウザに自動保存されます。荷下ろし先の数に上限はありません（10箇所以上も可）。</div>
+    </div>
+  `;
+
+  const tbody = document.getElementById('freightRows');
+  const save = () => localStorage.setItem(FREIGHT_STORAGE_KEY, JSON.stringify(state));
+
+  function compute() {
+    return calcFreightAllocation(Number(state.total) || 0, state.rows, state.rounding);
+  }
+
+  function renderRows() {
+    tbody.innerHTML = state.rows.map((r, i) => `
+      <tr data-idx="${i}">
+        <td style="color:#94a3b8; font-weight:bold;">${i + 1}</td>
+        <td><input type="text" data-field="name" value="${freightEscape(r.name)}" placeholder="例）A農場"></td>
+        <td><input type="number" data-field="qty" min="0" step="any" inputmode="decimal" class="num" value="${r.qty ?? ''}"></td>
+        <td class="num"><span class="cell-ratio">-</span><div class="freight-bar"><span class="cell-bar" style="width:0"></span></div></td>
+        <td class="num" style="font-weight:bold; color:#c2410c;"><span class="cell-amount">¥0</span></td>
+        <td class="num" style="color:#475569;"><span class="cell-unit">-</span></td>
+        <td><input type="text" data-field="note" value="${freightEscape(r.note)}" placeholder=""></td>
+        <td class="freight-no-print" style="white-space:nowrap;">
+          <button class="freight-icon-btn" data-act="up" title="上へ" ${i === 0 ? 'disabled' : ''}>▲</button>
+          <button class="freight-icon-btn" data-act="down" title="下へ" ${i === state.rows.length - 1 ? 'disabled' : ''}>▼</button>
+          <button class="freight-icon-btn" data-act="del" title="削除" style="color:#dc2626;">✕</button>
+        </td>
+      </tr>
+    `).join('') || `<tr><td colspan="8" style="text-align:center; color:#94a3b8; padding:24px;">「➕ 荷下ろし先を追加」から入力してください</td></tr>`;
+    updateResults();
+  }
+
+  // 入力中のフォーカスを維持するため、計算結果セルのみ更新
+  function updateResults() {
+    const { sumQty, amounts, sumAmount } = compute();
+    const total = Math.round(Number(state.total) || 0);
+    const unit = state.unit;
+    document.querySelectorAll('.freightUnitLabel').forEach(el => { el.textContent = unit; });
+
+    tbody.querySelectorAll('tr[data-idx]').forEach(tr => {
+      const i = Number(tr.dataset.idx);
+      const q = Math.max(0, Number(state.rows[i].qty) || 0);
+      const ratio = sumQty > 0 ? q / sumQty * 100 : 0;
+      tr.querySelector('.cell-ratio').textContent = sumQty > 0 ? num(ratio, 2) + '%' : '-';
+      tr.querySelector('.cell-bar').style.width = ratio + '%';
+      tr.querySelector('.cell-amount').textContent = yen(amounts[i] || 0);
+      tr.querySelector('.cell-unit').textContent = q > 0 ? num(amounts[i] / q, 2) : '-';
+    });
+
+    const activeCount = state.rows.filter(r => (Number(r.qty) || 0) > 0).length;
+    document.getElementById('kpiFreightCount').textContent = `${activeCount} 箇所`;
+    document.getElementById('kpiFreightQty').textContent = `${num(sumQty, sumQty % 1 ? 2 : 0)} ${unit}`;
+    document.getElementById('kpiFreightUnitPrice').textContent = sumQty > 0 && total > 0 ? `${num(total / sumQty, 2)} 円/${unit}` : '-';
+    document.getElementById('kpiFreightTotal').textContent = yen(total);
+
+    const diff = sumAmount - total;
+    const diffEl = document.getElementById('kpiFreightDiff');
+    if (sumQty > 0 && total > 0) {
+      diffEl.innerHTML = `${yen(sumAmount)} <span style="display:inline-block; white-space:nowrap; font-size:0.7em; color:${diff === 0 ? '#059669' : '#dc2626'};">${diff === 0 ? '✓ 一致' : `(${diff > 0 ? '+' : ''}${diff.toLocaleString()}円)`}</span>`;
+      diffEl.style.color = diff === 0 ? '#0f172a' : '#dc2626';
+    } else {
+      diffEl.textContent = '-';
+      diffEl.style.color = '#0f172a';
+    }
+
+    document.getElementById('freightFootQty').textContent = num(sumQty, sumQty % 1 ? 2 : 0);
+    document.getElementById('freightFootRatio').textContent = sumQty > 0 ? '100.00%' : '-';
+    document.getElementById('freightFootAmount').textContent = yen(sumAmount);
+    document.getElementById('freightFootUnit').textContent = sumQty > 0 && total > 0 ? num(total / sumQty, 2) : '-';
+  }
+
+  // ---- イベント ----
+  tbody.addEventListener('input', e => {
+    const tr = e.target.closest('tr[data-idx]');
+    const field = e.target.dataset.field;
+    if (!tr || !field) return;
+    state.rows[Number(tr.dataset.idx)][field] = field === 'qty' ? e.target.value : e.target.value;
+    save();
+    if (field === 'qty') updateResults();
+  });
+
+  tbody.addEventListener('click', e => {
+    const b = e.target.closest('button[data-act]');
+    if (!b) return;
+    const i = Number(b.closest('tr').dataset.idx);
+    if (b.dataset.act === 'del') state.rows.splice(i, 1);
+    if (b.dataset.act === 'up' && i > 0) [state.rows[i - 1], state.rows[i]] = [state.rows[i], state.rows[i - 1]];
+    if (b.dataset.act === 'down' && i < state.rows.length - 1) [state.rows[i + 1], state.rows[i]] = [state.rows[i], state.rows[i + 1]];
+    save();
+    renderRows();
+  });
+
+  // Enterキーで次の行の数量へ移動（最終行なら行追加）
+  tbody.addEventListener('keydown', e => {
+    if (e.key !== 'Enter' || e.isComposing) return;
+    const tr = e.target.closest('tr[data-idx]');
+    if (!tr) return;
+    e.preventDefault();
+    const field = e.target.dataset.field;
+    const i = Number(tr.dataset.idx);
+    if (i === state.rows.length - 1) {
+      state.rows.push({ name: '', qty: '', note: '' });
+      save();
+      renderRows();
+    }
+    const next = tbody.querySelector(`tr[data-idx="${i + 1}"] input[data-field="${field}"]`);
+    if (next) next.focus();
+  });
+
+  document.getElementById('freightTotal').addEventListener('input', e => { state.total = e.target.value; save(); updateResults(); });
+  document.getElementById('freightMemo').addEventListener('input', e => { state.memo = e.target.value; save(); });
+  document.getElementById('freightUnit').addEventListener('change', e => { state.unit = e.target.value; save(); updateResults(); });
+  document.getElementById('freightRounding').addEventListener('change', e => { state.rounding = e.target.value; save(); updateResults(); });
+
+  document.getElementById('btnFreightAdd').addEventListener('click', () => {
+    state.rows.push({ name: '', qty: '', note: '' });
+    save();
+    renderRows();
+    const inputs = tbody.querySelectorAll('input[data-field="name"]');
+    if (inputs.length) inputs[inputs.length - 1].focus();
+  });
+
+  document.getElementById('btnFreightSample').addEventListener('click', () => {
+    state = JSON.parse(JSON.stringify(FREIGHT_SAMPLE));
+    save();
+    renderFreightCalculator();
+    showGlobalToast('🧪', 'サンプル（30,000円 / A・B・C農場）を読み込みました');
+  });
+
+  document.getElementById('btnFreightClear').addEventListener('click', () => {
+    if (!confirm('入力内容をすべてクリアしますか？')) return;
+    state = { total: '', memo: '', unit: state.unit, rounding: state.rounding, rows: Array.from({ length: 3 }, () => ({ name: '', qty: '', note: '' })) };
+    save();
+    renderFreightCalculator();
+  });
+
+  const validRows = () => {
+    const { sumQty, amounts, sumAmount } = compute();
+    return {
+      sumQty, sumAmount,
+      list: state.rows.map((r, i) => ({ ...r, q: Math.max(0, Number(r.qty) || 0), amount: amounts[i] || 0 })).filter(r => r.q > 0 || r.name)
+    };
+  };
+
+  const copy = (text, msg) => {
+    navigator.clipboard.writeText(text).then(() => showGlobalToast('📋', msg)).catch(() => alert('コピーに失敗しました'));
+  };
+
+  document.getElementById('btnFreightCopyText').addEventListener('click', () => {
+    const { sumQty, sumAmount, list } = validRows();
+    const total = Math.round(Number(state.total) || 0);
+    const u = state.unit;
+    const lines = [
+      '【運搬料 按分計算結果】',
+      state.memo ? `便名/メモ: ${state.memo}` : null,
+      `運搬料総額: ${yen(total)}（積載合計: ${num(sumQty, sumQty % 1 ? 2 : 0)} ${u}${sumQty > 0 ? ` / 平均: ${num(total / sumQty, 2)} 円/${u}` : ''}）`,
+      `端数処理: ${roundingLabel[state.rounding]}`,
+      '----------------------------------------',
+      ...list.map(r => `・${r.name || '(未入力)'}: ${num(r.q, r.q % 1 ? 2 : 0)} ${u}（${sumQty > 0 ? num(r.q / sumQty * 100, 2) : '0.00'}%）→ ${yen(r.amount)}${r.q > 0 ? `（${num(r.amount / r.q, 2)} 円/${u}）` : ''}${r.note ? ` ※${r.note}` : ''}`),
+      '----------------------------------------',
+      `按分合計: ${yen(sumAmount)}${sumAmount === total ? '（総額と一致）' : `（総額との差額 ${(sumAmount - total).toLocaleString()}円）`}`
+    ].filter(l => l !== null);
+    copy(lines.join('\n'), 'メール・チャット用テキストをコピーしました');
+  });
+
+  document.getElementById('btnFreightCopyTsv').addEventListener('click', () => {
+    const { sumQty, sumAmount, list } = validRows();
+    const header = ['No.', '荷下ろし先', `納品数量(${state.unit})`, '構成比(%)', '按分運賃(円)', `単価(円/${state.unit})`, '備考'];
+    const rows = list.map((r, i) => [i + 1, r.name, r.q, sumQty > 0 ? (r.q / sumQty * 100).toFixed(2) : 0, r.amount, r.q > 0 ? (r.amount / r.q).toFixed(2) : '', r.note || '']);
+    rows.push(['', '合計', sumQty, sumQty > 0 ? '100.00' : '', sumAmount, '', '']);
+    copy([header, ...rows].map(r => r.join('\t')).join('\n'), 'Excel貼り付け用データをコピーしました');
+  });
+
+  document.getElementById('btnFreightCsv').addEventListener('click', () => {
+    const { sumQty, sumAmount, list } = validRows();
+    const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+    let csv = '\uFEFF';
+    csv += `${q('運搬料総額')},${Math.round(Number(state.total) || 0)}\n${q('便名・メモ')},${q(state.memo)}\n${q('端数処理')},${q(roundingLabel[state.rounding])}\n\n`;
+    csv += `No.,荷下ろし先,納品数量(${state.unit}),構成比(%),按分運賃(円),単価(円/${state.unit}),備考\n`;
+    list.forEach((r, i) => {
+      csv += `${i + 1},${q(r.name)},${r.q},${sumQty > 0 ? (r.q / sumQty * 100).toFixed(2) : 0},${r.amount},${r.q > 0 ? (r.amount / r.q).toFixed(2) : ''},${q(r.note)}\n`;
+    });
+    csv += `,合計,${sumQty},${sumQty > 0 ? '100.00' : ''},${sumAmount},,\n`;
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `運搬料按分_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
+
+  document.getElementById('btnFreightPrint').addEventListener('click', () => window.print());
+
+  renderRows();
 }
