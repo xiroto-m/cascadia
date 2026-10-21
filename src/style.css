@@ -5423,3 +5423,19 @@ tbody tr:last-child td {
   display: none;
 }
 
+
+/* フレコン：クラウド同期ステータスバッジ（状態別の色は flexcon.js の updateSyncBadgeUI で上書き） */
+.cloud-sync-badge-target {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  font-size: 11.5px;
+  border-radius: 20px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #64748b;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}

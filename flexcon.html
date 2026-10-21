@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="src/style.css?v=3.3">
+  <link rel="stylesheet" href="src/style.css?v=3.4">
   <link rel="icon" type="image/png" href="src/favicon.png">
   <style>
     /* Standalone Portal Specialized Styles */
@@ -189,7 +189,7 @@
         </div>
       </div>
       <div class="flexcon-header-actions">
-        <span class="cloud-sync-badge-target" style="display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; font-size: 11.5px; border-radius: 20px; border: 1px solid #cbd5e1; background: #f8fafc; color: #64748b; font-weight: 700; cursor: pointer; transition: all 0.2s ease;">
+        <span class="cloud-sync-badge-target">
           🟡 クラウド接続中...
         </span>
         <span class="badge-portal-scope">本運用・専用ポータル</span>
@@ -215,7 +215,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
   <script src="src/auth.js"></script>
-  <script src="src/flexcon.js?v=6.4"></script>
+  <script src="src/flexcon.js?v=6.5"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (typeof checkSession === 'function' && checkSession()) {

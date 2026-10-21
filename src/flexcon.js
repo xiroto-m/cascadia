@@ -1260,7 +1260,7 @@ function renderFlexconInventory(targetEl) {
         <div style="flex: 1; min-width: 280px;">
           <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap;">
             <h1 class="page-title" style="margin: 0;">📦 フレコンバッグ資材 在庫数・在庫金額確認ツール</h1>
-            <span class="cloud-sync-badge-target" style="display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; font-size: 11.5px; border-radius: 20px; border: 1px solid #cbd5e1; background: #f8fafc; color: #64748b; font-weight: 700; cursor: pointer; transition: all 0.2s ease;">
+            <span class="cloud-sync-badge-target">
               🟡 クラウド接続中...
             </span>
           </div>

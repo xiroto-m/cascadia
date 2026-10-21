@@ -4603,14 +4603,25 @@ function freightEscape(str) {
 }
 
 // 数値入力の正規化：Excel等からの貼り付けを想定し、カンマ・全角数字・空白・単位（kg/円等）を許容。
-// 解釈できない値は NaN、空欄は 0 を返す。
+// 不正なカンマ位置（例: 1,0001 や 1,,000）や解釈不能な文字列は NaN、空欄は 0 を返す。
 function freightNum(v) {
   if (typeof v === 'number') return v;
-  let s = String(v ?? '')
+  let s = String(v ?? '').trim()
     .replace(/[０-９．，－]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0))
-    .replace(/[\s,¥￥]/g, '')
+    .replace(/\s+/g, '')
+    .replace(/^[¥￥]/, '')
     .replace(/(kg|t|袋|ケース|個|円)$/i, '');
   if (s === '') return 0;
+  if (s.includes(',')) {
+    const parts = s.split('.');
+    const intPart = parts[0];
+    const decPart = parts[1];
+    // 正しい3桁区切り (例: 1,000 または 12,345,678) か判定
+    if (!/^-?\d{1,3}(,\d{3})+$/.test(intPart) || (decPart !== undefined && !/^\d+$/.test(decPart))) {
+      return NaN;
+    }
+    s = s.replace(/,/g, '');
+  }
   return /^-?\d*\.?\d+$/.test(s) ? Number(s) : NaN;
 }
 
@@ -4741,11 +4752,11 @@ function renderFreightCalculator() {
 
       <!-- KPI -->
       <div class="freight-kpi-grid">
-        <div style="${cardStyle}"><div style="font-size:0.85em; color:#64748b; font-weight:bold;">📍 荷下ろし箇所</div><div id="kpiFreightCount" style="font-size:1.35em; font-weight:bold; color:#0f172a; margin-top:4px;">0</div></div>
-        <div style="${cardStyle}"><div style="font-size:0.85em; color:#64748b; font-weight:bold;">⚖️ 積載合計</div><div id="kpiFreightQty" style="font-size:1.35em; font-weight:bold; color:#0f172a; margin-top:4px;">0</div></div>
-        <div style="${cardStyle}"><div style="font-size:0.85em; color:#64748b; font-weight:bold;">📐 平均単価</div><div id="kpiFreightUnitPrice" style="font-size:1.35em; font-weight:bold; color:#0f172a; margin-top:4px;">-</div></div>
-        <div style="${cardStyle}"><div style="font-size:0.85em; color:#64748b; font-weight:bold;">🧮 按分合計 / 差額</div><div id="kpiFreightDiff" style="font-size:1.35em; font-weight:bold; margin-top:4px;">-</div></div>
-        <div style="background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%); padding:16px; border-radius:12px; color:#fff; box-shadow:0 4px 6px rgba(0,0,0,0.1);"><div style="font-size:0.85em; color:#cbd5e1; font-weight:bold;">💰 運搬料 総額</div><div id="kpiFreightTotal" style="font-size:1.45em; font-weight:bold; color:#fdba74; margin-top:4px;">¥0</div></div>
+        <div style="${cardStyle}"><div style="font-size:0.85em; color:#64748b; font-weight:bold;">📍 荷下ろし箇所</div><div id="kpiFreightCount" style="font-size:1.35em; font-weight:bold; color:#0f172a; margin-top:4px; white-space:nowrap;">0 箇所</div></div>
+        <div style="${cardStyle}"><div style="font-size:0.85em; color:#64748b; font-weight:bold;">⚖️ 積載合計</div><div id="kpiFreightQty" style="margin-top:4px; min-height:1.4em; display:flex; align-items:baseline; gap:2px; flex-wrap:wrap;">0</div></div>
+        <div style="${cardStyle}"><div style="font-size:0.85em; color:#64748b; font-weight:bold;">📐 平均単価</div><div id="kpiFreightUnitPrice" style="margin-top:4px; min-height:1.4em; display:flex; align-items:baseline; gap:2px; flex-wrap:wrap;">-</div></div>
+        <div style="${cardStyle}"><div style="font-size:0.85em; color:#64748b; font-weight:bold;">🧮 按分合計 / 差額</div><div id="kpiFreightDiff" style="margin-top:4px; min-height:1.4em; display:flex; align-items:baseline; gap:6px; flex-wrap:wrap;">-</div></div>
+        <div style="background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%); padding:16px; border-radius:12px; color:#fff; box-shadow:0 4px 6px rgba(0,0,0,0.1);"><div style="font-size:0.85em; color:#cbd5e1; font-weight:bold;">💰 運搬料 総額</div><div id="kpiFreightTotal" style="font-size:1.45em; font-weight:bold; color:#fdba74; margin-top:4px; white-space:nowrap;">¥0</div></div>
       </div>
 
       <!-- 明細 -->
@@ -4847,14 +4858,25 @@ function renderFreightCalculator() {
 
     const activeCount = state.rows.filter(r => (freightNum(r.qty) || 0) > 0).length;
     document.getElementById('kpiFreightCount').textContent = `${activeCount} 箇所`;
-    document.getElementById('kpiFreightQty').textContent = `${num(sumQty, sumQty % 1 ? 2 : 0)} ${unit}`;
-    document.getElementById('kpiFreightUnitPrice').textContent = sumQty > 0 && total > 0 ? `${num(total / sumQty, 2)} 円/${unit}` : '-';
+
+    const qtyStr = num(sumQty, sumQty % 1 ? 2 : 0);
+    const qtyFontSize = qtyStr.length > 10 ? '1.05em' : qtyStr.length > 7 ? '1.18em' : '1.35em';
+    document.getElementById('kpiFreightQty').innerHTML = `<span style="font-size:${qtyFontSize}; font-weight:bold; color:#0f172a;">${qtyStr}</span><span style="font-size:0.75em; color:#64748b; font-weight:normal; white-space:nowrap; margin-left:3px;">${unit}</span>`;
+
+    if (sumQty > 0 && total > 0) {
+      const priceStr = num(total / sumQty, 2);
+      const priceFontSize = priceStr.length > 8 ? '1.1em' : '1.35em';
+      document.getElementById('kpiFreightUnitPrice').innerHTML = `<span style="font-size:${priceFontSize}; font-weight:bold; color:#0f172a;">${priceStr}</span><span style="font-size:0.75em; color:#64748b; font-weight:normal; white-space:nowrap; margin-left:3px;">円/${unit}</span>`;
+    } else {
+      document.getElementById('kpiFreightUnitPrice').innerHTML = `<span style="font-size:1.35em; font-weight:bold; color:#0f172a;">-</span>`;
+    }
+
     document.getElementById('kpiFreightTotal').textContent = yen(total);
 
     const diff = sumAmount - total;
     const diffEl = document.getElementById('kpiFreightDiff');
     if (sumQty > 0 && total > 0) {
-      diffEl.innerHTML = `${yen(sumAmount)} <span style="display:inline-block; white-space:nowrap; font-size:0.7em; color:${diff === 0 ? '#059669' : '#dc2626'};">${diff === 0 ? '✓ 一致' : `(${diff > 0 ? '+' : ''}${diff.toLocaleString()}円)`}</span>`;
+      diffEl.innerHTML = `<span style="font-size:1.35em; font-weight:bold;">${yen(sumAmount)}</span><span style="display:inline-block; white-space:nowrap; font-size:0.7em; color:${diff === 0 ? '#059669' : '#dc2626'}; font-weight:700;">${diff === 0 ? '✓ 一致' : `(${diff > 0 ? '+' : ''}${diff.toLocaleString()}円)`}</span>`;
       diffEl.style.color = diff === 0 ? '#0f172a' : '#dc2626';
     } else {
       diffEl.textContent = '-';
