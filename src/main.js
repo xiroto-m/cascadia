@@ -4674,7 +4674,7 @@ function renderFreightCalculator() {
     ceil: '切り上げ'
   };
 
-  const cardStyle = 'background:#ffffff; padding:16px; border-radius:12px; border:1px solid #e2e8f0; box-shadow:0 2px 4px rgba(0,0,0,0.04);';
+  const cardStyle = 'background:#ffffff; padding:14px 12px; border-radius:12px; border:1px solid #e2e8f0; box-shadow:0 2px 4px rgba(0,0,0,0.04); min-width:0; overflow:hidden;';
   const inputStyle = 'width:100%; padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.95em; box-sizing:border-box; background:#fff;';
   const btn = (bg) => `background:${bg}; color:#fff; border:none; padding:10px 16px; border-radius:8px; font-weight:bold; cursor:pointer;`;
 
@@ -4693,9 +4693,11 @@ function renderFreightCalculator() {
       .freight-icon-btn:hover { background:#f1f5f9; }
       .freight-icon-btn:disabled { opacity:.35; cursor:not-allowed; }
       #freightTool button.btn:hover { filter:brightness(1.08); transform:translateY(-1px); }
-      .freight-kpi-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:14px; margin-bottom:20px; }
+      .freight-kpi-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px; margin-bottom:20px; }
       .freight-kpi-grid > div { min-width:0; }
-      @media (max-width: 900px) { .freight-kpi-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+      @media (max-width: 1100px) { .freight-kpi-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+      @media (max-width: 680px) { .freight-kpi-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+      @media (max-width: 440px) { .freight-kpi-grid { grid-template-columns:1fr; } }
       @media print {
         .sidebar, .topbar, .freight-no-print { display:none !important; }
         .main-content { margin:0 !important; }
@@ -4860,15 +4862,15 @@ function renderFreightCalculator() {
     document.getElementById('kpiFreightCount').textContent = `${activeCount} 箇所`;
 
     const qtyStr = num(sumQty, sumQty % 1 ? 2 : 0);
-    const qtyFontSize = qtyStr.length > 10 ? '1.05em' : qtyStr.length > 7 ? '1.18em' : '1.35em';
-    document.getElementById('kpiFreightQty').innerHTML = `<span style="font-size:${qtyFontSize}; font-weight:bold; color:#0f172a;">${qtyStr}</span><span style="font-size:0.75em; color:#64748b; font-weight:normal; white-space:nowrap; margin-left:3px;">${unit}</span>`;
+    const qtyFontSize = qtyStr.length > 10 ? '1.0em' : qtyStr.length > 7 ? '1.15em' : '1.3em';
+    document.getElementById('kpiFreightQty').innerHTML = `<span style="font-size:${qtyFontSize}; font-weight:bold; color:#0f172a; letter-spacing:-0.5px;">${qtyStr}</span><span style="font-size:0.75em; color:#64748b; font-weight:normal; white-space:nowrap; display:inline-block; word-break:keep-all; margin-left:3px;">${unit}</span>`;
 
     if (sumQty > 0 && total > 0) {
       const priceStr = num(total / sumQty, 2);
-      const priceFontSize = priceStr.length > 8 ? '1.1em' : '1.35em';
-      document.getElementById('kpiFreightUnitPrice').innerHTML = `<span style="font-size:${priceFontSize}; font-weight:bold; color:#0f172a;">${priceStr}</span><span style="font-size:0.75em; color:#64748b; font-weight:normal; white-space:nowrap; margin-left:3px;">円/${unit}</span>`;
+      const priceFontSize = priceStr.length > 8 ? '1.05em' : '1.25em';
+      document.getElementById('kpiFreightUnitPrice').innerHTML = `<span style="font-size:${priceFontSize}; font-weight:bold; color:#0f172a; letter-spacing:-0.5px;">${priceStr}</span><span style="font-size:0.75em; color:#64748b; font-weight:normal; white-space:nowrap; display:inline-block; word-break:keep-all; margin-left:3px;">円/${unit}</span>`;
     } else {
-      document.getElementById('kpiFreightUnitPrice').innerHTML = `<span style="font-size:1.35em; font-weight:bold; color:#0f172a;">-</span>`;
+      document.getElementById('kpiFreightUnitPrice').innerHTML = `<span style="font-size:1.3em; font-weight:bold; color:#0f172a;">-</span>`;
     }
 
     document.getElementById('kpiFreightTotal').textContent = yen(total);
@@ -4876,7 +4878,7 @@ function renderFreightCalculator() {
     const diff = sumAmount - total;
     const diffEl = document.getElementById('kpiFreightDiff');
     if (sumQty > 0 && total > 0) {
-      diffEl.innerHTML = `<span style="font-size:1.35em; font-weight:bold;">${yen(sumAmount)}</span><span style="display:inline-block; white-space:nowrap; font-size:0.7em; color:${diff === 0 ? '#059669' : '#dc2626'}; font-weight:700;">${diff === 0 ? '✓ 一致' : `(${diff > 0 ? '+' : ''}${diff.toLocaleString()}円)`}</span>`;
+      diffEl.innerHTML = `<span style="font-size:1.25em; font-weight:bold; letter-spacing:-0.5px;">${yen(sumAmount)}</span><span style="display:inline-block; white-space:nowrap; word-break:keep-all; font-size:0.7em; color:${diff === 0 ? '#059669' : '#dc2626'}; font-weight:700;">${diff === 0 ? '✓ 一致' : `(${diff > 0 ? '+' : ''}${diff.toLocaleString()}円)`}</span>`;
       diffEl.style.color = diff === 0 ? '#0f172a' : '#dc2626';
     } else {
       diffEl.textContent = '-';
