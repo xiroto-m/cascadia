@@ -4602,10 +4602,26 @@ function freightEscape(str) {
   return String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
+// 数値入力の正規化：Excel等からの貼り付けを想定し、カンマ・全角数字・空白・単位（kg/円等）を許容。
+// 解釈できない値は NaN、空欄は 0 を返す。
+function freightNum(v) {
+  if (typeof v === 'number') return v;
+  let s = String(v ?? '')
+    .replace(/[０-９．，－]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0))
+    .replace(/[\s,¥￥]/g, '')
+    .replace(/(kg|t|袋|ケース|個|円)$/i, '');
+  if (s === '') return 0;
+  return /^-?\d*\.?\d+$/.test(s) ? Number(s) : NaN;
+}
+
+function freightIsInvalid(v) {
+  return String(v ?? '').trim() !== '' && Number.isNaN(freightNum(v));
+}
+
 // 按分計算本体
 // rounding: 'adjust'（最大剰余法で合計を総額に一致） / 'round' / 'floor' / 'ceil'
 function calcFreightAllocation(total, rows, rounding) {
-  const qtys = rows.map(r => Math.max(0, Number(r.qty) || 0));
+  const qtys = rows.map(r => Math.max(0, freightNum(r.qty) || 0));
   const sumQty = qtys.reduce((a, b) => a + b, 0);
   if (!(total > 0) || sumQty <= 0) {
     return { sumQty, amounts: qtys.map(() => 0), sumAmount: 0 };
@@ -4699,7 +4715,7 @@ function renderFreightCalculator() {
         <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px; align-items:end;">
           <label style="display:block;">
             <div style="font-size:0.85em; font-weight:bold; color:#475569; margin-bottom:6px;">🚛 運搬料 総額（1台あたり・円）</div>
-            <input id="freightTotal" type="number" min="0" step="1" inputmode="numeric" style="${inputStyle} font-size:1.15em; font-weight:bold;" value="${state.total ?? ''}">
+            <input id="freightTotal" type="text" inputmode="numeric" autocomplete="off" style="${inputStyle} font-size:1.15em; font-weight:bold;" value="${freightEscape(state.total)}">
           </label>
           <label style="display:block;">
             <div style="font-size:0.85em; font-weight:bold; color:#475569; margin-bottom:6px;">📏 数量単位</div>
@@ -4779,7 +4795,7 @@ function renderFreightCalculator() {
   const save = () => localStorage.setItem(FREIGHT_STORAGE_KEY, JSON.stringify(state));
 
   function compute() {
-    return calcFreightAllocation(Number(state.total) || 0, state.rows, state.rounding);
+    return calcFreightAllocation(freightNum(state.total) || 0, state.rows, state.rounding);
   }
 
   function renderRows() {
@@ -4787,7 +4803,7 @@ function renderFreightCalculator() {
       <tr data-idx="${i}">
         <td style="color:#94a3b8; font-weight:bold;">${i + 1}</td>
         <td><input type="text" data-field="name" value="${freightEscape(r.name)}" placeholder="例）A農場"></td>
-        <td><input type="number" data-field="qty" min="0" step="any" inputmode="decimal" class="num" value="${r.qty ?? ''}"></td>
+        <td><input type="text" data-field="qty" inputmode="decimal" autocomplete="off" class="num" value="${freightEscape(r.qty)}"></td>
         <td class="num"><span class="cell-ratio">-</span><div class="freight-bar"><span class="cell-bar" style="width:0"></span></div></td>
         <td class="num" style="font-weight:bold; color:#c2410c;"><span class="cell-amount">¥0</span></td>
         <td class="num" style="color:#475569;"><span class="cell-unit">-</span></td>
@@ -4805,13 +4821,23 @@ function renderFreightCalculator() {
   // 入力中のフォーカスを維持するため、計算結果セルのみ更新
   function updateResults() {
     const { sumQty, amounts, sumAmount } = compute();
-    const total = Math.round(Number(state.total) || 0);
+    const total = Math.round(freightNum(state.total) || 0);
+    const totalInput = document.getElementById('freightTotal');
+    const totalBad = freightIsInvalid(state.total);
+    totalInput.style.borderColor = totalBad ? '#dc2626' : '';
+    totalInput.style.background = totalBad ? '#fef2f2' : '';
+    totalInput.title = totalBad ? '数値として読み取れません' : '';
     const unit = state.unit;
     document.querySelectorAll('.freightUnitLabel').forEach(el => { el.textContent = unit; });
 
     tbody.querySelectorAll('tr[data-idx]').forEach(tr => {
       const i = Number(tr.dataset.idx);
-      const q = Math.max(0, Number(state.rows[i].qty) || 0);
+      const q = Math.max(0, freightNum(state.rows[i].qty) || 0);
+      const qtyInput = tr.querySelector('input[data-field="qty"]');
+      const bad = freightIsInvalid(state.rows[i].qty);
+      qtyInput.style.borderColor = bad ? '#dc2626' : '';
+      qtyInput.style.background = bad ? '#fef2f2' : '';
+      qtyInput.title = bad ? '数値として読み取れません（0として計算中）' : '';
       const ratio = sumQty > 0 ? q / sumQty * 100 : 0;
       tr.querySelector('.cell-ratio').textContent = sumQty > 0 ? num(ratio, 2) + '%' : '-';
       tr.querySelector('.cell-bar').style.width = ratio + '%';
@@ -4819,7 +4845,7 @@ function renderFreightCalculator() {
       tr.querySelector('.cell-unit').textContent = q > 0 ? num(amounts[i] / q, 2) : '-';
     });
 
-    const activeCount = state.rows.filter(r => (Number(r.qty) || 0) > 0).length;
+    const activeCount = state.rows.filter(r => (freightNum(r.qty) || 0) > 0).length;
     document.getElementById('kpiFreightCount').textContent = `${activeCount} 箇所`;
     document.getElementById('kpiFreightQty').textContent = `${num(sumQty, sumQty % 1 ? 2 : 0)} ${unit}`;
     document.getElementById('kpiFreightUnitPrice').textContent = sumQty > 0 && total > 0 ? `${num(total / sumQty, 2)} 円/${unit}` : '-';
@@ -4893,6 +4919,8 @@ function renderFreightCalculator() {
   });
 
   document.getElementById('btnFreightSample').addEventListener('click', () => {
+    if (state.rows.some(r => String(r.qty ?? '').trim() !== '' || String(r.name ?? '').trim() !== '') &&
+        !confirm('現在の入力内容をサンプルデータで上書きします。よろしいですか？')) return;
     state = JSON.parse(JSON.stringify(FREIGHT_SAMPLE));
     save();
     renderFreightCalculator();
@@ -4910,7 +4938,7 @@ function renderFreightCalculator() {
     const { sumQty, amounts, sumAmount } = compute();
     return {
       sumQty, sumAmount,
-      list: state.rows.map((r, i) => ({ ...r, q: Math.max(0, Number(r.qty) || 0), amount: amounts[i] || 0 })).filter(r => r.q > 0 || r.name)
+      list: state.rows.map((r, i) => ({ ...r, q: Math.max(0, freightNum(r.qty) || 0), amount: amounts[i] || 0 })).filter(r => r.q > 0 || r.name)
     };
   };
 
@@ -4920,7 +4948,7 @@ function renderFreightCalculator() {
 
   document.getElementById('btnFreightCopyText').addEventListener('click', () => {
     const { sumQty, sumAmount, list } = validRows();
-    const total = Math.round(Number(state.total) || 0);
+    const total = Math.round(freightNum(state.total) || 0);
     const u = state.unit;
     const lines = [
       '【運搬料 按分計算結果】',
@@ -4947,7 +4975,7 @@ function renderFreightCalculator() {
     const { sumQty, sumAmount, list } = validRows();
     const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
     let csv = '\uFEFF';
-    csv += `${q('運搬料総額')},${Math.round(Number(state.total) || 0)}\n${q('便名・メモ')},${q(state.memo)}\n${q('端数処理')},${q(roundingLabel[state.rounding])}\n\n`;
+    csv += `${q('運搬料総額')},${Math.round(freightNum(state.total) || 0)}\n${q('便名・メモ')},${q(state.memo)}\n${q('端数処理')},${q(roundingLabel[state.rounding])}\n\n`;
     csv += `No.,荷下ろし先,納品数量(${state.unit}),構成比(%),按分運賃(円),単価(円/${state.unit}),備考\n`;
     list.forEach((r, i) => {
       csv += `${i + 1},${q(r.name)},${r.q},${sumQty > 0 ? (r.q / sumQty * 100).toFixed(2) : 0},${r.amount},${r.q > 0 ? (r.amount / r.q).toFixed(2) : ''},${q(r.note)}\n`;
