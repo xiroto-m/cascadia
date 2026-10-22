@@ -91,7 +91,7 @@ function generateNavTree() {
         <a class="nav-item" data-page="ch4"><span class="nav-dot"></span>第4章 商品カタログ</a>
         <a class="nav-item" data-page="ch4-hay"><span class="nav-dot"></span>├ 乾草（牧草）</a>
         <a class="nav-item" data-page="ch4-sil"><span class="nav-dot"></span>├ サイレージ</a>
-        <a class="nav-item" data-page="ch4-byp"><span class="nav-dot"></span>├ バイパス脂肪・蛋白</a>
+        <a class="nav-item" data-page="ch4-byp"><span class="nav-dot"></span>├ 単体飼料・食品製造副産物</a>
         <a class="nav-item" data-page="ch4-comp"><span class="nav-dot"></span>├ 混合・代用乳</a>
         <a class="nav-item" data-page="ch4-px"><span class="nav-dot"></span>├ プレミックス・添加剤</a>
         <a class="nav-item" data-page="ch4-eqp"><span class="nav-dot"></span>├ 酪農機器・資材</a>
@@ -374,7 +374,7 @@ function getSalesPageTitle(pageId) {
     'ch4': '第4章 商品カタログ',
     'ch4-hay': '乾草（牧草）',
     'ch4-sil': 'サイレージ',
-    'ch4-byp': 'バイパス脂肪・蛋白',
+    'ch4-byp': '単体飼料・食品製造副産物',
     'ch4-comp': '混合・代用乳',
     'ch4-px': 'プレミックス・添加剤',
     'ch4-eqp': '酪農機器・資材',
