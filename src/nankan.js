@@ -103,7 +103,7 @@
       hqTel: 'TEL:048-762-9340 FAX:048-762-9360'
     },
     slipNextNo: 84,
-    holdLots: []
+    holdLots: ['K260513501']
   };
 
   // ===== ユーティリティ =====
@@ -167,6 +167,7 @@
     const st = document.createElement('style');
     st.id = 'nkStyles';
     st.textContent = `
+#contentArea:has(#nkRoot){max-width:1440px}
 .nk-root{--nk-green:#047857;--nk-green-bg:rgba(5,150,105,.08);--nk-border:#e2e8f0;--nk-muted:#64748b;font-size:14px;color:#1e293b}
 .nk-hero{padding:22px 24px;margin-bottom:18px;background:linear-gradient(135deg,rgba(5,150,105,.10),rgba(16,185,129,.04));border:1px solid rgba(5,150,105,.22);border-radius:14px;display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;align-items:flex-start}
 .nk-hero h1{margin:0 0 6px;font-size:21px;font-weight:800}
@@ -222,7 +223,7 @@
 .nk-warn{background:#fffbeb;border:1px solid #fde68a;color:#92400e;border-radius:9px;padding:9px 12px;font-size:12.5px;margin:10px 0;line-height:1.6}
 .nk-info{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;border-radius:9px;padding:9px 12px;font-size:12.5px;margin:10px 0;line-height:1.6}
 .nk-danger{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;border-radius:9px;padding:9px 12px;font-size:12.5px;margin:10px 0;line-height:1.6}
-.nk-dialog{border:0;border-radius:14px;padding:0;width:min(1080px,96vw);max-height:92vh;box-shadow:0 25px 50px -12px rgba(15,23,42,.45)}
+.nk-dialog{margin:auto;border:0;border-radius:14px;padding:0;width:min(1080px,96vw);max-height:92vh;box-shadow:0 25px 50px -12px rgba(15,23,42,.45)}
 .nk-dialog::backdrop{background:rgba(15,23,42,.5)}
 .nk-dialog-head{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--nk-border,#e2e8f0);position:sticky;top:0;background:#fff;z-index:2}
 .nk-dialog-head h3{margin:0;font-size:16px;font-weight:800}
@@ -258,7 +259,7 @@
     if (!m || !Array.isArray(m.materials) || !Array.isArray(m.recipes)) m = clone(DEFAULT_MASTER);
     if (!Array.isArray(m.operators) || !m.operators.length) m.operators = clone(DEFAULT_MASTER.operators);
     m.company = Object.assign({}, DEFAULT_MASTER.company, m.company || {});
-    if (!Array.isArray(m.holdLots)) m.holdLots = [];
+    if (!Array.isArray(m.holdLots) || !m.holdLots.length) m.holdLots = clone(DEFAULT_MASTER.holdLots);
     if (!(Number(m.slipNextNo) > 0)) m.slipNextNo = DEFAULT_MASTER.slipNextNo;
     return m;
   }
@@ -594,7 +595,7 @@
             <p>日次バッチ製造の一括登録（配合レシピ→原料消費の自動計算・ロット先入れ先出し）、原料入庫、製品出荷・出庫指図書、隔週棚卸し・差異突合・月末調整、KuKuRu様向け在庫報告書の出力までを一元管理します。データは全端末でリアルタイム共有されます。</p>
           </div>
           <div class="nk-hero-side">
-            <span class="nk-sync nk-sync-target">🟡 クラウド接続中...</span>
+            ${!isStandalone ? `<span class="nk-sync nk-sync-target">🟡 クラウド接続中...</span>` : ''}
             <label class="nk-operator">👤 入力担当者
               <select id="nkOperator">
                 ${master.operators.map((o) => `<option ${o === op ? 'selected' : ''}>${esc(o)}</option>`).join('')}
@@ -824,13 +825,13 @@
               const conv = t.kind.startsWith('raw') && t.pkg ? `${fmt(Math.abs(t.kg) / t.pkg, 2)} × ${fmt(t.pkg, 3)}kg` : '';
               const rel = t.batchId ? `🏭 ${esc(t.batchId.replace('BATCH-', ''))}${t.batches ? `（${fmt(t.batches, 2)}B）` : ''}` : t.shipmentId ? `🚚 ${esc(t.dest || '出荷')}` : (t.stocktakeRef ? `🔍 ${slashDate(t.stocktakeRef)}棚卸` : '');
               return `<tr>
-                <td data-label="日付">${slashDate(t.date)}</td>
+                <td data-label="日付" style="white-space:nowrap">${slashDate(t.date)}</td>
                 <td data-label="区分"><span class="nk-badge ${meta.cls}">${meta.label}</span></td>
                 <td data-label="品目">${esc(t.item || ('トロピカル ' + (t.lot || '')))}</td>
                 <td data-label="数量" class="num">${txQtyHtml(t)}</td>
-                <td data-label="換算" class="nk-note">${conv}</td>
+                <td data-label="換算" class="nk-note" style="white-space:nowrap">${conv}</td>
                 <td data-label="関連" class="nk-note">${rel}</td>
-                <td data-label="担当">${esc(t.operator || '')}</td>
+                <td data-label="担当" style="white-space:nowrap">${esc(t.operator || '')}</td>
                 <td data-label="備考" class="nk-note">${esc(t.note || '')}</td>
                 <td data-label="操作" style="white-space:nowrap">
                   <button type="button" class="nk-btn nk-btn-sm" data-edit="${esc(t.id)}" ${editable ? '' : 'disabled'} aria-label="編集">✏️</button>
@@ -1218,7 +1219,7 @@
       const doPrint = q('#bPrint').checked;
       dlg.close();
       toast(`⚡ ${slashDate(date)} ${n}バッチ（${bags}袋・${lot}）を登録しました`);
-      if (doPrint) printBatchRecord(date, n, lot, recipe ? recipe.id : null);
+      if (doPrint) setTimeout(() => printBatchRecord(date, n, lot, recipe ? recipe.id : null), 120);
     });
   }
 
@@ -1245,6 +1246,7 @@
       `<button type="button" class="nk-btn nk-btn-primary" id="iSubmit">📥 入庫を登録</button>`, 'min(760px,96vw)');
     const q = (s) => dlg.querySelector(s);
     let kgManual = false;
+    let pkgManual = false;
     const suffix = (d) => `（${d.slice(5, 7)}${d.slice(8, 10)}）`;
     const lotStyle = (m) => ['oats', 'timothy', 'straw', 'corn', 'kinoko', 'apple'].includes(m.id);
     const refreshMat = () => {
@@ -1254,19 +1256,29 @@
       q('#iItem').value = lotStyle(m) ? m.name.replace('ヘイ', m.id === 'oats' ? 'ヘイ' : '') + suffix(q('#iDate').value) : (lots[lots.length - 1] ? lots[lots.length - 1].item : m.name);
       const last = lots[lots.length - 1];
       q('#iPkg').value = last && last.pkg ? last.pkg : '';
+      pkgManual = false;
+      kgManual = false;
       q('#iHint').textContent = lots.length ? `現在のロット：${lots.map((l) => `${l.item}（${fmt(l.kg)}kg）`).join('、')}` : 'この原料の在庫ロットはまだありません。';
       calc();
     };
     const calc = () => {
-      if (kgManual) return;
-      const v = (Number(q('#iCount').value) || 0) * (Number(q('#iPkg').value) || 0);
+      const cnt = Number(q('#iCount').value) || 0;
+      const pkg = Number(q('#iPkg').value) || 0;
+      const kg = Number(q('#iKg').value) || 0;
+      if (kgManual) {
+        if (!pkgManual && cnt > 0 && kg > 0) {
+          q('#iPkg').value = Math.round((kg / cnt) * 1000) / 1000;
+        }
+        return;
+      }
+      const v = cnt * pkg;
       q('#iKg').value = v ? r4(v) : '';
     };
     q('#iMat').addEventListener('change', refreshMat);
     q('#iDate').addEventListener('change', refreshMat);
     q('#iCount').addEventListener('input', calc);
-    q('#iPkg').addEventListener('input', calc);
-    q('#iKg').addEventListener('input', () => { kgManual = q('#iKg').value !== ''; });
+    q('#iPkg').addEventListener('input', () => { pkgManual = q('#iPkg').value !== ''; calc(); });
+    q('#iKg').addEventListener('input', () => { kgManual = q('#iKg').value !== ''; calc(); });
     refreshMat();
     q('#iSubmit').addEventListener('click', () => {
       const item = q('#iItem').value.trim();
@@ -1592,12 +1604,25 @@
     .signs div span{display:block;height:18mm;border-top:1px solid #333}
     @media print{.noprint{display:none}body{padding:0}}`;
   function openPrint(title, body) {
-    const w = window.open('', '_blank');
-    if (!w) { toast('⚠️ ポップアップがブロックされました。ブラウザの設定でこのサイトのポップアップを許可してください。', 6000); return; }
-    w.document.open();
-    w.document.write(`<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>${esc(title)}</title><style>${PRINT_CSS}</style></head><body>
-      <div class="noprint">🖨 内容を確認のうえ印刷してください（PDF保存はプリンタ選択で「PDFに保存」）。 <button onclick="window.print()">印刷する</button></div>${body}</body></html>`);
-    w.document.close();
+    const html = `<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>${esc(title)}</title><style>${PRINT_CSS}</style></head><body>${body}</body></html>`;
+    const dlg = openDialog(`🖨 帳票プレビュー：${esc(title)}`, `
+      <div style="background:#e2e8f0;padding:12px;border-radius:10px;display:flex;justify-content:center">
+        <iframe id="nkPrintFrame" title="${esc(title)}" style="width:210mm;max-width:100%;height:min(72vh,760px);border:1px solid #cbd5e1;background:#fff;border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,.08)"></iframe>
+      </div>`,
+      `<button type="button" class="nk-btn" id="nkPrintNewTab">↗ 別タブで開く</button>
+       <button type="button" class="nk-btn nk-btn-primary" id="nkPrintNow">🖨 印刷 / PDF保存</button>`, 'min(920px,96vw)');
+    const frame = dlg.querySelector('#nkPrintFrame');
+    frame.srcdoc = html;
+    dlg.querySelector('#nkPrintNow').addEventListener('click', () => {
+      if (frame.contentWindow) { frame.contentWindow.focus(); frame.contentWindow.print(); }
+    });
+    dlg.querySelector('#nkPrintNewTab').addEventListener('click', () => {
+      const w = window.open('', '_blank');
+      if (!w) { toast('⚠️ ポップアップがブロックされました。右の「🖨 印刷 / PDF保存」をご利用ください。', 5000); return; }
+      w.document.open();
+      w.document.write(html.replace('<body>', '<body><div class="noprint">🖨 内容を確認のうえ印刷してください（PDF保存はプリンタ選択で「PDFに保存」）。 <button onclick="window.print()">印刷する</button></div>'));
+      w.document.close();
+    });
   }
   function headerBlock(master, issueDate, withSeal = true) {
     const co = master.company;
