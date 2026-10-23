@@ -12,6 +12,7 @@ export default defineConfig({
       input: {
         main: './index.html',
         flexcon: './flexcon.html',
+        nankan: './nankan.html',
         quiz: './quiz.html'
       }
     }

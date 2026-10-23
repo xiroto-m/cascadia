@@ -144,6 +144,7 @@ function generateNavTree() {
         <a class="nav-item" data-page="schedule-assistant"><span class="nav-dot"></span>得意先スケジュール支援</a>
         <a class="nav-item" data-page="lat-inventory-tool"><span class="nav-dot"></span>LAT機材・在庫金額計算</a>
         <a class="nav-item" data-page="flexcon-inventory"><span class="nav-dot"></span>フレコンバッグ在庫・金額管理</a>
+        <a class="nav-item" data-page="nankan-tropical"><span class="nav-dot"></span>南関工場 製造・在庫（トロピカル）</a>
         <a class="nav-item" data-page="freight-calculator"><span class="nav-dot"></span>運搬料 按分計算</a>
       </div>
     </div>
@@ -310,6 +311,18 @@ function navigateTo(pageId, highlightSearch = null) {
     statusBadge.textContent = 'ツール';
     statusBadge.className = 'status-badge status-sales-approved';
     renderFlexconInventory();
+    return;
+  }
+
+  if (pageId === 'nankan-tropical') {
+    currentPath.textContent = '便利ツール ＞ 南関工場 製造・在庫管理（トロピカル）';
+    statusBadge.textContent = 'ツール';
+    statusBadge.className = 'status-badge status-sales-approved';
+    if (typeof window.renderNankanSystem === 'function') {
+      window.renderNankanSystem(contentArea);
+    } else {
+      contentArea.innerHTML = '<p>南関工場システムの読み込みに失敗しました。ページを再読み込みしてください。</p>';
+    }
     return;
   }
 
@@ -997,6 +1010,12 @@ function renderPortalHome() {
         <div class="mini-card-title">フレコン資材 在庫・金額管理</div>
         <div class="mini-card-desc">拠点別のフレコンバッグ在庫枚数と金額評価、安全在庫アラート。</div>
         <span class="mini-card-badge" style="background:var(--accent-violet); color:#fff;">新ツール</span>
+      </div>
+      <div class="mini-card" data-target="nankan-tropical" style="background: linear-gradient(135deg, rgba(5,150,105,0.07), rgba(16,185,129,0.04)); border: 1px solid rgba(5,150,105,0.25);">
+        <div class="mini-card-icon">🏭</div>
+        <div class="mini-card-title">南関工場 製造・在庫管理</div>
+        <div class="mini-card-desc">トロピカルの日次バッチ製造登録・原料FIFO・隔週棚卸し・KuKuRu様向け在庫報告・出庫指示書。</div>
+        <span class="mini-card-badge" style="background:#047857; color:#fff;">新ツール</span>
       </div>
       <div class="mini-card" data-target="freight-calculator" style="background: linear-gradient(135deg, rgba(234,88,12,0.06), rgba(249,115,22,0.04)); border: 1px solid rgba(234,88,12,0.2);">
         <div class="mini-card-icon">🚚</div>

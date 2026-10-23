@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cascadia Trading | 熊本南関工場「トロピカル」製造・在庫管理システム</title>
+  <meta name="description" content="株式会社カスケディア・トレーディング 熊本南関工場 発酵TMR飼料「トロピカル」製造記録・原料在庫・製品出荷・棚卸管理システム">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="src/style.css?v=3.5">
+  <link rel="icon" type="image/png" href="src/favicon.png">
+  <style>
+    body.nankan-standalone-page {
+      background: var(--bg-primary, #f8fafc);
+      color: var(--text-primary, #1e293b);
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nankan-portal-header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border-subtle, #e2e8f0);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 12px 28px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+    }
+
+    .nankan-header-inner {
+      max-width: 1480px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .nankan-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .nankan-brand-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: #ffffff;
+      padding: 4px;
+      border: 1px solid var(--border-subtle, #e2e8f0);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nankan-brand-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .nankan-brand-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text-primary, #0f172a);
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nankan-brand-sub {
+      font-size: 12px;
+      color: var(--text-muted, #64748b);
+      margin-top: 1px;
+    }
+
+    .nankan-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .badge-portal-scope-nankan {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      background: rgba(5, 150, 105, 0.08);
+      color: #047857;
+      border: 1px solid rgba(5, 150, 105, 0.25);
+    }
+
+    .badge-portal-scope-nankan::before {
+      content: '';
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+    }
+
+    .btn-portal-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 15px;
+      background: #ffffff;
+      border: 1px solid var(--border-medium, #cbd5e1);
+      border-radius: 8px;
+      color: var(--text-secondary, #475569);
+      font-size: 12.5px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .btn-portal-back:hover {
+      background: #f1f5f9;
+      color: var(--text-primary, #0f172a);
+      border-color: #94a3b8;
+    }
+
+    .nankan-standalone-main {
+      flex: 1;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .nankan-standalone-page .content-area {
+      max-width: 1480px;
+      padding: 24px 28px 80px;
+      margin: 0 auto;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    @media (max-width: 768px) {
+      .nankan-portal-header {
+        padding: 10px 16px;
+      }
+      .nankan-standalone-page .content-area {
+        padding: 16px 12px 60px;
+      }
+      .nankan-brand-title {
+        font-size: 15px;
+      }
+      .nankan-brand-sub {
+        font-size: 11px;
+      }
+    }
+
+    .brand-divider {
+      font-weight: 400;
+      color: var(--border-medium, #cbd5e1);
+    }
+  </style>
+</head>
+<body class="auth-guarded nankan-standalone-page">
+  <!-- Standalone Header -->
+  <header class="nankan-portal-header">
+    <div class="nankan-header-inner">
+      <div class="nankan-brand">
+        <div class="nankan-brand-logo">
+          <img src="src/logo-mark.png" alt="Cascadia Trading Symbol">
+        </div>
+        <div>
+          <div class="nankan-brand-title">
+            Cascadia Trading
+            <span class="brand-divider">|</span>
+            <span>熊本南関工場「トロピカル」製造・在庫管理システム</span>
+          </div>
+          <div class="nankan-brand-sub">TMR原料入出庫・日次バッチ製造・隔週棚卸し・KuKuRu様向け在庫報告・出庫指示書発行（南関事務所・業務部・営業部連携）</div>
+        </div>
+      </div>
+      <div class="nankan-header-actions">
+        <span class="nankan-cloud-sync-badge">
+          🟡 クラウド接続中...
+        </span>
+        <span class="badge-portal-scope-nankan">南関工場・専用ポータル</span>
+        <a href="flexcon.html" class="btn-portal-back" title="フレコンバッグ資材管理を開く">
+          <span>📦 フレコン管理へ</span>
+        </a>
+        <a href="index.html" class="btn-portal-back" title="総合マニュアルポータルへ戻る">
+          <span>📚 総合ポータルへ</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="nankan-standalone-main">
+    <div class="content-area" id="contentArea"></div>
+  </main>
+
+  <!-- Global Toast -->
+  <div class="toast" id="toast">
+    <span class="toast-emoji"></span>
+    <span class="toast-text"></span>
+  </div>
+
+  <!-- Firebase SDK (Cloud Firestore リアルタイム同期用) -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="src/auth.js"></script>
+  <script src="src/data/nankan-initial.js?v=1.0"></script>
+  <script src="src/nankan.js?v=1.0"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof checkSession === 'function' && checkSession()) {
+        initNankanStandalone();
+      } else if (typeof showLogin === 'function') {
+        showLogin(initNankanStandalone);
+      } else {
+        initNankanStandalone();
+      }
+    });
+
+    function initNankanStandalone() {
+      if (typeof renderNankanSystem === 'function') {
+        renderNankanSystem();
+      }
+    }
+  </script>
+</body>
+</html>

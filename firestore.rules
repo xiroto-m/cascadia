@@ -5,5 +5,9 @@ service cloud.firestore {
     match /cascadia_flexcon/{docId} {
       allow read, write: if true;
     }
+    // Cascadia 南関工場生産進捗コレクション
+    match /cascadia_nankan/{docId} {
+      allow read, write: if true;
+    }
   }
 }
