@@ -3494,11 +3494,12 @@ function openFlexconTransferModal(data) {
   const updateCurrentStockInfo = () => {
     const fromLoc = fromLocSelect.value;
     const itemId = itemSelect.value;
-    const matrix = calculateStockMatrix(data.transactions);
+    const asOfOutDate = outDateInput.value || null;
+    const matrix = calculateStockMatrix(data.transactions, asOfOutDate);
     const avail = (matrix[fromLoc] && matrix[fromLoc][itemId]) ? matrix[fromLoc][itemId].qty : 0;
     const itemObj = FLEXCON_ITEMS.find(i => i.id === itemId);
     const itemName = itemObj ? itemObj.commonName : itemId;
-    stockInfoDiv.innerHTML = `📍 出荷元【${fromLoc}】の現在庫: <strong>${avail.toLocaleString()}</strong> 枚 (${itemName})`;
+    stockInfoDiv.innerHTML = `📍 出荷元【${fromLoc}】の在庫（${asOfOutDate || '現在'}時点）: <strong>${avail.toLocaleString()}</strong> 枚 (${itemName})`;
     stockInfoDiv.dataset.avail = avail;
     updateTransferDateNotice();
   };
@@ -3507,7 +3508,7 @@ function openFlexconTransferModal(data) {
     if (!inDateInput.dataset.userEdited || (inDateInput.value && inDateInput.value < outDateInput.value)) {
       inDateInput.value = outDateInput.value;
     }
-    updateTransferDateNotice();
+    updateCurrentStockInfo();
   });
   inDateInput.addEventListener('change', () => {
     inDateInput.dataset.userEdited = 'true';
@@ -4040,11 +4041,18 @@ function renderFlexconLedger(container, data) {
                 : tx.qty;
               const isOverdue = isOrdered && tx.deliveryDueDate && tx.deliveryDueDate < today;
               const displayDate = isOrdered ? (tx.deliveryDueDate || tx.date) : tx.date;
+              const isTransferTx = !!(tx.transferPairId || (typeof tx.id === 'string' && (tx.id.endsWith('-OUT') || tx.id.endsWith('-IN'))) || (tx.supplier && tx.supplier.startsWith('【拠点間移動】')) || (tx.purpose && tx.purpose.startsWith('【拠点間移動】')));
+              const hasSplitTransferDates = isTransferTx && tx.transferOutDate && tx.transferInDate && tx.transferOutDate !== tx.transferInDate;
 
               return `
                 <tr style="${isOverdue ? 'background: rgba(239,68,68,0.04);' : (isOrdered ? 'background: rgba(245,158,11,0.03);' : '')}">
                   <td style="padding: 8px; font-weight: 600;">
                     <div>${displayDate}</div>
+                    ${hasSplitTransferDates ? `
+                      <span style="font-size: 10px; color: var(--accent-blue); font-weight: 700; display: block; line-height: 1.25; margin-top: 2px;">
+                        ${isInbound ? `📤出荷: ${tx.transferOutDate}` : `📥入荷: ${tx.transferInDate}`}
+                      </span>
+                    ` : ''}
                     ${isOrdered && tx.isEarliestDelivery ? `
                       <span style="font-size: 10px; color: ${isOverdue ? '#ef4444' : 'var(--accent-blue)'}; font-weight: 700; display: block; line-height: 1.2;">
                         ⚡ 最短希望
@@ -4058,7 +4066,7 @@ function renderFlexconLedger(container, data) {
                       </span>
                     ` : `
                       <span style="padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 700; ${isInbound ? 'background: rgba(37,99,235,0.1); color: var(--accent-blue);' : 'background: rgba(139,92,246,0.1); color: var(--accent-violet);'}">
-                        ${isInbound ? '📥 入庫' : '📤 出庫'}
+                        ${isTransferTx ? (isInbound ? '🔄 移動入庫' : '🔄 移動出庫') : (isInbound ? '📥 入庫' : '📤 出庫')}
                       </span>
                     `}
                   </td>
@@ -4119,7 +4127,7 @@ function renderFlexconLedger(container, data) {
                       <button class="btn btn-secondary btn-ledger-edit" data-id="${tx.id}" style="padding: 3px 8px; font-size: 11.5px; display: inline-flex; align-items: center; gap: 3px; font-weight: 700; color: #334155; border-color: #cbd5e1; background: #f8fafc; cursor: pointer;" title="数量・内容・納品予定日を変更">
                         ✏️ 変更
                       </button>
-                      ${isInbound ? `
+                      ${(isInbound && !isTransferTx) ? `
                         <button class="btn btn-secondary btn-ledger-po" data-id="${tx.id}" style="padding: 4px 10px; font-size: 11.5px; display: inline-flex; align-items: center; gap: 3px; font-weight: 700; color: #1e3a8a; border-color: #93c5fd; background: #eff6ff; cursor: pointer;" title="現行様式 A4横 発注書プレビュー・印刷">
                           📄 発注書
                         </button>
@@ -4204,16 +4212,23 @@ function renderFlexconLedger(container, data) {
     });
   });
 
-  // レコード削除
+  // レコード削除（拠点間移動ペアの場合は出庫・入庫ペア一括削除に対応）
   container.querySelectorAll('.btn-delete-tx').forEach(btn => {
     btn.addEventListener('click', (e) => {
       const button = e.currentTarget || e.target.closest('.btn-delete-tx');
       const id = button ? button.dataset.id : null;
       if (!id) return;
-      if (confirm("このレコードを削除してもよろしいですか？")) {
-        data.transactions = data.transactions.filter(t => t.id !== id);
+      const pairedId = (typeof id === 'string' && id.endsWith('-OUT'))
+        ? id.replace(/-OUT$/, '-IN')
+        : ((typeof id === 'string' && id.endsWith('-IN')) ? id.replace(/-IN$/, '-OUT') : null);
+      const hasPair = pairedId && data.transactions.some(t => t.id === pairedId);
+      const msg = hasPair
+        ? "このレコードは拠点間移動のペア伝票です。\n在庫相違を防ぐため、対応する出庫・入庫の両方のレコードを削除しますか？"
+        : "このレコードを削除してもよろしいですか？";
+      if (confirm(msg)) {
+        data.transactions = data.transactions.filter(t => t.id !== id && (!hasPair || t.id !== pairedId));
         saveFlexconData(data);
-        showToast("🗑️ レコードを削除しました");
+        showToast(hasPair ? "🗑️ 拠点間移動ペアレコードを削除しました" : "🗑️ レコードを削除しました");
         renderFlexconInventory();
       }
     });
