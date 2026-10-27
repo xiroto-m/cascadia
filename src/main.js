@@ -4605,7 +4605,74 @@ function renderLatInventoryTool() {
 // =========================================================================
 
 const FREIGHT_STORAGE_KEY = 'cascadia_freight_calculator';
+
+// 定型4パターン定義（畑山様ご依頼：基本Ver ＋ 毎月発生する3パターン）
+const FREIGHT_PATTERNS = {
+  basic: {
+    id: 'basic',
+    label: '基本Ver（標準・2か所）',
+    shortBadge: '金額・数量 固定なし / 2か所',
+    desc: '運搬料：固定なし ｜ 荷下ろし先：A農場・B農場（2か所・数量固定なし）',
+    total: '',
+    memo: '',
+    unit: 'kg',
+    rounding: 'adjust',
+    rows: [
+      { name: 'A農場', qty: '', note: '' },
+      { name: 'B農場', qty: '', note: '' }
+    ]
+  },
+  pattern1: {
+    id: 'pattern1',
+    label: 'パターン①（千葉方面）',
+    shortBadge: '33,000円/台 / 計13,000kg',
+    desc: '運搬料：33,000円/台 ｜ A農場 12,000kg・B農場 1,000kg（合計 13,000kg）',
+    total: 33000,
+    memo: 'パターン①（千葉方面）',
+    unit: 'kg',
+    rounding: 'adjust',
+    rows: [
+      { name: 'A農場', qty: 12000, note: '' },
+      { name: 'B農場', qty: 1000, note: '' }
+    ]
+  },
+  pattern2: {
+    id: 'pattern2',
+    label: 'パターン②（唐津方面）',
+    shortBadge: '30,000円/台 / 7か所（数量自由）',
+    desc: '運搬料：30,000円/台 ｜ A農場〜G農場まで（7か所・数量固定なし）',
+    total: 30000,
+    memo: 'パターン②（唐津方面）',
+    unit: 'kg',
+    rounding: 'adjust',
+    rows: [
+      { name: 'A農場', qty: '', note: '' },
+      { name: 'B農場', qty: '', note: '' },
+      { name: 'C農場', qty: '', note: '' },
+      { name: 'D農場', qty: '', note: '' },
+      { name: 'E農場', qty: '', note: '' },
+      { name: 'F農場', qty: '', note: '' },
+      { name: 'G農場', qty: '', note: '' }
+    ]
+  },
+  pattern3: {
+    id: 'pattern3',
+    label: 'パターン③（九州用）',
+    shortBadge: '金額・数量 固定なし / 2か所',
+    desc: '運搬料：固定なし ｜ A農場〜B農場（2か所・数量固定なし）',
+    total: '',
+    memo: 'パターン③（九州用）',
+    unit: 'kg',
+    rounding: 'adjust',
+    rows: [
+      { name: 'A農場', qty: '', note: '' },
+      { name: 'B農場', qty: '', note: '' }
+    ]
+  }
+};
+
 const FREIGHT_SAMPLE = {
+  patternId: 'sample',
   total: 30000,
   memo: '例）A・B・C農場 3箇所下ろし便',
   unit: 'kg',
@@ -4676,13 +4743,16 @@ function calcFreightAllocation(total, rows, rounding) {
   return { sumQty, amounts, sumAmount: amounts.reduce((a, b) => a + b, 0) };
 }
 
-function renderFreightCalculator() {
+function renderFreightCalculator(focusTarget = null) {
   const content = contentArea;
   let state;
   try {
     state = JSON.parse(localStorage.getItem(FREIGHT_STORAGE_KEY) || 'null');
   } catch (e) { state = null; }
-  if (!state || !Array.isArray(state.rows)) state = JSON.parse(JSON.stringify(FREIGHT_SAMPLE));
+  if (!state || !Array.isArray(state.rows) || (!state.patternId && state.memo === '例）A・B・C農場 3箇所下ろし便')) {
+    state = JSON.parse(JSON.stringify(FREIGHT_PATTERNS.basic));
+  }
+  const currentPatternId = state.patternId || 'basic';
 
   const yen = n => '¥' + Math.round(n).toLocaleString('ja-JP');
   const num = (n, d = 0) => Number(n).toLocaleString('ja-JP', { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -4704,7 +4774,7 @@ function renderFreightCalculator() {
       .freight-table td { padding:8px; border-bottom:1px solid #f1f5f9; vertical-align:middle; }
       .freight-table tr:hover td { background:#fff7ed; }
       .freight-table input { width:100%; padding:7px 10px; border:1px solid #cbd5e1; border-radius:6px; box-sizing:border-box; font-size:0.95em; }
-      .freight-table input:focus, #freightTotal:focus, #freightMemo:focus { outline:none; border-color:#ea580c; box-shadow:0 0 0 3px rgba(234,88,12,0.15); }
+      .freight-table input:focus, #freightTotal:focus, #freightMemo:focus, #freightPatternSelect:focus { outline:none; border-color:#ea580c; box-shadow:0 0 0 3px rgba(234,88,12,0.15); }
       .freight-table .num { text-align:right; font-variant-numeric:tabular-nums; }
       .freight-bar { height:6px; background:#f1f5f9; border-radius:3px; overflow:hidden; margin-top:4px; }
       .freight-bar > span { display:block; height:100%; background:linear-gradient(90deg,#f97316,#ea580c); transition:width .25s; }
@@ -4712,10 +4782,18 @@ function renderFreightCalculator() {
       .freight-icon-btn:hover { background:#f1f5f9; }
       .freight-icon-btn:disabled { opacity:.35; cursor:not-allowed; }
       #freightTool button.btn:hover { filter:brightness(1.08); transform:translateY(-1px); }
+      .freight-pattern-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin-top:10px; }
+      .freight-pattern-card { text-align:left; padding:11px 12px; border-radius:10px; border:2px solid #e2e8f0; background:#f8fafc; cursor:pointer; transition:all .18s ease; display:flex; flex-direction:column; gap:4px; }
+      .freight-pattern-card:hover { border-color:#fb923c; background:#fff7ed; transform:translateY(-1px); }
+      .freight-pattern-card.active { border-color:#ea580c; background:#fff7ed; box-shadow:0 4px 12px rgba(234,88,12,0.14); }
       .freight-kpi-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px; margin-bottom:20px; }
       .freight-kpi-grid > div { min-width:0; }
-      @media (max-width: 1100px) { .freight-kpi-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+      @media (max-width: 1100px) {
+        .freight-kpi-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+        .freight-pattern-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      }
       @media (max-width: 680px) { .freight-kpi-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+      @media (max-width: 520px) { .freight-pattern-grid { grid-template-columns:1fr; } }
       @media (max-width: 440px) { .freight-kpi-grid { grid-template-columns:1fr; } }
       @media print {
         .sidebar, .topbar, .freight-no-print { display:none !important; }
@@ -4726,7 +4804,7 @@ function renderFreightCalculator() {
       }
     </style>
     <div class="tool-container" id="freightTool" style="max-width:1200px; margin:0 auto; padding:20px;">
-      <div class="section-hero" style="background:linear-gradient(135deg,#7c2d12 0%,#c2410c 55%,#ea580c 100%); border-radius:16px; padding:28px; color:#fff; margin-bottom:24px; box-shadow:0 10px 25px -5px rgba(194,65,12,0.35);">
+      <div class="section-hero" style="background:linear-gradient(135deg,#7c2d12 0%,#c2410c 55%,#ea580c 100%); border-radius:16px; padding:28px; color:#fff; margin-bottom:20px; box-shadow:0 10px 25px -5px rgba(194,65,12,0.35);">
         <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">
           <div>
             <span class="hero-emoji">🚚</span>
@@ -4739,6 +4817,41 @@ function renderFreightCalculator() {
             <button id="btnFreightCsv" class="btn" style="${btn('#475569')}">📥 CSV出力</button>
             <button id="btnFreightPrint" class="btn" style="${btn('#334155')}">🖨️ 印刷</button>
           </div>
+        </div>
+      </div>
+
+      <!-- 定型4パターン選択エリア -->
+      <div class="freight-no-print" style="${cardStyle} margin-bottom:16px; padding:14px 16px; border:1px solid #fed7aa; background:linear-gradient(180deg,#ffffff 0%,#fffaf5 100%);">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:1.15em;">🗂️</span>
+            <div>
+              <div style="font-size:0.92em; font-weight:800; color:#7c2d12;">定型パターン選択（4パターンから選択して入力開始）</div>
+              <div style="font-size:0.78em; color:#64748b;">毎月発生する配送パターンまたは基本Verを選択すると、金額・荷下ろし先が自動セットされます。</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <label for="freightPatternSelect" style="font-size:0.8em; font-weight:700; color:#475569; white-space:nowrap;">プルダウン選択:</label>
+            <select id="freightPatternSelect" style="padding:7px 12px; border:1px solid #fdba74; border-radius:8px; font-size:0.88em; font-weight:700; color:#9a3412; background:#fff7ed; cursor:pointer;">
+              ${Object.values(FREIGHT_PATTERNS).map(p => `<option value="${p.id}" ${currentPatternId === p.id ? 'selected' : ''}>${p.label}（${p.shortBadge}）</option>`).join('')}
+              ${currentPatternId === 'sample' ? `<option value="sample" selected>サンプル（30,000円 / A・B・C農場）</option>` : ''}
+            </select>
+          </div>
+        </div>
+        <div class="freight-pattern-grid">
+          ${Object.values(FREIGHT_PATTERNS).map(p => {
+            const isActive = currentPatternId === p.id;
+            return `
+              <button type="button" class="freight-pattern-card ${isActive ? 'active' : ''}" data-pattern="${p.id}">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; width:100%;">
+                  <span style="font-size:0.9em; font-weight:800; color:${isActive ? '#c2410c' : '#0f172a'};">${p.label}</span>
+                  ${isActive ? `<span style="font-size:0.7em; background:#ea580c; color:#fff; padding:2px 7px; border-radius:10px; font-weight:700; white-space:nowrap;">選択中</span>` : ''}
+                </div>
+                <div style="font-size:0.78em; font-weight:700; color:${isActive ? '#ea580c' : '#475569'};">${p.shortBadge}</div>
+                <div style="font-size:0.73em; color:#64748b; line-height:1.35;">${p.desc}</div>
+              </button>
+            `;
+          }).join('')}
         </div>
       </div>
 
@@ -4878,7 +4991,8 @@ function renderFreightCalculator() {
     });
 
     const activeCount = state.rows.filter(r => (freightNum(r.qty) || 0) > 0).length;
-    document.getElementById('kpiFreightCount').textContent = `${activeCount} 箇所`;
+    const totalRowCount = state.rows.length;
+    document.getElementById('kpiFreightCount').textContent = `${activeCount > 0 ? activeCount : totalRowCount} 箇所`;
 
     const qtyStr = num(sumQty, sumQty % 1 ? 2 : 0);
     const qtyFontSize = qtyStr.length > 10 ? '1.0em' : qtyStr.length > 7 ? '1.15em' : '1.3em';
@@ -4948,6 +5062,29 @@ function renderFreightCalculator() {
     if (next) next.focus();
   });
 
+  // 定型4パターン切替処理
+  const applyFreightPattern = (patId) => {
+    const pat = FREIGHT_PATTERNS[patId];
+    if (!pat) return;
+    state = JSON.parse(JSON.stringify(pat));
+    save();
+    const nextFocus = (state.total === '' || state.total === null || state.total === undefined) ? 'total' : 'firstQty';
+    renderFreightCalculator(nextFocus);
+    showGlobalToast('🗂️', `「${pat.label}」をセットしました`);
+  };
+
+  const patternSelectEl = document.getElementById('freightPatternSelect');
+  if (patternSelectEl) {
+    patternSelectEl.addEventListener('change', e => {
+      applyFreightPattern(e.target.value);
+    });
+  }
+  content.querySelectorAll('.freight-pattern-card').forEach(btnEl => {
+    btnEl.addEventListener('click', () => {
+      applyFreightPattern(btnEl.dataset.pattern);
+    });
+  });
+
   document.getElementById('freightTotal').addEventListener('input', e => { state.total = e.target.value; save(); updateResults(); });
   document.getElementById('freightMemo').addEventListener('input', e => { state.memo = e.target.value; save(); });
   document.getElementById('freightUnit').addEventListener('change', e => { state.unit = e.target.value; save(); updateResults(); });
@@ -4971,10 +5108,13 @@ function renderFreightCalculator() {
   });
 
   document.getElementById('btnFreightClear').addEventListener('click', () => {
-    if (!confirm('入力内容をすべてクリアしますか？')) return;
-    state = { total: '', memo: '', unit: state.unit, rounding: state.rounding, rows: Array.from({ length: 3 }, () => ({ name: '', qty: '', note: '' })) };
+    if (!confirm('現在のパターンの初期状態（数量クリア）に戻しますか？')) return;
+    const basePat = FREIGHT_PATTERNS[state.patternId] || FREIGHT_PATTERNS.basic;
+    state = JSON.parse(JSON.stringify(basePat));
+    // パターン①でもクリア押下時は数量を空にして再入力しやすくする
+    state.rows.forEach(r => { r.qty = ''; r.note = ''; });
     save();
-    renderFreightCalculator();
+    renderFreightCalculator(state.total ? 'firstQty' : 'total');
   });
 
   const validRows = () => {
@@ -5036,4 +5176,12 @@ function renderFreightCalculator() {
   document.getElementById('btnFreightPrint').addEventListener('click', () => window.print());
 
   renderRows();
+
+  if (focusTarget === 'total') {
+    const tIn = document.getElementById('freightTotal');
+    if (tIn) tIn.focus();
+  } else if (focusTarget === 'firstQty') {
+    const qIn = tbody.querySelector('tr[data-idx="0"] input[data-field="qty"]');
+    if (qIn) qIn.focus();
+  }
 }
