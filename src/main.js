@@ -4671,6 +4671,13 @@ const FREIGHT_PATTERNS = {
   }
 };
 
+// パターン定義を state 用にディープコピー（patternId を必ず付与して選択状態を保持する）
+function cloneFreightPattern(pat) {
+  const s = JSON.parse(JSON.stringify(pat));
+  s.patternId = pat.id;
+  return s;
+}
+
 const FREIGHT_SAMPLE = {
   patternId: 'sample',
   total: 30000,
@@ -4750,8 +4757,9 @@ function renderFreightCalculator(focusTarget = null) {
     state = JSON.parse(localStorage.getItem(FREIGHT_STORAGE_KEY) || 'null');
   } catch (e) { state = null; }
   if (!state || !Array.isArray(state.rows) || (!state.patternId && state.memo === '例）A・B・C農場 3箇所下ろし便')) {
-    state = JSON.parse(JSON.stringify(FREIGHT_PATTERNS.basic));
+    state = cloneFreightPattern(FREIGHT_PATTERNS.basic);
   }
+  if (!state.patternId && state.id && FREIGHT_PATTERNS[state.id]) state.patternId = state.id; // 旧版で保存された state の復元
   const currentPatternId = state.patternId || 'basic';
 
   const yen = n => '¥' + Math.round(n).toLocaleString('ja-JP');
@@ -5066,7 +5074,7 @@ function renderFreightCalculator(focusTarget = null) {
   const applyFreightPattern = (patId) => {
     const pat = FREIGHT_PATTERNS[patId];
     if (!pat) return;
-    state = JSON.parse(JSON.stringify(pat));
+    state = cloneFreightPattern(pat);
     save();
     const nextFocus = (state.total === '' || state.total === null || state.total === undefined) ? 'total' : 'firstQty';
     renderFreightCalculator(nextFocus);
@@ -5110,7 +5118,7 @@ function renderFreightCalculator(focusTarget = null) {
   document.getElementById('btnFreightClear').addEventListener('click', () => {
     if (!confirm('現在のパターンの初期状態（数量クリア）に戻しますか？')) return;
     const basePat = FREIGHT_PATTERNS[state.patternId] || FREIGHT_PATTERNS.basic;
-    state = JSON.parse(JSON.stringify(basePat));
+    state = cloneFreightPattern(basePat);
     // パターン①でもクリア押下時は数量を空にして再入力しやすくする
     state.rows.forEach(r => { r.qty = ''; r.note = ''; });
     save();
