@@ -4602,17 +4602,24 @@ function renderLatInventoryTool() {
 // =========================================================================
 //   運搬料 按分計算ツール（業務部 畑山様ご依頼 / 2026-10）
 //   1台あたりの運搬料を、荷下ろし先ごとの納品数量に応じて按分する
+//   v2: 定型4パターン（パターン別に入力内容を保持）／便の日付／入力チェック／計算履歴／スマホ表示対応
 // =========================================================================
 
 const FREIGHT_STORAGE_KEY = 'cascadia_freight_calculator';
+const FREIGHT_HISTORY_MAX = 50;
 
 // 定型4パターン定義（畑山様ご依頼：基本Ver ＋ 毎月発生する3パターン）
+// dummy: 畑山様に確認中で仮設定としている内容（画面上に「仮設定」バッジを表示）
+// farmHints: 荷下ろし先の入力候補（実際の農場名が未確定のためダミー）
 const FREIGHT_PATTERNS = {
   basic: {
     id: 'basic',
+    title: '基本Ver',
+    area: '標準・2か所',
     label: '基本Ver（標準・2か所）',
-    shortBadge: '金額・数量 固定なし / 2か所',
-    desc: '運搬料：固定なし ｜ 荷下ろし先：A農場・B農場（2か所・数量固定なし）',
+    summary: '金額・数量は都度入力 ／ 2か所',
+    dummy: null,
+    farmHints: [],
     total: '',
     memo: '',
     unit: 'kg',
@@ -4624,9 +4631,12 @@ const FREIGHT_PATTERNS = {
   },
   pattern1: {
     id: 'pattern1',
+    title: 'パターン①',
+    area: '千葉方面',
     label: 'パターン①（千葉方面）',
-    shortBadge: '33,000円/台 / 計13,000kg',
-    desc: '運搬料：33,000円/台 ｜ A農場 12,000kg・B農場 1,000kg（合計 13,000kg）',
+    summary: '33,000円/台 ／ 12,000kg＋1,000kg',
+    dummy: '荷下ろし先の実際の農場名は確認中のため、入力候補は仮データです。',
+    farmHints: ['【ダミー】千葉 第1農場', '【ダミー】千葉 第2農場'],
     total: 33000,
     memo: 'パターン①（千葉方面）',
     unit: 'kg',
@@ -4638,28 +4648,26 @@ const FREIGHT_PATTERNS = {
   },
   pattern2: {
     id: 'pattern2',
+    title: 'パターン②',
+    area: '唐津方面',
     label: 'パターン②（唐津方面）',
-    shortBadge: '30,000円/台 / 7か所（数量自由）',
-    desc: '運搬料：30,000円/台 ｜ A農場〜G農場まで（7か所・数量固定なし）',
+    summary: '30,000円/台 ／ 7か所（数量は都度入力）',
+    dummy: '荷下ろし先の実際の農場名は確認中のため、入力候補は仮データです。',
+    farmHints: ['A', 'B', 'C', 'D', 'E', 'F', 'G'].map(c => `【ダミー】唐津 ${c}農場`),
     total: 30000,
     memo: 'パターン②（唐津方面）',
     unit: 'kg',
     rounding: 'adjust',
-    rows: [
-      { name: 'A農場', qty: '', note: '' },
-      { name: 'B農場', qty: '', note: '' },
-      { name: 'C農場', qty: '', note: '' },
-      { name: 'D農場', qty: '', note: '' },
-      { name: 'E農場', qty: '', note: '' },
-      { name: 'F農場', qty: '', note: '' },
-      { name: 'G農場', qty: '', note: '' }
-    ]
+    rows: ['A', 'B', 'C', 'D', 'E', 'F', 'G'].map(c => ({ name: `${c}農場`, qty: '', note: '' }))
   },
   pattern3: {
     id: 'pattern3',
+    title: 'パターン③',
+    area: '九州用',
     label: 'パターン③（九州用）',
-    shortBadge: '金額・数量 固定なし / 2か所',
-    desc: '運搬料：固定なし ｜ A農場〜B農場（2か所・数量固定なし）',
+    summary: '金額・数量は都度入力 ／ 2か所',
+    dummy: '九州用の固有条件（農場名・単価など）は確認中のため、基本Verと同じ仮設定です。',
+    farmHints: ['【ダミー】九州 北部農場', '【ダミー】九州 南部農場'],
     total: '',
     memo: 'パターン③（九州用）',
     unit: 'kg',
@@ -4671,25 +4679,20 @@ const FREIGHT_PATTERNS = {
   }
 };
 
-// パターン定義を state 用にディープコピー（patternId を必ず付与して選択状態を保持する）
-function cloneFreightPattern(pat) {
-  const s = JSON.parse(JSON.stringify(pat));
-  s.patternId = pat.id;
-  return s;
+function freightToday() {
+  const d = new Date();
+  return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
 }
 
-const FREIGHT_SAMPLE = {
-  patternId: 'sample',
-  total: 30000,
-  memo: '例）A・B・C農場 3箇所下ろし便',
-  unit: 'kg',
-  rounding: 'adjust',
-  rows: [
-    { name: 'A農場', qty: 500, note: '' },
-    { name: 'B農場', qty: 1000, note: '' },
-    { name: 'C農場', qty: 3500, note: '' }
-  ]
-};
+// パターン定義から入力用の下書き（state）を作る。patternId を必ず付与して選択状態を保持する
+function cloneFreightPattern(pat) {
+  const s = JSON.parse(JSON.stringify({
+    total: pat.total, memo: pat.memo, unit: pat.unit, rounding: pat.rounding, rows: pat.rows
+  }));
+  s.patternId = pat.id;
+  s.date = freightToday();
+  return s;
+}
 
 function freightEscape(str) {
   return String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -4722,6 +4725,16 @@ function freightIsInvalid(v) {
   return String(v ?? '').trim() !== '' && Number.isNaN(freightNum(v));
 }
 
+function freightIsBlank(v) {
+  return String(v ?? '').trim() === '';
+}
+
+// 入力欄の表示用：数値として読めればカンマ区切り、それ以外（空欄・不正値）はそのまま
+function freightFmtInput(v) {
+  if (freightIsBlank(v) || freightIsInvalid(v)) return String(v ?? '');
+  return freightNum(v).toLocaleString('ja-JP', { maximumFractionDigits: 3 });
+}
+
 // 按分計算本体
 // rounding: 'adjust'（最大剰余法で合計を総額に一致） / 'round' / 'floor' / 'ceil'
 function calcFreightAllocation(total, rows, rounding) {
@@ -4750,202 +4763,289 @@ function calcFreightAllocation(total, rows, rounding) {
   return { sumQty, amounts, sumAmount: amounts.reduce((a, b) => a + b, 0) };
 }
 
+// 下書きがパターン初期値から変更されているか（「入力中」表示・確認ダイアログ用）
+function freightIsDirty(draft) {
+  const pat = FREIGHT_PATTERNS[draft.patternId];
+  if (!pat) return true;
+  const norm = rows => JSON.stringify(rows.map(r => [String(r.name ?? ''), String(freightIsBlank(r.qty) ? '' : freightNum(r.qty)), String(r.note ?? '')]));
+  return String(freightIsBlank(draft.total) ? '' : freightNum(draft.total)) !== String(freightIsBlank(pat.total) ? '' : pat.total)
+    || norm(draft.rows) !== norm(pat.rows)
+    || String(draft.memo ?? '') !== String(pat.memo ?? '');
+}
+
+// 保存データ：{ version:2, active, drafts:{ patternId: state }, history:[] }
+// 旧形式（単一 state）は該当パターンの下書きとして引き継ぐ
+function loadFreightStore() {
+  let raw = null;
+  try { raw = JSON.parse(localStorage.getItem(FREIGHT_STORAGE_KEY) || 'null'); } catch (e) { raw = null; }
+  let store;
+  if (raw && raw.version === 2 && raw.drafts) {
+    store = raw;
+  } else {
+    store = { version: 2, active: 'basic', drafts: {}, history: [] };
+    if (raw && Array.isArray(raw.rows) && raw.memo !== '例）A・B・C農場 3箇所下ろし便') {
+      const pid = FREIGHT_PATTERNS[raw.patternId] ? raw.patternId : (FREIGHT_PATTERNS[raw.id] ? raw.id : 'basic');
+      store.drafts[pid] = {
+        patternId: pid, date: freightToday(), total: raw.total ?? '', memo: raw.memo ?? '',
+        unit: raw.unit || 'kg', rounding: raw.rounding || 'adjust', rows: raw.rows
+      };
+      store.active = pid;
+    }
+  }
+  Object.keys(FREIGHT_PATTERNS).forEach(id => {
+    const d = store.drafts[id];
+    if (!d || !Array.isArray(d.rows)) store.drafts[id] = cloneFreightPattern(FREIGHT_PATTERNS[id]);
+    else { d.patternId = id; if (!d.date) d.date = freightToday(); }
+  });
+  if (!FREIGHT_PATTERNS[store.active]) store.active = 'basic';
+  if (!Array.isArray(store.history)) store.history = [];
+  return store;
+}
+
 function renderFreightCalculator(focusTarget = null) {
   const content = contentArea;
-  let state;
-  try {
-    state = JSON.parse(localStorage.getItem(FREIGHT_STORAGE_KEY) || 'null');
-  } catch (e) { state = null; }
-  if (!state || !Array.isArray(state.rows) || (!state.patternId && state.memo === '例）A・B・C農場 3箇所下ろし便')) {
-    state = cloneFreightPattern(FREIGHT_PATTERNS.basic);
-  }
-  if (!state.patternId && state.id && FREIGHT_PATTERNS[state.id]) state.patternId = state.id; // 旧版で保存された state の復元
-  const currentPatternId = state.patternId || 'basic';
+  const store = loadFreightStore();
+  let state = store.drafts[store.active];
+  const pattern = FREIGHT_PATTERNS[store.active];
 
   const yen = n => '¥' + Math.round(n).toLocaleString('ja-JP');
   const num = (n, d = 0) => Number(n).toLocaleString('ja-JP', { minimumFractionDigits: d, maximumFractionDigits: d });
   const roundingLabel = {
-    adjust: '端数自動調整（合計一致）',
+    adjust: '自動調整（合計一致）',
     round: '四捨五入',
     floor: '切り捨て',
     ceil: '切り上げ'
   };
 
-  const cardStyle = 'background:#ffffff; padding:14px 12px; border-radius:12px; border:1px solid #e2e8f0; box-shadow:0 2px 4px rgba(0,0,0,0.04); min-width:0; overflow:hidden;';
+  // 入力候補：パターン別の候補（ダミー）＋ 過去に入力した荷下ろし先名
+  const nameHints = [...new Set([
+    ...pattern.farmHints,
+    ...store.history.flatMap(h => (h.rows || []).map(r => String(r.name || '').trim())),
+    ...Object.values(store.drafts).flatMap(d => d.rows.map(r => String(r.name || '').trim()))
+  ].filter(Boolean))];
+
+  const cardStyle = 'background:#ffffff; padding:14px 16px; border-radius:12px; border:1px solid #e2e8f0; box-shadow:0 2px 4px rgba(0,0,0,0.04); min-width:0;';
   const inputStyle = 'width:100%; padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.95em; box-sizing:border-box; background:#fff;';
-  const btn = (bg) => `background:${bg}; color:#fff; border:none; padding:10px 16px; border-radius:8px; font-weight:bold; cursor:pointer;`;
+  const btn = (bg) => `background:${bg}; color:#fff; border:none; padding:9px 14px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:0.9em;`;
+  const fieldLabel = 'font-size:0.82em; font-weight:bold; color:#475569; margin-bottom:6px;';
 
   content.innerHTML = `
     <style>
+      #freightTool { max-width:1200px; margin:0 auto; padding:20px; box-sizing:border-box; }
+      #freightTool *, #freightTool *::before, #freightTool *::after { box-sizing:border-box; }
       .freight-table { width:100%; border-collapse:collapse; font-size:0.92em; }
       .freight-table th { background:#f1f5f9; color:#334155; padding:10px 8px; text-align:left; border-bottom:2px solid #e2e8f0; white-space:nowrap; }
       .freight-table td { padding:8px; border-bottom:1px solid #f1f5f9; vertical-align:middle; }
-      .freight-table tr:hover td { background:#fff7ed; }
-      .freight-table input { width:100%; padding:7px 10px; border:1px solid #cbd5e1; border-radius:6px; box-sizing:border-box; font-size:0.95em; }
-      .freight-table input:focus, #freightTotal:focus, #freightMemo:focus, #freightPatternSelect:focus { outline:none; border-color:#ea580c; box-shadow:0 0 0 3px rgba(234,88,12,0.15); }
-      .freight-table .num { text-align:right; font-variant-numeric:tabular-nums; }
+      .freight-table tbody tr:hover td { background:#fff7ed; }
+      .freight-table input { width:100%; padding:7px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:0.95em; background:#fff; }
+      #freightTool input:focus, #freightTool select:focus { outline:none; border-color:#ea580c; box-shadow:0 0 0 3px rgba(234,88,12,0.15); }
+      .freight-table .num, .freight-table .num input { text-align:right; font-variant-numeric:tabular-nums; }
+      .freight-table input.f-warn { border-color:#f59e0b; background:#fffbeb; }
+      .freight-table input.f-bad { border-color:#dc2626; background:#fef2f2; }
       .freight-bar { height:6px; background:#f1f5f9; border-radius:3px; overflow:hidden; margin-top:4px; }
       .freight-bar > span { display:block; height:100%; background:linear-gradient(90deg,#f97316,#ea580c); transition:width .25s; }
-      .freight-icon-btn { border:1px solid #e2e8f0; background:#fff; border-radius:6px; padding:4px 8px; cursor:pointer; font-size:0.9em; }
+      .freight-icon-btn { border:1px solid #e2e8f0; background:#fff; border-radius:6px; padding:5px 9px; cursor:pointer; font-size:0.9em; }
       .freight-icon-btn:hover { background:#f1f5f9; }
       .freight-icon-btn:disabled { opacity:.35; cursor:not-allowed; }
-      #freightTool button.btn:hover { filter:brightness(1.08); transform:translateY(-1px); }
-      .freight-pattern-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin-top:10px; }
-      .freight-pattern-card { text-align:left; padding:11px 12px; border-radius:10px; border:2px solid #e2e8f0; background:#f8fafc; cursor:pointer; transition:all .18s ease; display:flex; flex-direction:column; gap:4px; }
-      .freight-pattern-card:hover { border-color:#fb923c; background:#fff7ed; transform:translateY(-1px); }
-      .freight-pattern-card.active { border-color:#ea580c; background:#fff7ed; box-shadow:0 4px 12px rgba(234,88,12,0.14); }
-      .freight-kpi-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px; margin-bottom:20px; }
-      .freight-kpi-grid > div { min-width:0; }
+      #freightTool button.btn:hover { filter:brightness(1.08); }
+      .fp-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
+      .fp-card { text-align:left; padding:12px 14px; border-radius:10px; border:2px solid #e2e8f0; background:#fff; cursor:pointer; transition:border-color .15s, background .15s, box-shadow .15s; display:flex; flex-direction:column; gap:6px; min-width:0; font-family:inherit; }
+      .fp-card:hover { border-color:#fdba74; background:#fffaf5; }
+      .fp-card.active { border-color:#ea580c; background:#fff7ed; box-shadow:0 4px 12px rgba(234,88,12,0.14); }
+      .fp-head { display:flex; align-items:center; gap:6px; width:100%; }
+      .fp-title { font-size:0.95em; font-weight:800; color:#0f172a; white-space:nowrap; }
+      .fp-area { font-size:0.85em; font-weight:700; color:#475569; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+      .fp-card.active .fp-title { color:#c2410c; }
+      .fp-check { margin-left:auto; flex-shrink:0; width:20px; height:20px; border-radius:50%; background:#ea580c; color:#fff; font-size:0.72em; font-weight:900; display:flex; align-items:center; justify-content:center; }
+      .fp-sum { font-size:0.8em; color:#334155; font-weight:600; }
+      .fp-tags { display:flex; gap:4px; flex-wrap:wrap; min-height:18px; }
+      .fp-tag { font-size:0.68em; font-weight:700; padding:2px 7px; border-radius:10px; white-space:nowrap; }
+      .fp-tag.edit { background:#dbeafe; color:#1d4ed8; }
+      .fp-tag.dummy { background:#f1f5f9; color:#64748b; border:1px dashed #94a3b8; }
+      .freight-cond-grid { display:grid; grid-template-columns:minmax(0,0.95fr) minmax(0,1.15fr) minmax(0,1.5fr) minmax(0,0.6fr) minmax(0,1.2fr); gap:12px; align-items:end; }
+      .freight-cond-grid > label, .freight-cond-grid input, .freight-cond-grid select { min-width:0; }
+      .freight-kpi-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin-bottom:14px; }
+      .freight-alert { display:flex; gap:8px; align-items:flex-start; padding:9px 12px; border-radius:8px; font-size:0.85em; font-weight:600; margin-bottom:6px; }
+      .freight-alert.ok { background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; }
+      .freight-alert.info { background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; }
+      .freight-alert.warn { background:#fffbeb; color:#b45309; border:1px solid #fde68a; }
+      .freight-alert.error { background:#fef2f2; color:#b91c1c; border:1px solid #fecaca; }
+      .freight-history-item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-bottom:1px solid #f1f5f9; font-size:0.88em; flex-wrap:wrap; }
+      .freight-history-item:last-child { border-bottom:none; }
       @media (max-width: 1100px) {
-        .freight-kpi-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
-        .freight-pattern-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+        .fp-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+        .freight-cond-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+        .freight-cond-grid .c-memo { grid-column:1 / -1; }
       }
-      @media (max-width: 680px) { .freight-kpi-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
-      @media (max-width: 520px) { .freight-pattern-grid { grid-template-columns:1fr; } }
-      @media (max-width: 440px) { .freight-kpi-grid { grid-template-columns:1fr; } }
+      @media (max-width: 680px) {
+        #freightTool { padding:12px; }
+        .freight-kpi-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+        .fp-grid { grid-template-columns:1fr; }
+        .freight-table thead { display:none; }
+        .freight-table, .freight-table tbody, .freight-table tfoot { display:block; width:100%; }
+        .freight-table tr { display:grid; grid-template-columns:1fr 1fr; gap:8px 10px; padding:12px 14px; border-bottom:1px solid #e2e8f0; }
+        .freight-table td { display:block; border:none; padding:0; }
+        .freight-table td[data-label]::before { content:attr(data-label); display:block; font-size:0.72em; color:#64748b; font-weight:700; margin-bottom:3px; text-align:left; }
+        .freight-table td.c-no { display:none; }
+        .freight-table td.c-name, .freight-table td.c-note, .freight-table td.c-ops { grid-column:1 / -1; }
+        .freight-table td.c-ops { text-align:right; }
+        .freight-table td.num { text-align:left; }
+        .freight-table tfoot td:empty { display:none; }
+      }
+      @media (max-width: 420px) { .freight-cond-grid { grid-template-columns:1fr; } }
       @media print {
         .sidebar, .topbar, .freight-no-print { display:none !important; }
         .main-content { margin:0 !important; }
         #freightTool { max-width:none !important; padding:0 !important; }
-        #freightTool .section-hero { background:#fff !important; color:#000 !important; box-shadow:none !important; border:1px solid #000; }
-        .freight-table input { border:none; padding:0; }
+        #freightTool .freight-hero { background:#fff !important; color:#000 !important; box-shadow:none !important; border:1px solid #000; }
+        .freight-table input { border:none !important; padding:0; background:transparent !important; }
       }
     </style>
-    <div class="tool-container" id="freightTool" style="max-width:1200px; margin:0 auto; padding:20px;">
-      <div class="section-hero" style="background:linear-gradient(135deg,#7c2d12 0%,#c2410c 55%,#ea580c 100%); border-radius:16px; padding:28px; color:#fff; margin-bottom:20px; box-shadow:0 10px 25px -5px rgba(194,65,12,0.35);">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">
-          <div>
-            <span class="hero-emoji">🚚</span>
-            <h1 style="margin:8px 0; font-size:1.8em;">運搬料 按分計算ツール</h1>
-            <p class="hero-sub" style="margin:0; color:#fed7aa;">1台あたりの運搬料を、荷下ろし先ごとの納品数量に応じて自動按分します</p>
-          </div>
-          <div class="freight-no-print" style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button id="btnFreightCopyText" class="btn" style="${btn('#2563eb')}">📋 結果をコピー</button>
-            <button id="btnFreightCopyTsv" class="btn" style="${btn('#0891b2')}">📊 Excel用コピー</button>
-            <button id="btnFreightCsv" class="btn" style="${btn('#475569')}">📥 CSV出力</button>
-            <button id="btnFreightPrint" class="btn" style="${btn('#334155')}">🖨️ 印刷</button>
-          </div>
+    <div class="tool-container" id="freightTool">
+      <!-- ヘッダー（コンパクト化） -->
+      <div class="freight-hero" style="background:linear-gradient(135deg,#7c2d12 0%,#c2410c 55%,#ea580c 100%); border-radius:14px; padding:16px 22px; color:#fff; margin-bottom:16px; box-shadow:0 8px 20px -6px rgba(194,65,12,0.35); display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+        <span style="font-size:1.9em; line-height:1;">🚚</span>
+        <div style="min-width:0; flex:1;">
+          <h1 style="margin:0; font-size:1.4em;">運搬料 按分計算ツール</h1>
+          <p style="margin:2px 0 0; color:#fed7aa; font-size:0.88em;">1台あたりの運搬料を、荷下ろし先ごとの納品数量に応じて自動按分します</p>
         </div>
+        <div style="font-size:0.78em; color:#ffedd5; text-align:right;">選択中<br><strong style="font-size:1.15em; color:#fff;">${freightEscape(pattern.label)}</strong></div>
       </div>
 
-      <!-- 定型4パターン選択エリア -->
-      <div class="freight-no-print" style="${cardStyle} margin-bottom:16px; padding:14px 16px; border:1px solid #fed7aa; background:linear-gradient(180deg,#ffffff 0%,#fffaf5 100%);">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span style="font-size:1.15em;">🗂️</span>
-            <div>
-              <div style="font-size:0.92em; font-weight:800; color:#7c2d12;">定型パターン選択（4パターンから選択して入力開始）</div>
-              <div style="font-size:0.78em; color:#64748b;">毎月発生する配送パターンまたは基本Verを選択すると、金額・荷下ろし先が自動セットされます。</div>
-            </div>
-          </div>
-          <div style="display:flex; align-items:center; gap:8px;">
-            <label for="freightPatternSelect" style="font-size:0.8em; font-weight:700; color:#475569; white-space:nowrap;">プルダウン選択:</label>
-            <select id="freightPatternSelect" style="padding:7px 12px; border:1px solid #fdba74; border-radius:8px; font-size:0.88em; font-weight:700; color:#9a3412; background:#fff7ed; cursor:pointer;">
-              ${Object.values(FREIGHT_PATTERNS).map(p => `<option value="${p.id}" ${currentPatternId === p.id ? 'selected' : ''}>${p.label}（${p.shortBadge}）</option>`).join('')}
-              ${currentPatternId === 'sample' ? `<option value="sample" selected>サンプル（30,000円 / A・B・C農場）</option>` : ''}
-            </select>
-          </div>
+      <!-- ① 定型パターン選択 -->
+      <div class="freight-no-print" style="${cardStyle} margin-bottom:14px; border-color:#fed7aa;">
+        <div style="display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+          <div style="font-size:0.95em; font-weight:800; color:#7c2d12;">① 配送パターンを選ぶ</div>
+          <div style="font-size:0.78em; color:#64748b;">パターンごとに入力内容は自動保存されるため、切り替えても消えません。</div>
         </div>
-        <div class="freight-pattern-grid">
+        <div class="fp-grid" role="group" aria-label="配送パターン">
           ${Object.values(FREIGHT_PATTERNS).map(p => {
-            const isActive = currentPatternId === p.id;
+            const isActive = store.active === p.id;
+            const dirty = freightIsDirty(store.drafts[p.id]);
             return `
-              <button type="button" class="freight-pattern-card ${isActive ? 'active' : ''}" data-pattern="${p.id}">
-                <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; width:100%;">
-                  <span style="font-size:0.9em; font-weight:800; color:${isActive ? '#c2410c' : '#0f172a'};">${p.label}</span>
-                  ${isActive ? `<span style="font-size:0.7em; background:#ea580c; color:#fff; padding:2px 7px; border-radius:10px; font-weight:700; white-space:nowrap;">選択中</span>` : ''}
+              <button type="button" class="fp-card ${isActive ? 'active' : ''}" data-pattern="${p.id}" aria-pressed="${isActive}">
+                <div class="fp-head">
+                  <span class="fp-title">${p.title}</span>
+                  <span class="fp-area">${p.area}</span>
+                  ${isActive ? '<span class="fp-check" aria-hidden="true">✓</span>' : ''}
                 </div>
-                <div style="font-size:0.78em; font-weight:700; color:${isActive ? '#ea580c' : '#475569'};">${p.shortBadge}</div>
-                <div style="font-size:0.73em; color:#64748b; line-height:1.35;">${p.desc}</div>
-              </button>
-            `;
+                <div class="fp-sum">${p.summary}</div>
+                <div class="fp-tags">
+                  ${dirty ? '<span class="fp-tag edit">✏️ 入力中</span>' : ''}
+                  ${p.dummy ? '<span class="fp-tag dummy">仮設定</span>' : ''}
+                </div>
+              </button>`;
           }).join('')}
         </div>
+        ${pattern.dummy ? `<div style="margin-top:10px; font-size:0.8em; color:#64748b; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:8px; padding:8px 12px;">🧪 <strong>仮設定：</strong>${freightEscape(pattern.dummy)}</div>` : ''}
       </div>
 
-      <!-- 基本条件 -->
-      <div style="${cardStyle} margin-bottom:20px;">
-        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px; align-items:end;">
+      <!-- ② 基本条件 -->
+      <div style="${cardStyle} margin-bottom:14px;">
+        <div style="font-size:0.95em; font-weight:800; color:#0f172a; margin-bottom:10px;" class="freight-no-print">② 便の条件を入力</div>
+        <div class="freight-cond-grid">
           <label style="display:block;">
-            <div style="font-size:0.85em; font-weight:bold; color:#475569; margin-bottom:6px;">🚛 運搬料 総額（1台あたり・円）</div>
-            <input id="freightTotal" type="text" inputmode="numeric" autocomplete="off" style="${inputStyle} font-size:1.15em; font-weight:bold;" value="${freightEscape(state.total)}">
+            <div style="${fieldLabel}">📅 便の日付</div>
+            <input id="freightDate" type="date" style="${inputStyle}" value="${freightEscape(state.date)}">
           </label>
           <label style="display:block;">
-            <div style="font-size:0.85em; font-weight:bold; color:#475569; margin-bottom:6px;">📏 数量単位</div>
+            <div style="${fieldLabel}">🚛 運搬料 総額（1台・円）</div>
+            <input id="freightTotal" type="text" inputmode="numeric" autocomplete="off" placeholder="例）33,000" style="${inputStyle} font-size:1.1em; font-weight:bold; text-align:right;" value="${freightEscape(freightFmtInput(state.total))}">
+          </label>
+          <label style="display:block;" class="c-memo">
+            <div style="${fieldLabel}">📝 便名・メモ（任意）</div>
+            <input id="freightMemo" type="text" style="${inputStyle}" placeholder="例）◯◯運輸 4t車" value="${freightEscape(state.memo)}">
+          </label>
+          <label style="display:block;">
+            <div style="${fieldLabel}">📏 単位</div>
             <select id="freightUnit" style="${inputStyle}">
               ${['kg', 't', '袋', 'ケース', '個'].map(u => `<option value="${u}" ${state.unit === u ? 'selected' : ''}>${u}</option>`).join('')}
             </select>
           </label>
           <label style="display:block;">
-            <div style="font-size:0.85em; font-weight:bold; color:#475569; margin-bottom:6px;">🔢 端数処理</div>
-            <select id="freightRounding" style="${inputStyle}">
+            <div style="${fieldLabel}">🔢 端数処理</div>
+            <select id="freightRounding" style="${inputStyle}" title="端数自動調整：1円未満の端数を端数の大きい納品先から順に配分し、按分合計を総額と1円単位で一致させます">
               ${Object.entries(roundingLabel).map(([k, v]) => `<option value="${k}" ${state.rounding === k ? 'selected' : ''}>${v}</option>`).join('')}
             </select>
           </label>
-          <label style="display:block; grid-column:span 1;">
-            <div style="font-size:0.85em; font-weight:bold; color:#475569; margin-bottom:6px;">📝 便名・メモ（任意）</div>
-            <input id="freightMemo" type="text" style="${inputStyle}" placeholder="例）10/22 ◯◯運輸 4t車" value="${freightEscape(state.memo)}">
-          </label>
-        </div>
-        <div style="margin-top:10px; font-size:0.8em; color:#64748b;">
-          ※「端数自動調整」は1円未満の端数を端数の大きい納品先から順に配分し、按分合計を運搬料総額と<strong>1円単位でぴったり一致</strong>させます。
         </div>
       </div>
 
       <!-- KPI -->
       <div class="freight-kpi-grid">
-        <div style="${cardStyle}"><div style="font-size:0.85em; color:#64748b; font-weight:bold;">📍 荷下ろし箇所</div><div id="kpiFreightCount" style="font-size:1.35em; font-weight:bold; color:#0f172a; margin-top:4px; white-space:nowrap;">0 箇所</div></div>
-        <div style="${cardStyle}"><div style="font-size:0.85em; color:#64748b; font-weight:bold;">⚖️ 積載合計</div><div id="kpiFreightQty" style="margin-top:4px; min-height:1.4em; display:flex; align-items:baseline; gap:2px; flex-wrap:wrap;">0</div></div>
-        <div style="${cardStyle}"><div style="font-size:0.85em; color:#64748b; font-weight:bold;">📐 平均単価</div><div id="kpiFreightUnitPrice" style="margin-top:4px; min-height:1.4em; display:flex; align-items:baseline; gap:2px; flex-wrap:wrap;">-</div></div>
-        <div style="${cardStyle}"><div style="font-size:0.85em; color:#64748b; font-weight:bold;">🧮 按分合計 / 差額</div><div id="kpiFreightDiff" style="margin-top:4px; min-height:1.4em; display:flex; align-items:baseline; gap:6px; flex-wrap:wrap;">-</div></div>
-        <div style="background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%); padding:16px; border-radius:12px; color:#fff; box-shadow:0 4px 6px rgba(0,0,0,0.1);"><div style="font-size:0.85em; color:#cbd5e1; font-weight:bold;">💰 運搬料 総額</div><div id="kpiFreightTotal" style="font-size:1.45em; font-weight:bold; color:#fdba74; margin-top:4px; white-space:nowrap;">¥0</div></div>
+        <div style="${cardStyle}"><div style="font-size:0.8em; color:#64748b; font-weight:bold;">📍 荷下ろし箇所</div><div id="kpiFreightCount" style="font-size:1.35em; font-weight:bold; color:#0f172a; margin-top:4px; white-space:nowrap;">0 箇所</div></div>
+        <div style="${cardStyle}"><div style="font-size:0.8em; color:#64748b; font-weight:bold;">⚖️ 積載合計</div><div id="kpiFreightQty" style="margin-top:4px; min-height:1.4em; display:flex; align-items:baseline; gap:2px; flex-wrap:wrap;">0</div></div>
+        <div style="${cardStyle}"><div style="font-size:0.8em; color:#64748b; font-weight:bold;">📐 平均単価</div><div id="kpiFreightUnitPrice" style="margin-top:4px; min-height:1.4em; display:flex; align-items:baseline; gap:2px; flex-wrap:wrap;">-</div></div>
+        <div style="background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%); padding:14px 16px; border-radius:12px; color:#fff; box-shadow:0 4px 6px rgba(0,0,0,0.1); min-width:0;"><div style="font-size:0.8em; color:#cbd5e1; font-weight:bold;">💰 按分合計 / 総額</div><div id="kpiFreightDiff" style="margin-top:4px; min-height:1.4em; display:flex; align-items:baseline; gap:6px; flex-wrap:wrap;">-</div></div>
       </div>
 
-      <!-- 明細 -->
+      <!-- 入力チェック結果 -->
+      <div id="freightAlerts" class="freight-no-print" aria-live="polite"></div>
+
+      <!-- ③ 明細 -->
       <div style="${cardStyle} padding:0; overflow:hidden;">
-        <div class="freight-no-print" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding:14px 16px; border-bottom:1px solid #e2e8f0;">
-          <div style="font-weight:bold; color:#0f172a;">📦 荷下ろし先別 納品数量・按分運賃</div>
-          <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button id="btnFreightAdd" class="btn" style="${btn('#ea580c')} padding:8px 14px;">➕ 荷下ろし先を追加</button>
-            <button id="btnFreightSample" class="btn" style="${btn('#64748b')} padding:8px 14px;">🧪 サンプル読込</button>
-            <button id="btnFreightClear" class="btn" style="${btn('#ef4444')} padding:8px 14px;">🔄 クリア</button>
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding:12px 16px; border-bottom:1px solid #e2e8f0;">
+          <div>
+            <div style="font-weight:800; color:#0f172a;"><span class="freight-no-print">③ </span>荷下ろし先別 納品数量・按分運賃</div>
+            <div class="freight-no-print" style="font-size:0.75em; color:#64748b; margin-top:2px;">荷下ろし先は入力候補から選択できます（候補の農場マスタは仮データ）。Enterで次の行へ移動します。</div>
+          </div>
+          <div class="freight-no-print" style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button id="btnFreightAdd" class="btn" style="${btn('#ea580c')}">➕ 荷下ろし先を追加</button>
+            <button id="btnFreightClear" class="btn" style="${btn('#94a3b8')}" title="このパターンを初期値に戻します">↺ 初期値に戻す</button>
           </div>
         </div>
         <div style="overflow-x:auto;">
           <table class="freight-table">
             <thead>
               <tr>
-                <th style="width:40px;">No.</th>
-                <th style="min-width:160px;">荷下ろし先（納品先）</th>
-                <th style="width:140px;" class="num">納品数量（<span class="freightUnitLabel"></span>）</th>
+                <th style="width:44px;">No.</th>
+                <th style="min-width:170px;">荷下ろし先（納品先）</th>
+                <th style="width:150px;" class="num">納品数量（<span class="freightUnitLabel"></span>）</th>
                 <th style="width:130px;" class="num">構成比</th>
                 <th style="width:130px;" class="num">按分運賃</th>
-                <th style="width:120px;" class="num">単価（円/<span class="freightUnitLabel"></span>）</th>
                 <th style="min-width:140px;">備考</th>
-                <th class="freight-no-print" style="width:110px;">操作</th>
+                <th class="freight-no-print" style="width:120px;">操作</th>
               </tr>
             </thead>
             <tbody id="freightRows"></tbody>
             <tfoot>
               <tr style="background:#fff7ed; font-weight:bold;">
+                <td class="c-no"></td>
+                <td class="c-name">合計</td>
+                <td class="num" data-label="合計数量" id="freightFootQty">0</td>
+                <td class="num" data-label="構成比" id="freightFootRatio">-</td>
+                <td class="num" data-label="按分合計" id="freightFootAmount" style="color:#c2410c;">¥0</td>
                 <td></td>
-                <td>合計</td>
-                <td class="num" id="freightFootQty">0</td>
-                <td class="num" id="freightFootRatio">-</td>
-                <td class="num" id="freightFootAmount">¥0</td>
-                <td class="num" id="freightFootUnit">-</td>
-                <td colspan="2"></td>
+                <td class="freight-no-print"></td>
               </tr>
             </tfoot>
           </table>
         </div>
+        <datalist id="freightNameHints">${nameHints.map(n => `<option value="${freightEscape(n)}"></option>`).join('')}</datalist>
       </div>
-      <div class="freight-no-print" style="margin-top:12px; font-size:0.8em; color:#64748b;">💾 入力内容はこのブラウザに自動保存されます。荷下ろし先の数に上限はありません（10箇所以上も可）。</div>
+
+      <!-- ④ 出力・保存 -->
+      <div class="freight-no-print" style="${cardStyle} margin-top:14px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <div style="font-size:0.95em; font-weight:800; color:#0f172a; margin-right:auto;">④ 結果を出力・保存</div>
+        <button id="btnFreightCopyText" class="btn" style="${btn('#2563eb')}">📋 メール用コピー</button>
+        <button id="btnFreightCopyTsv" class="btn" style="${btn('#0891b2')}">📊 Excel用コピー</button>
+        <button id="btnFreightCsv" class="btn" style="${btn('#475569')}">📥 CSV出力</button>
+        <button id="btnFreightPrint" class="btn" style="${btn('#334155')}">🖨️ 印刷</button>
+        <button id="btnFreightSaveHistory" class="btn" style="${btn('#059669')}">💾 履歴に保存</button>
+      </div>
+
+      <!-- 計算履歴 -->
+      <details class="freight-no-print" id="freightHistory" style="${cardStyle} margin-top:14px; padding:0;" ${store.history.length ? '' : ''}>
+        <summary style="padding:12px 16px; cursor:pointer; font-weight:800; color:#0f172a;">📚 計算履歴（${store.history.length}件・このブラウザに保存）</summary>
+        <div id="freightHistoryList" style="border-top:1px solid #e2e8f0;"></div>
+      </details>
+
+      <div class="freight-no-print" style="margin-top:10px; font-size:0.78em; color:#64748b;">💾 入力内容はパターンごとにこのブラウザへ自動保存されます。荷下ろし先の数に上限はありません。</div>
     </div>
   `;
 
   const tbody = document.getElementById('freightRows');
-  const save = () => localStorage.setItem(FREIGHT_STORAGE_KEY, JSON.stringify(state));
+  const save = () => localStorage.setItem(FREIGHT_STORAGE_KEY, JSON.stringify(store));
 
   function compute() {
     return calcFreightAllocation(freightNum(state.total) || 0, state.rows, state.rounding);
@@ -4954,21 +5054,50 @@ function renderFreightCalculator(focusTarget = null) {
   function renderRows() {
     tbody.innerHTML = state.rows.map((r, i) => `
       <tr data-idx="${i}">
-        <td style="color:#94a3b8; font-weight:bold;">${i + 1}</td>
-        <td><input type="text" data-field="name" value="${freightEscape(r.name)}" placeholder="例）A農場"></td>
-        <td><input type="text" data-field="qty" inputmode="decimal" autocomplete="off" class="num" value="${freightEscape(r.qty)}"></td>
-        <td class="num"><span class="cell-ratio">-</span><div class="freight-bar"><span class="cell-bar" style="width:0"></span></div></td>
-        <td class="num" style="font-weight:bold; color:#c2410c;"><span class="cell-amount">¥0</span></td>
-        <td class="num" style="color:#475569;"><span class="cell-unit">-</span></td>
-        <td><input type="text" data-field="note" value="${freightEscape(r.note)}" placeholder=""></td>
-        <td class="freight-no-print" style="white-space:nowrap;">
-          <button class="freight-icon-btn" data-act="up" title="上へ" ${i === 0 ? 'disabled' : ''}>▲</button>
-          <button class="freight-icon-btn" data-act="down" title="下へ" ${i === state.rows.length - 1 ? 'disabled' : ''}>▼</button>
-          <button class="freight-icon-btn" data-act="del" title="削除" style="color:#dc2626;">✕</button>
+        <td class="c-no" style="color:#94a3b8; font-weight:bold;">${i + 1}</td>
+        <td class="c-name" data-label="荷下ろし先 ${i + 1}"><input type="text" data-field="name" list="freightNameHints" value="${freightEscape(r.name)}" placeholder="例）A農場"></td>
+        <td class="num" data-label="納品数量（${freightEscape(state.unit)}）"><input type="text" data-field="qty" inputmode="decimal" autocomplete="off" value="${freightEscape(freightFmtInput(r.qty))}" placeholder="0"></td>
+        <td class="num" data-label="構成比"><span class="cell-ratio">-</span><div class="freight-bar"><span class="cell-bar" style="width:0"></span></div></td>
+        <td class="num" data-label="按分運賃" style="font-weight:bold; color:#c2410c;"><span class="cell-amount">¥0</span><div class="cell-unit" style="font-size:0.75em; color:#94a3b8; font-weight:normal;"></div></td>
+        <td class="c-note" data-label="備考"><input type="text" data-field="note" value="${freightEscape(r.note)}"></td>
+        <td class="c-ops freight-no-print" style="white-space:nowrap;">
+          <button class="freight-icon-btn" data-act="up" title="上へ" aria-label="上へ移動" ${i === 0 ? 'disabled' : ''}>▲</button>
+          <button class="freight-icon-btn" data-act="down" title="下へ" aria-label="下へ移動" ${i === state.rows.length - 1 ? 'disabled' : ''}>▼</button>
+          <button class="freight-icon-btn" data-act="del" title="削除" aria-label="削除" style="color:#dc2626;">✕</button>
         </td>
       </tr>
-    `).join('') || `<tr><td colspan="8" style="text-align:center; color:#94a3b8; padding:24px;">「➕ 荷下ろし先を追加」から入力してください</td></tr>`;
+    `).join('') || `<tr><td colspan="7" style="text-align:center; color:#94a3b8; padding:24px; grid-column:1 / -1;">「➕ 荷下ろし先を追加」から入力してください</td></tr>`;
     updateResults();
+  }
+
+  // 入力チェック：画面上部のメッセージと入力欄の色分け
+  function validate(sumQty, total, sumAmount) {
+    const msgs = [];
+    if (freightIsInvalid(state.total)) msgs.push(['error', '運搬料総額が数値として読み取れません。']);
+    else if (!(total > 0)) msgs.push(['info', '運搬料総額を入力してください。']);
+    const badQty = [], noName = [], noQty = [];
+    const names = {};
+    state.rows.forEach((r, i) => {
+      const n = String(r.name ?? '').trim();
+      if (freightIsInvalid(r.qty)) badQty.push(i + 1);
+      else if ((freightNum(r.qty) || 0) > 0 && !n) noName.push(i + 1);
+      if (n && freightIsBlank(r.qty)) noQty.push(i + 1);
+      if (n) names[n] = (names[n] || 0) + 1;
+    });
+    const dup = Object.keys(names).filter(k => names[k] > 1);
+    if (badQty.length) msgs.push(['error', `${badQty.join('・')}行目の数量が数値として読み取れません（0として計算中）。`]);
+    if (noName.length) msgs.push(['warn', `${noName.join('・')}行目は数量があるのに荷下ろし先名が未入力です。`]);
+    if (dup.length) msgs.push(['warn', `荷下ろし先名が重複しています：${dup.map(freightEscape).join('、')}`]);
+    if (noQty.length && total > 0) msgs.push(['info', `数量が未入力の荷下ろし先が${noQty.length}件あります（0として計算）。`]);
+    if (!msgs.some(m => m[0] !== 'info') && sumQty > 0 && total > 0) {
+      msgs.unshift(sumAmount === total
+        ? ['ok', `✓ 按分完了：按分合計 ${yen(sumAmount)} が運搬料総額と一致しています。`]
+        : ['warn', `按分合計が総額と ${(sumAmount - total).toLocaleString()}円 ずれています（端数処理：${roundingLabel[state.rounding]}）。`]);
+    }
+    const icon = { ok: '✅', info: 'ℹ️', warn: '⚠️', error: '⛔' };
+    document.getElementById('freightAlerts').innerHTML = msgs.slice(0, 4)
+      .map(([lv, m]) => `<div class="freight-alert ${lv}"><span>${lv === 'ok' ? '' : icon[lv]}</span><span>${m}</span></div>`).join('');
+    return { badQty, noName };
   }
 
   // 入力中のフォーカスを維持するため、計算結果セルのみ更新
@@ -4979,81 +5108,99 @@ function renderFreightCalculator(focusTarget = null) {
     const totalBad = freightIsInvalid(state.total);
     totalInput.style.borderColor = totalBad ? '#dc2626' : '';
     totalInput.style.background = totalBad ? '#fef2f2' : '';
-    totalInput.title = totalBad ? '数値として読み取れません' : '';
     const unit = state.unit;
     document.querySelectorAll('.freightUnitLabel').forEach(el => { el.textContent = unit; });
+
+    const { badQty, noName } = validate(sumQty, total, sumAmount);
 
     tbody.querySelectorAll('tr[data-idx]').forEach(tr => {
       const i = Number(tr.dataset.idx);
       const q = Math.max(0, freightNum(state.rows[i].qty) || 0);
-      const qtyInput = tr.querySelector('input[data-field="qty"]');
-      const bad = freightIsInvalid(state.rows[i].qty);
-      qtyInput.style.borderColor = bad ? '#dc2626' : '';
-      qtyInput.style.background = bad ? '#fef2f2' : '';
-      qtyInput.title = bad ? '数値として読み取れません（0として計算中）' : '';
+      tr.querySelector('input[data-field="qty"]').classList.toggle('f-bad', badQty.includes(i + 1));
+      tr.querySelector('input[data-field="name"]').classList.toggle('f-warn', noName.includes(i + 1));
       const ratio = sumQty > 0 ? q / sumQty * 100 : 0;
       tr.querySelector('.cell-ratio').textContent = sumQty > 0 ? num(ratio, 2) + '%' : '-';
       tr.querySelector('.cell-bar').style.width = ratio + '%';
       tr.querySelector('.cell-amount').textContent = yen(amounts[i] || 0);
-      tr.querySelector('.cell-unit').textContent = q > 0 ? num(amounts[i] / q, 2) : '-';
+      tr.querySelector('.cell-unit').textContent = q > 0 && total > 0 ? `${num(amounts[i] / q, 2)} 円/${unit}` : '';
     });
 
     const activeCount = state.rows.filter(r => (freightNum(r.qty) || 0) > 0).length;
-    const totalRowCount = state.rows.length;
-    document.getElementById('kpiFreightCount').textContent = `${activeCount > 0 ? activeCount : totalRowCount} 箇所`;
+    document.getElementById('kpiFreightCount').textContent = `${activeCount > 0 ? activeCount : state.rows.length} 箇所`;
 
     const qtyStr = num(sumQty, sumQty % 1 ? 2 : 0);
     const qtyFontSize = qtyStr.length > 10 ? '1.0em' : qtyStr.length > 7 ? '1.15em' : '1.3em';
-    document.getElementById('kpiFreightQty').innerHTML = `<span style="font-size:${qtyFontSize}; font-weight:bold; color:#0f172a; letter-spacing:-0.5px;">${qtyStr}</span><span style="font-size:0.75em; color:#64748b; font-weight:normal; white-space:nowrap; display:inline-block; word-break:keep-all; margin-left:3px;">${unit}</span>`;
+    document.getElementById('kpiFreightQty').innerHTML = `<span style="font-size:${qtyFontSize}; font-weight:bold; color:#0f172a;">${qtyStr}</span><span style="font-size:0.75em; color:#64748b; margin-left:3px;">${freightEscape(unit)}</span>`;
 
-    if (sumQty > 0 && total > 0) {
-      const priceStr = num(total / sumQty, 2);
-      const priceFontSize = priceStr.length > 8 ? '1.05em' : '1.25em';
-      document.getElementById('kpiFreightUnitPrice').innerHTML = `<span style="font-size:${priceFontSize}; font-weight:bold; color:#0f172a; letter-spacing:-0.5px;">${priceStr}</span><span style="font-size:0.75em; color:#64748b; font-weight:normal; white-space:nowrap; display:inline-block; word-break:keep-all; margin-left:3px;">円/${unit}</span>`;
-    } else {
-      document.getElementById('kpiFreightUnitPrice').innerHTML = `<span style="font-size:1.3em; font-weight:bold; color:#0f172a;">-</span>`;
-    }
+    document.getElementById('kpiFreightUnitPrice').innerHTML = (sumQty > 0 && total > 0)
+      ? `<span style="font-size:1.25em; font-weight:bold; color:#0f172a;">${num(total / sumQty, 2)}</span><span style="font-size:0.75em; color:#64748b; margin-left:3px;">円/${freightEscape(unit)}</span>`
+      : `<span style="font-size:1.3em; font-weight:bold; color:#0f172a;">-</span>`;
 
-    document.getElementById('kpiFreightTotal').textContent = yen(total);
-
-    const diff = sumAmount - total;
     const diffEl = document.getElementById('kpiFreightDiff');
-    if (sumQty > 0 && total > 0) {
-      diffEl.innerHTML = `<span style="font-size:1.25em; font-weight:bold; letter-spacing:-0.5px;">${yen(sumAmount)}</span><span style="display:inline-block; white-space:nowrap; word-break:keep-all; font-size:0.7em; color:${diff === 0 ? '#059669' : '#dc2626'}; font-weight:700;">${diff === 0 ? '✓ 一致' : `(${diff > 0 ? '+' : ''}${diff.toLocaleString()}円)`}</span>`;
-      diffEl.style.color = diff === 0 ? '#0f172a' : '#dc2626';
+    if (total > 0) {
+      const diff = sumAmount - total;
+      const tag = sumQty > 0
+        ? `<span style="font-size:0.72em; font-weight:700; color:${diff === 0 ? '#6ee7b7' : '#fca5a5'};">${diff === 0 ? '✓ 一致' : `(${diff > 0 ? '+' : ''}${diff.toLocaleString()}円)`}</span>`
+        : `<span style="font-size:0.72em; color:#94a3b8;">数量待ち</span>`;
+      diffEl.innerHTML = `<span style="font-size:1.3em; font-weight:bold; color:#fdba74;">${yen(sumAmount)}</span><span style="font-size:0.8em; color:#cbd5e1;">/ ${yen(total)}</span>${tag}`;
     } else {
-      diffEl.textContent = '-';
-      diffEl.style.color = '#0f172a';
+      diffEl.innerHTML = `<span style="font-size:1.3em; font-weight:bold; color:#fdba74;">-</span>`;
     }
 
-    document.getElementById('freightFootQty').textContent = num(sumQty, sumQty % 1 ? 2 : 0);
+    document.getElementById('freightFootQty').textContent = `${num(sumQty, sumQty % 1 ? 2 : 0)} ${unit}`;
     document.getElementById('freightFootRatio').textContent = sumQty > 0 ? '100.00%' : '-';
     document.getElementById('freightFootAmount').textContent = yen(sumAmount);
-    document.getElementById('freightFootUnit').textContent = sumQty > 0 && total > 0 ? num(total / sumQty, 2) : '-';
   }
 
-  // ---- イベント ----
+  // パターンカードの「入力中」バッジだけを更新（全体再描画しない）
+  function refreshDirtyTag() {
+    const card = content.querySelector(`.fp-card[data-pattern="${store.active}"] .fp-tags`);
+    if (!card) return;
+    const has = !!card.querySelector('.fp-tag.edit');
+    const dirty = freightIsDirty(state);
+    if (dirty && !has) card.insertAdjacentHTML('afterbegin', '<span class="fp-tag edit">✏️ 入力中</span>');
+    if (!dirty && has) card.querySelector('.fp-tag.edit').remove();
+  }
+
+  const commit = (recalc = true) => { save(); if (recalc) updateResults(); refreshDirtyTag(); };
+
+  // ---- 明細のイベント ----
   tbody.addEventListener('input', e => {
     const tr = e.target.closest('tr[data-idx]');
     const field = e.target.dataset.field;
     if (!tr || !field) return;
-    state.rows[Number(tr.dataset.idx)][field] = field === 'qty' ? e.target.value : e.target.value;
-    save();
-    if (field === 'qty') updateResults();
+    state.rows[Number(tr.dataset.idx)][field] = e.target.value;
+    commit(field !== 'note');
+  });
+
+  // 数量欄：フォーカス中はカンマなし、離れたらカンマ区切りで表示
+  tbody.addEventListener('focusin', e => {
+    if (e.target.dataset.field !== 'qty') return;
+    const v = e.target.value;
+    if (!freightIsBlank(v) && !freightIsInvalid(v)) e.target.value = String(freightNum(v));
+  });
+  tbody.addEventListener('focusout', e => {
+    if (e.target.dataset.field !== 'qty') return;
+    e.target.value = freightFmtInput(e.target.value);
   });
 
   tbody.addEventListener('click', e => {
     const b = e.target.closest('button[data-act]');
     if (!b) return;
     const i = Number(b.closest('tr').dataset.idx);
-    if (b.dataset.act === 'del') state.rows.splice(i, 1);
+    if (b.dataset.act === 'del') {
+      const r = state.rows[i];
+      if (!freightIsBlank(r.qty) && !confirm(`「${r.name || (i + 1) + '行目'}」を削除しますか？`)) return;
+      state.rows.splice(i, 1);
+    }
     if (b.dataset.act === 'up' && i > 0) [state.rows[i - 1], state.rows[i]] = [state.rows[i], state.rows[i - 1]];
     if (b.dataset.act === 'down' && i < state.rows.length - 1) [state.rows[i + 1], state.rows[i]] = [state.rows[i], state.rows[i + 1]];
     save();
     renderRows();
+    refreshDirtyTag();
   });
 
-  // Enterキーで次の行の数量へ移動（最終行なら行追加）
+  // Enterキーで次の行の同じ欄へ移動（最終行なら行追加）
   tbody.addEventListener('keydown', e => {
     if (e.key !== 'Enter' || e.isComposing) return;
     const tr = e.target.closest('tr[data-idx]');
@@ -5070,103 +5217,112 @@ function renderFreightCalculator(focusTarget = null) {
     if (next) next.focus();
   });
 
-  // 定型4パターン切替処理
-  const applyFreightPattern = (patId) => {
-    const pat = FREIGHT_PATTERNS[patId];
-    if (!pat) return;
-    state = cloneFreightPattern(pat);
-    save();
-    const nextFocus = (state.total === '' || state.total === null || state.total === undefined) ? 'total' : 'firstQty';
-    renderFreightCalculator(nextFocus);
-    showGlobalToast('🗂️', `「${pat.label}」をセットしました`);
-  };
-
-  const patternSelectEl = document.getElementById('freightPatternSelect');
-  if (patternSelectEl) {
-    patternSelectEl.addEventListener('change', e => {
-      applyFreightPattern(e.target.value);
-    });
-  }
-  content.querySelectorAll('.freight-pattern-card').forEach(btnEl => {
+  // ---- パターン切替（入力内容はパターンごとに保持されるため確認不要） ----
+  content.querySelectorAll('.fp-card').forEach(btnEl => {
     btnEl.addEventListener('click', () => {
-      applyFreightPattern(btnEl.dataset.pattern);
+      const id = btnEl.dataset.pattern;
+      if (!FREIGHT_PATTERNS[id] || id === store.active) return;
+      store.active = id;
+      save();
+      const d = store.drafts[id];
+      renderFreightCalculator(freightIsBlank(d.total) ? 'total' : 'firstEmptyQty');
+      showGlobalToast('🗂️', `「${FREIGHT_PATTERNS[id].label}」に切り替えました`);
     });
   });
 
-  document.getElementById('freightTotal').addEventListener('input', e => { state.total = e.target.value; save(); updateResults(); });
-  document.getElementById('freightMemo').addEventListener('input', e => { state.memo = e.target.value; save(); });
-  document.getElementById('freightUnit').addEventListener('change', e => { state.unit = e.target.value; save(); updateResults(); });
-  document.getElementById('freightRounding').addEventListener('change', e => { state.rounding = e.target.value; save(); updateResults(); });
+  // ---- 基本条件 ----
+  const totalEl = document.getElementById('freightTotal');
+  totalEl.addEventListener('input', e => { state.total = e.target.value; commit(); });
+  totalEl.addEventListener('focus', e => { const v = e.target.value; if (!freightIsBlank(v) && !freightIsInvalid(v)) e.target.value = String(freightNum(v)); });
+  totalEl.addEventListener('blur', e => { e.target.value = freightFmtInput(e.target.value); });
+  totalEl.addEventListener('keydown', e => {
+    if (e.key !== 'Enter' || e.isComposing) return;
+    e.preventDefault();
+    const q = tbody.querySelector('input[data-field="qty"]');
+    if (q) q.focus();
+  });
+  document.getElementById('freightDate').addEventListener('change', e => { state.date = e.target.value; save(); });
+  document.getElementById('freightMemo').addEventListener('input', e => { state.memo = e.target.value; commit(false); });
+  document.getElementById('freightUnit').addEventListener('change', e => { state.unit = e.target.value; save(); renderRows(); });
+  document.getElementById('freightRounding').addEventListener('change', e => { state.rounding = e.target.value; commit(); });
 
   document.getElementById('btnFreightAdd').addEventListener('click', () => {
     state.rows.push({ name: '', qty: '', note: '' });
     save();
     renderRows();
+    refreshDirtyTag();
     const inputs = tbody.querySelectorAll('input[data-field="name"]');
     if (inputs.length) inputs[inputs.length - 1].focus();
   });
 
-  document.getElementById('btnFreightSample').addEventListener('click', () => {
-    if (state.rows.some(r => String(r.qty ?? '').trim() !== '' || String(r.name ?? '').trim() !== '') &&
-        !confirm('現在の入力内容をサンプルデータで上書きします。よろしいですか？')) return;
-    state = JSON.parse(JSON.stringify(FREIGHT_SAMPLE));
-    save();
-    renderFreightCalculator();
-    showGlobalToast('🧪', 'サンプル（30,000円 / A・B・C農場）を読み込みました');
-  });
-
   document.getElementById('btnFreightClear').addEventListener('click', () => {
-    if (!confirm('現在のパターンの初期状態（数量クリア）に戻しますか？')) return;
-    const basePat = FREIGHT_PATTERNS[state.patternId] || FREIGHT_PATTERNS.basic;
-    state = cloneFreightPattern(basePat);
-    // パターン①でもクリア押下時は数量を空にして再入力しやすくする
-    state.rows.forEach(r => { r.qty = ''; r.note = ''; });
+    if (freightIsDirty(state) && !confirm(`「${pattern.label}」の入力内容を初期値に戻します。よろしいですか？`)) return;
+    store.drafts[store.active] = cloneFreightPattern(pattern);
     save();
-    renderFreightCalculator(state.total ? 'firstQty' : 'total');
+    renderFreightCalculator(freightIsBlank(pattern.total) ? 'total' : 'firstQty');
+    showGlobalToast('↺', '初期値に戻しました');
   });
 
+  // ---- 出力 ----
   const validRows = () => {
     const { sumQty, amounts, sumAmount } = compute();
     return {
       sumQty, sumAmount,
-      list: state.rows.map((r, i) => ({ ...r, q: Math.max(0, freightNum(r.qty) || 0), amount: amounts[i] || 0 })).filter(r => r.q > 0 || r.name)
+      list: state.rows.map((r, i) => ({ ...r, q: Math.max(0, freightNum(r.qty) || 0), amount: amounts[i] || 0 })).filter(r => r.q > 0 || String(r.name || '').trim())
     };
+  };
+
+  // 未入力のまま出力しないためのガード
+  const ensureReady = () => {
+    const { sumQty } = compute();
+    if (!((freightNum(state.total) || 0) > 0)) { showGlobalToast('⚠️', '運搬料総額を入力してください'); totalEl.focus(); return false; }
+    if (!(sumQty > 0)) { showGlobalToast('⚠️', '納品数量を入力してください'); const q = tbody.querySelector('input[data-field="qty"]'); if (q) q.focus(); return false; }
+    return true;
   };
 
   const copy = (text, msg) => {
     navigator.clipboard.writeText(text).then(() => showGlobalToast('📋', msg)).catch(() => alert('コピーに失敗しました'));
   };
 
+  const headerInfo = () => [
+    `便の日付: ${state.date || '-'}`,
+    `パターン: ${pattern.label}`,
+    state.memo && state.memo !== pattern.memo ? `便名/メモ: ${state.memo}` : null
+  ].filter(Boolean);
+
   document.getElementById('btnFreightCopyText').addEventListener('click', () => {
+    if (!ensureReady()) return;
     const { sumQty, sumAmount, list } = validRows();
     const total = Math.round(freightNum(state.total) || 0);
     const u = state.unit;
     const lines = [
       '【運搬料 按分計算結果】',
-      state.memo ? `便名/メモ: ${state.memo}` : null,
+      ...headerInfo(),
       `運搬料総額: ${yen(total)}（積載合計: ${num(sumQty, sumQty % 1 ? 2 : 0)} ${u}${sumQty > 0 ? ` / 平均: ${num(total / sumQty, 2)} 円/${u}` : ''}）`,
       `端数処理: ${roundingLabel[state.rounding]}`,
       '----------------------------------------',
-      ...list.map(r => `・${r.name || '(未入力)'}: ${num(r.q, r.q % 1 ? 2 : 0)} ${u}（${sumQty > 0 ? num(r.q / sumQty * 100, 2) : '0.00'}%）→ ${yen(r.amount)}${r.q > 0 ? `（${num(r.amount / r.q, 2)} 円/${u}）` : ''}${r.note ? ` ※${r.note}` : ''}`),
+      ...list.map(r => `・${r.name || '(未入力)'}: ${num(r.q, r.q % 1 ? 2 : 0)} ${u}（${sumQty > 0 ? num(r.q / sumQty * 100, 2) : '0.00'}%）→ ${yen(r.amount)}${r.note ? ` ※${r.note}` : ''}`),
       '----------------------------------------',
       `按分合計: ${yen(sumAmount)}${sumAmount === total ? '（総額と一致）' : `（総額との差額 ${(sumAmount - total).toLocaleString()}円）`}`
-    ].filter(l => l !== null);
+    ];
     copy(lines.join('\n'), 'メール・チャット用テキストをコピーしました');
   });
 
   document.getElementById('btnFreightCopyTsv').addEventListener('click', () => {
+    if (!ensureReady()) return;
     const { sumQty, sumAmount, list } = validRows();
-    const header = ['No.', '荷下ろし先', `納品数量(${state.unit})`, '構成比(%)', '按分運賃(円)', `単価(円/${state.unit})`, '備考'];
-    const rows = list.map((r, i) => [i + 1, r.name, r.q, sumQty > 0 ? (r.q / sumQty * 100).toFixed(2) : 0, r.amount, r.q > 0 ? (r.amount / r.q).toFixed(2) : '', r.note || '']);
-    rows.push(['', '合計', sumQty, sumQty > 0 ? '100.00' : '', sumAmount, '', '']);
+    const header = ['日付', 'パターン', 'No.', '荷下ろし先', `納品数量(${state.unit})`, '構成比(%)', '按分運賃(円)', `単価(円/${state.unit})`, '備考'];
+    const rows = list.map((r, i) => [state.date, pattern.label, i + 1, r.name, r.q, sumQty > 0 ? (r.q / sumQty * 100).toFixed(2) : 0, r.amount, r.q > 0 ? (r.amount / r.q).toFixed(2) : '', r.note || '']);
+    rows.push(['', '', '', '合計', sumQty, sumQty > 0 ? '100.00' : '', sumAmount, '', '']);
     copy([header, ...rows].map(r => r.join('\t')).join('\n'), 'Excel貼り付け用データをコピーしました');
   });
 
   document.getElementById('btnFreightCsv').addEventListener('click', () => {
+    if (!ensureReady()) return;
     const { sumQty, sumAmount, list } = validRows();
     const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
     let csv = '\uFEFF';
-    csv += `${q('運搬料総額')},${Math.round(freightNum(state.total) || 0)}\n${q('便名・メモ')},${q(state.memo)}\n${q('端数処理')},${q(roundingLabel[state.rounding])}\n\n`;
+    csv += `${q('便の日付')},${q(state.date)}\n${q('パターン')},${q(pattern.label)}\n${q('運搬料総額')},${Math.round(freightNum(state.total) || 0)}\n${q('便名・メモ')},${q(state.memo)}\n${q('端数処理')},${q(roundingLabel[state.rounding])}\n\n`;
     csv += `No.,荷下ろし先,納品数量(${state.unit}),構成比(%),按分運賃(円),単価(円/${state.unit}),備考\n`;
     list.forEach((r, i) => {
       csv += `${i + 1},${q(r.name)},${r.q},${sumQty > 0 ? (r.q / sumQty * 100).toFixed(2) : 0},${r.amount},${r.q > 0 ? (r.amount / r.q).toFixed(2) : ''},${q(r.note)}\n`;
@@ -5176,20 +5332,84 @@ function renderFreightCalculator(focusTarget = null) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `運搬料按分_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `運搬料按分_${state.date || freightToday()}_${pattern.title}.csv`;
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   });
 
   document.getElementById('btnFreightPrint').addEventListener('click', () => window.print());
 
+  // ---- 計算履歴 ----
+  function renderHistory() {
+    const el = document.getElementById('freightHistoryList');
+    if (!store.history.length) {
+      el.innerHTML = `<div style="padding:16px; color:#94a3b8; font-size:0.88em;">まだ履歴はありません。「💾 履歴に保存」で計算結果を記録できます。</div>`;
+      return;
+    }
+    el.innerHTML = store.history.map(h => {
+      const p = FREIGHT_PATTERNS[h.patternId];
+      const names = (h.rows || []).filter(r => (freightNum(r.qty) || 0) > 0).map(r => r.name || '(未入力)');
+      return `
+        <div class="freight-history-item" data-hid="${h.hid}">
+          <div style="font-weight:800; color:#0f172a; white-space:nowrap;">${freightEscape(h.date || '-')}</div>
+          <span class="fp-tag" style="background:#ffedd5; color:#9a3412;">${freightEscape(p ? p.label : h.patternId)}</span>
+          <div style="font-weight:700; color:#c2410c; white-space:nowrap;">${yen(freightNum(h.total) || 0)}</div>
+          <div style="color:#64748b; flex:1; min-width:140px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${freightEscape(names.join('、'))}">${names.length}か所：${freightEscape(names.join('、'))}${h.memo && (!p || h.memo !== p.memo) ? ` ／ ${freightEscape(h.memo)}` : ''}</div>
+          <button class="freight-icon-btn" data-hact="load">読込</button>
+          <button class="freight-icon-btn" data-hact="del" style="color:#dc2626;" aria-label="履歴を削除">✕</button>
+        </div>`;
+    }).join('');
+  }
+
+  document.getElementById('btnFreightSaveHistory').addEventListener('click', () => {
+    if (!ensureReady()) return;
+    const snap = JSON.parse(JSON.stringify(state));
+    snap.hid = Date.now();
+    snap.savedAt = new Date().toISOString();
+    store.history.unshift(snap);
+    store.history = store.history.slice(0, FREIGHT_HISTORY_MAX);
+    save();
+    renderHistory();
+    const det = document.getElementById('freightHistory');
+    det.querySelector('summary').textContent = `📚 計算履歴（${store.history.length}件・このブラウザに保存）`;
+    det.open = true;
+    showGlobalToast('💾', '計算結果を履歴に保存しました');
+  });
+
+  document.getElementById('freightHistoryList').addEventListener('click', e => {
+    const b = e.target.closest('button[data-hact]');
+    if (!b) return;
+    const hid = Number(b.closest('[data-hid]').dataset.hid);
+    const h = store.history.find(x => x.hid === hid);
+    if (!h) return;
+    if (b.dataset.hact === 'del') {
+      if (!confirm('この履歴を削除しますか？')) return;
+      store.history = store.history.filter(x => x.hid !== hid);
+      save();
+      renderFreightCalculator();
+      document.getElementById('freightHistory').open = true;
+      return;
+    }
+    const pid = FREIGHT_PATTERNS[h.patternId] ? h.patternId : 'basic';
+    if (freightIsDirty(store.drafts[pid]) && !confirm(`「${FREIGHT_PATTERNS[pid].label}」の現在の入力内容を、この履歴で上書きします。よろしいですか？`)) return;
+    const d = JSON.parse(JSON.stringify(h));
+    delete d.hid; delete d.savedAt;
+    d.patternId = pid;
+    store.drafts[pid] = d;
+    store.active = pid;
+    save();
+    renderFreightCalculator();
+    showGlobalToast('📚', `${h.date || ''} の履歴を読み込みました`);
+  });
+
+  renderHistory();
   renderRows();
 
   if (focusTarget === 'total') {
-    const tIn = document.getElementById('freightTotal');
-    if (tIn) tIn.focus();
-  } else if (focusTarget === 'firstQty') {
-    const qIn = tbody.querySelector('tr[data-idx="0"] input[data-field="qty"]');
-    if (qIn) qIn.focus();
+    totalEl.focus();
+  } else if (focusTarget === 'firstQty' || focusTarget === 'firstEmptyQty') {
+    const inputs = [...tbody.querySelectorAll('input[data-field="qty"]')];
+    const target = focusTarget === 'firstEmptyQty' ? (inputs.find(i => freightIsBlank(i.value)) || inputs[0]) : inputs[0];
+    if (target) target.focus();
   }
 }
