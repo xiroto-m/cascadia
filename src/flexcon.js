@@ -1349,7 +1349,42 @@ function renderFlexconInventory(targetEl) {
   }
 }
 
-// 在庫計算ヘルパー（指定月末時点対応 ＆ 未納品発注残の分離）
+// 指定月末時点の選択肢（最新リアルタイム＋各月末時点）を動的に生成
+function buildAsOfSelectOptionsHtml(transactions, selectedAsOf = 'latest') {
+  const monthSet = new Set([
+    '2026-12', '2026-11', '2026-10', '2026-09',
+    '2026-08', '2026-07', '2026-06', '2026-05'
+  ]);
+  const now = new Date();
+  for (let offset = -2; offset <= 2; offset++) {
+    const d = new Date(now.getFullYear(), now.getMonth() + offset, 1);
+    const ym = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    monthSet.add(ym);
+  }
+  (transactions || []).forEach(tx => {
+    if (tx && tx.date && tx.date.length >= 7) monthSet.add(tx.date.slice(0, 7));
+    if (tx && tx.transferOutDate && tx.transferOutDate.length >= 7) monthSet.add(tx.transferOutDate.slice(0, 7));
+    if (tx && tx.transferInDate && tx.transferInDate.length >= 7) monthSet.add(tx.transferInDate.slice(0, 7));
+  });
+
+  const sortedMonths = Array.from(monthSet).sort().reverse();
+  const getLastDayStr = (ym) => {
+    const [y, m] = ym.split('-').map(Number);
+    const lastDay = new Date(y, m, 0).getDate();
+    return `${ym}-${String(lastDay).padStart(2, '0')}`;
+  };
+
+  let html = `<option value="latest" ${selectedAsOf === 'latest' ? 'selected' : ''}>⚡ 最新リアルタイム（全期間）</option>`;
+  sortedMonths.forEach(ym => {
+    const [y, m] = ym.split('-').map(Number);
+    const endDate = getLastDayStr(ym);
+    const slashDate = endDate.replace(/-/g, '/');
+    html += `<option value="${endDate}" ${selectedAsOf === endDate ? 'selected' : ''}>${y}年 ${m}月末 時点 (${slashDate})</option>`;
+  });
+  return html;
+}
+
+// 在庫計算ヘルパー（指定月末時点対応 ＆ 未納品発注残の分離 ＆ 月跨ぎ拠点間移動の未着管理）
 function calculateStockMatrix(transactions, asOfDate = null) {
   const matrix = {};
   // 各拠点・品目の在庫ロットキュー（FIFO計算用）
@@ -1359,10 +1394,36 @@ function calculateStockMatrix(transactions, asOfDate = null) {
     matrix[loc] = {};
     fifoQueues[loc] = {};
     FLEXCON_ITEMS.forEach(item => {
-      matrix[loc][item.id] = { qty: 0, totalValue: 0, lastPrice: item.defaultPrice, orderedQty: 0 };
+      matrix[loc][item.id] = { qty: 0, totalValue: 0, lastPrice: item.defaultPrice, orderedQty: 0, inTransitInQty: 0, inTransitDetails: [] };
       fifoQueues[loc][item.id] = [];
     });
   });
+
+  // 指定基準日(asOfDate)時点で「出荷元は出庫済（outDate <= asOfDate）だが、移動先には未入荷（inDate > asOfDate）」の月跨ぎ移動を集計
+  if (asOfDate) {
+    transactions.forEach(tx => {
+      if (tx.type !== 'inbound' || tx.status === 'ordered') return;
+      let outDate = tx.transferOutDate || null;
+      if (!outDate && typeof tx.id === 'string' && tx.id.endsWith('-IN')) {
+        const outId = tx.id.replace(/-IN$/, '-OUT');
+        const pairedOut = transactions.find(t => t.id === outId);
+        if (pairedOut) outDate = pairedOut.date;
+      }
+      if (outDate && outDate <= asOfDate && tx.date > asOfDate && matrix[tx.location]) {
+        const items = (tx.items && tx.items.length > 0) ? tx.items : [{ item: tx.item, qty: tx.qty }];
+        items.forEach(it => {
+          if (!it.item || !matrix[tx.location][it.item]) return;
+          matrix[tx.location][it.item].inTransitInQty = (matrix[tx.location][it.item].inTransitInQty || 0) + (it.qty || 0);
+          matrix[tx.location][it.item].inTransitDetails.push({
+            qty: it.qty || 0,
+            outDate: outDate,
+            inDate: tx.date,
+            fromLoc: tx.transferFromLoc || (tx.supplier || '').replace(/^【拠点間移動】|発.*$/g, '').trim()
+          });
+        });
+      }
+    });
+  }
 
   const filtered = transactions.filter(tx => {
     if (asOfDate && tx.date > asOfDate) return false;
@@ -1563,12 +1624,7 @@ function renderFlexconDashboard(container, data) {
       </div>
       <div style="display: flex; align-items: center; gap: 8px;">
         <select id="asOfSelect" style="padding: 6px 12px; font-size: 13px; font-weight: 600; border-radius: 8px; border: 1px solid var(--border-medium); background: var(--bg-primary); color: var(--text-primary);">
-          <option value="latest" ${currentFlexconAsOf === 'latest' ? 'selected' : ''}>⚡ 最新リアルタイム（全期間）</option>
-          <option value="2026-09-30" ${currentFlexconAsOf === '2026-09-30' ? 'selected' : ''}>2026年 9月末 時点 (2026/09/30)</option>
-          <option value="2026-08-31" ${currentFlexconAsOf === '2026-08-31' ? 'selected' : ''}>2026年 8月末 時点 (2026/08/31)</option>
-          <option value="2026-07-31" ${currentFlexconAsOf === '2026-07-31' ? 'selected' : ''}>2026年 7月末 時点 (2026/07/31)</option>
-          <option value="2026-06-30" ${currentFlexconAsOf === '2026-06-30' ? 'selected' : ''}>2026年 6月末 時点 (2026/06/30)</option>
-          <option value="2026-05-31" ${currentFlexconAsOf === '2026-05-31' ? 'selected' : ''}>2026年 5月末 時点 (2026/05/31)</option>
+          ${buildAsOfSelectOptionsHtml(data.transactions, currentFlexconAsOf)}
         </select>
         <span style="font-size: 12px; font-weight: 700; color: var(--accent-blue); background: rgba(37,99,235,0.1); padding: 4px 10px; border-radius: 6px;">
           ${currentFlexconAsOf === 'latest' ? '現在時点' : currentFlexconAsOf + ' 時点'}
@@ -1792,6 +1848,11 @@ function renderFlexconDashboard(container, data) {
                         ${cell.orderedQty > 0 ? `
                           <div style="font-size: 10px; color: var(--accent-green); font-weight: 600; margin-top: 2px;">
                             (入荷待 +${cell.orderedQty}枚)
+                          </div>
+                        ` : ''}
+                        ${cell.inTransitInQty > 0 ? `
+                          <div style="font-size: 10px; color: var(--accent-blue); font-weight: 700; margin-top: 2px;" title="${(cell.inTransitDetails || []).map(d => `${d.fromLoc ? d.fromLoc + 'より ' : ''}${d.outDate}出荷 → ${d.inDate}入荷 (${d.qty}枚)`).join(' / ')}">
+                            (🔄移動未着 +${cell.inTransitInQty}枚${cell.inTransitDetails && cell.inTransitDetails[0] ? ` [${cell.inTransitDetails[0].inDate.slice(5).replace('-', '/')}着]` : ''})
                           </div>
                         ` : ''}
                       </td>
@@ -3307,14 +3368,14 @@ function openFlexconOutboundModal(data) {
   });
 }
 
-// 5. 拠点間移動モーダル（出庫＋入庫を一括生成・単価欄ロック）
+// 5. 拠点間移動モーダル（出庫＋入庫を一括生成・出荷日と入荷日の個別入力対応・単価欄ロック）
 function openFlexconTransferModal(data) {
   const modalContainer = document.getElementById('flexconActionModalContainer');
   const today = new Date().toISOString().split('T')[0];
 
   modalContainer.innerHTML = `
     <div class="flexcon-modal-overlay" id="flexconTransferModalOverlay">
-      <div class="flexcon-modal-box" style="max-width: 620px;">
+      <div class="flexcon-modal-box" style="max-width: 640px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
           <div style="display: flex; align-items: center; gap: 8px;">
             <span style="font-size: 20px;">🔄</span>
@@ -3324,25 +3385,35 @@ function openFlexconTransferModal(data) {
         </div>
 
         <form id="modalTransferForm" class="tool-form" novalidate>
-          <div class="tool-group">
-            <label for="mTransferDate">移動日 <span style="color:#ef4444;">*</span></label>
-            <input type="date" id="mTransferDate" value="${today}" required>
-          </div>
-
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
             <div class="tool-group">
-              <label for="mTransferFromLoc">移動元拠点（出庫場所） <span style="color:#ef4444;">*</span></label>
+              <label for="mTransferFromLoc">📤 出荷元拠点（出庫場所） <span style="color:#ef4444;">*</span></label>
               <select id="mTransferFromLoc" required>
                 ${FLEXCON_LOCATIONS.map(l => `<option value="${l}">${l}</option>`).join('')}
               </select>
             </div>
             <div class="tool-group">
-              <label for="mTransferToLoc">移動先拠点（受入場所） <span style="color:#ef4444;">*</span></label>
+              <label for="mTransferToLoc">📥 納品先拠点（受入場所） <span style="color:#ef4444;">*</span></label>
               <select id="mTransferToLoc" required>
                 ${FLEXCON_LOCATIONS.map((l, idx) => `<option value="${l}" ${idx === 1 ? 'selected' : ''}>${l}</option>`).join('')}
               </select>
             </div>
           </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="tool-group">
+              <label for="mTransferOutDate">📤 出荷日（移動元の出庫日） <span style="color:#ef4444;">*</span></label>
+              <input type="date" id="mTransferOutDate" value="${today}" required>
+              <div style="font-size: 10.5px; color: var(--text-muted); margin-top: 3px;">※この日付で出荷元の在庫から減算されます</div>
+            </div>
+            <div class="tool-group">
+              <label for="mTransferInDate">📥 入荷日（納品先の受入日） <span style="color:#ef4444;">*</span></label>
+              <input type="date" id="mTransferInDate" value="${today}" required>
+              <div style="font-size: 10.5px; color: var(--text-muted); margin-top: 3px;">※月を跨ぐ場合は到着月の日付を指定してください</div>
+            </div>
+          </div>
+
+          <div id="mTransferDateNotice" style="display: none; background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.35); border-left: 4px solid #f59e0b; border-radius: 8px; padding: 9px 12px; margin-bottom: 12px; font-size: 11.5px; color: #92400e; line-height: 1.45;"></div>
 
           <div class="tool-group">
             <label for="mTransferItem">対象資材（品目） <span style="color:#ef4444;">*</span></label>
@@ -3366,8 +3437,8 @@ function openFlexconTransferModal(data) {
           ${renderOperatorSelectHtml('mTransferOperator', '入力担当者')}
           ${renderNoteSelectHtml('mTransferNotePreset', 'mTransferNote')}
 
-          <div style="background: rgba(37,99,235,0.04); border: 1px solid rgba(37,99,235,0.18); border-radius: 8px; padding: 10px 14px; margin-top: 10px; font-size: 11.5px; color: var(--text-secondary); line-height: 1.4;">
-            💡 <strong>登録の仕組み:</strong> 移動元拠点からの「出庫」と移動先拠点への「入庫」の2レコードが一度に自動作成されます。移動元の実在庫が減算され、移動先の実在庫に加算されます。
+          <div style="background: rgba(37,99,235,0.04); border: 1px solid rgba(37,99,235,0.18); border-radius: 8px; padding: 10px 14px; margin-top: 10px; font-size: 11.5px; color: var(--text-secondary); line-height: 1.45;">
+            💡 <strong>登録の仕組み:</strong> 出荷元拠点からの「出庫（出荷日付）」と納品先拠点への「入庫（入荷日付）」の2レコードが自動作成されます。入出庫日が月を跨ぐ場合（例：出荷日 10/31・入荷日 11/5）も、それぞれの月の月末在庫に正確に反映されます。
           </div>
 
           <div style="display: flex; gap: 10px; margin-top: 20px;">
@@ -3388,8 +3459,37 @@ function openFlexconTransferModal(data) {
 
   const fromLocSelect = document.getElementById('mTransferFromLoc');
   const toLocSelect = document.getElementById('mTransferToLoc');
+  const outDateInput = document.getElementById('mTransferOutDate');
+  const inDateInput = document.getElementById('mTransferInDate');
+  const dateNoticeDiv = document.getElementById('mTransferDateNotice');
   const itemSelect = document.getElementById('mTransferItem');
   const stockInfoDiv = document.getElementById('mTransferStockInfo');
+
+  const updateTransferDateNotice = () => {
+    const outDate = outDateInput.value;
+    const inDate = inDateInput.value;
+    const fromLoc = fromLocSelect.value;
+    const toLoc = toLocSelect.value;
+    if (!outDate || !inDate || outDate === inDate) {
+      dateNoticeDiv.style.display = 'none';
+      return;
+    }
+    dateNoticeDiv.style.display = 'block';
+    if (inDate < outDate) {
+      dateNoticeDiv.style.background = 'rgba(239, 68, 68, 0.08)';
+      dateNoticeDiv.style.borderColor = 'rgba(239, 68, 68, 0.35)';
+      dateNoticeDiv.style.borderLeft = '4px solid #ef4444';
+      dateNoticeDiv.style.color = '#b91c1c';
+      dateNoticeDiv.innerHTML = `⚠️ <strong>日付の確認:</strong> 入荷日（${inDate}）が出荷日（${outDate}）より前の日付になっています。`;
+    } else {
+      const isCrossMonth = outDate.slice(0, 7) !== inDate.slice(0, 7);
+      dateNoticeDiv.style.background = 'rgba(245, 158, 11, 0.08)';
+      dateNoticeDiv.style.borderColor = 'rgba(245, 158, 11, 0.35)';
+      dateNoticeDiv.style.borderLeft = '4px solid #f59e0b';
+      dateNoticeDiv.style.color = '#92400e';
+      dateNoticeDiv.innerHTML = `📅 <strong>${isCrossMonth ? '月跨ぎ移動の計上' : '出荷日・入荷日の個別計上'}:</strong> 出荷元【${fromLoc}】は <strong>${outDate}</strong> に出庫減算され、納品先【${toLoc}】は <strong>${inDate}</strong> に入庫加算されます。`;
+    }
+  };
 
   const updateCurrentStockInfo = () => {
     const fromLoc = fromLocSelect.value;
@@ -3398,11 +3498,24 @@ function openFlexconTransferModal(data) {
     const avail = (matrix[fromLoc] && matrix[fromLoc][itemId]) ? matrix[fromLoc][itemId].qty : 0;
     const itemObj = FLEXCON_ITEMS.find(i => i.id === itemId);
     const itemName = itemObj ? itemObj.commonName : itemId;
-    stockInfoDiv.innerHTML = `📍 移動元【${fromLoc}】の現在庫: <strong>${avail.toLocaleString()}</strong> 枚 (${itemName})`;
+    stockInfoDiv.innerHTML = `📍 出荷元【${fromLoc}】の現在庫: <strong>${avail.toLocaleString()}</strong> 枚 (${itemName})`;
     stockInfoDiv.dataset.avail = avail;
+    updateTransferDateNotice();
   };
 
+  outDateInput.addEventListener('change', () => {
+    if (!inDateInput.dataset.userEdited || (inDateInput.value && inDateInput.value < outDateInput.value)) {
+      inDateInput.value = outDateInput.value;
+    }
+    updateTransferDateNotice();
+  });
+  inDateInput.addEventListener('change', () => {
+    inDateInput.dataset.userEdited = 'true';
+    updateTransferDateNotice();
+  });
+
   fromLocSelect.addEventListener('change', updateCurrentStockInfo);
+  toLocSelect.addEventListener('change', updateTransferDateNotice);
   itemSelect.addEventListener('change', updateCurrentStockInfo);
   updateCurrentStockInfo();
   setupModalOperatorAndNote('mTransferOperator', 'mTransferNotePreset', 'mTransferNote');
@@ -3413,16 +3526,21 @@ function openFlexconTransferModal(data) {
     const toLoc = toLocSelect.value;
     const itemId = itemSelect.value;
     const qty = parseInt(document.getElementById('mTransferQty').value, 10);
-    const date = document.getElementById('mTransferDate').value;
+    const outDate = outDateInput.value;
+    const inDate = inDateInput.value;
     const note = document.getElementById('mTransferNote').value.trim();
     const operator = getSelectedOperator('mTransferOperator');
 
-    if (!date) {
-      alert("移動日を入力してください。");
+    if (!outDate || !inDate) {
+      alert("出荷日と入荷日をそれぞれ入力してください。");
+      return;
+    }
+    if (inDate < outDate) {
+      alert(`⚠️ 入荷日（${inDate}）が出荷日（${outDate}）より前の日付になっています。日付をご確認ください。`);
       return;
     }
     if (fromLoc === toLoc) {
-      alert("⚠️ 移動元拠点と移動先拠点が同じです。異なる拠点を選択してください。");
+      alert("⚠️ 出荷元拠点と納品先拠点が同じです。異なる拠点を選択してください。");
       return;
     }
     if (!qty || qty <= 0) {
@@ -3432,60 +3550,83 @@ function openFlexconTransferModal(data) {
 
     const avail = parseInt(stockInfoDiv.dataset.avail || '0', 10);
     if (qty > avail) {
-      if (!confirm(`⚠️ 在庫超過警告: 移動元 (${fromLoc}) の現在庫は ${avail} 枚です。\n移動数量 (${qty} 枚) が現在庫を超えていますが、登録を続行しますか？`)) {
+      if (!confirm(`⚠️ 在庫超過警告: 出荷元 (${fromLoc}) の現在庫は ${avail} 枚です。\n移動数量 (${qty} 枚) が現在庫を超えていますが、登録を続行しますか？`)) {
         return;
       }
     }
 
-    // 移動元の在庫を先入先出（FIFO）で払い出し、そのロット単価をそのまま移動先へ引き継ぐ
-    const issueLots = getFifoIssueLots(data.transactions, fromLoc, itemId, qty, date);
+    // 移動元の在庫を出荷日時点で先入先出（FIFO）で払い出し、そのロット単価をそのまま移動先へ引き継ぐ
+    const issueLots = getFifoIssueLots(data.transactions, fromLoc, itemId, qty, outDate);
     const lotFields = buildFifoTxFields(itemId, issueLots);
 
     const baseId = Date.now().toString().slice(-6);
+    const pairId = "TX-" + baseId;
+    const dateDiffNote = outDate !== inDate ? `（出荷:${outDate} → 入荷:${inDate}）` : '';
 
-    // 1. 移動元からの出庫
+    // 1. 移動元からの出庫（出荷日付で計上）
     const outboundTx = Object.assign({
-      id: "TX-" + baseId + "-OUT",
-      date: date,
+      id: pairId + "-OUT",
+      transferPairId: pairId,
+      transferOutDate: outDate,
+      transferInDate: inDate,
+      transferFromLoc: fromLoc,
+      transferToLoc: toLoc,
+      date: outDate,
       type: "outbound",
       status: "delivered",
       location: fromLoc,
       supplier: "",
       operator: operator,
       ourContact: operator,
-      purpose: `【拠点間移動】${toLoc}宛`,
-      note: note ? `移動先: ${toLoc} / ${note}` : `移動先: ${toLoc}へ振替`
+      purpose: `【拠点間移動】${toLoc}宛${dateDiffNote}`,
+      note: note ? `移動先: ${toLoc}${dateDiffNote} / ${note}` : `移動先: ${toLoc}へ振替${dateDiffNote}`
     }, JSON.parse(JSON.stringify(lotFields)));
 
-    // 2. 移動先への入庫（移動元のロット単価を引継ぎ）
+    // 2. 移動先への入庫（入荷日付で計上・移動元のロット単価を引継ぎ）
     const inboundTx = Object.assign({
-      id: "TX-" + baseId + "-IN",
-      date: date,
+      id: pairId + "-IN",
+      transferPairId: pairId,
+      transferOutDate: outDate,
+      transferInDate: inDate,
+      transferFromLoc: fromLoc,
+      transferToLoc: toLoc,
+      date: inDate,
       type: "inbound",
       status: "delivered",
       location: toLoc,
       operator: operator,
       ourContact: operator,
-      supplier: `【拠点間移動】${fromLoc}発`,
+      supplier: `【拠点間移動】${fromLoc}発${dateDiffNote}`,
       purpose: "",
-      note: note ? `移動元: ${fromLoc} / ${note}` : `移動元: ${fromLoc}より受入`
+      note: note ? `移動元: ${fromLoc}${dateDiffNote} / ${note}` : `移動元: ${fromLoc}より受入${dateDiffNote}`
     }, JSON.parse(JSON.stringify(lotFields)));
 
     data.transactions.push(outboundTx, inboundTx);
     saveFlexconData(data);
     closeModal();
-    showToast(`🔄 拠点間移動を登録しました（${fromLoc} → ${toLoc} : ${qty}枚）`);
+    const toastDateMsg = outDate !== inDate ? ` [出荷:${outDate} → 入荷:${inDate}]` : '';
+    showToast(`🔄 拠点間移動を登録しました（${fromLoc} → ${toLoc} : ${qty}枚${toastDateMsg}）`);
     renderFlexconInventory();
   });
 }
 
-// 6. トランザクション変更モーダル（発注内容・受入内容・数量・納品予定日の変更）
+// 6. トランザクション変更モーダル（発注内容・受入内容・数量・納品予定日・拠点間移動ペア日付の変更）
 function openEditTransactionModal(txId, data) {
   const tx = data.transactions.find(t => t.id === txId);
   if (!tx) return;
   const modalContainer = document.getElementById('flexconActionModalContainer');
   const isOrdered = tx.status === 'ordered';
   const isInbound = tx.type === 'inbound';
+
+  // 拠点間移動ペア（-OUT / -IN）の自動検出
+  const pairedTxId = (typeof tx.id === 'string' && tx.id.endsWith('-OUT'))
+    ? tx.id.replace(/-OUT$/, '-IN')
+    : ((typeof tx.id === 'string' && tx.id.endsWith('-IN')) ? tx.id.replace(/-IN$/, '-OUT') : null);
+  const pairedTx = pairedTxId ? data.transactions.find(t => t.id === pairedTxId) : null;
+  const isTransferPair = !!pairedTx;
+  const transferOutTx = isTransferPair ? (tx.type === 'outbound' ? tx : pairedTx) : null;
+  const transferInTx = isTransferPair ? (tx.type === 'inbound' ? tx : pairedTx) : null;
+
   const rawItems = (tx.items && Array.isArray(tx.items) && tx.items.length > 0)
     ? JSON.parse(JSON.stringify(tx.items))
     : [{
@@ -3502,9 +3643,9 @@ function openEditTransactionModal(txId, data) {
       <div class="flexcon-modal-box" style="max-width: 720px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
           <div style="display: flex; align-items: center; gap: 8px;">
-            <span style="font-size: 20px;">✏️</span>
+            <span style="font-size: 20px;">${isTransferPair ? '🔄' : '✏️'}</span>
             <h3 style="margin: 0; font-size: 17px; font-weight: 800;">
-              ${isOrdered ? '発注・受入内容の変更' : (isInbound ? '入庫データの変更' : '出庫データの変更')}
+              ${isTransferPair ? '拠点間移動データの変更（出荷日・入荷日対応）' : (isOrdered ? '発注・受入内容の変更' : (isInbound ? '入庫データの変更' : '出庫データの変更'))}
             </h3>
             <span style="font-size: 11px; background: rgba(37,99,235,0.1); color: var(--accent-blue); padding: 2px 8px; border-radius: 4px; font-weight: 700;">
               ${tx.orderNo || tx.id}
@@ -3514,6 +3655,37 @@ function openEditTransactionModal(txId, data) {
         </div>
 
         <form id="modalEditForm" class="tool-form" novalidate>
+          ${isTransferPair ? `
+            <div style="background: rgba(37,99,235,0.05); border: 1px solid rgba(37,99,235,0.22); border-radius: 8px; padding: 12px 14px; margin-bottom: 14px;">
+              <div style="font-size: 12px; font-weight: 800; color: var(--accent-blue); margin-bottom: 8px;">
+                🔄 拠点間移動ペア設定（出荷元と納品先の日付・拠点を一括更新します）
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px;">
+                <div class="tool-group" style="margin: 0;">
+                  <label for="mEditTransferFromLoc">📤 出荷元拠点（出庫） <span style="color:#ef4444;">*</span></label>
+                  <select id="mEditTransferFromLoc" required>
+                    ${FLEXCON_LOCATIONS.map(l => `<option value="${l}" ${l === transferOutTx.location ? 'selected' : ''}>${l}</option>`).join('')}
+                  </select>
+                </div>
+                <div class="tool-group" style="margin: 0;">
+                  <label for="mEditTransferToLoc">📥 納品先拠点（入庫） <span style="color:#ef4444;">*</span></label>
+                  <select id="mEditTransferToLoc" required>
+                    ${FLEXCON_LOCATIONS.map(l => `<option value="${l}" ${l === transferInTx.location ? 'selected' : ''}>${l}</option>`).join('')}
+                  </select>
+                </div>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="tool-group" style="margin: 0;">
+                  <label for="mEditTransferOutDate">📤 出荷日（移動元の出庫日） <span style="color:#ef4444;">*</span></label>
+                  <input type="date" id="mEditTransferOutDate" value="${transferOutTx.date}" required>
+                </div>
+                <div class="tool-group" style="margin: 0;">
+                  <label for="mEditTransferInDate">📥 入荷日（納品先の受入日） <span style="color:#ef4444;">*</span></label>
+                  <input type="date" id="mEditTransferInDate" value="${transferInTx.date}" required>
+                </div>
+              </div>
+            </div>
+          ` : `
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
             <div class="tool-group">
               <label for="mEditDate">${isOrdered ? '発注日' : '取引日'} <span style="color:#ef4444;">*</span></label>
@@ -3554,6 +3726,7 @@ function openEditTransactionModal(txId, data) {
               <label for="mEditParty">${isInbound ? '仕入先 / 納品元' : '出庫用途 / 納品先'}</label>
               <input type="text" id="mEditParty" value="${tx.supplier || tx.purpose || ''}">
             </div>
+          `}
           `}
 
           <!-- 品目・数量・単価の内訳一覧 -->
@@ -3624,15 +3797,66 @@ function openEditTransactionModal(txId, data) {
       });
     });
 
+    const noteVal = document.getElementById('mEditNote').value.trim();
+    const opVal = getSelectedOperator('mEditOperator');
+
+    if (isTransferPair) {
+      const outDateVal = document.getElementById('mEditTransferOutDate').value;
+      const inDateVal = document.getElementById('mEditTransferInDate').value;
+      const fromLocVal = document.getElementById('mEditTransferFromLoc').value;
+      const toLocVal = document.getElementById('mEditTransferToLoc').value;
+
+      if (inDateVal < outDateVal) {
+        alert(`⚠️ 入荷日（${inDateVal}）が出荷日（${outDateVal}）より前の日付になっています。`);
+        return false;
+      }
+      if (fromLocVal === toLocVal) {
+        alert(`⚠️ 出荷元拠点と納品先拠点が同じです。異なる拠点を選択してください。`);
+        return false;
+      }
+
+      const dateDiffNote = outDateVal !== inDateVal ? `（出荷:${outDateVal} → 入荷:${inDateVal}）` : '';
+      transferOutTx.date = outDateVal;
+      transferOutTx.location = fromLocVal;
+      transferOutTx.transferOutDate = outDateVal;
+      transferOutTx.transferInDate = inDateVal;
+      transferOutTx.transferFromLoc = fromLocVal;
+      transferOutTx.transferToLoc = toLocVal;
+      transferOutTx.purpose = `【拠点間移動】${toLocVal}宛${dateDiffNote}`;
+      transferOutTx.operator = opVal;
+      transferOutTx.ourContact = opVal;
+
+      transferInTx.date = inDateVal;
+      transferInTx.location = toLocVal;
+      transferInTx.transferOutDate = outDateVal;
+      transferInTx.transferInDate = inDateVal;
+      transferInTx.transferFromLoc = fromLocVal;
+      transferInTx.transferToLoc = toLocVal;
+      transferInTx.supplier = `【拠点間移動】${fromLocVal}発${dateDiffNote}`;
+      transferInTx.operator = opVal;
+      transferInTx.ourContact = opVal;
+
+      tx.note = noteVal;
+      if (updatedRows.length > 0) {
+        const totalQ = updatedRows.reduce((s, it) => s + it.qty, 0);
+        [transferOutTx, transferInTx].forEach(target => {
+          target.items = JSON.parse(JSON.stringify(updatedRows));
+          target.item = updatedRows[0].item;
+          target.qty = totalQ;
+          target.price = updatedRows[0].price;
+        });
+      }
+      return true;
+    }
+
     const dateVal = document.getElementById('mEditDate').value;
     const locVal = document.getElementById('mEditLocation').value;
-    const noteVal = document.getElementById('mEditNote').value.trim();
 
     tx.date = dateVal;
     tx.location = locVal;
     tx.note = noteVal;
-    tx.operator = getSelectedOperator('mEditOperator');
-    tx.ourContact = tx.operator;
+    tx.operator = opVal;
+    tx.ourContact = opVal;
     if (isOrdered) {
       tx.orderDate = dateVal;
       tx.deliveryDueDate = document.getElementById('mEditDueDate').value;
@@ -3649,12 +3873,13 @@ function openEditTransactionModal(txId, data) {
       tx.qty = updatedRows.reduce((s, it) => s + it.qty, 0);
       tx.price = updatedRows[0].price;
     }
+    return true;
   };
 
   // 1. 変更保存のみ
   document.getElementById('modalEditForm').addEventListener('submit', (e) => {
     e.preventDefault();
-    collectEditedData();
+    if (collectEditedData() === false) return;
     saveFlexconData(data);
     closeModal();
     showToast("💾 データを正常に更新・保存しました");
@@ -3664,7 +3889,7 @@ function openEditTransactionModal(txId, data) {
   // 2. この内容で受入完了にする
   if (isOrdered && document.getElementById('btnSaveAndDeliver')) {
     document.getElementById('btnSaveAndDeliver').addEventListener('click', () => {
-      collectEditedData();
+      if (collectEditedData() === false) return;
       const effectiveDate = tx.deliveryDueDate || tx.orderDate || new Date().toISOString().split('T')[0];
       tx.status = 'delivered';
       tx.date = effectiveDate;
@@ -4008,18 +4233,24 @@ function renderFlexconLedger(container, data) {
 
 // 7. 月末棚卸し＆CSVエクスポート
 function renderFlexconCheck(container, data) {
-  const matrix = calculateStockMatrix(data.transactions);
+  const asOf = currentFlexconAsOf === 'latest' ? null : currentFlexconAsOf;
+  const matrix = calculateStockMatrix(data.transactions, asOf);
 
   container.innerHTML = `
     <div class="tool-card" style="margin-bottom: 20px;">
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 14px;">
-        <h3 style="margin: 0;">📑 月末実在庫 棚卸し照合・差額調整</h3>
-        <button class="btn btn-primary" id="btnExportFlexconCSV" style="background: linear-gradient(135deg, var(--accent-green), #107c41); color: #fff; padding: 8px 16px; font-size: 13px;">
-          📥 全在庫・入出庫データをCSVエクスポート
-        </button>
+        <h3 style="margin: 0;">📑 月末実在庫 棚卸し照合・差額調整 (${currentFlexconAsOf === 'latest' ? '現在時点' : currentFlexconAsOf + ' 時点'})</h3>
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <select id="asOfSelectCheck" style="padding: 6px 12px; font-size: 12.5px; font-weight: 600; border-radius: 8px; border: 1px solid var(--border-medium); background: var(--bg-primary); color: var(--text-primary);">
+            ${buildAsOfSelectOptionsHtml(data.transactions, currentFlexconAsOf)}
+          </select>
+          <button class="btn btn-primary" id="btnExportFlexconCSV" style="background: linear-gradient(135deg, var(--accent-green), #107c41); color: #fff; padding: 8px 16px; font-size: 13px;">
+            📥 全在庫・入出庫データをCSVエクスポート
+          </button>
+        </div>
       </div>
       <p style="font-size: 12px; color: var(--text-muted); margin-top: 0; margin-bottom: 16px;">
-        各拠点の月末棚卸カウント数を入力し、システム帳簿理論在庫との差額を照合します。
+        各拠点の月末棚卸カウント数を入力し、指定基準日時点のシステム帳簿理論在庫との差額を照合します。
       </p>
 
       <div style="overflow-x: auto;">
@@ -4055,6 +4286,14 @@ function renderFlexconCheck(container, data) {
       </div>
     </div>
   `;
+
+  const asOfSelectCheck = document.getElementById('asOfSelectCheck');
+  if (asOfSelectCheck) {
+    asOfSelectCheck.addEventListener('change', (e) => {
+      currentFlexconAsOf = e.target.value;
+      renderFlexconCheck(container, data);
+    });
+  }
 
   document.getElementById('btnExportFlexconCSV').addEventListener('click', () => {
     let csv = "\uFEFF日付(納品日),区分,ステータス,保管場所,品名ID,品名通称,枚数,単価,金額,仕入先/用途,発注日,発注No,備考\n";
