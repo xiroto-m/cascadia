@@ -4609,8 +4609,9 @@ const FREIGHT_STORAGE_KEY = 'cascadia_freight_calculator';
 const FREIGHT_HISTORY_MAX = 50;
 
 // 定型4パターン定義（畑山様ご依頼：基本Ver ＋ 毎月発生する3パターン）
-// dummy: 畑山様に確認中で仮設定としている内容（画面上に「仮設定」バッジを表示）
-// farmHints: 荷下ろし先の入力候補（実際の農場名が未確定のためダミー）
+// 荷下ろし先の農場名は畑山様ご提供の「運搬料按分_パターン.docx（2026-10-28 黄色ハイライト）」に基づく
+// placeholderNames: 旧バージョンの仮名（A農場…）。保存済みの下書きを実際の農場名へ自動移行するために使用
+// dummy: 確認中で仮設定としている内容（画面上に「仮設定」バッジを表示）※現在は全パターン確定済み
 const FREIGHT_PATTERNS = {
   basic: {
     id: 'basic',
@@ -4619,7 +4620,6 @@ const FREIGHT_PATTERNS = {
     label: '基本Ver（標準・2か所）',
     summary: '金額・数量は都度入力 ／ 2か所',
     dummy: null,
-    farmHints: [],
     total: '',
     memo: '',
     unit: 'kg',
@@ -4634,16 +4634,16 @@ const FREIGHT_PATTERNS = {
     title: 'パターン①',
     area: '千葉方面',
     label: 'パターン①（千葉方面）',
-    summary: '33,000円/台 ／ 12,000kg＋1,000kg',
-    dummy: '荷下ろし先の実際の農場名は確認中のため、入力候補は仮データです。',
-    farmHints: ['【ダミー】千葉 第1農場', '【ダミー】千葉 第2農場'],
+    summary: '33,000円/台 ／ 平山牧場 12,000kg・寺島牧場 1,000kg',
+    dummy: null,
     total: 33000,
     memo: 'パターン①（千葉方面）',
     unit: 'kg',
     rounding: 'adjust',
+    placeholderNames: ['A農場', 'B農場'],
     rows: [
-      { name: 'A農場', qty: 12000, note: '' },
-      { name: 'B農場', qty: 1000, note: '' }
+      { name: '平山牧場', qty: 12000, note: '' },
+      { name: '寺島牧場', qty: 1000, note: '' }
     ]
   },
   pattern2: {
@@ -4652,32 +4652,60 @@ const FREIGHT_PATTERNS = {
     area: '唐津方面',
     label: 'パターン②（唐津方面）',
     summary: '30,000円/台 ／ 7か所（数量は都度入力）',
-    dummy: '荷下ろし先の実際の農場名は確認中のため、入力候補は仮データです。',
-    farmHints: ['A', 'B', 'C', 'D', 'E', 'F', 'G'].map(c => `【ダミー】唐津 ${c}農場`),
+    dummy: null,
     total: 30000,
     memo: 'パターン②（唐津方面）',
     unit: 'kg',
     rounding: 'adjust',
-    rows: ['A', 'B', 'C', 'D', 'E', 'F', 'G'].map(c => ({ name: `${c}農場`, qty: '', note: '' }))
+    placeholderNames: ['A農場', 'B農場', 'C農場', 'D農場', 'E農場', 'F農場', 'G農場'],
+    rows: [
+      '佐賀牛宮崎牧場',
+      '池田嘉彦（池田牧場）',
+      'JA唐津（うわば資材センター）',
+      '山口畜産',
+      '川口光（川口牧場）',
+      '木場ファーム',
+      '栗ファーム'
+    ].map(name => ({ name, qty: '', note: '' }))
   },
   pattern3: {
     id: 'pattern3',
     title: 'パターン③',
     area: '九州用',
     label: 'パターン③（九州用）',
-    summary: '金額・数量は都度入力 ／ 2か所',
-    dummy: '九州用の固有条件（農場名・単価など）は確認中のため、基本Verと同じ仮設定です。',
-    farmHints: ['【ダミー】九州 北部農場', '【ダミー】九州 南部農場'],
+    summary: '金額・数量は都度入力 ／ 中居DF・木村DF',
+    dummy: null,
     total: '',
     memo: 'パターン③（九州用）',
     unit: 'kg',
     rounding: 'adjust',
+    placeholderNames: ['A農場', 'B農場'],
     rows: [
-      { name: 'A農場', qty: '', note: '' },
-      { name: 'B農場', qty: '', note: '' }
+      { name: '中居DF', qty: '', note: '' },
+      { name: '木村DF', qty: '', note: '' }
     ]
   }
 };
+
+// 荷下ろし先の入力候補（全パターンの登録農場）
+const FREIGHT_FARM_MASTER = [...new Set(Object.values(FREIGHT_PATTERNS)
+  .filter(p => p.placeholderNames)
+  .flatMap(p => p.rows.map(r => r.name)))];
+
+// 旧バージョンで保存された下書きの仮名（A農場…）を、同じ行位置の実際の農場名へ置き換える。
+// 入力済みの数量・備考はそのまま残す。ユーザーが名前を変更済みの行は触らない。
+function migrateFreightFarmNames(draft) {
+  const pat = FREIGHT_PATTERNS[draft.patternId];
+  if (!pat || !pat.placeholderNames) return false;
+  let changed = false;
+  draft.rows.forEach((r, i) => {
+    if (i < pat.rows.length && String(r.name ?? '').trim() === pat.placeholderNames[i]) {
+      r.name = pat.rows[i].name;
+      changed = true;
+    }
+  });
+  return changed;
+}
 
 function freightToday() {
   const d = new Date();
@@ -4799,6 +4827,12 @@ function loadFreightStore() {
   });
   if (!FREIGHT_PATTERNS[store.active]) store.active = 'basic';
   if (!Array.isArray(store.history)) store.history = [];
+  // 2026-10-28 畑山様ご提供の農場名へ、保存済み下書きの仮名を一度だけ自動移行
+  if ((store.farmNamesV || 0) < 1) {
+    Object.values(store.drafts).forEach(migrateFreightFarmNames);
+    store.farmNamesV = 1;
+    try { localStorage.setItem(FREIGHT_STORAGE_KEY, JSON.stringify(store)); } catch (e) { /* 保存不可でも表示は継続 */ }
+  }
   return store;
 }
 
@@ -4817,9 +4851,10 @@ function renderFreightCalculator(focusTarget = null) {
     ceil: '切り上げ'
   };
 
-  // 入力候補：パターン別の候補（ダミー）＋ 過去に入力した荷下ろし先名
+  // 入力候補：選択中パターンの登録農場 → 全パターンの登録農場 → 過去に入力した荷下ろし先名
   const nameHints = [...new Set([
-    ...pattern.farmHints,
+    ...(pattern.placeholderNames ? pattern.rows.map(r => r.name) : []),
+    ...FREIGHT_FARM_MASTER,
     ...store.history.flatMap(h => (h.rows || []).map(r => String(r.name || '').trim())),
     ...Object.values(store.drafts).flatMap(d => d.rows.map(r => String(r.name || '').trim()))
   ].filter(Boolean))];
@@ -4987,7 +5022,7 @@ function renderFreightCalculator(focusTarget = null) {
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding:12px 16px; border-bottom:1px solid #e2e8f0;">
           <div>
             <div style="font-weight:800; color:#0f172a;"><span class="freight-no-print">③ </span>荷下ろし先別 納品数量・按分運賃</div>
-            <div class="freight-no-print" style="font-size:0.75em; color:#64748b; margin-top:2px;">荷下ろし先は入力候補から選択できます（候補の農場マスタは仮データ）。Enterで次の行へ移動します。</div>
+            <div class="freight-no-print" style="font-size:0.75em; color:#64748b; margin-top:2px;">荷下ろし先は登録農場の候補から選択できます（直接入力も可）。Enterで次の行へ移動します。</div>
           </div>
           <div class="freight-no-print" style="display:flex; gap:8px; flex-wrap:wrap;">
             <button id="btnFreightAdd" class="btn" style="${btn('#ea580c')}">➕ 荷下ろし先を追加</button>
@@ -4999,11 +5034,11 @@ function renderFreightCalculator(focusTarget = null) {
             <thead>
               <tr>
                 <th style="width:44px;">No.</th>
-                <th style="min-width:170px;">荷下ろし先（納品先）</th>
+                <th style="min-width:250px;">荷下ろし先（納品先）</th>
                 <th style="width:150px;" class="num">納品数量（<span class="freightUnitLabel"></span>）</th>
-                <th style="width:130px;" class="num">構成比</th>
+                <th style="width:110px;" class="num">構成比</th>
                 <th style="width:130px;" class="num">按分運賃</th>
-                <th style="min-width:140px;">備考</th>
+                <th style="min-width:110px;">備考</th>
                 <th class="freight-no-print" style="width:120px;">操作</th>
               </tr>
             </thead>
