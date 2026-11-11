@@ -2754,7 +2754,7 @@ function generatePurchaseOrderHtml(tx, forStandalone = false) {
           <div class="po-issuer-postal">〒330-0063</div>
           <div class="po-issuer-address">埼玉県さいたま市浦和区高砂2-11-13</div>
           <div class="po-issuer-tel">TEL:048-762-9340 FAX:048-762-9360</div>
-          <div class="po-issuer-staff">担当： ${tx.ourContact || '畑山'}</div>
+          <div class="po-issuer-staff">担当： ${(tx.ourContact || tx.operator || '畑山').trim() || '畑山'}</div>
         </div>
       </div>
 
@@ -2827,7 +2827,7 @@ function generatePurchaseOrderHtml(tx, forStandalone = false) {
         <div class="po-stamp-box">
           <div class="po-stamp-label">担当</div>
           <div class="po-stamp-circle">
-            <span style="font-size: 11px; color: #dc2626; font-weight: bold;">${tx.ourContact ? tx.ourContact.charAt(0) : '畑'}</span>
+            <span style="font-size: ${((tx.ourContact || tx.operator || '畑山').trim() || '畑山').length >= 4 ? '10px' : '11px'}; color: #dc2626; font-weight: bold; white-space: nowrap;">${(tx.ourContact || tx.operator || '畑山').trim() || '畑山'}</span>
           </div>
         </div>
       </div>
@@ -2958,9 +2958,9 @@ function generatePurchaseOrderHtml(tx, forStandalone = false) {
     .po-notes-section { border: 1.5px solid #111827; padding: 6px 10px; }
     .po-notes-content { font-size: 11px; line-height: 1.5; color: #1f2937; }
     .po-stamp-row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
-    .po-stamp-box { border: 1px solid #6b7280; width: 48px; text-align: center; border-radius: 3px; }
-    .po-stamp-label { font-size: 9.5px; color: #4b5563; border-bottom: 1px solid #6b7280; padding: 1px 0; background: #f9fafb; }
-    .po-stamp-circle { height: 34px; display: flex; align-items: center; justify-content: center; }
+    .po-stamp-box { border: 1px solid #6b7280; min-width: 52px; width: auto; text-align: center; border-radius: 3px; }
+    .po-stamp-label { font-size: 9.5px; color: #4b5563; border-bottom: 1px solid #6b7280; padding: 1px 4px; background: #f9fafb; }
+    .po-stamp-circle { height: 34px; padding: 0 6px; display: flex; align-items: center; justify-content: center; }
 
     @media print {
       body { background: #ffffff !important; padding: 0 !important; margin: 0 !important; }

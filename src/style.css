@@ -4968,7 +4968,8 @@ tbody tr:last-child td {
 
 .po-stamp-box {
   border: 1px solid #6b7280;
-  width: 48px;
+  min-width: 52px;
+  width: auto;
   text-align: center;
   border-radius: 3px;
 }
@@ -4977,12 +4978,13 @@ tbody tr:last-child td {
   font-size: 9.5px;
   color: #4b5563;
   border-bottom: 1px solid #6b7280;
-  padding: 1px 0;
+  padding: 1px 4px;
   background: #f9fafb;
 }
 
 .po-stamp-circle {
   height: 34px;
+  padding: 0 6px;
   display: flex;
   align-items: center;
   justify-content: center;
